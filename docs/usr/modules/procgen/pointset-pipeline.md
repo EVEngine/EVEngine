@@ -246,6 +246,11 @@ Scene 为每个批次建立 `__pcg/<batchId>` Host，节点带 `pcg`、`pcg.inst
 `publishCellInstances(prefix, request, points, ...)`
 和 `removeCellInstances(prefix, request)`，其批次 id 自动包含 level/x/z。
 
+流送边界同时更新多个 cell 时，`synchronizeCellInstancesAtomic(...)` 会把完整 cell
+快照组成单次 `replaceBatches` 事务。Scene provider 在提交前构建所有 detached tree 和
+元数据；任一 stale revision、重复 PointId、重复 batch 或 provider 错误都会使整组保持原状。
+该事务必须在 Scene owning thread 同步调用，回调不能观察到部分提交状态。
+
 完整组合见 `examples/pcg-biome`：大 Cell 放置乔木，小 Cell 放置草和岩石，Spline
 道路作为排除域，移动生成源会触发带迟滞的生成与清理。
 

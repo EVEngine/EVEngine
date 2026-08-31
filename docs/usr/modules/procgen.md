@@ -286,6 +286,13 @@ provider 暂时失败后的追赶、存档恢复和 Scene 重建，而不会通�
 revision 反而更高则返回冲突，不会用旧 RuntimeGeneration 状态覆盖新场景。返回的成功值是已同步的
 十进制 revision，可用于日志和监控，不再要求脚本复制 revision 分支策略。
 
+相邻 cell 必须作为同一可见更新提交时，使用
+`synchronizeCellInstancesAtomic(prefix, runtimes, requests, assetAttribute, defaultAsset)`。
+`runtimes[i]` 与 `requests[i]` 一一对应；函数先从每个 `RuntimeGeneration` 取得当前完整快照，
+再通过 Scene capability 离线准备全部目标树。只有所有 cell 的 PointId、batch id 和 revision
+都通过校验后才统一提交。返回值是实际更新的 cell 数；返回失败时没有任何参与 batch 被修改。
+这一入口刻意使用脚本数组表达事务集合，不引入 UE 风格的公开 PCG 图 DSL。
+
 异步或分阶段生成取得 `nextGenerate()` request 后，应在昂贵阶段之间调用
 `isRequestCurrent(request)`。视点、frustum 或 source 集合变化使 cell 不再需要时，scheduler 会立即
 换发 ticket；查询随即返回 false，worker 可停止后续噪声、网格或资产构建。即使 worker 未配合，最终

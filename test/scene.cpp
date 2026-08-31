@@ -364,6 +364,65 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     CHECK_EQ(host->getNodeCount(), 1);
 }
 
+TEST_CASE("Scene.procgenSink.replacesMultipleBatchesAtomically") {
+    Scene* mod  = Scene::create();
+    auto*  sink = eve::cap::query<eve::IProcgenSceneSink>();
+    REQUIRE(sink != nullptr);
+
+    eve::ProcgenInstanceDesc a1;
+    a1.id            = "a1";
+    a1.sourcePointId = 101;
+    a1.x             = 1.f;
+    eve::ProcgenInstanceDesc b1;
+    b1.id            = "b1";
+    b1.sourcePointId = 201;
+    b1.x             = 2.f;
+    REQUIRE(sink->replaceBatch("tx/a", 1, {a1}).ok());
+    REQUIRE(sink->replaceBatch("tx/b", 1, {b1}).ok());
+
+    auto a2 = a1;
+    a2.x    = 10.f;
+    auto b2 = b1;
+    b2.x    = 20.f;
+    std::vector<eve::ProcgenBatchSnapshot> transaction{
+        {"tx/a", 2, {a2}},
+        {"tx/b", 2, {b2}},
+    };
+    auto committed = sink->replaceBatches(transaction);
+    REQUIRE(committed.ok());
+    CHECK_EQ(committed.value(), uint64_t(2));
+    CHECK_EQ(sink->batchRevision("tx/a"), uint64_t(2));
+    CHECK_EQ(sink->batchRevision("tx/b"), uint64_t(2));
+
+    auto hostAResult = mod->findHost("__pcg/tx/a");
+    auto hostBResult = mod->findHost("__pcg/tx/b");
+    REQUIRE(hostAResult.ok());
+    REQUIRE(hostBResult.ok());
+    SceneHost* hostA = hostAResult.value();
+    SceneHost* hostB = hostBResult.value();
+    CHECK(approxEq(hostA->findById("a1").value()->x, 10.f));
+    CHECK(approxEq(hostB->findById("b1").value()->x, 20.f));
+    transaction[0].targetRevision = 3;
+    transaction[0].instances[0].x = 30.f;
+    transaction[1].targetRevision = 2;
+    transaction[1].instances[0].x = 40.f;
+    auto rejected                 = sink->replaceBatches(transaction);
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(sink->batchRevision("tx/a"), uint64_t(2));
+    CHECK_EQ(sink->batchRevision("tx/b"), uint64_t(2));
+    CHECK(approxEq(hostA->findById("a1").value()->x, 10.f));
+    CHECK(approxEq(hostB->findById("b1").value()->x, 20.f));
+
+    transaction[1].targetRevision = 3;
+    transaction[1].instances.push_back(transaction[1].instances.front());
+    auto invalid = sink->replaceBatches(transaction);
+    REQUIRE(!invalid.ok());
+    CHECK_EQ(sink->batchRevision("tx/a"), uint64_t(2));
+    CHECK_EQ(sink->batchRevision("tx/b"), uint64_t(2));
+    CHECK(approxEq(hostA->findById("a1").value()->x, 10.f));
+    CHECK(approxEq(hostB->findById("b1").value()->x, 20.f));
+}
+
 TEST_CASE("Scene.link.syncRenderable3DWorld") {
     SceneHost *h = sceneValue(SceneHost::createHost("link3d"));
     h->setTree(node("root", {node("mesh").withPosition(1.f, 2.f, 3.f)}).withPosition(10.f, 0.f, 0.f));

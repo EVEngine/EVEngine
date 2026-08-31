@@ -968,6 +968,56 @@ eve::Result<uint64_t> Procgen::synchronizeCellInstances(const std::string& prefi
     return sink->replaceBatch(batchId, targetRevision, instances.value());
 }
 
+eve::Result<uint64_t> Procgen::synchronizeCellInstancesAtomic(const std::string&                            prefix,
+                                                              const std::vector<const RuntimeGeneration*>&  runtimes,
+                                                              const std::vector<const ProcgenCellRequest*>& requests,
+                                                              const std::string& assetAttribute,
+                                                              const std::string& defaultAsset) {
+    if (prefix.empty() || runtimes.empty() || runtimes.size() != requests.size())
+        return procgenBindingFailure<uint64_t>(
+            eve::DiagnosticCode::InvalidArgument,
+            "synchronizeCellInstancesAtomic requires a prefix and equally sized non-empty runtime/request lists",
+            "cells");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "synchronizeCellInstancesAtomic scene sink is unavailable");
+
+    std::vector<eve::ProcgenBatchSnapshot> snapshots;
+    snapshots.reserve(requests.size());
+    std::unordered_set<std::string> batchIds;
+    for (size_t index = 0; index < requests.size(); ++index) {
+        const auto* runtime = runtimes[index];
+        const auto* request = requests[index];
+        if (!runtime || !request)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                   "synchronizeCellInstancesAtomic contains a null cell", "cells");
+        const int                 level          = request->getLevel();
+        const int                 x              = request->getX();
+        const int                 z              = request->getZ();
+        const uint64_t            targetRevision = runtime->getCellRevision(level, x, z);
+        std::unique_ptr<PointSet> output(runtime->getCellOutput(level, x, z));
+        if (!output || targetRevision == 0)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::NotFound,
+                                                   "synchronizeCellInstancesAtomic contains an inactive cell", "cells");
+        const std::string batchId =
+            prefix + "/L" + std::to_string(level) + "/" + std::to_string(x) + "/" + std::to_string(z);
+        if (!batchIds.insert(batchId).second)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Conflict,
+                                                   "synchronizeCellInstancesAtomic repeats a cell", "cells");
+        const uint64_t sceneRevision = sink->batchRevision(batchId);
+        if (sceneRevision > targetRevision)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Conflict,
+                                                   "Scene cell revision is ahead of RuntimeGeneration", "revision");
+        if (sceneRevision == targetRevision) continue;
+        auto instances = sceneInstanceDescs(*output, assetAttribute, defaultAsset, true);
+        if (!instances) return eve::Result<uint64_t>::failure(instances.status());
+        snapshots.push_back({batchId, targetRevision, std::move(instances).takeValue()});
+    }
+    if (snapshots.empty()) return eve::Result<uint64_t>::success(0);
+    return sink->replaceBatches(snapshots);
+}
+
 eve::Result<void> Procgen::removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request) {
     if (prefix.empty())
         return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
@@ -4202,6 +4252,28 @@ void Procgen::expose(ssq::Class &cls) {
                         vm, value->synchronizeCellInstances(prefix, *runtime, *request, assetAttribute, defaultAsset),
                         [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
                 });
+    cls.addFunc("synchronizeCellInstancesAtomic", [vm = cls.getHandle()](Procgen* value, const std::string& prefix,
+                                                                         ssq::Array         runtimeArray,
+                                                                         ssq::Array         requestArray,
+                                                                         const std::string& assetAttribute,
+                                                                         const std::string& defaultAsset) {
+        std::vector<const RuntimeGeneration*>  runtimes;
+        std::vector<const ProcgenCellRequest*> requests;
+        if (runtimeArray.size() == requestArray.size()) {
+            runtimes.reserve(runtimeArray.size());
+            requests.reserve(requestArray.size());
+            for (size_t index = 0; index < runtimeArray.size(); ++index) {
+                runtimes.push_back(runtimeArray.get<RuntimeGeneration*>(index));
+                requests.push_back(requestArray.get<ProcgenCellRequest*>(index));
+            }
+        }
+        return eve::script::projectResult(
+            vm,
+            value ? value->synchronizeCellInstancesAtomic(prefix, runtimes, requests, assetAttribute, defaultAsset)
+                  : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                         "synchronizeCellInstancesAtomic requires Procgen", "procgen"),
+            [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+    });
     cls.addFunc("removeCellInstances",
                 [vm = cls.getHandle()](Procgen* value, const std::string& prefix, ProcgenCellRequest* request) {
                     if (!value || !request)

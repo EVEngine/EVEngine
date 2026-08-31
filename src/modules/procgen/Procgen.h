@@ -342,6 +342,27 @@ public:
                                                                  const ProcgenCellRequest& request,
                                                                  const std::string&        assetAttribute,
                                                                  const std::string&        defaultAsset);
+    /**
+     * @brief Synchronize several active runtime cells through one atomic Scene transaction.
+     * @param
+     * prefix Non-empty namespace used to derive Scene batch identities.
+     * @param runtimes Authoritative runtimes,
+     * one per request.
+     * @param requests Cell coordinate requests paired by index with runtimes.
+     * @param
+     * assetAttribute Optional string attribute selecting each instance asset.
+     * @param defaultAsset Asset used
+     * when the selected attribute is absent.
+     * @return Number of changed cell batches committed; zero means every
+     * cell was already current.
+     * @thread Synchronous on the runtime and Scene owning thread; references are not
+     * retained.
+     * @reentrant Not reentrant for any participating runtime cell or Scene batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> synchronizeCellInstancesAtomic(
+        const std::string& prefix, const std::vector<const RuntimeGeneration*>& runtimes,
+        const std::vector<const ProcgenCellRequest*>& requests, const std::string& assetAttribute,
+        const std::string& defaultAsset);
     [[nodiscard]] eve::Result<void> removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request);
     int                             getPublishedInstanceCount(const std::string& batchId) const;
     int                             getPublishedCreatedCount(const std::string& batchId) const;

@@ -243,6 +243,123 @@ public:
         return eve::Result<uint64_t>::success(targetRevision);
     }
 
+    eve::Result<uint64_t> replaceBatches(const std::vector<eve::ProcgenBatchSnapshot>& snapshots) override {
+        if (snapshots.empty())
+            return eve::Result<uint64_t>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                       "procedural scene transaction requires at least one snapshot", "snapshots"));
+
+        struct PreparedBatch {
+            const eve::ProcgenBatchSnapshot*          snapshot = nullptr;
+            SceneHost*                                host     = nullptr;
+            SceneHost::Tree                           tree;
+            std::unordered_set<std::string>           ids;
+            std::unordered_map<uint64_t, std::string> pointIds;
+            std::vector<std::string>                  addedIds;
+            std::vector<std::string>                  reusedIds;
+            std::vector<std::string>                  removedIds;
+            Stats                                     stats;
+        };
+        std::vector<PreparedBatch> prepared;
+        prepared.reserve(snapshots.size());
+        std::unordered_set<std::string> batchIds;
+        batchIds.reserve(snapshots.size());
+
+        for (const auto& snapshot : snapshots) {
+            if (snapshot.batchId.empty() || snapshot.targetRevision == 0)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument,
+                    "procedural scene transaction requires batch ids and non-zero revisions", "snapshots"));
+            if (!batchIds.insert(snapshot.batchId).second)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "procedural scene transaction repeats a batch id", "snapshots"));
+            if (batchRevision(snapshot.batchId) >= snapshot.targetRevision)
+                return eve::Result<uint64_t>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                           "procedural scene transaction contains a stale revision", snapshot.batchId));
+
+            PreparedBatch batch;
+            batch.snapshot = &snapshot;
+            batch.ids.reserve(snapshot.instances.size());
+            batch.pointIds.reserve(snapshot.instances.size());
+            for (const auto& instance : snapshot.instances) {
+                if (instance.id.empty() || instance.sourcePointId == 0 || !batch.ids.insert(instance.id).second ||
+                    !batch.pointIds.emplace(instance.sourcePointId, instance.id).second)
+                    return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::Conflict,
+                        "procedural scene transaction requires unique instance ids and source PointIds",
+                        snapshot.batchId));
+            }
+            const auto  previous    = ids_.find(snapshot.batchId);
+            const auto& previousIds = previous == ids_.end() ? emptyIds_ : previous->second;
+            for (const auto& id : batch.ids) {
+                if (previousIds.find(id) == previousIds.end()) {
+                    ++batch.stats.created;
+                    batch.addedIds.push_back(id);
+                } else {
+                    ++batch.stats.reused;
+                    batch.reusedIds.push_back(id);
+                }
+            }
+            for (const auto& id : previousIds) {
+                if (batch.ids.find(id) != batch.ids.end()) continue;
+                ++batch.stats.removed;
+                batch.removedIds.push_back(id);
+            }
+
+            batch.host    = hostByName(hostName(snapshot.batchId));
+            NodeDesc root = makeRoot(snapshot.batchId, snapshot.instances);
+            auto     tree = SceneHost::buildDetachedTree(batch.host ? &*batch.host->tree() : nullptr, std::move(root));
+            if (!tree) return eve::Result<uint64_t>::failure(tree.status());
+            batch.tree = std::move(tree).takeValue();
+            prepared.push_back(std::move(batch));
+        }
+
+        auto nextCounts    = counts_;
+        auto nextIds       = ids_;
+        auto nextInstances = instances_;
+        auto nextPointIds  = pointIds_;
+        auto nextRevisions = revisions_;
+        auto nextStats     = stats_;
+        for (const auto& batch : prepared) {
+            const auto& snapshot            = *batch.snapshot;
+            nextCounts[snapshot.batchId]    = int(snapshot.instances.size());
+            nextIds[snapshot.batchId]       = batch.ids;
+            nextInstances[snapshot.batchId] = snapshot.instances;
+            nextPointIds[snapshot.batchId]  = batch.pointIds;
+            nextRevisions[snapshot.batchId] = snapshot.targetRevision;
+            nextStats[snapshot.batchId]     = batch.stats;
+        }
+
+        for (auto& batch : prepared) {
+            if (batch.host) continue;
+            batch.host = borrowSceneResult(SceneHost::createHost(hostName(batch.snapshot->batchId)));
+            if (!batch.host)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Failed, "procedural scene transaction could not allocate all target hosts",
+                    batch.snapshot->batchId));
+            batch.host->setVisible(false);
+        }
+
+        for (auto& batch : prepared) {
+            *batch.host->tree() = std::move(batch.tree);
+            batch.host->setVisible(true);
+        }
+        counts_.swap(nextCounts);
+        ids_.swap(nextIds);
+        instances_.swap(nextInstances);
+        pointIds_.swap(nextPointIds);
+        revisions_.swap(nextRevisions);
+        stats_.swap(nextStats);
+        for (const auto& batch : prepared) {
+            for (const auto& id : batch.removedIds) batch.host->fireEvent("node_removed", id);
+            for (const auto& id : batch.addedIds) batch.host->fireEvent("node_added", id, "pcg-root");
+            for (const auto& id : batch.reusedIds) batch.host->fireEvent("node_changed", id, "pcg-root");
+        }
+        for (const auto& batch : prepared) TransformSystem::updateHost(batch.host);
+        return eve::Result<uint64_t>::success(static_cast<uint64_t>(prepared.size()));
+    }
+
     eve::Result<uint64_t> applyDelta(const std::string& batchId,
                                      const eve::ProcgenInstanceDelta& delta) override {
         const auto current = revisions_.find(batchId);
@@ -394,6 +511,31 @@ private:
         int reused  = 0;
         int removed = 0;
     };
+    static NodeDesc makeRoot(const std::string& batchId, const std::vector<eve::ProcgenInstanceDesc>& instances) {
+        NodeDesc root;
+        root.id   = "pcg-root";
+        root.key  = "pcg-root";
+        root.name = batchId;
+        root.tags = {"pcg", "pcg.batch"};
+        root.children.reserve(instances.size());
+        for (const auto& instance : instances) {
+            NodeDesc child;
+            child.id   = instance.id;
+            child.key  = instance.id;
+            child.name = instance.asset;
+            child.x    = instance.x;
+            child.y    = instance.y;
+            child.z    = instance.z;
+            child.yaw  = instance.yaw;
+            child.sx   = instance.scaleX;
+            child.sy   = instance.scaleY;
+            child.sz   = instance.scaleZ;
+            child.tags = {"pcg", "pcg.instance"};
+            if (!instance.asset.empty()) child.tags.push_back("pcg.asset:" + instance.asset);
+            root.children.push_back(std::move(child));
+        }
+        return root;
+    }
     static std::string hostName(const std::string& batchId) { return "__pcg/" + batchId; }
     const std::unordered_set<std::string> emptyIds_;
     std::unordered_map<std::string, int> counts_;

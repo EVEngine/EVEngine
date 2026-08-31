@@ -46,6 +46,24 @@ public:
         revisions[batchId] = targetRevision;
         return eve::Result<uint64_t>::success(targetRevision);
     }
+    eve::Result<uint64_t> replaceBatches(const std::vector<eve::ProcgenBatchSnapshot>& snapshots) override {
+        if (failBatchTransaction)
+            return eve::Result<uint64_t>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "injected batch transaction failure"));
+        auto nextBatches   = batches;
+        auto nextRevisions = revisions;
+        for (const auto& snapshot : snapshots) {
+            if (snapshot.batchId.empty() || snapshot.targetRevision == 0 ||
+                nextRevisions[snapshot.batchId] >= snapshot.targetRevision)
+                return eve::Result<uint64_t>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "mock batch transaction is stale"));
+            nextBatches[snapshot.batchId]   = snapshot.instances;
+            nextRevisions[snapshot.batchId] = snapshot.targetRevision;
+        }
+        batches.swap(nextBatches);
+        revisions.swap(nextRevisions);
+        return eve::Result<uint64_t>::success(static_cast<uint64_t>(snapshots.size()));
+    }
     eve::Result<uint64_t> applyDelta(const std::string& batchId, const eve::ProcgenInstanceDelta& delta) override {
         const auto current = revisions.find(batchId);
         if (current == revisions.end() || current->second != delta.baseRevision)
@@ -98,6 +116,7 @@ public:
     eve::ProcgenInstanceDelta                                              lastDelta;
     int                                                                    replaceCalls = 0;
     int                                                                    deltaCalls   = 0;
+    bool                                                                   failBatchTransaction = false;
 };
 
 }  // namespace
@@ -319,6 +338,62 @@ TEST_CASE("procgen.sceneSink.synchronizesRuntimeRevisionWithDeltaAndSnapshotReco
     CHECK_EQ(sink.replaceCalls, 2);
     CHECK_EQ(sink.deltaCalls, 1);
 
+    eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
+}
+
+TEST_CASE("procgen.sceneSink.synchronizesSeveralRuntimeCellsAtomically") {
+    eve::cap::detail::clearAllRaw();
+    MockProcgenSceneSink sink;
+    eve::cap::provide<eve::IProcgenSceneSink>(&sink);
+
+    Procgen           proc;
+    RuntimeGeneration firstRuntime(301);
+    RuntimeGeneration secondRuntime(302);
+    REQUIRE(firstRuntime.addLevel(10.f, 6.f, 2.f) >= 0);
+    REQUIRE(secondRuntime.addLevel(10.f, 6.f, 2.f) >= 0);
+    firstRuntime.updateSource(1.f, 1.f, 1.f, 0.f);
+    secondRuntime.updateSource(21.f, 1.f, 1.f, 0.f);
+    std::unique_ptr<ProcgenCellRequest> firstRequest(firstRuntime.nextGenerate());
+    std::unique_ptr<ProcgenCellRequest> secondRequest(secondRuntime.nextGenerate());
+    REQUIRE(bool(firstRequest));
+    REQUIRE(bool(secondRequest));
+
+    PointSet  firstPoints;
+    const int firstPoint = firstPoints.add(1.f, 0.f, 1.f);
+    REQUIRE(firstPoints.trySetPointId(firstPoint, 5001).ok());
+    PointSet  secondPoints;
+    const int secondPoint = secondPoints.add(21.f, 0.f, 1.f);
+    REQUIRE(secondPoints.trySetPointId(secondPoint, 5002).ok());
+    REQUIRE(firstRuntime.completeGeneration(firstRequest.get(), &firstPoints));
+    REQUIRE(secondRuntime.completeGeneration(secondRequest.get(), &secondPoints));
+
+    std::vector<const RuntimeGeneration*>  runtimes{&firstRuntime, &secondRuntime};
+    std::vector<const ProcgenCellRequest*> requests{firstRequest.get(), secondRequest.get()};
+    auto committed = proc.synchronizeCellInstancesAtomic("world", runtimes, requests, "asset", "stone");
+    REQUIRE(committed.ok());
+    CHECK_EQ(committed.value(), uint64_t(2));
+    CHECK_EQ(sink.revisions.at("world/L0/0/0"), uint64_t(1));
+    CHECK_EQ(sink.revisions.at("world/L0/2/0"), uint64_t(1));
+
+    PointSet firstRevisionTwo = firstPoints;
+    firstRevisionTwo.setPosition(0, 5.f, 0.f, 1.f);
+    PointSet secondRevisionTwo = secondPoints;
+    secondRevisionTwo.setPosition(0, 25.f, 0.f, 1.f);
+    REQUIRE(firstRuntime.applyCellUpdate(0, 0, 0, 1, firstRevisionTwo).ok());
+    REQUIRE(secondRuntime.applyCellUpdate(0, 2, 0, 1, secondRevisionTwo).ok());
+    sink.failBatchTransaction = true;
+    auto rejected             = proc.synchronizeCellInstancesAtomic("world", runtimes, requests, "asset", "stone");
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(sink.revisions.at("world/L0/0/0"), uint64_t(1));
+    CHECK_EQ(sink.revisions.at("world/L0/2/0"), uint64_t(1));
+    CHECK_EQ(sink.batches.at("world/L0/0/0")[0].x, 1.f);
+    CHECK_EQ(sink.batches.at("world/L0/2/0")[0].x, 21.f);
+
+    sink.failBatchTransaction = false;
+    auto recovered            = proc.synchronizeCellInstancesAtomic("world", runtimes, requests, "asset", "stone");
+    REQUIRE(recovered.ok());
+    CHECK_EQ(sink.batches.at("world/L0/0/0")[0].x, 5.f);
+    CHECK_EQ(sink.batches.at("world/L0/2/0")[0].x, 25.f);
     eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
 }
 

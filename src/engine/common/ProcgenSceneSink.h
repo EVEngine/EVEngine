@@ -41,6 +41,16 @@ struct EVENGINE_API ProcgenInstanceDelta {
     std::vector<std::string> targetOrder;
 };
 
+/** @brief One complete cell snapshot participating in an atomic multi-batch publication. */
+struct EVENGINE_API ProcgenBatchSnapshot {
+    /** @brief Stable target batch identity. */
+    std::string batchId;
+    /** @brief Non-zero revision newer than the committed batch revision. */
+    uint64_t targetRevision = 0;
+    /** @brief Complete ordered target contents. */
+    std::vector<ProcgenInstanceDesc> instances;
+};
+
 /**
  * @brief Optional scene consumer for procedural instance batches.
  *
@@ -68,6 +78,14 @@ public:
     [[nodiscard]] virtual Result<uint64_t> replaceBatch(
         const std::string& batchId, uint64_t targetRevision,
         const std::vector<ProcgenInstanceDesc>& instances) = 0;
+    /**
+     * @brief Atomically replace several batches from complete snapshots.
+     * @param snapshots Non-empty transaction whose batch ids are unique.
+     * @return Number of committed batches, or a structured failure with no batch changed.
+     * @thread Called synchronously on the scene-owning thread; implementations must not retain references.
+     * @reentrant Not reentrant. No scene callback may observe a partially committed transaction.
+     */
+    [[nodiscard]] virtual Result<uint64_t> replaceBatches(const std::vector<ProcgenBatchSnapshot>& snapshots) = 0;
     /** @brief Remove the visible contents of a batch. */
     virtual bool removeBatch(const std::string& batchId) = 0;
     /**
