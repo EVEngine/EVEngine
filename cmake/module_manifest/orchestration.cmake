@@ -37,7 +37,8 @@ eve_declare_module(NAME lighting_editing LAYER 5
                    DEPS daynight editing graphics weather
                    GROUP 3d web)
 eve_declare_module(NAME building_editing LAYER 5
-                   DEPS building editing
+                   DEPS editing
+                   OPTIONAL_DEPS building
                    GROUP 2d 3d web)
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    DEPS animation data filesystem graphics ik
