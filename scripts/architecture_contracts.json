@@ -49,6 +49,31 @@
       "stale": "Generation and owner identity are checked by resolve; encoded validity alone is insufficient."
     },
     {
+      "id": "pixelworld-fragment-link-contract",
+      "rule": "link",
+      "scope": "src/modules/pixelworld/PixelWorld.h",
+      "owner": "pixelworld::PixelWorld",
+      "issue": "EVENGINE-PIXELWORLD-FRAGMENTS",
+      "reason": "Detached fragment bitmaps need process-local source identity without becoming a second mutable terrain authority.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/pixelworld/PixelWorld.h",
+        "docs/dev/PixelWorld-Noita技术路线.md"
+      ],
+      "tests": [
+        "test/pixelworld.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "PixelWorldLink"
+      ],
+      "create": "PixelWorld stamps a world id and epoch into every atomically detached PixelFragment.",
+      "ownership": "PixelWorld solely owns live terrain; a fragment owns only its detached bitmap and a non-owning source link.",
+      "destroy_order": "Fragment destruction is independent; world destruction makes rasterization impossible without dereferencing retained world pointers.",
+      "restore": "Transactional restore and clear increment the world epoch; callers must discard or explicitly recreate stale physics projections.",
+      "stale": "Rasterization compares both runtime world identity and epoch and returns StaleHandle before any terrain write."
+    },
+    {
       "id": "rts-link-contract",
       "rule": "link",
       "scope": "src/modules/rts/RTSTypes.h",
@@ -211,6 +236,35 @@
       "events": "signals and transition trace remain in NpcAiWorld and are not dispatched while an ECS view is open",
       "services": "borrowed owner-thread NpcAiWorld plus injected SimulationStep tick and dt",
       "phase": "deterministic AI simulation phase after perception ingestion and before animation/presentation consumption"
+    },
+    {
+      "id": "pixelworld-thread-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/pixelworld_thread/PixelWorldThread.h",
+      "owner": "pixelworld::PixelWorld",
+      "issue": "EVENGINE-PIXELWORLD-PARALLEL",
+      "reason": "PixelWorld worker scheduling must declare immutable phase reads, isolated candidate writes and canonical commit ordering.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/pixelworld_thread/PixelWorldThread.h",
+        "docs/dev/PixelWorld-Noita技术路线.md"
+      ],
+      "tests": [
+        "test/pixelworld_parallel.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "JobSystem",
+        "JobSystemPixelScheduler"
+      ],
+      "entity_scope": "canonical active PixelWorld Chunk indices for one injected SimulationTick",
+      "view": "immutable post-movement PixelCell phase state plus one owning candidate slot per Chunk index",
+      "read_set": "PixelCell material and temperature, immutable MaterialCatalog definitions and canonical Chunk order",
+      "write_set": "index-owned ThermalContribution buffers and transfer counters only; workers never write PixelWorld",
+      "structural_changes": "none on workers; owner thread performs sorted temperature commits and later Chunk tombstone publication",
+      "events": "StepStats parallelTasks and deterministic phase counters after synchronous join",
+      "services": "borrowed running thread::JobSystem through JobSystemPixelScheduler",
+      "phase": "thermal candidate generation after canonical movement and before owner-thread thermal commit"
     },
     {
       "id": "rpg-ecs-system-contracts",

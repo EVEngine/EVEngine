@@ -25,8 +25,9 @@ namespace detail {
  *
  * The token starts active for a newly-created Result. A move transfers its
  * responsibility after payload movement succeeds; a moved-from Result is
- * disarmed. In non-assert builds this class has no data member and its methods
- * compile to no-ops.
+ * disarmed. The two bytes remain present in non-assert builds so Result keeps
+ * one ABI when a Release engine library is consumed by an assertion-enabled
+ * test or tool; the observation operations themselves compile to no-ops.
  */
 class ResultObservation {
 public:
@@ -38,9 +39,7 @@ public:
     /** @brief Start an inactive token used while a Result move is constructed. */
     struct InactiveTag {};
     explicit ResultObservation(InactiveTag) noexcept {
-#if !defined(ZEROERR_NO_ASSERT)
         mustObserve_ = false;
-#endif
     }
 
 #if !defined(ZEROERR_NO_ASSERT)
@@ -77,10 +76,11 @@ protected:
     }
 
 private:
-#if !defined(ZEROERR_NO_ASSERT)
+    // Do not condition these fields on ZEROERR_NO_ASSERT. Public Result<T>
+    // values cross static/shared-library boundaries whose assertion policy may
+    // intentionally differ from the consumer (notably Release unit tests).
     mutable bool observed_    = false;
     bool         mustObserve_ = true;
-#endif
 };
 
 template <class T>
@@ -94,8 +94,9 @@ using ResultReturn = std::invoke_result_t<T>;
  * Every Result is checked in an assertion-enabled build before destruction.
  * Calling `ok`, `status`, `value`, `error`, a composition helper, `ignore`, or
  * `expect` counts as an explicit observation. In release-style builds where
- * `ZEROERR_NO_ASSERT` is defined, observation has no storage or branch cost;
- * the class remains `[[nodiscard]]` at compile time.
+ * `ZEROERR_NO_ASSERT` is defined, observation checks have no branch cost. The
+ * small observation token retains a stable ABI and the class remains
+ * `[[nodiscard]]` at compile time.
  *
  * @tparam T Owning value type. References and void use a different form.
  */

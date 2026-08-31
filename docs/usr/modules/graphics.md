@@ -184,6 +184,12 @@ Agent 可直接决定是否继续纠正；无效期望会在写入前拒绝。�
 重新上传到由当前 Graphics 后端创建的已有纹理；纹理对象保持不变，可继续被材质引用。
 该方法必须在渲染线程调用，后端所有权、格式或尺寸不匹配时抛出异常。
 
+C++ 渲染适配器可调用 `updateTextureRegion(texture,x,y,width,height,rgba,bytesPerRow)`
+更新单 mip RGBA8 纹理的子矩形。Vulkan 使用 staging buffer 和原图 `copyBufferToImage`，
+WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样器或描述符。
+多个离散矩形应使用 `updateTextureRegions(texture, regions)`：它在任何写入前验证整个
+批次；Vulkan 将所有 region 紧密打包进一个 staging buffer 并只提交一次。
+
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `bakeMeshMorph()`、`newMeshFromArrays()`、`updateMeshVertices()`、`clear()`、`clearMorphWeights()`、`declareFloat()`、`declareMatrix()`、`declareVec2()`、`declareVec3()`、`declareVec4()`

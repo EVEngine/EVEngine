@@ -270,6 +270,11 @@ public:
     bool releaseTexture(Texture *texture) override;
     bool updateTexture(Texture *texture, int width, int height,
                        const uint8_t *rgba) override;
+    eve::Result<void> updateTextureRegion(Texture *texture, int x, int y, int width,
+                                          int height, std::span<const std::uint8_t> rgba,
+                                          std::size_t bytesPerRow = 0) override;
+    eve::Result<void> updateTextureRegions(
+        Texture *texture, std::span<const TextureRegionUpload> regions) override;
 
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                           const Color &color) override;

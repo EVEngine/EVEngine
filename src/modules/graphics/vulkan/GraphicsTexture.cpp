@@ -680,6 +680,111 @@ bool Graphics::updateTexture(Texture *tex, int width, int height, const uint8_t 
     return replaceTexturePixelsRGBA(tex, width, height, rgba);
 }
 
+eve::Result<void> Graphics::updateTextureRegion(Texture *tex, int x, int y, int width,
+                                                int height,
+                                                std::span<const std::uint8_t> rgba,
+                                                std::size_t bytesPerRow) {
+    const TextureRegionUpload upload{x, y, width, height, rgba, bytesPerRow};
+    return updateTextureRegions(tex, std::span<const TextureRegionUpload>(&upload, 1));
+}
+
+eve::Result<void> Graphics::updateTextureRegions(
+    Texture *tex, std::span<const TextureRegionUpload> regions) {
+    if (!tex)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "texture must be non-null",
+            "graphics.updateTextureRegions.texture"));
+    if (tex->mipmapCount != 1)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "partial updates require a single-mip texture",
+            "graphics.updateTextureRegions.mipmaps"));
+
+    auto *gpu = static_cast<GpuTexture *>(tex->gpuHandle);
+    const auto owned = std::find_if(ownedGpuTextures.begin(), ownedGpuTextures.end(),
+                                    [gpu](const std::unique_ptr<GpuTexture> &candidate) {
+                                        return candidate.get() == gpu;
+                                    });
+    if (!gpu || owned == ownedGpuTextures.end() || gpu->isCube)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "texture is not an owned 2D texture",
+            "graphics.updateTextureRegions.texture"));
+    if (regions.empty()) return eve::Result<void>::success();
+
+    std::vector<std::size_t> packedOffsets;
+    packedOffsets.reserve(regions.size());
+    std::size_t packedSize = 0;
+    for (const TextureRegionUpload &region : regions) {
+        if (region.x < 0 || region.y < 0 || region.width <= 0 || region.height <= 0 ||
+            region.x > tex->width - region.width || region.y > tex->height - region.height)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "invalid texture region",
+                "graphics.updateTextureRegions.region"));
+        const std::size_t packedRow = std::size_t(region.width) * 4U;
+        const std::size_t stride = region.bytesPerRow == 0 ? packedRow : region.bytesPerRow;
+        const std::size_t requiredBytes = stride * std::size_t(region.height - 1) + packedRow;
+        if (stride < packedRow || region.rgba.size() < requiredBytes)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument,
+                "source bytes do not cover the texture region",
+                "graphics.updateTextureRegions.bytes"));
+        packedOffsets.push_back(packedSize);
+        packedSize += packedRow * std::size_t(region.height);
+    }
+
+    std::vector<std::uint8_t> packed(packedSize);
+    for (std::size_t index = 0; index < regions.size(); ++index) {
+        const TextureRegionUpload &region = regions[index];
+        const std::size_t packedRow = std::size_t(region.width) * 4U;
+        const std::size_t stride = region.bytesPerRow == 0 ? packedRow : region.bytesPerRow;
+        for (int row = 0; row < region.height; ++row)
+            std::copy_n(region.rgba.data() + std::size_t(row) * stride, packedRow,
+                        packed.data() + packedOffsets[index] + std::size_t(row) * packedRow);
+    }
+    vkb::GenericBuffer staging(
+        device, vk::BufferUsageFlagBits::eTransferSrc, vk::DeviceSize(packed.size()),
+        vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+    staging.updateLocal(vkb::FrameSlot::gpuIdle(), packed.data(), vk::DeviceSize(packed.size()));
+
+    waitForSharedGpuResources();
+    vkb::executeImmediately(device.instance, uploadPool,
+                            device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+        gpu->image.setLayout(cb, vk::ImageLayout::eTransferDstOptimal);
+        std::vector<vk::BufferImageCopy> copies;
+        copies.reserve(regions.size());
+        for (std::size_t index = 0; index < regions.size(); ++index) {
+            const TextureRegionUpload &source = regions[index];
+            vk::BufferImageCopy copy{};
+            copy.bufferOffset = packedOffsets[index];
+            copy.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+            copy.imageOffset = vk::Offset3D{source.x, source.y, 0};
+            copy.imageExtent = vk::Extent3D{std::uint32_t(source.width),
+                                            std::uint32_t(source.height), 1};
+            copies.push_back(copy);
+        }
+        cb.copyBufferToImage(staging.buffer, gpu->image.image(),
+                             vk::ImageLayout::eTransferDstOptimal, copies);
+
+        vk::ImageMemoryBarrier barrier{};
+        barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+        barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+        barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.image = gpu->image.image();
+        barrier.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+        cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                           vk::PipelineStageFlagBits::eVertexShader |
+                               vk::PipelineStageFlagBits::eFragmentShader |
+                               vk::PipelineStageFlagBits::eComputeShader,
+                           {}, 0, nullptr, 0, nullptr, 1, &barrier);
+        gpu->image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+    });
+    staging.release();
+    return eve::Result<void>::success();
+}
+
 bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_t *rgba) {
     if (!tex || !rgba || w <= 0 || h <= 0 || !initialized) return false;
 

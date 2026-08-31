@@ -8,6 +8,7 @@
 #include <glm/vec4.hpp>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <vector>
 #include "common/Module.h"
@@ -44,6 +45,20 @@ class GlobalIllumination;
 class GrassField;
 class Material;
 class Mesh;
+
+/**
+ * @brief One borrowed RGBA8 source rectangle for a batched texture update.
+ * @ownership `rgba` remains owned by the caller and is never retained.
+ * @lifetime The byte span must remain valid through updateTextureRegions().
+ */
+struct TextureRegionUpload {
+    int x = 0;
+    int y = 0;
+    int width = 0;
+    int height = 0;
+    std::span<const std::uint8_t> rgba;
+    std::size_t bytesPerRow = 0;
+};
 
 /**
  * @brief Backend-owned layout facts for a mesh uploaded through Graphics.
@@ -500,6 +515,36 @@ public:
      */
     virtual bool updateTexture(Texture *texture, int width, int height,
                                const uint8_t *rgba) = 0;
+
+    /**
+     * @brief Upload one tightly packed or row-strided RGBA8 rectangle into mip level zero.
+     * @param texture Borrowed texture owned by this Graphics backend.
+     * @param x Destination pixel offset from the left edge.
+     * @param y Destination pixel offset from the top edge.
+     * @param width Rectangle width in pixels.
+     * @param height Rectangle height in pixels.
+     * @param rgba Owning-external bytes borrowed only for this synchronous call.
+     * @param bytesPerRow Source row stride; zero means `width * 4`.
+     * @return Success after the upload is visible to subsequent draws, or a diagnostic.
+     * @ownership Graphics retains neither `texture` nor `rgba`; it already owns texture storage.
+     * @lifetime `texture` and `rgba` must remain valid only for this render-thread call.
+     * @remarks Textures with mip chains are rejected because partial mip regeneration is undefined.
+     */
+    [[nodiscard]] virtual eve::Result<void> updateTextureRegion(
+        Texture *texture, int x, int y, int width, int height,
+        std::span<const std::uint8_t> rgba, std::size_t bytesPerRow = 0) = 0;
+
+    /**
+     * @brief Validate then upload multiple independent mip-zero RGBA8 regions as one batch.
+     * @param texture Borrowed single-mip texture owned by this Graphics backend.
+     * @param regions Borrowed descriptors and source spans, consumed synchronously.
+     * @return Success after every region is accepted and uploaded, otherwise no upload occurs.
+     * @ownership Graphics retains neither the texture nor region/source spans.
+     * @lifetime All arguments need remain valid only through this render-thread call.
+     * @remarks Vulkan guarantees one staging allocation and queue submission for the batch.
+     */
+    [[nodiscard]] virtual eve::Result<void> updateTextureRegions(
+        Texture *texture, std::span<const TextureRegionUpload> regions) = 0;
 
     /**
      * @brief Recreate the sampler for an existing texture (keeps image / mip chain).
