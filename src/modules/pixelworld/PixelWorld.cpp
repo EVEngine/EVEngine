@@ -658,7 +658,7 @@ eve::Result<std::vector<PixelFragment>> PixelWorld::extractUnsupportedFragments(
                 minY = std::min(minY, cy);
                 maxY = std::max(maxY, cy);
                 if (cy >= supportY) supported = true;
-                for (const auto [dx, dy] : neighbors) {
+                for (const auto& [dx, dy] : neighbors) {
                     const int nx = cx + dx, ny = cy + dy;
                     const bool inside = nx >= region.minX && nx <= region.maxX &&
                                         ny >= region.minY && ny <= region.maxY;
@@ -681,7 +681,7 @@ eve::Result<std::vector<PixelFragment>> PixelWorld::extractUnsupportedFragments(
             fragment.height = maxY - minY + 1;
             fragment.solidCellCount = std::uint32_t(component.size());
             fragment.cells.resize(std::size_t(fragment.width) * std::size_t(fragment.height));
-            for (const auto [cx, cy] : component)
+            for (const auto& [cx, cy] : component)
                 fragment.cells[std::size_t(cy - minY) * std::size_t(fragment.width) + std::size_t(cx - minX)] =
                     impl_->get(cx, cy);
             fragments.push_back(std::move(fragment));
@@ -938,7 +938,7 @@ eve::Result<StepStats> PixelWorld::advanceImpl(eve::SimulationTick tick,
         const auto& own = ownSummary->second;
         if (own.thermalRemainderCells != 0) return true;
         if (own.minimumTemperature != own.maximumTemperature) return true;
-        for (const auto [dx, dy] :
+        for (const auto& [dx, dy] :
              std::array<std::pair<int, int>, 4>{{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}}) {
             const auto neighbor = phaseSummaries.find({coord.x + dx, coord.y + dy});
             if (neighbor == phaseSummaries.end() || neighbor->second.nonAir == 0) continue;
@@ -970,7 +970,7 @@ eve::Result<StepStats> PixelWorld::advanceImpl(eve::SimulationTick tick,
             for (int lx = 0; lx < kPixelChunkSize; ++lx) {
                 const PixelCell source = ownChunk.cells[Chunk::index(lx, ly)];
                 if (source.material == MaterialId::Air) continue;
-                for (const auto [ox, oy] : std::array<std::pair<int, int>, 2>{{{1, 0}, {0, 1}}}) {
+                for (const auto& [ox, oy] : std::array<std::pair<int, int>, 2>{{{1, 0}, {0, 1}}}) {
                     PixelCell target;
                     if (ox != 0 && lx == kPixelChunkSize - 1) {
                         if (rightChunk == nullptr) continue;
@@ -1211,7 +1211,7 @@ eve::Result<StepStats> PixelWorld::advanceImpl(eve::SimulationTick tick,
                 ++stats.cellsVisited;
                 bool reacted = false;
                 if (impl_->catalog.canReact(cell.material))
-                    for (const auto [ox, oy] :
+                    for (const auto& [ox, oy] :
                          std::array<std::pair<int, int>, 4>{{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}}) {
                         const int neighborLocalX = lx + ox;
                         const int neighborLocalY = ly + oy;

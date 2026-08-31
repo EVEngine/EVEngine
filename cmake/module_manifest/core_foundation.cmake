@@ -74,6 +74,7 @@ eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial
 eve_declare_module(NAME crowd LAYER 0 SCRIPT Crowd SLOT crowd
                    GROUP 2d 3d web)
 eve_declare_module(NAME pixelworld LAYER 0 SCRIPT PixelWorldModule SLOT pixelworld
+                   THIRDPARTY poco
                    GROUP 2d 3d web)
 eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)

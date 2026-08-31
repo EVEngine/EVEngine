@@ -1,5 +1,30 @@
 #include "pixelworld/PixelMaterialCatalogCodec.h"
 
+#if defined(__EMSCRIPTEN__)
+
+namespace eve::pixelworld {
+namespace {
+
+eve::Diagnostic webCodecUnavailable() {
+    return eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                  "material Catalog JSON codec is unavailable on the Web build", "codec",
+                                  {}, "pixelworld.catalog-codec");
+}
+
+}  // namespace
+
+eve::Result<std::string> encodeMaterialCatalogJson(const MaterialCatalog&) {
+    return eve::Result<std::string>::failure(webCodecUnavailable());
+}
+
+eve::Result<MaterialCatalog> decodeMaterialCatalogJson(std::string_view) {
+    return eve::Result<MaterialCatalog>::failure(webCodecUnavailable());
+}
+
+}  // namespace eve::pixelworld
+
+#else
+
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
@@ -294,3 +319,5 @@ eve::Result<MaterialCatalog> decodeMaterialCatalogJson(std::string_view json) {
 }
 
 }  // namespace eve::pixelworld
+
+#endif  // defined(__EMSCRIPTEN__)
