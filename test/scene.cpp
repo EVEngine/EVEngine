@@ -248,10 +248,12 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     REQUIRE(sink != nullptr);
 
     std::vector<eve::ProcgenInstanceDesc> instances(2);
+    instances[0].sourcePointId = 101;
     instances[0].id     = "tree-1";
     instances[0].asset  = "oak";
     instances[0].x      = 3.f;
     instances[0].scaleY = 2.f;
+    instances[1].sourcePointId = 102;
     instances[1].id     = "rock-2";
     instances[1].asset  = "granite";
     instances[1].z      = 8.f;
@@ -281,7 +283,7 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     delta.targetRevision = 2;
     instances[0].x       = 7.f;
     delta.updated.push_back(instances[0]);
-    delta.removed.push_back("rock-2");
+    delta.removedPointIds.push_back(102);
     eve::ProcgenInstanceDesc flower;
     flower.id    = "flower-3";
     flower.asset = "lily";
@@ -306,6 +308,17 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 1);
     CHECK_EQ(sink->lastReusedCount("biome/0/0"), 1);
     CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 1);
+
+    eve::ProcgenInstanceDelta unknownRemoval;
+    unknownRemoval.baseRevision   = 2;
+    unknownRemoval.targetRevision = 3;
+    unknownRemoval.removedPointIds.push_back(999);
+    unknownRemoval.targetOrder = {"flower-3", "tree-1"};
+    auto unknown = sink->applyDelta("biome/0/0", unknownRemoval);
+    CHECK(!unknown.ok());
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(2));
+    CHECK_EQ(host->getNodeCount(), 3);
+    CHECK(approxEq(host->findById("tree-1").value()->x, 7.f));
 
     delta.baseRevision = 1;
     delta.updated[0].x = 99.f;

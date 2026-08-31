@@ -108,12 +108,14 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     CHECK_EQ(proc.getPublishedRemovedCount("forest/main"), 0);
     const auto& published = sink.batches.at("forest/main");
     CHECK_EQ(published[0].id, std::string("pcg-id-1001"));
+    CHECK_EQ(published[0].sourcePointId, uint64_t(1001));
     CHECK_EQ(published[0].asset, std::string("oak"));
     CHECK_EQ(published[0].x, 1.f);
     CHECK_EQ(published[0].yaw, 30.f);
     CHECK_EQ(published[0].scaleZ, 4.f);
     CHECK_EQ(published[1].asset, std::string("granite"));
     CHECK_EQ(published[1].id, std::string("pcg-id-1002"));
+    CHECK_EQ(published[1].sourcePointId, uint64_t(1002));
 
     auto reorderedResult = proc.newPointSetHandle();
     REQUIRE(reorderedResult.ok());

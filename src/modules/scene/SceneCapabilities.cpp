@@ -184,8 +184,14 @@ public:
             root.children.push_back(std::move(child));
         }
         std::unordered_set<std::string> nextIds;
+        std::unordered_map<uint64_t, std::string> nextPointIds;
         nextIds.reserve(instances.size());
-        for (const auto& instance : instances) nextIds.insert(instance.id);
+        nextPointIds.reserve(instances.size());
+        for (const auto& instance : instances) {
+            if (!nextIds.insert(instance.id).second) return false;
+            if (instance.sourcePointId != 0 && !nextPointIds.emplace(instance.sourcePointId, instance.id).second)
+                return false;
+        }
         const auto previous = ids_.find(batchId);
         const auto& previousIds = previous == ids_.end() ? emptyIds_ : previous->second;
         Stats stats;
@@ -203,6 +209,7 @@ public:
         counts_[batchId] = int(instances.size());
         ids_[batchId]    = std::move(nextIds);
         instances_[batchId] = instances;
+        pointIds_[batchId]   = std::move(nextPointIds);
         revisions_[batchId] = revisions_[batchId] + 1;
         stats_[batchId]  = stats;
         return true;
@@ -221,8 +228,22 @@ public:
 
         std::unordered_map<std::string, eve::ProcgenInstanceDesc> staged;
         for (const auto& instance : instances_.at(batchId)) staged.emplace(instance.id, instance);
+        const auto& pointIds = pointIds_.at(batchId);
+        std::unordered_set<std::string> removedIds;
+        removedIds.reserve(delta.removedPointIds.size() + delta.removed.size());
+        for (const auto pointId : delta.removedPointIds) {
+            const auto found = pointIds.find(pointId);
+            if (pointId == 0 || found == pointIds.end() || !removedIds.insert(found->second).second)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "procedural scene delta removes an unknown source PointId",
+                    "removedPointIds"));
+        }
         for (const auto& id : delta.removed)
-            if (id.empty() || staged.erase(id) != 1)
+            if (id.empty() || !removedIds.insert(id).second)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "procedural scene delta repeats a removed identity", "removed"));
+        for (const auto& id : removedIds)
+            if (staged.erase(id) != 1)
                 return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
                     eve::DiagnosticCode::Conflict, "procedural scene delta removes an unknown identity", "removed"));
         for (const auto& instance : delta.updated) {
@@ -278,6 +299,7 @@ public:
         counts_.erase(batchId);
         ids_.erase(batchId);
         instances_.erase(batchId);
+        pointIds_.erase(batchId);
         revisions_.erase(batchId);
         return true;
     }
@@ -310,6 +332,7 @@ private:
     std::unordered_map<std::string, int> counts_;
     std::unordered_map<std::string, std::unordered_set<std::string>> ids_;
     std::unordered_map<std::string, std::vector<eve::ProcgenInstanceDesc>> instances_;
+    std::unordered_map<std::string, std::unordered_map<uint64_t, std::string>> pointIds_;
     std::unordered_map<std::string, uint64_t> revisions_;
     std::unordered_map<std::string, Stats> stats_;
 };

@@ -803,6 +803,7 @@ eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenP
     for (size_t pointIndex = 0; pointIndex < view->points().size(); ++pointIndex) {
         const auto&              point = view->points()[pointIndex];
         eve::ProcgenInstanceDesc instance;
+        instance.sourcePointId = point.id;
         instance.id = sceneInstanceId(*view, pointIndex, seedOccurrences);
         if (!instanceIds.insert(instance.id).second)
             return procgenBindingFailure<void>(eve::DiagnosticCode::Conflict,

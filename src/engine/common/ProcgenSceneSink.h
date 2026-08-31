@@ -11,6 +11,8 @@ namespace eve {
 
 /** @brief Engine-neutral description of one procedural scene instance. */
 struct EVENGINE_API ProcgenInstanceDesc {
+    /** @brief Stable source PointId; zero denotes a legacy instance without delta identity. */
+    uint64_t    sourcePointId = 0;
     std::string id;
     std::string asset;
     float       x      = 0.f;
@@ -29,6 +31,9 @@ struct EVENGINE_API ProcgenInstanceDelta {
     uint64_t                         targetRevision = 0;
     std::vector<ProcgenInstanceDesc> added;
     std::vector<ProcgenInstanceDesc> updated;
+    /** @brief Stable source PointIds removed from the target batch. */
+    std::vector<uint64_t>            removedPointIds;
+    /** @brief Compatibility removals addressed directly by Scene instance id. */
     std::vector<std::string>         removed;
     std::vector<std::string>         targetOrder;
 };
