@@ -1,5 +1,6 @@
 #include "common/ECS.h"
 #include "common/Identity.h"
+#include "common/Module.h"
 #include "common/Runtime.h"
 #include "rts/RTS.h"
 #include "rts/RTSAction.h"
@@ -80,6 +81,27 @@ TEST_CASE("rts.sandboxScriptCompilesThroughEveScriptFrontend") {
         compiled = false;
     }
     REQUIRE(compiled);
+}
+
+TEST_CASE("rts.scriptFogQueriesResolveCreatedFactionIdentity") {
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    ssq::VM          vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local sim = eve.RTS();
+        local configured = sim.configureScriptWorld(4, 4, 1.0, 0.0, 0.0);
+        local created = sim.newFaction("00000000-0000-7000-8000-00000000fc01");
+        if (configured.ok && created.ok) {
+            local explored = sim.scriptCellExplored(created.value, 0, 0);
+            local visible = sim.scriptCellVisible(created.value, 0, 0);
+            if (explored.ok && visible.ok) result = "ok";
+        }
+    )"));
+
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 
 TEST_CASE("rts.legacySandboxContentMaterializesEveryArchetype") {
