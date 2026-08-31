@@ -24,7 +24,8 @@ eve_declare_module(NAME social_editing LAYER 2
                    DEPS editing social
                    GROUP 2d 3d web)
 eve_declare_module(NAME network_editing LAYER 2
-                   DEPS editing network
+                   DEPS editing
+                   OPTIONAL_DEPS network
                    GROUP 2d 3d web)
 eve_declare_module(NAME profiler_editing LAYER 2
                    DEPS editing profiler

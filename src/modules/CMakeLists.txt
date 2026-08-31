@@ -105,7 +105,16 @@ endif()
 eve_module_enabled(procgen _has_procgen)
 if(NOT _has_procgen)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};PcgGraph.cpp;BiomeTarget.cpp;BiomeRuntime.cpp;TextureRecipeTarget.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};PcgGraph.cpp;BiomeTarget.cpp;BiomeRuntime.cpp;HeightmapTarget.cpp;HeightmapMesh.cpp;TextureRecipeTarget.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# Map authoring documents remain available without the runtime map provider;
+# these bridges are the only map_editing sources that require live map types.
+eve_module_enabled(map _has_map_editor_bridge)
+if(NOT _has_map_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};MapIntegration.cpp;TileLayerTarget.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -196,7 +205,7 @@ endif()
 eve_module_enabled(voxel _has_voxel_editor_bridge)
 if(NOT _has_voxel_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};VoxelPaletteTarget.cpp;VoxelPaletteRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};VoxelPaletteTarget.cpp;VoxelPaletteRuntime.cpp;VoxelWorldTarget.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -204,6 +213,13 @@ eve_module_enabled(hd2d _has_hd2d_editor_bridge)
 if(NOT _has_hd2d_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
       "${EVENGINE_EXCLUDED_MODULE_FILES};Hd2dTarget.cpp;Hd2dRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(snow _has_snow_editor_bridge)
+if(NOT _has_snow_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};SnowFieldTarget.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
