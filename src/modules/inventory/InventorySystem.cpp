@@ -8,31 +8,6 @@
 
 namespace eve::inventory {
 
-struct PreparedInventoryAdd::State {
-    Bag                                  *target = nullptr;
-    std::unique_ptr<Bag>                  baseline;
-    std::unique_ptr<Bag>                  candidate;
-    std::vector<InventoryChangeEvent>     events;
-    int                                   totalAdded = 0;
-};
-
-struct PreparedInventoryRemove::State {
-    Bag                              *target = nullptr;
-    std::unique_ptr<Bag>              baseline;
-    std::unique_ptr<Bag>              candidate;
-    InventoryChangeEvent              event;
-    int                               totalRemoved = 0;
-};
-
-PreparedInventoryAdd::PreparedInventoryAdd() = default;
-PreparedInventoryAdd::~PreparedInventoryAdd() = default;
-PreparedInventoryAdd::PreparedInventoryAdd(PreparedInventoryAdd &&) noexcept = default;
-PreparedInventoryAdd &PreparedInventoryAdd::operator=(PreparedInventoryAdd &&) noexcept = default;
-PreparedInventoryRemove::PreparedInventoryRemove() = default;
-PreparedInventoryRemove::~PreparedInventoryRemove() = default;
-PreparedInventoryRemove::PreparedInventoryRemove(PreparedInventoryRemove &&) noexcept = default;
-PreparedInventoryRemove &PreparedInventoryRemove::operator=(PreparedInventoryRemove &&) noexcept = default;
-
 namespace {
 
 bool tagsIntersect(const std::vector<std::string> &a, const std::vector<std::string> &b) {
@@ -227,55 +202,10 @@ void InventorySystem::ensureBuiltins() {
 
 int InventorySystem::nextInstanceId() { return instanceCounter()++; }
 
-void InventorySystem::ensureNextInstanceIdAbove(int usedInstanceId) noexcept {
-    if (instanceCounter() <= usedInstanceId) instanceCounter() = usedInstanceId + 1;
-}
-
-std::unique_ptr<Bag> InventorySystem::cloneBag(const Bag &source) {
-    auto clone = std::make_unique<Bag>(source.getSlotCount());
-    clone->id_ = source.id_;
-    clone->kind_ = source.kind_;
-    clone->maxWeight_ = source.maxWeight_;
-    clone->maxVolume_ = source.maxVolume_;
-    clone->acceptRule_ = source.acceptRule_;
-    clone->capacityPolicy_ = source.capacityPolicy_;
-    clone->stackRule_ = source.stackRule_;
-    clone->acceptTags_ = source.acceptTags_;
-    clone->rejectTags_ = source.rejectTags_;
-    clone->slots_ = source.slots_;
-    clone->extra_ = source.extra_;
-    return clone;
-}
-
-bool InventorySystem::bagsEqual(const Bag &target, const Bag &baseline) {
-    if (target.id_ != baseline.id_ || target.kind_ != baseline.kind_ ||
-        target.maxWeight_ != baseline.maxWeight_ || target.maxVolume_ != baseline.maxVolume_ ||
-        target.acceptRule_ != baseline.acceptRule_ ||
-        target.capacityPolicy_ != baseline.capacityPolicy_ || target.stackRule_ != baseline.stackRule_ ||
-        target.acceptTags_ != baseline.acceptTags_ || target.rejectTags_ != baseline.rejectTags_ ||
-        target.extra_ != baseline.extra_ || target.slots_.size() != baseline.slots_.size())
-        return false;
-    for (std::size_t i = 0; i < target.slots_.size(); ++i) {
-        const auto &a = target.slots_[i];
-        const auto &b = baseline.slots_[i];
-        if (a.instanceId != b.instanceId || a.itemId != b.itemId || a.quantity != b.quantity ||
-            a.durability != b.durability || a.props != b.props || a.tags != b.tags)
-            return false;
-    }
-    return true;
-}
-
 void InventorySystem::emit(InventoryChangeEvent ev) {
     if (!changeHooksSuppressed()) {
         for (auto &kv : changeHooks()) {
-            if (!kv.second) continue;
-            try {
-                kv.second(ev);
-            } catch (...) {
-                // Hooks are post-commit observers. One faulty observer must not
-                // unwind an already committed authoritative inventory change or
-                // prevent the remaining observers and poll queue from seeing it.
-            }
+            if (kv.second) kv.second(ev);
         }
     }
     eventQueue().push_back(std::move(ev));
@@ -363,11 +293,6 @@ bool InventorySystem::canAdd(Bag *bag, const std::string &itemId, int quantity,
 }
 
 int InventorySystem::addItem(Bag *bag, const std::string &itemId, int quantity) {
-    return addItemImpl(bag, itemId, quantity, true);
-}
-
-int InventorySystem::addItemImpl(Bag *bag, const std::string &itemId, int quantity,
-                                 bool publish) {
     if (!bag || quantity <= 0) return 0;
     const ItemDefinition *def = ItemRegistry::find(itemId);
     if (!def) return 0;
@@ -418,7 +343,7 @@ int InventorySystem::addItemImpl(Bag *bag, const std::string &itemId, int quanti
         added += put;
     }
 
-    if (publish && added > 0) {
+    if (added > 0) {
         InventoryChangeEvent ev;
         ev.action = "add";
         ev.bagId = bag->getId();
@@ -427,121 +352,6 @@ int InventorySystem::addItemImpl(Bag *bag, const std::string &itemId, int quanti
         emit(std::move(ev));
     }
     return added;
-}
-
-eve::Result<PreparedInventoryAdd>
-InventorySystem::prepareAddBatch(Bag *bag, const std::vector<InventoryItemGrant> &grants) {
-    if (!bag)
-        return eve::Result<PreparedInventoryAdd>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "inventory batch requires a Bag", "bag"));
-    if (grants.empty())
-        return eve::Result<PreparedInventoryAdd>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "inventory batch requires at least one grant", "grants"));
-
-    PreparedInventoryAdd prepared;
-    prepared.state_ = std::make_unique<PreparedInventoryAdd::State>();
-    prepared.state_->target = bag;
-    prepared.state_->baseline = cloneBag(*bag);
-    prepared.state_->candidate = cloneBag(*bag);
-    prepared.state_->events.reserve(grants.size());
-    for (std::size_t index = 0; index < grants.size(); ++index) {
-        const auto &grant = grants[index];
-        if (grant.itemId.empty() || grant.quantity <= 0)
-            return eve::Result<PreparedInventoryAdd>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "inventory grant requires an item id and positive quantity",
-                "grants[" + std::to_string(index) + "]"));
-        const int added = addItemImpl(prepared.state_->candidate.get(), grant.itemId, grant.quantity, false);
-        if (added != grant.quantity)
-            return eve::Result<PreparedInventoryAdd>::failure(eve::Diagnostic::error(
-                ItemRegistry::find(grant.itemId) ? eve::DiagnosticCode::PreconditionViolation
-                                                 : eve::DiagnosticCode::NotFound,
-                ItemRegistry::find(grant.itemId) ? "inventory cannot fit the complete reward batch"
-                                                 : "inventory reward references an unknown item",
-                "grants[" + std::to_string(index) + "].itemId", {{"itemId", grant.itemId}},
-                "inventory.prepare-add-batch"));
-        prepared.state_->totalAdded += added;
-        InventoryChangeEvent event;
-        event.action = "add";
-        event.bagId = bag->getId();
-        event.itemId = grant.itemId;
-        event.quantity = added;
-        prepared.state_->events.push_back(std::move(event));
-    }
-    return eve::Result<PreparedInventoryAdd>::success(std::move(prepared),
-                                                       eve::Status::success(eve::StatusCode::Pending));
-}
-
-eve::Result<int> InventorySystem::commitAddBatch(PreparedInventoryAdd prepared) {
-    if (!prepared.state_ || !prepared.state_->target || !prepared.state_->baseline ||
-        !prepared.state_->candidate)
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "inventory batch is empty or already consumed", "prepared"));
-    Bag &target = *prepared.state_->target;
-    const Bag &baseline = *prepared.state_->baseline;
-    if (!bagsEqual(target, baseline))
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, "Bag changed after inventory batch preparation", "bag"));
-
-    target.slots_.swap(prepared.state_->candidate->slots_);
-    const int totalAdded = prepared.state_->totalAdded;
-    for (auto &event : prepared.state_->events) emit(std::move(event));
-    prepared.state_.reset();
-    return eve::Result<int>::success(totalAdded, eve::Status::success(eve::StatusCode::Applied));
-}
-
-eve::Result<PreparedInventoryRemove>
-InventorySystem::prepareRemove(Bag *bag, const std::string &itemId, int quantity) {
-    if (!bag || itemId.empty() || quantity <= 0)
-        return eve::Result<PreparedInventoryRemove>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument,
-            "inventory removal requires a Bag, item id, and positive quantity", "removal"));
-    if (!ItemRegistry::find(itemId))
-        return eve::Result<PreparedInventoryRemove>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "inventory removal references an unknown item", "itemId",
-            {{"itemId", itemId}}, "inventory.prepare-remove"));
-    if (countItem(bag, itemId) < quantity)
-        return eve::Result<PreparedInventoryRemove>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::PreconditionViolation,
-            "inventory does not contain the complete removal quantity", "quantity",
-            {{"itemId", itemId}}, "inventory.prepare-remove"));
-
-    PreparedInventoryRemove prepared;
-    prepared.state_ = std::make_unique<PreparedInventoryRemove::State>();
-    prepared.state_->target = bag;
-    prepared.state_->baseline = cloneBag(*bag);
-    prepared.state_->candidate = cloneBag(*bag);
-    int remaining = quantity;
-    for (auto &stack : prepared.state_->candidate->slots_) {
-        if (remaining <= 0) break;
-        if (stack.empty() || stack.itemId != itemId) continue;
-        const int take = std::min(stack.quantity, remaining);
-        stack.quantity -= take;
-        remaining -= take;
-        if (stack.quantity <= 0) stack.clear();
-    }
-    prepared.state_->totalRemoved = quantity;
-    prepared.state_->event.action = "remove";
-    prepared.state_->event.bagId = bag->getId();
-    prepared.state_->event.itemId = itemId;
-    prepared.state_->event.quantity = quantity;
-    return eve::Result<PreparedInventoryRemove>::success(
-        std::move(prepared), eve::Status::success(eve::StatusCode::Pending));
-}
-
-eve::Result<int> InventorySystem::commitRemove(PreparedInventoryRemove prepared) {
-    if (!prepared.state_ || !prepared.state_->target || !prepared.state_->baseline ||
-        !prepared.state_->candidate)
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "inventory removal is empty or already consumed", "prepared"));
-    Bag &target = *prepared.state_->target;
-    if (!bagsEqual(target, *prepared.state_->baseline))
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, "Bag changed after inventory removal preparation", "bag"));
-    target.slots_.swap(prepared.state_->candidate->slots_);
-    const int removed = prepared.state_->totalRemoved;
-    emit(std::move(prepared.state_->event));
-    prepared.state_.reset();
-    return eve::Result<int>::success(removed, eve::Status::success(eve::StatusCode::Applied));
 }
 
 int InventorySystem::removeItem(Bag *bag, const std::string &itemId, int quantity) {

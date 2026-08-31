@@ -34,29 +34,10 @@ print(bag.countItem("potion.hp") + "\n");
 
 `newEquipmentSet()` 后 `defineSlot("weapon")`，可选 `addSlotAllowedTag`。从背包 `findItem` 得到槽位，再 `equipFromBag` / `unequipToBag`。属性加成请在脚本或 C++ `registerChangeHook` 里对接 `rpg` 模块，背包本身不依赖 RPG。
 
-### 原子保存背包与装备
-
-`eve.InventorySaveSession()` 通过 `bind(bag, equipment)` 借用两个权威容器。
-`snapshotJson()` 生成 schema `eve.inventory.save-session`、版本 1 的确定性 JSON；
-`restoreSnapshotJson()` 会先校验所有物品定义、策略名、物品实例身份、堆叠上限和装备槽契约，
-再一次发布背包与装备状态。任一字段失败时两个容器都不改变，也不会产生库存事件或调用 hook。
-物品定义注册表属于内容，不写入玩家存档；读档前必须先加载相同内容版本。
-
-### C++ 批量加入事务
-
-跨系统奖励应使用 `InventorySystem::prepareAddBatch()` 先在私有候选背包上验证完整批次，再用
-`commitAddBatch()` 提交。准备阶段不改变背包、不产生轮询事件、也不调用 hook；提交时如果背包自准备后
-发生变化，会以结构化 `Conflict` 拒绝。成功提交先一次替换权威槽位，随后才发布每项 `add` 事件，
-因此观察者不会看到半批物品。预备对象仅可移动、只能提交一次，并且只能在背包所属模拟线程使用。
-
-需要和货币、任务等其他权威状态共同提交的移除操作使用 `prepareRemove()` / `commitRemove()`；它采用
-同样的候选背包、陈旧检测和提交后事件契约。RPG 商店已在此基础上提供购买与出售事务。
-
 ## 常见问题
 
 - 未先 `registerItemsFromJson` / C++ `registerItem` 就 `addItem`，会放入 0 个。
 - `canAddItem` 表示能否放入**全部**请求数量；`addItem` 允许部分成功。
-- 多种物品共享容量时不要逐项 `canAddItem` 后再添加；C++ 使用 `prepareAddBatch` / `commitAddBatch`。
 - `maxWeight` / `maxVolume` 为 `<=0` 时该维度不限制（仍受所选 `capacityPolicy` 约束）。
 
 ## API 快查
@@ -69,7 +50,7 @@ print(bag.countItem("potion.hp") + "\n");
 - `getMaxWeight()`、`getName()`、`getRejectTag()`、`getRejectTagCount()`、`getSlotCount()`、`getSlotDurability()`、`getSlotInstanceId()`、`getSlotItemId()`、`getSlotName()`
 - `getSlotProp()`、`getSlotQuantity()`、`getStackRule()`、`getUsedSlotCount()`、`getUsedVolume()`、`getUsedWeight()`、`hasAcceptRule()`、`hasCapacityPolicy()`、`hasItemDefinition()`
 - `hasSlot()`、`hasStackRule()`、`isSlotEmpty()`、`itemHasTag()`、`moveSlot()`、`newBag()`、`newEquipmentSet()`、`registerItemsFromJson()`、`removeAt()`
-- `removeItem()`、`restoreSnapshotJson()`、`setAcceptRule()`、`setCapacityPolicy()`、`setExtra()`、`setId()`、`setKind()`、`setMaxVolume()`、`setMaxWeight()`、`setSlotCount()`、`snapshotJson()`
+- `removeItem()`、`setAcceptRule()`、`setCapacityPolicy()`、`setExtra()`、`setId()`、`setKind()`、`setMaxVolume()`、`setMaxWeight()`、`setSlotCount()`
 - `setSlotDurability()`、`setSlotProp()`、`setStackRule()`、`slotHasTag()`、`splitStack()`、`swapSlots()`、`transferItem()`、`transferSlot()`、`unequipToBag()`
 
 ## 使用要点

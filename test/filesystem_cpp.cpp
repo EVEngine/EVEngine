@@ -190,27 +190,6 @@ TEST_CASE("filesystem.writeReadAppendRemove") {
     CHECK(threw);
 }
 
-TEST_CASE("filesystem.atomicTextReplacePreservesContract") {
-    useIdentity("ev_ut_fs_atomic_text");
-    auto* f = fs();
-    const std::string name = "slot1.sav";
-    REQUIRE(f->writeTextAtomic(name, "version=1").ok());
-    CHECK_EQ(f->readText(name), std::string("version=1"));
-    REQUIRE(f->writeTextAtomic(name, "version=2\n角色=勇者").ok());
-    CHECK_EQ(f->readText(name), std::string("version=2\n角色=勇者"));
-
-    auto rejected = f->writeTextAtomic("../outside.sav", "invalid");
-    CHECK(!rejected.ok());
-    CHECK_EQ(f->readText(name), std::string("version=2\n角色=勇者"));
-
-    bool sawTemporary = false;
-    for (const auto& item : f->getDirectoryItems("")) {
-        if (item.find("slot1.sav.tmp.") != std::string::npos) sawTemporary = true;
-    }
-    CHECK(!sawTemporary);
-    CHECK(f->remove(name));
-}
-
 TEST_CASE("filesystem.setSourceSecondCallFails") {
     auto* f = fs();
     // `game_source` is a sticky, process-wide singleton field: only the very

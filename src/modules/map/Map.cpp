@@ -2,14 +2,12 @@
 
 #include "common/Capability.h"
 #include "common/Module.h"
-#include "common/SquirrelBinding.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "map/ArtifactProvider.h"
 #include "map/DualGrid.h"
 #include "map/FlowField.h"
 #include "map/Fov.h"
-#include "map/MapObjectContract.h"
 #include "map/Path.h"
 #include "map/Pathfinder.h"
 #include "map/TileConfig.h"
@@ -18,31 +16,8 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <algorithm>
-#include <cmath>
-#include <iterator>
 
 namespace eve::map {
-namespace {
-
-void retireReplacedLayers(const std::vector<TileLayer *> &previous,
-                          const std::vector<TileLayer *> &replacement) {
-    for (TileLayer *layer : previous) {
-        if (!layer || std::find(replacement.begin(), replacement.end(), layer) != replacement.end())
-            continue;
-        layer->clear();
-        layer->setVisible(false);
-    }
-}
-
-void discardCandidateLayers(const std::vector<TileLayer *> &layers) {
-    for (TileLayer *layer : layers) {
-        if (!layer) continue;
-        layer->clear();
-        layer->setVisible(false);
-    }
-}
-
-}  // namespace
 
 Map::Map() { registerMapArtifactProvider(); }
 
@@ -80,18 +55,14 @@ Fov *Map::newFovVolume(int mapW, int mapH, int depth) {
 TileLayer *Map::newLayerFromFile(const std::string &path) {
     std::vector<MapObject> objs;
     auto layers = loadMapFile(path, &objs, nullptr);
-    if (layers.empty()) return nullptr;
-    retireReplacedLayers(loadedLayers_, layers);
     setObjects(std::move(objs));
-    loadedLayers_ = std::move(layers);
-    return loadedLayers_.front();
+    loadedLayers_ = layers;
+    return loadedLayers_.empty() ? nullptr : loadedLayers_.front();
 }
 
 int Map::loadFromFile(const std::string &path) {
     std::vector<MapObject> objs;
     auto layers = loadMapFile(path, &objs, nullptr);
-    if (layers.empty()) return 0;
-    retireReplacedLayers(loadedLayers_, layers);
     setObjects(std::move(objs));
     loadedLayers_ = std::move(layers);
     return int(loadedLayers_.size());
@@ -242,96 +213,6 @@ float Map::getObjectHeight(int i) const {
 int Map::getObjectGid(int i) const {
     if (i < 0 || i >= int(objects_.size())) return 0;
     return int(objects_[size_t(i)].gid);
-}
-
-eve::Result<int> Map::loadFromFileWithObjectContract(const std::string &path,
-                                                     std::string_view contractJson) {
-    std::vector<MapObject> objects;
-    std::string error;
-    auto layers = loadMapFile(path, &objects, &error);
-    if (layers.empty()) {
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, error.empty() ? "map could not be loaded" : error, path, {},
-            "map.load"));
-    }
-    auto admitted = validateMapObjects(objects, contractJson);
-    if (!admitted.ok()) {
-        discardCandidateLayers(layers);
-        return eve::Result<int>::failure(admitted.status());
-    }
-    retireReplacedLayers(loadedLayers_, layers);
-    setObjects(std::move(objects));
-    loadedLayers_ = std::move(layers);
-    return eve::Result<int>::success(static_cast<int>(loadedLayers_.size()),
-                                     eve::Status::success(eve::StatusCode::Applied));
-}
-
-eve::Result<int> Map::loadFromTextWithObjectContract(std::string_view mapJson,
-                                                     std::string_view contractJson) {
-    std::vector<MapObject> objects;
-    std::string error;
-    auto layers = loadMapText(std::string(mapJson), &objects, &error);
-    if (layers.empty()) {
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, error.empty() ? "map text could not be loaded" : error,
-            "$map", {}, "map.load"));
-    }
-    auto admitted = validateMapObjects(objects, contractJson);
-    if (!admitted.ok()) {
-        discardCandidateLayers(layers);
-        return eve::Result<int>::failure(admitted.status());
-    }
-    retireReplacedLayers(loadedLayers_, layers);
-    setObjects(std::move(objects));
-    loadedLayers_ = std::move(layers);
-    return eve::Result<int>::success(static_cast<int>(loadedLayers_.size()),
-                                     eve::Status::success(eve::StatusCode::Applied));
-}
-
-int Map::getObjectPropertyCount(int objectIndex) const {
-    if (objectIndex < 0 || objectIndex >= int(objects_.size())) return 0;
-    return int(objects_[size_t(objectIndex)].properties.size());
-}
-
-std::string Map::getObjectPropertyName(int objectIndex, int propertyIndex) const {
-    if (objectIndex < 0 || objectIndex >= int(objects_.size()) || propertyIndex < 0) return {};
-    const auto &properties = objects_[size_t(objectIndex)].properties;
-    if (propertyIndex >= int(properties.size())) return {};
-    auto it = properties.begin();
-    std::advance(it, propertyIndex);
-    return it->first;
-}
-
-bool Map::hasObjectProperty(int objectIndex, std::string_view name) const {
-    if (objectIndex < 0 || objectIndex >= int(objects_.size())) return false;
-    return objects_[size_t(objectIndex)].properties.contains(std::string(name));
-}
-
-std::string Map::getObjectProperty(int objectIndex, std::string_view name, std::string fallback) const {
-    if (objectIndex < 0 || objectIndex >= int(objects_.size())) return fallback;
-    const auto &properties = objects_[size_t(objectIndex)].properties;
-    auto it = properties.find(std::string(name));
-    return it == properties.end() ? fallback : it->second;
-}
-
-std::optional<std::size_t> Map::findObjectByName(std::string_view name) const {
-    for (std::size_t index = 0; index < objects_.size(); ++index)
-        if (objects_[index].name == name) return index;
-    return std::nullopt;
-}
-
-std::optional<std::size_t> Map::findObjectAt(float x, float y, std::string_view type) const {
-    if (!std::isfinite(x) || !std::isfinite(y)) return std::nullopt;
-    for (std::size_t index = 0; index < objects_.size(); ++index) {
-        const MapObject &object = objects_[index];
-        if (!type.empty() && object.type != type) continue;
-        const bool point = object.width <= 0.f && object.height <= 0.f;
-        if (point ? (object.x == x && object.y == y)
-                  : (x >= object.x && y >= object.y && x <= object.x + std::max(0.f, object.width) &&
-                     y <= object.y + std::max(0.f, object.height)))
-            return index;
-    }
-    return std::nullopt;
 }
 
 bool Map::resolveDualGrid(TileLayer *logic, TileLayer *display) {
@@ -562,23 +443,10 @@ void Map::expose(ssq::Table &table) {
 }
 
 void Map::expose(ssq::Class &cls) {
-    const HSQUIRRELVM vm = cls.getHandle();
     cls.addFunc("getName", &Map::getName);
     cls.addFunc("newLayer", &Map::newLayer);
     cls.addFunc("newLayerFromFile", &Map::newLayerFromFile);
     cls.addFunc("loadFromFile", &Map::loadFromFile);
-    cls.addFunc("loadFromFileWithObjectContract",
-                [vm](Map *value, const std::string &path, const std::string &contractJson) {
-                    if (!value)
-                        return eve::script::projectResult(
-                            vm, eve::Result<int>::failure(eve::Diagnostic::error(
-                                    eve::DiagnosticCode::InvalidArgument, "Map receiver must not be null", "map",
-                                    {}, "map.squirrel")),
-                            [](int count) { return eve::Value(count); });
-                    return eve::script::projectResult(vm,
-                                                      value->loadFromFileWithObjectContract(path, contractJson),
-                                                      [](int count) { return eve::Value(count); });
-                });
     cls.addFunc("newPathfinder", &Map::newPathfinder);
     cls.addFunc("newPathfinderSize", &Map::newPathfinderSize);
     cls.addFunc("newFov", &Map::newFov);
@@ -608,25 +476,6 @@ void Map::expose(ssq::Class &cls) {
     cls.addFunc("getObjectWidth", &Map::getObjectWidth);
     cls.addFunc("getObjectHeight", &Map::getObjectHeight);
     cls.addFunc("getObjectGid", &Map::getObjectGid);
-    cls.addFunc("getObjectPropertyCount", &Map::getObjectPropertyCount);
-    cls.addFunc("getObjectPropertyName", &Map::getObjectPropertyName);
-    cls.addFunc("hasObjectProperty", [](Map *self, int objectIndex, const std::string &name) {
-        return self && self->hasObjectProperty(objectIndex, name);
-    });
-    cls.addFunc("getObjectProperty",
-                [](Map *self, int objectIndex, const std::string &name, const std::string &fallback) {
-                    return self ? self->getObjectProperty(objectIndex, name, fallback) : fallback;
-                });
-    cls.addFunc("findObjectByName", [](Map *value, const std::string &name) -> int {
-        if (!value) return -1;
-        const auto found = value->findObjectByName(name);
-        return found ? static_cast<int>(*found) : -1;
-    });
-    cls.addFunc("findObjectAt", [](Map *value, float x, float y, const std::string &type) -> int {
-        if (!value) return -1;
-        const auto found = value->findObjectAt(x, y, type);
-        return found ? static_cast<int>(*found) : -1;
-    });
     cls.addFunc("resolveDualGrid", &Map::resolveDualGrid);
     cls.addFunc("resolveDualGridFilled", &Map::resolveDualGridFilled);
     cls.addFunc("dualGridMaskAt", &Map::dualGridMaskAt);

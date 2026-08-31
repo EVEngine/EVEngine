@@ -2,10 +2,7 @@
 
 #include "rpg/Quest.h"
 #include "rpg/QuestSystem.h"
-#include "common/Value.h"
 
-#include <algorithm>
-#include <unordered_set>
 #include <utility>
 
 namespace eve::rpg {
@@ -39,127 +36,6 @@ bool Tracker::fail(const std::string &id, const std::string &reason) {
 void Tracker::pollEvents() {
     polled = std::move(pending);
     pending.clear();
-}
-
-eve::Result<std::string> Tracker::snapshotJson() const {
-    eve::Value::Array encodedEntries;
-    encodedEntries.reserve(order.size());
-    for (const auto &id : order) {
-        const auto found = entries.find(id);
-        if (found == entries.end())
-            return eve::Result<std::string>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvariantViolation, "quest tracker order references a missing entry", id));
-        eve::Value::Array objectives;
-        objectives.reserve(found->second.objectives.size());
-        for (const auto &objective : found->second.objectives) {
-            eve::Value::Object encodedObjective;
-            encodedObjective.emplace("current", eve::Value(objective.current));
-            encodedObjective.emplace("id", eve::Value(objective.id));
-            objectives.emplace_back(std::move(encodedObjective));
-        }
-        eve::Value::Object encodedEntry;
-        encodedEntry.emplace("id", eve::Value(found->second.id));
-        encodedEntry.emplace("objectives", eve::Value(std::move(objectives)));
-        encodedEntry.emplace("state", eve::Value(found->second.state));
-        encodedEntries.emplace_back(std::move(encodedEntry));
-    }
-    eve::Value::Object root;
-    root.emplace("entries", eve::Value(std::move(encodedEntries)));
-    root.emplace("schema", eve::Value("eve.rpg.quest-tracker"));
-    root.emplace("version", eve::Value(1));
-    return eve::Value(std::move(root)).toJson();
-}
-
-eve::Result<void> Tracker::restoreSnapshotJson(std::string_view json) {
-    auto parsed = eve::Value::fromJson(json);
-    if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
-    const eve::Value &root = parsed.value();
-    auto fail = [](eve::DiagnosticCode code, std::string message, std::string path) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-    };
-    if (!root.isObject())
-        return fail(eve::DiagnosticCode::ParseError, "quest tracker root must be an object", "$");
-    const eve::Value *schema = root.find("schema");
-    if (!schema || !schema->isString() || schema->asString() != "eve.rpg.quest-tracker")
-        return fail(eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPG Tracker", "$.schema");
-    const eve::Value *version = root.find("version");
-    if (!version || !version->isInt64() || version->asInt() != 1)
-        return fail(eve::DiagnosticCode::UnknownVersion, "unsupported RPG Tracker snapshot version", "$.version");
-    const eve::Value *encodedEntries = root.find("entries");
-    if (!encodedEntries || !encodedEntries->isArray())
-        return fail(eve::DiagnosticCode::ParseError, "quest tracker entries must be an array", "$.entries");
-
-    Tracker candidate;
-    if (encodedEntries->arraySize() != candidate.order.size())
-        return fail(eve::DiagnosticCode::Conflict,
-                    "quest tracker snapshot does not match the current quest registry", "$.entries");
-    std::unordered_set<std::string> seenEntries;
-    for (std::size_t index = 0; index < candidate.order.size(); ++index) {
-        const eve::Value &encoded = encodedEntries->at(index);
-        const std::string path = "$.entries[" + std::to_string(index) + "]";
-        if (!encoded.isObject())
-            return fail(eve::DiagnosticCode::ParseError, "quest tracker entry must be an object", path);
-        const eve::Value *id = encoded.find("id");
-        const eve::Value *state = encoded.find("state");
-        const eve::Value *objectives = encoded.find("objectives");
-        if (!id || !id->isString() || !state || !state->isString() || !objectives || !objectives->isArray())
-            return fail(eve::DiagnosticCode::ParseError, "quest tracker entry fields have invalid types", path);
-        if (!seenEntries.emplace(id->asString()).second)
-            return fail(eve::DiagnosticCode::Conflict, "quest tracker entry id is duplicated", path + ".id");
-        if (id->asString() != candidate.order[index])
-            return fail(eve::DiagnosticCode::Conflict,
-                        "quest tracker entry order or id does not match the current registry", path + ".id");
-        auto entryIt = candidate.entries.find(id->asString());
-        if (entryIt == candidate.entries.end())
-            return fail(eve::DiagnosticCode::NotFound, "quest definition is not registered", path + ".id");
-        const std::string &stateName = state->asString();
-        if (stateName != "locked" && stateName != "inactive" && stateName != "active" &&
-            stateName != "ready" && stateName != "completed" && stateName != "failed")
-            return fail(eve::DiagnosticCode::InvalidArgument, "quest tracker state is invalid", path + ".state");
-        if (objectives->arraySize() != entryIt->second.objectives.size())
-            return fail(eve::DiagnosticCode::Conflict,
-                        "quest objective list does not match the current definition", path + ".objectives");
-        bool allDone = true;
-        for (std::size_t objectiveIndex = 0; objectiveIndex < entryIt->second.objectives.size(); ++objectiveIndex) {
-            const eve::Value &encodedObjective = objectives->at(objectiveIndex);
-            const std::string objectivePath = path + ".objectives[" + std::to_string(objectiveIndex) + "]";
-            if (!encodedObjective.isObject())
-                return fail(eve::DiagnosticCode::ParseError, "quest objective must be an object", objectivePath);
-            const eve::Value *objectiveId = encodedObjective.find("id");
-            const eve::Value *current = encodedObjective.find("current");
-            auto &runtime = entryIt->second.objectives[objectiveIndex];
-            if (!objectiveId || !objectiveId->isString() || !current || !current->isInt64())
-                return fail(eve::DiagnosticCode::ParseError, "quest objective fields have invalid types", objectivePath);
-            if (objectiveId->asString() != runtime.id)
-                return fail(eve::DiagnosticCode::Conflict,
-                            "quest objective id or order does not match the current definition", objectivePath + ".id");
-            if (current->asInt() < 0 || current->asInt() > runtime.count)
-                return fail(eve::DiagnosticCode::InvalidArgument,
-                            "quest objective progress is outside its definition bounds", objectivePath + ".current");
-            runtime.current = static_cast<int>(current->asInt());
-            runtime.done = runtime.current >= runtime.count;
-            allDone = allDone && runtime.done;
-        }
-        if ((stateName == "ready" || stateName == "completed") && !allDone)
-            return fail(eve::DiagnosticCode::InvariantViolation,
-                        "ready or completed quest must have every objective complete", path + ".state");
-        if ((stateName == "locked" || stateName == "inactive") &&
-            std::any_of(entryIt->second.objectives.begin(), entryIt->second.objectives.end(),
-                        [](const ObjectiveRuntime &objective) { return objective.current != 0; }))
-            return fail(eve::DiagnosticCode::InvariantViolation,
-                        "locked or inactive quest cannot contain progress", path + ".state");
-        if (allDone && stateName != "ready" && stateName != "completed" && stateName != "failed")
-            return fail(eve::DiagnosticCode::InvariantViolation,
-                        "fully progressed quest must be ready, completed, or failed", path + ".state");
-        entryIt->second.state = stateName;
-    }
-    candidate.pending.clear();
-    candidate.polled.clear();
-    entries.swap(candidate.entries);
-    order.swap(candidate.order);
-    pending.swap(candidate.pending);
-    polled.swap(candidate.polled);
-    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 int Tracker::getCount() const { return int(entries.size()); }

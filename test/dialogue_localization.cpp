@@ -1,6 +1,4 @@
 #include "dialogue/ConversationLocalization.h"
-#include "dialogue/DialogueFlow.h"
-#include "i18n/I18n.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -47,41 +45,4 @@ TEST_CASE("dialogueLocalization.rejectsPartialDuration") {
     CHECK(catalog.resolveDuration("intro.invalid", "en") == 0.0);
     REQUIRE(diagnostics.size() == 1);
     CHECK(diagnostics.front().message == "invalid duration was ignored");
-}
-
-TEST_CASE("dialogueLocalization.validatesExactRuntimeLocaleCoverage") {
-    auto* localization = eve::i18n::I18n::create();
-    auto* flow         = DialogueFlow::create();
-    REQUIRE(localization != nullptr);
-    REQUIRE(flow != nullptr);
-    localization->clear();
-    flow->clear();
-    auto bundle = localization->replaceBundleFromJson(R"({
-      "schema":"eve.i18n.bundle","version":1,"defaultLocale":"en",
-      "locales":{
-        "en":{"intro":{"welcome":"Welcome"}},
-        "zh-CN":{"intro":{"welcome":"欢迎"}}
-      }
-    })");
-    REQUIRE(bundle.ok());
-    REQUIRE_EQ(flow->loadFromDnut("conversation intro version=1 entry=welcome\n"
-                                  "node welcome line speaker=guide i18n=intro.welcome next=end\n"
-                                  "node end end\nendconversation\n",
-                                  "localized.dnut"),
-               1);
-    auto validated = flow->validateLocalization(*localization, "zh-CN");
-    REQUIRE(validated.ok());
-    CHECK_EQ(validated.value(), 1);
-    auto missingLocale = flow->validateLocalization(*localization, "fr");
-    CHECK(!missingLocale.ok());
-
-    REQUIRE_EQ(flow->loadFromDnut("conversation broken version=1 entry=line\n"
-                                  "node line line speaker=guide i18n=intro.missing next=end\n"
-                                  "node end end\nendconversation\n",
-                                  "missing.dnut"),
-               1);
-    auto missingKey = flow->validateLocalization(*localization, "en");
-    CHECK(!missingKey.ok());
-    flow->clear();
-    localization->clear();
 }

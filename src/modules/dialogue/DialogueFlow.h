@@ -21,14 +21,6 @@ namespace eve::dialogue {
 
 class ConversationDocument;
 
-}  // namespace eve::dialogue
-
-namespace eve::i18n {
-class I18n;
-}
-
-namespace eve::dialogue {
-
 /** @brief Script-facing registry and runner for compiled .dnut conversations. */
 class DialogueFlow : public Module {
 public:
@@ -115,27 +107,13 @@ public:
     int         importLocalizationCsv(const std::string& csv, const std::string& defaultLocale);
     std::string exportMissingLocalizationCsv(const std::string& locale) const;
     std::string exportVoiceRecordingCsv(const std::string& locale) const;
-    /**
-     * @brief Validate that every referenced dialogue localization key exists in one exact locale.
-     * @param
-     * localization Borrowed localization authority used only during this synchronous call.
-     * @param locale Exact
-     * locale to inspect; default-language substitution is intentionally not accepted.
-     * @return Number of
-     * validated localized nodes, or a path-scoped missing-key diagnostic.
-     * @thread Main-thread only; neither
-     * module may be mutated concurrently.
-     * @reentrancy Does not invoke script or user callbacks.
-     */
-    [[nodiscard]] eve::Result<int> validateLocalization(const eve::i18n::I18n& localization,
-                                                        const std::string&     locale) const;
-    void                           setLocale(const std::string& locale) { locale_ = locale; }
-    std::string                    getLocale() const { return locale_; }
-    int                            getDiagnosticCount() const;
-    std::string                    getDiagnosticSeverity(int index) const;
-    std::string                    getDiagnosticPath(int index) const;
-    int                            getDiagnosticLine(int index) const;
-    std::string                    getDiagnosticMessage(int index) const;
+    void        setLocale(const std::string& locale) { locale_ = locale; }
+    std::string getLocale() const { return locale_; }
+    int         getDiagnosticCount() const;
+    std::string getDiagnosticSeverity(int index) const;
+    std::string getDiagnosticPath(int index) const;
+    int         getDiagnosticLine(int index) const;
+    std::string getDiagnosticMessage(int index) const;
     /** @brief Create an empty UI-neutral conversation document. */
     ConversationDocument* newDocument(const std::string& id) const;
     /** @brief Create an editable copy of a registered conversation. */
@@ -143,26 +121,8 @@ public:
     /** @brief Validate and transactionally insert or replace an authored document. */
     bool applyDocument(ConversationDocument* document);
 
-    /**
-     * @brief Start a conversation after validating script bindings.
-     * @return Applied on success, or a
-     * structured missing-asset/binding/runner diagnostic.
-     * @thread Affine to the DialogueFlow thread. @reentrancy
-     * Does not invoke integration callbacks.
-     */
-    [[nodiscard]] eve::Result<void> startChecked(const std::string& id, ssq::Object bindings);
-    /** @brief Compatibility-only bool projection of startChecked. */
-    bool start(const std::string& id, ssq::Object bindings);
-    /**
-     * @brief Advance the active conversation with a structured runner diagnostic.
-     * @return Applied on
-     * success; failure preserves the runner's validated state.
-     * @thread Affine to the DialogueFlow thread.
-     * @reentrancy May synchronously invoke configured command handlers.
-     */
-    [[nodiscard]] eve::Result<void> advanceChecked();
-    /** @brief Compatibility-only bool projection of advanceChecked. */
-    bool advance();
+    bool        start(const std::string& id, ssq::Object bindings);
+    bool        advance();
     /**
      * @brief Select a route, atomically applying configured payment/state effects.
      * @return Applied on success, or the canonical dialogue/transaction diagnostic.
@@ -170,20 +130,20 @@ public:
      * @reentrancy Providers are invoked synchronously and must not re-enter this flow.
      */
     [[nodiscard]] eve::Result<void> select(const std::string& routeId);
-    bool                            isActive() const { return runner_.isActive(); }
-    bool                            isBlocked() const { return runner_.isBlocked(); }
-    std::string                     getConversationId() const;
-    std::string                     getNodeId() const { return runner_.currentNodeId(); }
-    std::string                     getNodeKind() const;
-    std::string                     getSpeaker() const;
-    std::string                     getText();
-    std::string                     getPool() const;
-    std::string                     getI18nKey() const;
-    std::string                     getVoice() const;
-    std::string                     getVoiceStatus() const;
-    float                           getVoiceDuration() const;
-    int                             getRouteCount() const;
-    std::string                     getRouteId(int index) const;
+    bool        isActive() const { return runner_.isActive(); }
+    bool        isBlocked() const { return runner_.isBlocked(); }
+    std::string getConversationId() const;
+    std::string getNodeId() const { return runner_.currentNodeId(); }
+    std::string getNodeKind() const;
+    std::string getSpeaker() const;
+    std::string getText();
+    std::string getPool() const;
+    std::string getI18nKey() const;
+    std::string getVoice() const;
+    std::string getVoiceStatus() const;
+    float       getVoiceDuration() const;
+    int         getRouteCount() const;
+    std::string getRouteId(int index) const;
 
     /** @brief Register one pure Squirrel evaluator receiving {expression,bindings,locals}. */
     bool setExpressionEvaluator(ssq::Object fn);
@@ -203,9 +163,9 @@ public:
 private:
     int                      mergeImported(std::vector<ConversationAsset> imported);
     const ConversationAsset* find(const std::string& id) const;
-    StateValue      evaluate(const std::string& expression, const StateValue& bindings, const StateValue& locals);
-    CommandResponse dispatchCommand(const CommandRequest& request);
-    std::string     nextTransactionId(const char* purpose);
+    StateValue evaluate(const std::string& expression, const StateValue& bindings, const StateValue& locals);
+    CommandResponse          dispatchCommand(const CommandRequest& request);
+    std::string              nextTransactionId(const char* purpose);
 
     std::vector<ConversationAsset>                            assets_;
     std::vector<ConversationDiagnostic>                       diagnostics_;

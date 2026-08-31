@@ -9,10 +9,8 @@
  */
 
 #include "rpg/QuestTypes.h"
-#include "common/Result.h"
 
 #include <string>
-#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -45,28 +43,6 @@ public:
 
     /** @brief 把 pending 移到 polled 并清空 pending；随后 getEvent* 读 polled。 */
     void pollEvents();
-
-    /**
-     * @brief Serialize persistent quest progress as deterministic versioned JSON.
-     * @return Owning JSON using schema `eve.rpg.quest-tracker` version 1, or a structured failure.
-     * @remarks Runtime event queues are transient and are intentionally excluded. The snapshot
-     * is bound to the currently registered quest and objective ids.
-     * @thread Call on the owning simulation thread; no internal synchronization is performed.
-     * @reentrancy No callbacks are invoked.
-     */
-    [[nodiscard]] eve::Result<std::string> snapshotJson() const;
-
-    /**
-     * @brief Validate and atomically restore quest progress against the current registry.
-     * @param json UTF-8 JSON produced by snapshotJson().
-     * @return Success after one commit, or a structured parse/schema/content failure.
-     * @remarks Unknown fields are ignored for version 1. Missing, removed, duplicated, or
-     * reordered quest/objective ids are rejected so content migration cannot silently lose progress.
-     * A failure leaves entries, ordering, and both event queues unchanged.
-     * @thread Call on the owning simulation thread.
-     * @reentrancy No callbacks are invoked.
-     */
-    [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view json);
 
     int getCount() const;
     std::string getId(int index) const;

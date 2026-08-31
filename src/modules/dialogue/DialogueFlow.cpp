@@ -5,7 +5,6 @@
 #include "dialogue/ConversationImporter.h"
 #include "dialogue/ConversationToolchain.h"
 #include "filesystem/Filesystem.h"
-#include "i18n/I18n.h"
 
 #include <algorithm>
 #include <array>
@@ -459,26 +458,6 @@ std::string DialogueFlow::exportVoiceRecordingCsv(const std::string& locale) con
     return localization_.exportVoiceRecordingCsv(assets_, locale);
 }
 
-eve::Result<int> DialogueFlow::validateLocalization(const eve::i18n::I18n& localization,
-                                                    const std::string&     locale) const {
-    if (locale.empty() || !localization.hasLanguage(locale))
-        return eve::Result<int>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "dialogue localization locale is unavailable",
-                                   "dialogue.localization." + locale, {}, "dialogue.localization"));
-    int validated = 0;
-    for (const auto& asset : assets_)
-        for (const auto& node : asset.nodes) {
-            if (node.i18nKey.empty()) continue;
-            if (!localization.hasInLanguage(locale, node.i18nKey))
-                return eve::Result<int>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::NotFound,
-                    "dialogue localization key is missing from the exact locale: " + node.i18nKey,
-                    "dialogue." + asset.id + "." + node.id + ".i18n", {}, "dialogue.localization"));
-            ++validated;
-        }
-    return eve::Result<int>::success(validated, eve::Status::success(eve::StatusCode::Ok));
-}
-
 int DialogueFlow::getDiagnosticCount() const { return static_cast<int>(diagnostics_.size()); }
 
 std::string DialogueFlow::getDiagnosticSeverity(int index) const {
@@ -533,7 +512,7 @@ std::string DialogueFlow::getDiagnosticMessage(int index) const {
                : std::string{};
 }
 
-eve::Result<void> DialogueFlow::startChecked(const std::string& id, ssq::Object bindings) {
+bool DialogueFlow::start(const std::string& id, ssq::Object bindings) {
     StateValue converted = StateValue::object();
     if (vm_) {
         const SQInteger top = sq_gettop(vm_);
@@ -542,33 +521,14 @@ eve::Result<void> DialogueFlow::startChecked(const std::string& id, ssq::Object 
         sq_settop(vm_, top);
         if (!ok) {
             failureMessage_ = "conversation bindings must be a scalar-only table";
-            return dialogueFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, "dialogue.bindings");
+            return false;
         }
     }
     const ConversationAsset* asset = find(id);
-    if (!asset)
-        return dialogueFailure(eve::DiagnosticCode::NotFound, "conversation was not found: " + id, "dialogue." + id);
-    if (!runner_.start(asset, std::move(converted), &failureMessage_))
-        return dialogueFailure(eve::DiagnosticCode::Failed,
-                               failureMessage_.empty() ? "conversation could not start" : failureMessage_,
-                               "dialogue." + id);
-    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    return runner_.start(asset, std::move(converted), &failureMessage_);
 }
 
-bool DialogueFlow::start(const std::string& id, ssq::Object bindings) {
-    return startChecked(id, std::move(bindings)).ok();
-}
-
-eve::Result<void> DialogueFlow::advanceChecked() {
-    if (!runner_.advance(&failureMessage_))
-        return dialogueFailure(eve::DiagnosticCode::Failed,
-                               failureMessage_.empty() ? "conversation could not advance" : failureMessage_,
-                               "dialogue.advance");
-    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
-}
-
-bool DialogueFlow::advance() { return advanceChecked().ok(); }
-
+bool              DialogueFlow::advance() { return runner_.advance(&failureMessage_); }
 eve::Result<void> DialogueFlow::select(const std::string& routeId) {
     const auto* node = runner_.currentNode();
     if (!node) return runner_.selectRouteForTransaction(routeId);
@@ -861,18 +821,6 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("importLocalizationCsv", &DialogueFlow::importLocalizationCsv);
     cls.addFunc("exportMissingLocalizationCsv", &DialogueFlow::exportMissingLocalizationCsv);
     cls.addFunc("exportVoiceRecordingCsv", &DialogueFlow::exportVoiceRecordingCsv);
-    cls.addFunc("validateLocalization", [vm = cls.getHandle()](DialogueFlow* value, eve::i18n::I18n* localization,
-                                                               const std::string& locale) {
-        if (!value || !localization)
-            return eve::script::projectResult(
-                vm,
-                eve::Result<int>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "validateLocalization requires dialogue and i18n modules",
-                    "dialogue.localization", {}, "dialogue.squirrel")),
-                [](int count) { return eve::Value(count); });
-        return eve::script::projectResult(vm, value->validateLocalization(*localization, locale),
-                                          [](int count) { return eve::Value(count); });
-    });
     cls.addFunc("setLocale", &DialogueFlow::setLocale);
     cls.addFunc("getLocale", &DialogueFlow::getLocale);
     cls.addFunc("getDiagnosticCount", &DialogueFlow::getDiagnosticCount);
@@ -885,19 +833,6 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("applyDocument", &DialogueFlow::applyDocument);
     cls.addFunc("start", &DialogueFlow::start);
     cls.addFunc("advance", &DialogueFlow::advance);
-    cls.addFunc(
-        "startChecked", [vm = cls.getHandle()](DialogueFlow* value, const std::string& id, ssq::Object bindings) {
-            if (!value)
-                return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,
-                                                                      "dialogue flow must not be null", "dialogue"));
-            return eve::script::projectResult(vm, value->startChecked(id, std::move(bindings)));
-        });
-    cls.addFunc("advanceChecked", [vm = cls.getHandle()](DialogueFlow* value) {
-        if (!value)
-            return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,
-                                                                  "dialogue flow must not be null", "dialogue"));
-        return eve::script::projectResult(vm, value->advanceChecked());
-    });
     cls.addFunc("select", [vm = cls.getHandle()](DialogueFlow* value, const std::string& routeId) {
         if (!value)
             return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,

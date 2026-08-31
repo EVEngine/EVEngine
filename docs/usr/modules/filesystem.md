@@ -60,11 +60,7 @@ fs.watch("config/game.json");
 - `newFileData()`、`pollWatch()`、`read()`、`readText()`、`remove()`、`setAndroidSaveExternal()`、`setFused()`、`setIdentity()`、`setSource()`
 - `setSymlinksEnabled()`、`setupWriteDirectory()`、`tryReload()`、`unbind()`、`unwatch()`、`unwatchAll()`、`watch()`、`watchTree()`、`watchNewDirectory()`
 - `startRemoteSync()`、`stopRemoteSync()`、`isRemoteSyncing()`、`remoteSyncStatus()`、`pollRemoteChange()`、`setRemoteHotDir()`
-- `write()`、`writeText()`、`writeTextAtomic()`、`mountExternalReadOnly()`
-
-玩家存档应使用 `writeTextAtomic(relativePath, text)`：原生平台先写同目录临时文件并刷新，
-再原子替换目标，写入阶段失败时保留旧文件。路径必须位于配置的保存目录内且不能包含父级穿越。
-WebGPU 当前无法提供同等级替换保证，会明确返回失败；普通缓存或可重建输出仍可使用 `writeText()`。
+- `write()`、`writeText()`、`mountExternalReadOnly()`
 
 ## 使用要点
 

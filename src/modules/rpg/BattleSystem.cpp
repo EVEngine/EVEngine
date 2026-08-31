@@ -5,9 +5,7 @@
 #include "rpg/TraitSystem.h"
 
 #include <cctype>
-#include <cmath>
 #include <cstdlib>
-#include <optional>
 #include <random>
 #include <unordered_map>
 
@@ -20,26 +18,11 @@ std::unordered_map<std::string, SkillDamageSpec> &skillDamageTable() {
     return t;
 }
 
-eve::Result<double> parseFormula(const std::string &formula, RPGActor *attacker, RPGActor *target,
-                                 bool validateOnly);
-
 }  // namespace
 
-eve::Result<void> BattleSystem::registerSkillDamageChecked(const std::string &skillId,
-                                                            const SkillDamageSpec &spec) {
-    if (skillId.empty())
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "skill damage id must not be empty", "skillId"));
-    if (!spec.formula.empty()) {
-        auto formula = parseFormula(spec.formula, nullptr, nullptr, true);
-        if (!formula) return eve::Result<void>::failure(formula.status());
-    }
-    skillDamageTable()[skillId] = spec;
-    return eve::Result<void>::success();
-}
-
 void BattleSystem::registerSkillDamage(const std::string &skillId, const SkillDamageSpec &spec) {
-    registerSkillDamageChecked(skillId, spec).ignore("legacy RPG damage registration facade");
+    if (skillId.empty()) return;
+    skillDamageTable()[skillId] = spec;
 }
 
 const SkillDamageSpec *BattleSystem::findSkillDamage(const std::string &skillId) {
@@ -58,11 +41,9 @@ struct FormulaParser {
     size_t pos = 0;
     RPGActor *a;
     RPGActor *b;
-    bool validateOnly;
-    std::optional<eve::Diagnostic> error;
 
-    FormulaParser(const std::string &str, RPGActor *atk, RPGActor *tgt, bool syntaxOnly)
-        : s(str), a(atk), b(tgt), validateOnly(syntaxOnly) {}
+    FormulaParser(const std::string &str, RPGActor *atk, RPGActor *tgt)
+        : s(str), a(atk), b(tgt) {}
 
     void skipSpace() {
         while (pos < s.size() && std::isspace(static_cast<unsigned char>(s[pos]))) ++pos;
@@ -99,17 +80,7 @@ struct FormulaParser {
             } else if (c == '/') {
                 ++pos;
                 const double rhs = parseFactor();
-                if (validateOnly) {
-                    lhs = 1.0;
-                } else if (rhs == 0.0) {
-                    if (!error)
-                        error = eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                       "damage formula cannot divide by zero",
-                                                       "formula[" + std::to_string(pos) + "]");
-                    lhs = 0.0;
-                } else {
-                    lhs /= rhs;
-                }
+                lhs = rhs == 0.0 ? 0.0 : lhs / rhs;
             } else {
                 break;
             }
@@ -119,20 +90,11 @@ struct FormulaParser {
 
     double parseFactor() {
         skipSpace();
-        if (pos < s.size() && (s[pos] == '+' || s[pos] == '-')) {
-            const bool negate = s[pos++] == '-';
-            const double value = parseFactor();
-            return negate ? -value : value;
-        }
         if (pos < s.size() && s[pos] == '(') {
             ++pos;
             double v = parseExpression();
             skipSpace();
-            if (pos >= s.size() || s[pos] != ')') {
-                fail("damage formula is missing a closing parenthesis");
-                return 0.0;
-            }
-            ++pos;
+            if (pos < s.size() && s[pos] == ')') ++pos;
             return v;
         }
         if (pos < s.size() && (s[pos] == 'a' || s[pos] == 'b') && pos + 1 < s.size() &&
@@ -144,10 +106,6 @@ struct FormulaParser {
                                       s[pos] == '_')) {
                 name.push_back(s[pos++]);
             }
-            if (name.empty()) {
-                fail("damage formula attribute name must not be empty");
-                return 0.0;
-            }
             RPGActor *actor = isA ? a : b;
             return actor ? AttributeSystem::getFinal(actor, name) : 0.0;
         }
@@ -157,54 +115,18 @@ struct FormulaParser {
                                       s[pos] == '.')) {
                 num.push_back(s[pos++]);
             }
-            char *end = nullptr;
-            const double value = std::strtod(num.c_str(), &end);
-            if (end == num.c_str() || *end != '\0' || !std::isfinite(value)) {
-                fail("damage formula contains an invalid number");
-                return 0.0;
-            }
-            return value;
+            return std::strtod(num.c_str(), nullptr);
         }
-        fail("damage formula expected a number, attribute, unary sign, or parenthesized expression");
         return 0.0;
     }
-
-    void fail(std::string message) {
-        if (error) return;
-        error = eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message),
-                                       "formula[" + std::to_string(pos) + "]");
-    }
 };
-
-eve::Result<double> parseFormula(const std::string &formula, RPGActor *attacker, RPGActor *target,
-                                 bool validateOnly) {
-    if (formula.empty())
-        return eve::Result<double>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, "damage formula must not be empty", "formula"));
-    FormulaParser parser(formula, attacker, target, validateOnly);
-    const double value = parser.parseExpression();
-    parser.skipSpace();
-    if (parser.error) return eve::Result<double>::failure(std::move(*parser.error));
-    if (parser.pos != formula.size())
-        return eve::Result<double>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, "damage formula contains trailing input",
-            "formula[" + std::to_string(parser.pos) + "]"));
-    if (!std::isfinite(value))
-        return eve::Result<double>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "damage formula result must be finite", "formula"));
-    return eve::Result<double>::success(value);
-}
 
 }  // namespace
 
 double BattleSystem::evaluateFormula(const std::string &formula, RPGActor *attacker,
                                      RPGActor *target) {
-    return std::move(evaluateFormulaChecked(formula, attacker, target)).valueOr(0.0);
-}
-
-eve::Result<double> BattleSystem::evaluateFormulaChecked(const std::string &formula, RPGActor *attacker,
-                                                          RPGActor *target) {
-    return parseFormula(formula, attacker, target, false);
+    FormulaParser parser(formula, attacker, target);
+    return parser.parseExpression();
 }
 
 DamageResult BattleSystem::resolveHit(RPGActor *attacker, RPGActor *target,

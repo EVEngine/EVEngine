@@ -4,14 +4,5 @@
    "completePolicy": "claim",
    "objectives": [{"id": "kill_slimes", "topic": "kill", "target": "slime", "count": 3}],
    "rewards": [{"type": "attribute", "id": "gold", "amount": 50}],
-   "tags": ["main"], "extra": {"title": "清剿史莱姆"}},
-  {"id": "quest.ranger_cache",
-   "startPolicy": "manual",
-   "completePolicy": "claim",
-   "objectives": [{"id": "recover_cache", "topic": "interact", "target": "forest_cache", "count": 1}],
-   "rewards": [
-     {"type": "item", "id": "potion", "amount": 1},
-     {"type": "attribute", "id": "gold", "amount": 35}
-   ],
-   "tags": ["side"], "extra": {"title": "雾林遗失物资"}}
+   "tags": ["main"], "extra": {"title": "清剿史莱姆"}}
 ]

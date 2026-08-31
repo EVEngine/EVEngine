@@ -238,10 +238,6 @@ double RPGActor::getXpToNext() { return LevelSystem::getXpToNext(this); }
 
 void RPGActor::setXpToNext(double value) { LevelSystem::setXpToNext(this, value); }
 
-eve::Result<void> RPGActor::restoreProgression(int level, double xp, double xpToNext) {
-    return LevelSystem::restoreProgression(this, level, xp, xpToNext);
-}
-
 bool RPGActor::gainXp(double amount) { return LevelSystem::gainXp(this, amount); }
 
 double RPGActor::getCurrent(const std::string &resource) {

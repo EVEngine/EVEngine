@@ -203,10 +203,6 @@ public:
     int modifierCount() const;
     /** @brief Return a modifier by deterministic sequence order, or null when out of range. */
     const AttributeModifier* modifierAt(int index) const;
-    /** @brief Number of named attribute values, including modifier-only values. */
-    int attributeCount() const;
-    /** @brief Return an attribute id in deterministic lexical order, or an empty string. */
-    std::string attributeAt(int index) const;
 
 private:
     void rebuildOrder() const;

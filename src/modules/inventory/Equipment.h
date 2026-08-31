@@ -11,7 +11,6 @@
 namespace eve::inventory {
 
 class Bag;
-class InventorySaveSession;
 
 class EquipmentSet {
 public:
@@ -52,7 +51,6 @@ public:
 
 private:
     friend class InventorySystem;
-    friend class InventorySaveSession;
 
     struct Slot {
         ItemStack stack;

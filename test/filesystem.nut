@@ -50,13 +50,3 @@ function textRoundTrip() {
     if (!p.writeText("slot1.sav", expected)) return false;
     return p.readText("slot1.sav") == expected;
 }
-
-function atomicTextRoundTrip() {
-    local p = eve.Filesystem();
-    p.setIdentity("ev_ut_filesystem_atomic_text", true);
-    if (!p.setupWriteDirectory()) return false;
-    if (p.writeTextAtomic("slot1.sav", "old") == 0) return false;
-    if (p.writeTextAtomic("slot1.sav", "new\n角色=勇者") == 0) return false;
-    if (p.writeTextAtomic("../outside.sav", "invalid") != 0) return false;
-    return p.readText("slot1.sav") == "new\n角色=勇者";
-}
