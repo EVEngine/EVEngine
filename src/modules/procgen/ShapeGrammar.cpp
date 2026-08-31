@@ -64,8 +64,7 @@ void ShapeGrammar::clear() {
     lastSplineLength_ = 0.f;
 }
 
-bool ShapeGrammar::addModule(const std::string& symbol, const std::string& asset, float length,
-                             float weight) {
+bool ShapeGrammar::addModule(const std::string& symbol, const std::string& asset, float length, float weight) {
     if (symbol.empty() || asset.empty() || length <= 0.f || weight <= 0.f) return false;
     const auto existing = modules_.find(symbol);
     if (existing != modules_.end() && !existing->second.empty() &&
@@ -78,17 +77,13 @@ bool ShapeGrammar::addModule(const std::string& symbol, const std::string& asset
 
 bool ShapeGrammar::removeModule(const std::string& symbol) {
     if (modules_.erase(symbol) == 0) return false;
-    moduleOrder_.erase(std::remove(moduleOrder_.begin(), moduleOrder_.end(), symbol),
-                       moduleOrder_.end());
+    moduleOrder_.erase(std::remove(moduleOrder_.begin(), moduleOrder_.end(), symbol), moduleOrder_.end());
     return true;
 }
-bool ShapeGrammar::hasModule(const std::string& symbol) const {
-    return modules_.find(symbol) != modules_.end();
-}
+bool        ShapeGrammar::hasModule(const std::string& symbol) const { return modules_.find(symbol) != modules_.end(); }
 int ShapeGrammar::getModuleCount() const { return int(moduleOrder_.size()); }
 std::string ShapeGrammar::getModuleSymbol(int index) const {
-    return index >= 0 && index < int(moduleOrder_.size()) ? moduleOrder_[size_t(index)]
-                                                          : std::string();
+    return index >= 0 && index < int(moduleOrder_.size()) ? moduleOrder_[size_t(index)] : std::string();
 }
 int ShapeGrammar::getVariantCount(const std::string& symbol) const {
     const auto found = modules_.find(symbol);
@@ -133,8 +128,8 @@ bool ShapeGrammar::validate(const std::string& grammar) {
     return true;
 }
 
-PointSet* ShapeGrammar::generate(const std::string& grammar, PointSet* controlPoints,
-                                 uint32_t seed, bool acceptIncomplete) {
+PointSet* ShapeGrammar::generate(const std::string& grammar, PointSet* controlPoints, uint32_t seed,
+                                 bool acceptIncomplete) {
     error_.clear();
     lastSymbolCount_  = 0;
     lastUsedLength_   = 0.f;
@@ -172,10 +167,11 @@ PointSet* ShapeGrammar::generate(const std::string& grammar, PointSet* controlPo
         ProcgenPoint point;
         if (!samplePolyline(*controlPoints, cursor + variant->length * 0.5f, point)) break;
         point.seed = mixGrammar(seed ^ uint32_t(i));
-        point.stringAttributes["module"] = symbols[i];
-        point.stringAttributes["asset"]  = variant->asset;
-        point.floatAttributes["length"]  = variant->length;
-        output.points().push_back(std::move(point));
+        const int pointIndex = output.appendPoint(std::move(point));
+        output.trySetStringAttribute(pointIndex, "module", symbols[i]).expect("shape grammar module metadata schema");
+        output.trySetStringAttribute(pointIndex, "asset", variant->asset).expect("shape grammar asset metadata schema");
+        output.trySetFloatAttribute(pointIndex, "length", variant->length)
+            .expect("shape grammar length metadata schema");
         cursor += variant->length;
     }
     lastSymbolCount_ = output.getCount();
@@ -186,15 +182,14 @@ PointSet* ShapeGrammar::generate(const std::string& grammar, PointSet* controlPo
 std::string ShapeGrammar::getError() const { return error_; }
 std::string ShapeGrammar::debugReport() const {
     std::ostringstream out;
-    out << "modules=" << modules_.size() << " symbols=" << lastSymbolCount_
-        << " used=" << lastUsedLength_ << " spline=" << lastSplineLength_;
+    out << "modules=" << modules_.size() << " symbols=" << lastSymbolCount_ << " used=" << lastUsedLength_
+        << " spline=" << lastSplineLength_;
     if (!error_.empty()) out << " error=" << error_;
     return out.str();
 }
 
 void ShapeGrammar::Parser::skipWhitespace() {
-    while (position < text.size() && std::isspace(static_cast<unsigned char>(text[position])))
-        ++position;
+    while (position < text.size() && std::isspace(static_cast<unsigned char>(text[position]))) ++position;
 }
 
 std::vector<ShapeGrammar::Element> ShapeGrammar::Parser::sequence(char terminator) {
@@ -242,9 +237,7 @@ std::vector<ShapeGrammar::Element> ShapeGrammar::Parser::sequence(char terminato
             ++position;
         } else if (position < text.size() && std::isdigit(static_cast<unsigned char>(text[position]))) {
             const size_t start = position;
-            while (position < text.size() &&
-                   std::isdigit(static_cast<unsigned char>(text[position])))
-                ++position;
+            while (position < text.size() && std::isdigit(static_cast<unsigned char>(text[position]))) ++position;
             element.repeatMin = element.repeatMax =
                 std::max(0, std::atoi(text.substr(start, position - start).c_str()));
         }
@@ -306,8 +299,7 @@ bool ShapeGrammar::expandSequence(const std::vector<Element>& sequence, float av
                 used += unitLength;
             } else {
                 float groupUsed = 0.f;
-                if (!expandSequence(element.children, available - used - reservedAfter, symbols,
-                                    groupUsed))
+                if (!expandSequence(element.children, available - used - reservedAfter, symbols, groupUsed))
                     return false;
                 used += groupUsed;
             }
@@ -316,8 +308,7 @@ bool ShapeGrammar::expandSequence(const std::vector<Element>& sequence, float av
     return true;
 }
 
-const ShapeModuleVariant* ShapeGrammar::chooseVariant(const std::string& symbol,
-                                                       uint32_t seed) const {
+const ShapeModuleVariant* ShapeGrammar::chooseVariant(const std::string& symbol, uint32_t seed) const {
     const auto found = modules_.find(symbol);
     if (found == modules_.end() || found->second.empty()) return nullptr;
     float total = 0.f;

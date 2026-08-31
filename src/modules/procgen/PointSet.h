@@ -1,20 +1,14 @@
 #pragma once
 
+#include "procgen/AttributeTable.h"
+
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace eve::procgen {
 
 class Heightmap;
-
-/** @brief Compact three-component value used by typed point metadata. */
-struct ProcgenAttributeVector {
-    float x = 0.f;
-    float y = 0.f;
-    float z = 0.f;
-};
 
 /** @brief One deterministic sample used by script-first procedural pipelines. */
 struct ProcgenPoint {
@@ -47,12 +41,6 @@ struct ProcgenPoint {
     float colorB    = 1.f;
     float colorA    = 1.f;
     float steepness = 0.5f;
-
-    std::unordered_map<std::string, float>       floatAttributes;
-    std::unordered_map<std::string, std::int64_t> intAttributes;
-    std::unordered_map<std::string, bool>         boolAttributes;
-    std::unordered_map<std::string, ProcgenAttributeVector> vectorAttributes;
-    std::unordered_map<std::string, std::string> stringAttributes;
 };
 
 /**
@@ -67,6 +55,19 @@ public:
     int  getCount() const;
     bool empty() const;
     void clear();
+
+    /** @brief Reserve point storage without changing point or attribute row counts. */
+    void reserve(std::size_t count);
+    /** @brief Append a point with an empty attribute row and return its row index. */
+    [[nodiscard]] int appendPoint(ProcgenPoint point);
+    /**
+     * @brief Append a point and its attributes from another set.
+     * @return New row index, or a
+     * schema/range failure without partial mutation.
+     */
+    [[nodiscard]] Result<int> appendPointFrom(const PointSet& source, std::size_t sourceIndex);
+    /** @brief Clear all metadata values on an existing point while retaining the set schema. */
+    [[nodiscard]] Result<void> clearPointAttributes(std::size_t index);
 
     int   add(float x, float y, float z);
     void  setPosition(int index, float x, float y, float z);
@@ -93,8 +94,7 @@ public:
     float getScaleZ(int index) const;
 
     /** @brief Set local-space point bounds before scale and rotation are applied. */
-    void setBounds(int index, float minX, float minY, float minZ, float maxX, float maxY,
-                   float maxZ);
+    void setBounds(int index, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
     /** @brief Return the local-space minimum X bound. */
     float getBoundsMinX(int index) const;
     /** @brief Return the local-space minimum Y bound. */
@@ -128,22 +128,31 @@ public:
     void     setPointSeed(int index, uint32_t seed);
     uint32_t getPointSeed(int index) const;
 
+    /** @brief Canonical checked float metadata write. */
+    [[nodiscard]] Result<void> trySetFloatAttribute(int index, const std::string& name, float value);
+    /** @brief Compatibility-only unchecked script setter; canonical code uses trySetFloatAttribute. */
     void        setFloatAttribute(int index, const std::string& name, float value);
     float       getFloatAttribute(int index, const std::string& name, float fallback) const;
     bool        hasFloatAttribute(int index, const std::string& name) const;
-    /** @brief Set one signed integer metadata value. */
+    /** @brief Canonical checked signed integer metadata write. */
+    [[nodiscard]] Result<void> trySetIntAttribute(int index, const std::string& name, std::int64_t value);
+    /** @brief Compatibility-only unchecked script setter; canonical code uses trySetIntAttribute. */
     void setIntAttribute(int index, const std::string& name, std::int64_t value);
     /** @brief Read signed integer metadata or return the caller-provided default when absent. */
     std::int64_t getIntAttribute(int index, const std::string& name, std::int64_t fallback) const;
     /** @brief Test whether signed integer metadata exists. */
     bool hasIntAttribute(int index, const std::string& name) const;
-    /** @brief Set one boolean metadata value. */
+    /** @brief Canonical checked Boolean metadata write. */
+    [[nodiscard]] Result<void> trySetBoolAttribute(int index, const std::string& name, bool value);
+    /** @brief Compatibility-only unchecked script setter; canonical code uses trySetBoolAttribute. */
     void setBoolAttribute(int index, const std::string& name, bool value);
     /** @brief Read boolean metadata or return the caller-provided default when absent. */
     bool getBoolAttribute(int index, const std::string& name, bool fallback) const;
     /** @brief Test whether boolean metadata exists. */
     bool hasBoolAttribute(int index, const std::string& name) const;
-    /** @brief Set one three-component metadata value. */
+    /** @brief Canonical checked vector metadata write. */
+    [[nodiscard]] Result<void> trySetVectorAttribute(int index, const std::string& name, float x, float y, float z);
+    /** @brief Compatibility-only unchecked script setter; canonical code uses trySetVectorAttribute. */
     void setVectorAttribute(int index, const std::string& name, float x, float y, float z);
     /** @brief Read the X component of vector metadata or the caller-provided default. */
     float getVectorAttributeX(int index, const std::string& name, float fallback) const;
@@ -153,20 +162,28 @@ public:
     float getVectorAttributeZ(int index, const std::string& name, float fallback) const;
     /** @brief Test whether vector metadata exists. */
     bool hasVectorAttribute(int index, const std::string& name) const;
+    /** @brief Canonical checked string metadata write. */
+    [[nodiscard]] Result<void> trySetStringAttribute(int index, const std::string& name, const std::string& value);
+    /** @brief Compatibility-only unchecked script setter; canonical code uses trySetStringAttribute. */
     void        setStringAttribute(int index, const std::string& name, const std::string& value);
     std::string getStringAttribute(int index, const std::string& name, const std::string& fallback) const;
     bool        hasStringAttribute(int index, const std::string& name) const;
     /** @brief Return float, int, bool, vector, string, or empty when the attribute is absent. */
     std::string getAttributeType(int index, const std::string& name) const;
 
+    /** @brief Borrow immutable point rows; structural ownership remains with this set. */
     const std::vector<ProcgenPoint>& points() const { return points_; }
-    std::vector<ProcgenPoint>&       points() { return points_; }
+    /** @brief Mutably access one existing point without changing row structure. */
+    ProcgenPoint& mutablePoint(std::size_t index);
+    /** @brief Borrow the authoritative schema-bearing attribute table. */
+    const AttributeTable& attributes() const noexcept { return attributes_; }
 
 private:
     ProcgenPoint*       pointAt(int index);
     const ProcgenPoint* pointAt(int index) const;
 
     std::vector<ProcgenPoint> points_;
+    AttributeTable            attributes_;
 };
 
 /** @brief Stable label-based seed derivation; independent pipeline branches do not perturb each other. */
@@ -177,20 +194,18 @@ PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, fl
 PointSet poissonDiskPoints(int width, int depth, float radius, uint32_t seed, int maxPoints);
 PointSet filterPointHeight(const PointSet& input, float minHeight, float maxHeight);
 PointSet filterPointDensity(const PointSet& input, float minDensity, float maxDensity);
-PointSet filterPointBox(const PointSet& input, float minX, float minY, float minZ, float maxX,
-                        float maxY, float maxZ, bool invert);
+PointSet filterPointBox(const PointSet& input, float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+                        bool invert);
 PointSet filterPointSlope(const PointSet& input, float minDegrees, float maxDegrees);
 PointSet filterPointsByPolygon(const PointSet& input, const PointSet& polygon, bool invert);
-PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& controlPoints,
-                                      float minDistance, float maxDistance);
+PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& controlPoints, float minDistance,
+                                      float maxDistance);
 PointSet excludePointRadius(const PointSet& input, float x, float z, float radius);
 PointSet jitterPointPositions(const PointSet& input, uint32_t seed, float amountX, float amountZ);
 PointSet selfPrunePoints(const PointSet& input, float radius);
-PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& heightmap,
-                                  float originX, float originZ, float cellSize,
-                                  float heightScale);
-PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint32_t seed,
-                              float lateralJitter);
+PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& heightmap, float originX, float originZ,
+                                  float cellSize, float heightScale);
+PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint32_t seed, float lateralJitter);
 /** @brief Concatenate two attributed point collections while preserving order. */
 PointSet mergePointSets(const PointSet& first, const PointSet& second);
 /** @brief Stable union that keeps the first occurrence of equal position-and-seed identities. */
@@ -200,30 +215,27 @@ PointSet intersectPointSets(const PointSet& first, const PointSet& second);
 /** @brief Remove first-set points whose position-and-seed identity occurs in the second set. */
 PointSet differencePointSets(const PointSet& first, const PointSet& second);
 /** @brief Apply translation, yaw rotation and non-uniform scale to points and their transforms. */
-PointSet transformPointSet(const PointSet& input, float translateX, float translateY,
-                           float translateZ, float yawDegrees, float scaleX, float scaleY,
-                           float scaleZ);
+PointSet transformPointSet(const PointSet& input, float translateX, float translateY, float translateZ,
+                           float yawDegrees, float scaleX, float scaleY, float scaleZ);
 /** @brief Apply translation, pitch/yaw/roll rotation and non-uniform scale. */
-PointSet transformPointSet3D(const PointSet& input, float translateX, float translateY,
-                             float translateZ, float pitchDegrees, float yawDegrees,
-                             float rollDegrees, float scaleX, float scaleY, float scaleZ);
+PointSet transformPointSet3D(const PointSet& input, float translateX, float translateY, float translateZ,
+                             float pitchDegrees, float yawDegrees, float rollDegrees, float scaleX, float scaleY,
+                             float scaleZ);
 /** @brief Instantiate source points relative to targets in stable target-major order. */
-PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets,
-                             bool inheritTargetAttributes);
+PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets, bool inheritTargetAttributes);
 /** @brief Linearly remap point density between ranges with optional output clamping. */
-PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax,
-                           float outputMin, float outputMax, bool clampOutput);
+PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax, float outputMin, float outputMax,
+                           bool clampOutput);
 /** @brief Apply one scalar operation to a float metadata attribute. */
 PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,
-                                 const std::string& outputAttribute,
-                                 const std::string& operation, float operand,
+                                 const std::string& outputAttribute, const std::string& operation, float operand,
                                  float defaultValue);
 /** @brief Select points whose named float attribute lies in an inclusive range. */
-PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue,
-                                   float maxValue, bool invert);
+PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue, float maxValue,
+                                   bool invert);
 /** @brief Select points whose named string attribute equals a value. */
-PointSet filterPointStringAttribute(const PointSet& input, const std::string& name,
-                                    const std::string& value, bool invert);
+PointSet filterPointStringAttribute(const PointSet& input, const std::string& name, const std::string& value,
+                                    bool invert);
 /** @brief Deterministically keep points according to density and a root seed. */
 PointSet densityCullPoints(const PointSet& input, uint32_t seed, float multiplier);
 

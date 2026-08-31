@@ -259,7 +259,7 @@ bool PointCompute::transformChain(const PointSet& input, PointSet& output, const
 
         output = input;
         for (int index = 0; index < output.getCount(); ++index) {
-            ProcgenPoint& point  = output.points()[size_t(index)];
+            ProcgenPoint& point  = output.mutablePoint(size_t(index));
             const float*  values = packed.data() + size_t(index) * kPointFloats;
             point.x              = values[0];
             point.y              = values[1];

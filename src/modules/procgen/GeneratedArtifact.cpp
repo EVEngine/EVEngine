@@ -318,7 +318,8 @@ eve::Value encodePointSet(const PointSet &points) {
     eve::Value::Object result;
     eve::Value::Array  encodedPoints;
     encodedPoints.reserve(points.points().size());
-    for (const ProcgenPoint &point : points.points()) {
+    for (std::size_t index = 0; index < points.points().size(); ++index) {
+        const ProcgenPoint& point = points.points()[index];
         eve::Value::Object encoded;
         encoded.emplace("x", eve::Value(point.x));
         encoded.emplace("y", eve::Value(point.y));
@@ -345,11 +346,41 @@ eve::Value encodePointSet(const PointSet &points) {
         encoded.emplace("colorB", eve::Value(point.colorB));
         encoded.emplace("colorA", eve::Value(point.colorA));
         encoded.emplace("steepness", eve::Value(point.steepness));
-        encoded.emplace("floatAttributes", encodeFloatMap(point.floatAttributes));
-        encoded.emplace("intAttributes", encodeIntMap(point.intAttributes));
-        encoded.emplace("boolAttributes", encodeBoolMap(point.boolAttributes));
-        encoded.emplace("vectorAttributes", encodeVectorMap(point.vectorAttributes));
-        encoded.emplace("stringAttributes", encodeStringMap(point.stringAttributes));
+        eve::Value::Object floatAttributes;
+        eve::Value::Object intAttributes;
+        eve::Value::Object boolAttributes;
+        eve::Value::Object vectorAttributes;
+        eve::Value::Object stringAttributes;
+        for (std::size_t column = 0; column < points.attributes().columnCount(); ++column) {
+            const std::string name(points.attributes().columnName(column));
+            if (!points.attributes().has(index, name)) continue;
+            switch (*points.attributes().typeOf(name)) {
+                case ProcgenAttributeType::Float:
+                    floatAttributes.emplace(name, eve::Value(*points.attributes().getFloat(index, name)));
+                    break;
+                case ProcgenAttributeType::Int:
+                    intAttributes.emplace(name, eve::Value(*points.attributes().getInt(index, name)));
+                    break;
+                case ProcgenAttributeType::Bool:
+                    boolAttributes.emplace(name, eve::Value(*points.attributes().getBool(index, name)));
+                    break;
+                case ProcgenAttributeType::Vector: {
+                    const auto        value = *points.attributes().getVector(index, name);
+                    eve::Value::Array components{eve::Value(value.x), eve::Value(value.y), eve::Value(value.z)};
+                    vectorAttributes.emplace(name, eve::Value(std::move(components)));
+                    break;
+                }
+                case ProcgenAttributeType::String:
+                    stringAttributes.emplace(name,
+                                             eve::Value(std::string(*points.attributes().getString(index, name))));
+                    break;
+            }
+        }
+        encoded.emplace("floatAttributes", eve::Value(std::move(floatAttributes)));
+        encoded.emplace("intAttributes", eve::Value(std::move(intAttributes)));
+        encoded.emplace("boolAttributes", eve::Value(std::move(boolAttributes)));
+        encoded.emplace("vectorAttributes", eve::Value(std::move(vectorAttributes)));
+        encoded.emplace("stringAttributes", eve::Value(std::move(stringAttributes)));
         encodedPoints.emplace_back(std::move(encoded));
     }
     result.emplace("points", eve::Value(std::move(encodedPoints)));
@@ -720,9 +751,14 @@ bool decodePayload(ArtifactType type, const eve::Value *encoded, ArtifactLeafPay
         if (!encodedPoints) return false;
         PointSet points;
         for (const eve::Value &encodedPoint : *encodedPoints) {
-            const auto  *item = encodedPoint.getIf<eve::Value::Object>();
-            ProcgenPoint point;
-            std::int64_t seed = 0;
+            const auto*                                             item = encodedPoint.getIf<eve::Value::Object>();
+            ProcgenPoint                                            point;
+            std::int64_t                                            seed = 0;
+            std::unordered_map<std::string, float>                  floatAttributes;
+            std::unordered_map<std::string, std::int64_t>           intAttributes;
+            std::unordered_map<std::string, bool>                   boolAttributes;
+            std::unordered_map<std::string, ProcgenAttributeVector> vectorAttributes;
+            std::unordered_map<std::string, std::string>            stringAttributes;
             if (!item || !readFloatValue(*item, "x", point.x) || !readFloatValue(*item, "y", point.y) ||
                 !readFloatValue(*item, "z", point.z) || !readFloatValue(*item, "normalX", point.normalX) ||
                 !readFloatValue(*item, "normalY", point.normalY) || !readFloatValue(*item, "normalZ", point.normalZ) ||
@@ -743,14 +779,24 @@ bool decodePayload(ArtifactType type, const eve::Value *encoded, ArtifactLeafPay
                 !readOptionalFloatValue(*item, "colorB", point.colorB) ||
                 !readOptionalFloatValue(*item, "colorA", point.colorA) ||
                 !readOptionalFloatValue(*item, "steepness", point.steepness) ||
-                !decodeFloatMap(stateMember(*item, "floatAttributes"), point.floatAttributes) ||
-                !decodeOptionalIntMap(stateMember(*item, "intAttributes"), point.intAttributes) ||
-                !decodeOptionalBoolMap(stateMember(*item, "boolAttributes"), point.boolAttributes) ||
-                !decodeOptionalVectorMap(stateMember(*item, "vectorAttributes"), point.vectorAttributes) ||
-                !decodeStringMap(stateMember(*item, "stringAttributes"), point.stringAttributes))
+                !decodeFloatMap(stateMember(*item, "floatAttributes"), floatAttributes) ||
+                !decodeOptionalIntMap(stateMember(*item, "intAttributes"), intAttributes) ||
+                !decodeOptionalBoolMap(stateMember(*item, "boolAttributes"), boolAttributes) ||
+                !decodeOptionalVectorMap(stateMember(*item, "vectorAttributes"), vectorAttributes) ||
+                !decodeStringMap(stateMember(*item, "stringAttributes"), stringAttributes))
                 return false;
             point.seed = static_cast<std::uint32_t>(seed);
-            points.points().push_back(std::move(point));
+            const int pointIndex = points.appendPoint(std::move(point));
+            for (const auto& [name, value] : floatAttributes)
+                if (!points.trySetFloatAttribute(pointIndex, name, value).ok()) return false;
+            for (const auto& [name, value] : intAttributes)
+                if (!points.trySetIntAttribute(pointIndex, name, value).ok()) return false;
+            for (const auto& [name, value] : boolAttributes)
+                if (!points.trySetBoolAttribute(pointIndex, name, value).ok()) return false;
+            for (const auto& [name, value] : vectorAttributes)
+                if (!points.trySetVectorAttribute(pointIndex, name, value.x, value.y, value.z).ok()) return false;
+            for (const auto& [name, value] : stringAttributes)
+                if (!points.trySetStringAttribute(pointIndex, name, value).ok()) return false;
         }
         output = std::move(points);
         return true;

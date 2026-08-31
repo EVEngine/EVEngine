@@ -9,7 +9,8 @@ PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& height
                                   float cellSize, float heightScale) {
     if (cellSize <= 0.f || heightmap.getWidth() <= 0 || heightmap.getHeight() <= 0) return {};
     PointSet output = input;
-    for (auto& point : output.points()) {
+    for (size_t index = 0; index < output.points().size(); ++index) {
+        auto&       point = output.mutablePoint(index);
         const float hx = (point.x - originX) / cellSize;
         const float hz = (point.z - originZ) / cellSize;
         point.y        = heightmap.sampleBilinear(hx, hz) * heightScale;
