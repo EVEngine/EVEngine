@@ -1,6 +1,7 @@
 #include "common/CameraObstruction.h"
 #include "common/Capability.h"
 #include "common/PhysicsQuery.h"
+#include "common/ProcgenWorldQuery.h"
 #include "physics/ArtifactProvider.h"
 #include "physics/Physics.h"
 #include "physics/TargetingLineOfSightAdapter.h"
@@ -118,6 +119,29 @@ private:
     std::vector<RegisteredWorld> worlds_;
 };
 
+CameraObstructionQueryImpl& cameraObstructionQuery();
+
+class ProcgenWorldQueryImpl final : public eve::IProcgenWorldQuery {
+public:
+    eve::Result<eve::ProcgenSurfaceHit> projectDown(float x, float z, float maxY, float minY,
+                                                    std::uint64_t maskBits) override {
+        eve::ProcgenSurfaceHit output;
+        eve::CameraObstructionHit hit;
+        const bool found = cameraObstructionQuery().sphereCast(
+            x, maxY, z, x, minY, z, 0.f, maskBits, -1, &hit);
+        if (!found) return eve::Result<eve::ProcgenSurfaceHit>::success(output);
+        output.hit = true;
+        output.objectId = hit.bodyId;
+        output.x = hit.x;
+        output.y = hit.y;
+        output.z = hit.z;
+        output.normalX = hit.normalX;
+        output.normalY = hit.normalY;
+        output.normalZ = hit.normalZ;
+        return eve::Result<eve::ProcgenSurfaceHit>::success(output);
+    }
+};
+
 CameraObstructionQueryImpl& cameraObstructionQuery() {
     static CameraObstructionQueryImpl impl;
     return impl;
@@ -132,7 +156,9 @@ TargetingLineOfSightAdapter& targetingLineOfSightAdapter() {
 
 void registerPhysicsCapabilities() {
     static PhysicsQueryImpl impl;
+    static ProcgenWorldQueryImpl procgenWorldQuery;
     eve::cap::provide<eve::IPhysicsQuery>(&impl);
+    eve::cap::provide<eve::IProcgenWorldQuery>(&procgenWorldQuery);
     eve::cap::provide<eve::ICameraObstructionQuery>(&cameraObstructionQuery());
     eve::cap::provide<eve::sensing::ILineOfSightQuery>(&targetingLineOfSightAdapter());
     registerPhysicsArtifactProvider();

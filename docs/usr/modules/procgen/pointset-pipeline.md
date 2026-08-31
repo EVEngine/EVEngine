@@ -5,7 +5,11 @@
 ## 纯脚本 PointSet 管线
 
 程序化世界编排使用普通 Squirrel 函数，不要求节点图。`PointSet` 是带位置、法线、
-旋转、缩放、密度、独立 seed 和自定义属性的 3D 采样集合。`sampleGrid`、
+完整 pitch/yaw/roll 旋转、缩放、局部 bounds、RGBA 颜色、steepness、密度、独立 seed
+和自定义属性的 3D 采样集合。旧脚本可继续使用 `setYaw/getYaw`；需要完整旋转时使用
+`setRotation/getPitch/getYaw/getRoll`。Bounds、颜色和 steepness 分别由
+`setBounds`、`setColor`、`setSteepness` 设置，并用对应的 `get*` 方法检查。
+`sampleGrid`、
 `filterHeight`、`filterDensity`、`excludeRadius`、`jitterPoints` 和 `selfPrune`
 均返回新的集合，不修改输入，因此中间结果可以命名、检查、复用或分支：
 
@@ -87,19 +91,33 @@ Box、Sphere、Spline、Point Data，以及 Union、Intersection、Difference �
 组合对象会保存输入的不可变副本，调用方可以安全销毁原对象：
 
 ```nut
-local world = procgen.boxVolume(0, -20, 0, 512, 200, 512);
-local town = procgen.sphereVolume(256, 0, 256, 80);
+local worldResult = procgen.boxVolume(0.0, -20.0, 0.0, 512.0, 200.0, 512.0);
+if (!worldResult.ok) throw worldResult.status.summary;
+local world = worldResult.value;
+local townResult = procgen.sphereVolume(256.0, 0.0, 256.0, 80.0);
+if (!townResult.ok) throw townResult.status.summary;
+local town = townResult.value;
 
-local roadPoints = procgen.newPointSet();
-roadPoints.add(20, 0, 30);
-roadPoints.add(180, 0, 220);
-roadPoints.add(480, 0, 420);
-local road = procgen.splineData(roadPoints, 8.0);
+local roadPointsResult = procgen.newPointSet();
+if (!roadPointsResult.ok) throw roadPointsResult.status.summary;
+local roadPoints = roadPointsResult.value;
+roadPoints.add(20.0, 0.0, 30.0);
+roadPoints.add(180.0, 0.0, 220.0);
+roadPoints.add(480.0, 0.0, 420.0);
+local roadResult = procgen.splineData(roadPoints, 8.0);
+if (!roadResult.ok) throw roadResult.status.summary;
+local road = roadResult.value;
 
-local reserved = procgen.unionSpatial(town, road);
-local wilderness = procgen.differenceSpatial(world, reserved);
-local candidates = procgen.sampleSpatial(wilderness, 16.0,
+local reservedResult = procgen.unionSpatial(town, road);
+if (!reservedResult.ok) throw reservedResult.status.summary;
+local reserved = reservedResult.value;
+local wildernessResult = procgen.differenceSpatial(world, reserved);
+if (!wildernessResult.ok) throw wildernessResult.status.summary;
+local wilderness = wildernessResult.value;
+local candidatesResult = procgen.sampleSpatial(wilderness, 16.0,
     procgen.deriveSeed(42, "wilderness"), 0.7);
+if (!candidatesResult.ok) throw candidatesResult.status.summary;
+local candidates = candidatesResult.value;
 ```
 
 `sampleSpatial(spatial, spacing, seed, jitter)` 在空间包围盒内建立确定性三维格点，
@@ -112,9 +130,15 @@ local candidates = procgen.sampleSpatial(wilderness, 16.0,
 `projectToSpatial` 投影：
 
 ```nut
-local surface = procgen.heightfieldData(heightmap, 0, 0, 2.0, 80.0);
-local ground = procgen.sampleSpatial(surface, 8.0, 42, 0.5);
-local projected = procgen.projectToSpatial(importedPoints, surface);
+local surfaceResult = procgen.heightfieldData(heightmap, 0.0, 0.0, 2.0, 80.0);
+if (!surfaceResult.ok) throw surfaceResult.status.summary;
+local surface = surfaceResult.value;
+local groundResult = procgen.sampleSpatial(surface, 8.0, 42, 0.5);
+if (!groundResult.ok) throw groundResult.status.summary;
+local ground = groundResult.value;
+local projectedResult = procgen.projectToSpatial(importedPoints, surface);
+if (!projectedResult.ok) throw projectedResult.status.summary;
+local projected = projectedResult.value;
 ```
 
 常用 PCG 点处理以返回新值的纯函数提供：`mergePoints`、`transformPoints`、

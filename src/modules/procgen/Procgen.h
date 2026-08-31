@@ -188,10 +188,30 @@ public:
                                                                           uint32_t seed, int maxPoints);
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> mergePointsHandle(ProcgenPointSetHandleRef first,
                                                                           ProcgenPointSetHandleRef second);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> unionPointsHandle(ProcgenPointSetHandleRef first,
+                                                                          ProcgenPointSetHandleRef second);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> intersectPointsHandle(ProcgenPointSetHandleRef first,
+                                                                              ProcgenPointSetHandleRef second);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> differencePointsHandle(ProcgenPointSetHandleRef first,
+                                                                               ProcgenPointSetHandleRef second);
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> transformPointsHandle(ProcgenPointSetHandleRef input,
                                                                               float translateX, float translateY,
                                                                               float translateZ, float yawDegrees,
                                                                               float scaleX, float scaleY, float scaleZ);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> transformPoints3DHandle(
+        ProcgenPointSetHandleRef input, float translateX, float translateY, float translateZ,
+        float pitchDegrees, float yawDegrees, float rollDegrees, float scaleX, float scaleY,
+        float scaleZ);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> copyPointsHandle(
+        ProcgenPointSetHandleRef source, ProcgenPointSetHandleRef targets,
+        bool inheritTargetAttributes);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> remapDensityHandle(
+        ProcgenPointSetHandleRef input, float inputMin, float inputMax, float outputMin,
+        float outputMax, bool clampOutput);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> mathFloatAttributeHandle(
+        ProcgenPointSetHandleRef input, const std::string& attribute,
+        const std::string& outputAttribute, const std::string& operation, float operand,
+        float defaultValue);
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterFloatAttributeHandle(ProcgenPointSetHandleRef input,
                                                                                    const std::string       &name,
                                                                                    float minValue, float maxValue,
@@ -202,17 +222,28 @@ public:
                                                                                     bool                     invert);
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> densityCullHandle(ProcgenPointSetHandleRef input, uint32_t seed,
                                                                           float multiplier);
+    /** @brief Project points through the optional world-query capability. */
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> projectToWorldHandle(
+        ProcgenPointSetHandleRef input, float maxY, float minY, std::uint64_t maskBits,
+        bool keepUnmatched);
 
     // --- Spatial data and composable PCG domains ---
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> pointDataHandle(ProcgenPointSetHandleRef points);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> boxVolumeHandle(float minX, float minY, float minZ,
                                                                            float maxX, float maxY, float maxZ);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> sphereVolumeHandle(float x, float y, float z, float radius);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> polygonVolumeHandle(
+        ProcgenPointSetHandleRef controlPoints, float minY, float maxY);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> splineDataHandle(ProcgenPointSetHandleRef controlPoints,
                                                                             float                    radius);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> heightfieldDataHandle(ProcgenHeightmapHandleRef heightmap,
                                                                                  float originX, float originZ,
                                                                                  float cellSize, float heightScale);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> textureMaskDataHandle(
+        ProcgenHeightmapHandleRef values, float originX, float originZ, float cellSize,
+        float minValue, float maxValue, float minY, float maxY);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> meshSurfaceDataHandle(
+        ProcgenMeshBuildHandleRef mesh, float tolerance);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> unionSpatialHandle(ProcgenSpatialDataHandleRef left,
                                                                               ProcgenSpatialDataHandleRef right);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> intersectSpatialHandle(ProcgenSpatialDataHandleRef left,

@@ -423,12 +423,18 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     PointSet points;
     const int point = points.add(1.25f, 2.5f, 3.75f);
     points.setNormal(point, 0.f, 0.f, 1.f);
-    points.setYaw(point, 45.f);
+    points.setRotation(point, 15.f, 45.f, 25.f);
     points.setScale(point, 2.f, 3.f, 4.f);
+    points.setBounds(point, -1.f, -2.f, -3.f, 1.f, 2.f, 3.f);
+    points.setColor(point, 0.1f, 0.2f, 0.3f, 0.4f);
+    points.setSteepness(point, 0.65f);
     points.setDensity(point, 0.75f);
     points.setPointSeed(point, 1234);
     points.setFloatAttribute(point, "slope", 12.5f);
     points.setFloatAttribute(point, "roughness", 0.4f);
+    points.setIntAttribute(point, "variant", 7);
+    points.setBoolAttribute(point, "hero", true);
+    points.setVectorAttribute(point, "wind", 1.f, 2.f, 3.f);
     points.setStringAttribute(point, "asset", "oak \"hero\"");
     points.setStringAttribute(point, "biome", "forest");
     points.add(9.f, 8.f, 7.f);
@@ -436,7 +442,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     delete generated;
 
     const std::string persisted = source.serializeCell(level, x, z);
-    CHECK(persisted.find("EVPCG_CELL 1 404") == 0);
+    CHECK(persisted.find("EVPCG_CELL 2 404") == 0);
     RuntimeGeneration equivalent(404);
     equivalent.addLevel(10.f, 6.f, 1.5f);
     equivalent.updateSource(5.f, 5.f, 1.f, 0.f);
@@ -444,9 +450,15 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     REQUIRE(bool(equivalentRequest));
     PointSet equivalentPoints = points;
     equivalentPoints.points()[0].floatAttributes.clear();
+    equivalentPoints.points()[0].intAttributes.clear();
+    equivalentPoints.points()[0].boolAttributes.clear();
+    equivalentPoints.points()[0].vectorAttributes.clear();
     equivalentPoints.points()[0].stringAttributes.clear();
     equivalentPoints.setFloatAttribute(0, "roughness", 0.4f);
     equivalentPoints.setFloatAttribute(0, "slope", 12.5f);
+    equivalentPoints.setIntAttribute(0, "variant", 7);
+    equivalentPoints.setBoolAttribute(0, "hero", true);
+    equivalentPoints.setVectorAttribute(0, "wind", 1.f, 2.f, 3.f);
     equivalentPoints.setStringAttribute(0, "biome", "forest");
     equivalentPoints.setStringAttribute(0, "asset", "oak \"hero\"");
     CHECK(equivalent.completeGeneration(equivalentRequest, &equivalentPoints));
@@ -462,8 +474,16 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     CHECK_EQ(loaded->getCount(), 2);
     CHECK_EQ(loaded->getX(0), 1.25f);
     CHECK_EQ(loaded->getNormalZ(0), 1.f);
+    CHECK_EQ(loaded->getPitch(0), 15.f);
+    CHECK_EQ(loaded->getRoll(0), 25.f);
     CHECK_EQ(loaded->getScaleY(0), 3.f);
+    CHECK_EQ(loaded->getBoundsMinY(0), -2.f);
+    CHECK_EQ(loaded->getColorA(0), 0.4f);
+    CHECK_EQ(loaded->getSteepness(0), 0.65f);
     CHECK_EQ(loaded->getFloatAttribute(0, "slope", -1.f), 12.5f);
+    CHECK_EQ(loaded->getIntAttribute(0, "variant", -1), 7);
+    CHECK(loaded->getBoolAttribute(0, "hero", false));
+    CHECK_EQ(loaded->getVectorAttributeZ(0, "wind", -1.f), 3.f);
     CHECK_EQ(loaded->getStringAttribute(0, "asset", ""), std::string("oak \"hero\""));
     delete loaded;
 
@@ -477,4 +497,18 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     constrained.setMaxPointsPerCell(1);
     CHECK(!constrained.deserializeCell(persisted));
     CHECK_EQ(constrained.getRejectedOutputCount(), 1);
+
+    RuntimeGeneration legacy(404);
+    legacy.addLevel(10.f, 6.f, 1.5f);
+    const std::string legacyV1 =
+        "EVPCG_CELL 1 404 0 0 0 1 10\nPOINTS 1\n"
+        "POINT 1 2 3 0 1 0 90 1 1 1 0.5 77\nEND\n";
+    CHECK(legacy.deserializeCell(legacyV1));
+    PointSet* legacyPoints = legacy.getCellOutput(0, 0, 0);
+    REQUIRE(bool(legacyPoints));
+    CHECK_EQ(legacyPoints->getYaw(0), 90.f);
+    CHECK_EQ(legacyPoints->getPitch(0), 0.f);
+    CHECK_EQ(legacyPoints->getColorR(0), 1.f);
+    CHECK_EQ(legacyPoints->getSteepness(0), 0.5f);
+    delete legacyPoints;
 }
