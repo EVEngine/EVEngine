@@ -13,6 +13,8 @@
 #include "graphics/TextureSampler.h"
 #include "image/ImageData.h"
 #include "image/Image.h"
+#include "pixelworld/PixelWorld.h"
+#include "pixelworld_graphics/PixelWorldGraphics.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -113,6 +115,15 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     REQUIRE(gfx->updateTexture(texture, 1, 1, green));
     REQUIRE(texture == stable);
     REQUIRE(!gfx->updateTexture(texture, 2, 1, green));
+    REQUIRE(gfx->updateTextureRegion(texture, 0, 0, 1, 1, red).ok());
+    CHECK(!gfx->updateTextureRegion(texture, 1, 0, 1, 1, red).ok());
+    CHECK(!gfx->updateTextureRegion(texture, 0, 0, 1, 1,
+                                    std::span<const uint8_t>(red, 3)).ok());
+    const TextureRegionUpload rejectedBatch[] = {
+        {0, 0, 1, 1, green, 0},
+        {1, 0, 1, 1, green, 0},
+    };
+    CHECK(!gfx->updateTextureRegions(texture, rejectedBatch).ok());
 
     Canvas *canvas = gfx->newCanvas(64, 64);
     REQUIRE(canvas != nullptr);
@@ -131,8 +142,8 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     REQUIRE(background[2] > 247);
 
     const uint8_t *updated = pixel(*image, 16, 16);
-    REQUIRE(updated[0] < 8);
-    REQUIRE(updated[1] > 247);
+    REQUIRE(updated[0] > 247);
+    REQUIRE(updated[1] < 8);
     REQUIRE(updated[2] < 8);
 
     const uint8_t *blended = pixel(*image, 40, 16);
@@ -142,6 +153,31 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     const bool blueBlended = blended[2] >= 126 && blended[2] <= 129;
     REQUIRE(blueBlended);
     writeParityArtifact(*image, "texture_update_alpha_blend", backend);
+}
+
+TEST_CASE("graphics.backendParity.pixelWorldMillionPixelAtlas") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+
+    eve::pixelworld::PixelWorld world(4242);
+    // Radius 724 covers every cell in [0,1024)^2, creating a genuine one-million
+    // pixel viewport while also proving off-viewport chunks are clipped by the adapter.
+    REQUIRE(world.paintCircleChecked(512, 512, 724, "stone").ok());
+    eve::pixelworld_graphics::PixelWorldAtlasRenderer renderer(0, 0, 1024, 1024);
+    CHECK(renderer.sync(&world, gfx) == 256);
+    REQUIRE(renderer.texture() != nullptr);
+    CHECK(renderer.texture()->width == 1024);
+    CHECK(renderer.texture()->height == 1024);
+    CHECK(renderer.uploadCount() == 1);
+    CHECK(renderer.totalUploadedChunks() == 256);
+    CHECK(renderer.renderedRevision() == world.revision());
+
+    world.setMaterial(1, 1, "sand");
+    world.setMaterial(1022, 1022, "water");
+    CHECK(renderer.sync(&world, gfx) == 2);
+    CHECK(renderer.uploadCount() == 2);
+    CHECK(renderer.totalUploadedChunks() == 258);
+    CHECK(renderer.renderedRevision() == world.revision());
 }
 
 TEST_CASE("graphics.backendParity.draw2dUvRotationAndBlendModes") {

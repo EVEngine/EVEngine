@@ -2265,6 +2265,65 @@ bool Graphics::updateTexture(Texture *texture, int width, int height,
     return true;
 }
 
+eve::Result<void> Graphics::updateTextureRegion(Texture *texture, int x, int y, int width,
+                                                int height,
+                                                std::span<const std::uint8_t> rgba,
+                                                std::size_t bytesPerRow) {
+    const TextureRegionUpload upload{x, y, width, height, rgba, bytesPerRow};
+    return updateTextureRegions(texture, std::span<const TextureRegionUpload>(&upload, 1));
+}
+
+eve::Result<void> Graphics::updateTextureRegions(
+    Texture *texture, std::span<const TextureRegionUpload> regions) {
+    auto *gpu = gpuForTexture(texture);
+    if (!texture || !gpu || gpu->isCube)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "texture is not an owned 2D texture",
+            "graphics.updateTextureRegions.texture"));
+    if (texture->mipmapCount != 1)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "partial updates require a single-mip texture",
+            "graphics.updateTextureRegions.mipmaps"));
+
+    for (const TextureRegionUpload &region : regions) {
+        if (region.x < 0 || region.y < 0 || region.width <= 0 || region.height <= 0 ||
+            region.x > texture->width - region.width ||
+            region.y > texture->height - region.height)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "invalid texture region",
+                "graphics.updateTextureRegions.region"));
+        const std::size_t packedRow = std::size_t(region.width) * 4U;
+        const std::size_t stride = region.bytesPerRow == 0 ? packedRow : region.bytesPerRow;
+        const std::size_t requiredBytes = stride * std::size_t(region.height - 1) + packedRow;
+        if (stride < packedRow || region.rgba.size() < requiredBytes)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument,
+                "source bytes do not cover the texture region",
+                "graphics.updateTextureRegions.bytes"));
+    }
+
+    for (const TextureRegionUpload &region : regions) {
+        const std::size_t packedRow = std::size_t(region.width) * 4U;
+        const std::size_t stride = region.bytesPerRow == 0 ? packedRow : region.bytesPerRow;
+        const std::size_t requiredBytes = stride * std::size_t(region.height - 1) + packedRow;
+        WGPUTexelCopyTextureInfo dst{};
+        dst.texture = gpu->texture.Get();
+        dst.mipLevel = 0;
+        dst.origin = {std::uint32_t(region.x), std::uint32_t(region.y), 0};
+        dst.aspect = WGPUTextureAspect_All;
+        WGPUTexelCopyBufferLayout layout{};
+        layout.offset = 0;
+        layout.bytesPerRow = std::uint32_t(stride);
+        layout.rowsPerImage = std::uint32_t(region.height);
+        WGPUExtent3D extent{std::uint32_t(region.width), std::uint32_t(region.height), 1};
+        queue.WriteTexture(reinterpret_cast<const wgpu::TexelCopyTextureInfo *>(&dst),
+                           region.rgba.data(), requiredBytes,
+                           reinterpret_cast<const wgpu::TexelCopyBufferLayout *>(&layout),
+                           reinterpret_cast<const wgpu::Extent3D *>(&extent));
+    }
+    return eve::Result<void>::success();
+}
+
 GpuTexture *Graphics::gpuForTexture(Texture *t) const {
     return t ? static_cast<GpuTexture *>(t->gpuHandle) : nullptr;
 }

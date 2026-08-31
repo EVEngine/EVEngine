@@ -124,7 +124,7 @@ function(eve_resolve_modules)
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "headless")
         set(_hostless_profile TRUE)
-        set(_profile_seed common data event timer)
+        set(_profile_seed common data event timer pixelworld)
         set(EVENGINE_PROFILE_CORE_KIND headless CACHE INTERNAL
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "server")
@@ -132,7 +132,7 @@ function(eve_resolve_modules)
         set(_profile_seed
             common data event timer network authority decision definitions effects
             game_event orders schema social statepatch steering tags transaction
-            economy attributes sensing spatial action settlement tactics)
+            economy attributes sensing spatial action settlement tactics pixelworld)
         set(EVENGINE_PROFILE_CORE_KIND server CACHE INTERNAL
             "Core boundary selected by the active profile" FORCE)
     else()

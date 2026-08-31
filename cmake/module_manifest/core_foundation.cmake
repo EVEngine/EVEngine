@@ -73,6 +73,8 @@ eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial
 # 与渲染解耦；examples/crowd 演示渲染由游戏脚本自行完成）。
 eve_declare_module(NAME crowd LAYER 0 SCRIPT Crowd SLOT crowd
                    GROUP 2d 3d web)
+eve_declare_module(NAME pixelworld LAYER 0 SCRIPT PixelWorldModule SLOT pixelworld
+                   GROUP 2d 3d web)
 eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 # L6 -- editor orchestration
@@ -86,6 +88,18 @@ eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
 eve_declare_module(NAME database LAYER 0 SCRIPT Database
                    THIRDPARTY poco_data poco)
 # L1 -- gameplay domain adapter
+eve_declare_module(NAME pixelworld_thread LAYER 1
+                   DEPS pixelworld thread
+                   GROUP 2d 3d web)
+eve_declare_module(NAME pixelworld_replay LAYER 1
+                   DEPS pixelworld
+                   GROUP 2d 3d web)
+eve_declare_module(NAME pixelworld_streaming LAYER 1
+                   DEPS asset pixelworld
+                   GROUP 2d 3d web)
+eve_declare_module(NAME pixelworld_editor LAYER 6 SCRIPT PixelWorldEditorModule SLOT pixelworldEditor
+                   DEPS pixelworld ui
+                   GROUP 2d 3d web)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
                    DEPS action attributes decision definitions effects inventory settlement)
 # L0 -- foundation (continued)

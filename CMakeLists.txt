@@ -93,6 +93,8 @@ option(EVENGINE_BUILD_HOST
     "Build the interactive/native eve host (disabled by core/headless/server profiles)" ON)
 option(EVENGINE_BUILD_PROFILE_CHECKS
     "Build independent public-header and optional-capability profile checks" OFF)
+option(EVENGINE_BUILD_PIXELWORLD_BENCHMARK
+    "Build the renderer-independent PixelWorld million-cell benchmark" OFF)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
@@ -453,6 +455,9 @@ function(main)
     endif()
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
+    if(EVENGINE_BUILD_PIXELWORLD_BENCHMARK)
+        add_subdirectory(benchmarks/pixelworld)
+    endif()
     if(EVENGINE_BUILD_HOST)
         add_subdirectory(src/scripts)
     endif()
