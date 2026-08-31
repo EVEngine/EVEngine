@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
 #include <string>
 
 namespace eve::map {
@@ -20,6 +21,8 @@ struct MapObject {
     float height = 0.f;
     /** @brief Optional tileset GID (tile objects); 0 = none. */
     uint32_t gid = 0;
+    /** @brief Owning canonical text projection of Tiled custom properties, sorted by name. */
+    std::map<std::string, std::string> properties;
 };
 
 }  // namespace eve::map

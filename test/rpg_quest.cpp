@@ -284,3 +284,87 @@ TEST_CASE("rpg.quest.facadeManualClaim") {
 
     rpg->clearQuestDefinitions();
 }
+
+TEST_CASE("rpg.quest.versionedSnapshotRoundTripAndRegistryMismatchRollback") {
+    QuestRegistry::clear();
+    REQUIRE_EQ(QuestRegistry::loadFromJson(R"([
+      {"id":"quest.hunt","startPolicy":"auto","completePolicy":"claim",
+       "objectives":[{"id":"kill","topic":"kill","target":"slime","count":3}]}
+    ])"), 1);
+    Tracker source;
+    source.notify("kill", "slime", 2);
+    source.pollEvents();
+    auto encoded = source.snapshotJson();
+    REQUIRE(encoded.ok());
+
+    Tracker restored;
+    restored.notify("kill", "slime", 1);
+    REQUIRE(restored.restoreSnapshotJson(encoded.value()).ok());
+    CHECK_EQ(restored.getState("quest.hunt"), std::string("active"));
+    CHECK_EQ(restored.getObjectiveCurrent("quest.hunt", 0), 2);
+    restored.pollEvents();
+    CHECK_EQ(restored.getEventCount(), 0);
+
+    const auto before = restored.snapshotJson();
+    REQUIRE(before.ok());
+    auto malformed = restored.restoreSnapshotJson(
+        R"({"schema":"eve.rpg.quest-tracker","version":1,"entries":[{"id":"quest.hunt","state":"completed","objectives":[{"id":"kill","current":1}]}]})");
+    CHECK(!malformed.ok());
+    auto afterMalformed = restored.snapshotJson();
+    REQUIRE(afterMalformed.ok());
+    CHECK_EQ(afterMalformed.value(), before.value());
+
+    QuestRegistry::clear();
+    REQUIRE_EQ(QuestRegistry::loadFromJson(R"([
+      {"id":"quest.hunt","startPolicy":"auto","completePolicy":"claim",
+       "objectives":[{"id":"kill-v2","topic":"kill","target":"slime","count":3}]}
+    ])"), 1);
+    auto mismatch = restored.restoreSnapshotJson(encoded.value());
+    CHECK(!mismatch.ok());
+    CHECK_EQ(restored.getObjectiveCurrent("quest.hunt", 0), 2);
+    QuestRegistry::clear();
+}
+
+TEST_CASE("rpg.quest.strictReplacementCommitsCompleteCatalogueAtomically") {
+    QuestRegistry::clear();
+    REQUIRE_EQ(QuestRegistry::loadFromJson(R"([{"id":"old.quest"}])"), 1);
+
+    auto replaced = QuestRegistry::replaceFromJsonStrict(R"([
+      {"id":"quest.intro","startPolicy":"manual","completePolicy":"auto",
+       "objectives":[{"id":"talk","topic":"talk","target":"elder","count":1}]},
+      {"id":"quest.hunt","startPolicy":"auto","completePolicy":"claim","requires":["quest.intro"],
+       "objectives":[{"id":"kill","topic":"kill","target":"slime","count":3}],
+       "rewards":[{"type":"item","id":"potion","amount":2}],
+       "tags":["main"],"extra":{"title":"Hunt"}}
+    ])");
+    REQUIRE(replaced.ok());
+    CHECK_EQ(replaced.value(), 2);
+    CHECK(QuestRegistry::find("old.quest") == nullptr);
+    REQUIRE(QuestRegistry::find("quest.hunt") != nullptr);
+    CHECK_EQ(QuestRegistry::find("quest.hunt")->getExtra("title"), std::string("Hunt"));
+    QuestRegistry::clear();
+}
+
+TEST_CASE("rpg.quest.strictReplacementRejectsInvalidBatchWithoutMutation") {
+    QuestRegistry::clear();
+    auto initial = QuestRegistry::replaceFromJsonStrict(R"([{"id":"quest.stable"}])");
+    REQUIRE(initial.ok());
+
+    auto invalidPolicy = QuestRegistry::replaceFromJsonStrict(
+        R"([{"id":"quest.new","startPolicy":"sometimes"}])");
+    CHECK(!invalidPolicy.ok());
+    CHECK(QuestRegistry::find("quest.stable") != nullptr);
+    CHECK(QuestRegistry::find("quest.new") == nullptr);
+
+    auto missingDependency = QuestRegistry::replaceFromJsonStrict(
+        R"([{"id":"quest.new","requires":["quest.missing"]}])");
+    CHECK(!missingDependency.ok());
+    CHECK(QuestRegistry::find("quest.stable") != nullptr);
+
+    auto partialBatch = QuestRegistry::replaceFromJsonStrict(
+        R"([{"id":"quest.good"},{"id":"quest.bad","objectives":[{"id":"o","topic":"kill","count":0}]}])");
+    CHECK(!partialBatch.ok());
+    CHECK(QuestRegistry::find("quest.good") == nullptr);
+    CHECK(QuestRegistry::find("quest.stable") != nullptr);
+    QuestRegistry::clear();
+}

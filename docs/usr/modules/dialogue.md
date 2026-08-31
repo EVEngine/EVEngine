@@ -137,7 +137,10 @@ endconversation
   `exportVoiceRecordingCsv(locale)` 生成并可再次回导的录音清单，包含角色、源文、译文、
   voice key、录制状态和时长；当前行可用 `getVoiceStatus/getVoiceDuration` 读取回导结果，
   将时长直接交给 `dialogueVoice.registerVoice` 即可驱动语音结束自动推进。
-- 执行：`start(id, bindings)`、`advance`、`select(routeId)`、`isActive/isBlocked`、
+- 内容包提交前可调用 `validateLocalization(i18n, locale)`，逐节点验证 `i18n` 引用在指定
+  精确语言中存在；该检查故意不接受默认语言回退，并返回结构化 Result 和节点路径。
+- 执行：产品路径使用 `startChecked(id, bindings)`、`advanceChecked()` 和 `select(routeId)` 的
+  结构化 Result；`start(id, bindings)` / `advance()` 仅作兼容投影；`isActive/isBlocked`、
   `getActiveConversationId/getNodeId/getNodeKind`。
 - 当前节点：`getSpeaker/getText/getPool/getI18nKey/getVoice`、
   `getRouteCount/getRouteId`。

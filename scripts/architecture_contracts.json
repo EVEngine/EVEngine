@@ -209,6 +209,36 @@
       "phase": "input buffering in Input; candidate preparation and atomic selection in PrePhysics"
     },
     {
+      "id": "inventory-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/inventory/InventorySystem.h",
+      "owner": "inventory::InventorySystem",
+      "issue": "EVENGINE-ARCH-INVENTORY-TRANSACTIONS",
+      "reason": "Inventory mutations and prepared batches publish their access, commit and observer contracts even though Bags are domain containers rather than ECS entities.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/inventory/InventorySystem.h",
+        "src/modules/inventory/InventorySystem.cpp",
+        "docs/usr/modules/inventory.md"
+      ],
+      "tests": [
+        "test/inventory.cpp",
+        "test/rpg_quest_reward.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "InventorySystem"
+      ],
+      "entity_scope": "caller-owned Bag and EquipmentSet domain containers; no ECS entity traversal",
+      "view": "one owning-thread Bag snapshot captured during preparation and compared in full before commit",
+      "read_set": "item definitions, Bag configuration, filters, capacity and stack policies, slots and custom properties",
+      "write_set": "the target Bag slot vector plus the inventory event queue after successful commit",
+      "structural_changes": "prepared additions mutate only a private candidate; commit swaps the target slot vector once and never changes ECS structure",
+      "events": "inventory change hooks and poll events publish only after the authoritative slot swap; failed and stale batches publish nothing",
+      "services": "process-local item registry and named inventory policies on the Bag owning simulation thread",
+      "phase": "gameplay transaction commit after validation and before downstream inventory presentation polling"
+    },
+    {
       "id": "npc-ai-ecs-system-contracts",
       "rule": "ecs-system",
       "scope": "src/modules/npc_ai/NpcAiECS.h",
