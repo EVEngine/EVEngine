@@ -1,10 +1,11 @@
-#include "editor/EditorHouseGenTarget.h"
+#include "housegen_editing/HouseGenTarget.h"
 
 #include "housegen/HouseLayout.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::housegen_editing;
+using namespace eve::editing;
 
 namespace {
 void apply(HouseGenDocumentTarget& target, EditorResult<DomainOperation> operation) {

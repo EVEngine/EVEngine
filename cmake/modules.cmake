@@ -11,7 +11,7 @@
 # switched off and its dependencies, its third-party libraries and its script
 # binding follow automatically.
 #
-#   -DEVENGINE_PROFILE=minimal|2d|3d|full|web|procgen-core-only|physics-core-only|asset-core-only|headless|server
+#   -DEVENGINE_PROFILE=minimal|2d|3d|runtime-3d|full|web|procgen-core-only|physics-core-only|asset-core-only|headless|server
 #                                                   pick a preset (default: full)
 #   -DEVENGINE_MODULE_<NAME>=ON|OFF              override one module
 #
@@ -94,7 +94,7 @@ function(eve_resolve_modules)
         set(EVENGINE_PROFILE "full")
     endif()
 
-    set(_valid full minimal 2d 3d web procgen-core-only physics-core-only asset-core-only headless server)
+    set(_valid full minimal 2d 3d runtime-3d web procgen-core-only physics-core-only asset-core-only headless server)
     if(NOT EVENGINE_PROFILE IN_LIST _valid)
         message(FATAL_ERROR "EVENGINE_PROFILE must be one of: ${_valid} (got: ${EVENGINE_PROFILE})")
     endif()
@@ -162,6 +162,10 @@ function(eve_resolve_modules)
     set(_wanted "")
     foreach(m IN LISTS EVE_ALL_MODULES)
         set(_on FALSE)
+        set(_selection_profile "${EVENGINE_PROFILE}")
+        if(EVENGINE_PROFILE STREQUAL "runtime-3d")
+            set(_selection_profile "3d")
+        endif()
         if(_hostless_profile)
             if("${m}" IN_LIST _profile_seed)
                 set(_on TRUE)
@@ -170,8 +174,13 @@ function(eve_resolve_modules)
             set(_on TRUE)
         elseif(EVENGINE_PROFILE STREQUAL "full")
             set(_on TRUE)
-        elseif("${EVENGINE_PROFILE}" IN_LIST EVE_MODULE_${m}_GROUP)
+        elseif("${_selection_profile}" IN_LIST EVE_MODULE_${m}_GROUP)
             set(_on TRUE)
+        endif()
+
+        if(EVENGINE_PROFILE STREQUAL "runtime-3d" AND
+           m MATCHES "^(editor|editing|.*_editing)$")
+            set(_on FALSE)
         endif()
 
         # --- 2. explicit override -------------------------------------------
@@ -215,6 +224,15 @@ function(eve_resolve_modules)
             endif()
         endforeach()
     endwhile()
+
+    if(EVENGINE_PROFILE STREQUAL "runtime-3d")
+        foreach(m IN LISTS _wanted)
+            if(m MATCHES "^(editor|editing|.*_editing)$")
+                message(FATAL_ERROR
+                    "Runtime-only profile '${EVENGINE_PROFILE}' acquired editing module '${m}'")
+            endif()
+        endforeach()
+    endif()
 
     # --- 4. emit in declaration order ----------------------------------------
     set(_enabled "")

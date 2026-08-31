@@ -1,8 +1,18 @@
 #pragma once
 
 #include "common/Module.h"
+#include "editing/EditingExtension.h"
 #include "editor/EditorCommandService.h"
 #include "editor/EditorTarget.h"
+#ifdef EVENGINE_HAS_MAP
+#include "map_editing/TileLayerTarget.h"
+#endif
+#ifdef EVENGINE_HAS_PROCGEN
+#include "procgen_editing/HeightmapTarget.h"
+#endif
+#ifdef EVENGINE_HAS_VOXEL
+#include "voxel_editing/VoxelWorldTarget.h"
+#endif
 
 #include <memory>
 #include <string>
@@ -45,9 +55,11 @@ class EditorSession;
 class EditorWorkspace;
 class TileBufferTarget;
 #ifdef EVENGINE_HAS_MAP
-class TileLayerTarget;
+using TileLayerTarget = eve::map_editing::TileLayerTarget;
 #endif
-class HeightmapTarget;
+#ifdef EVENGINE_HAS_PROCGEN
+using HeightmapTarget = eve::procgen_editing::HeightmapTarget;
+#endif
 class ScriptEditorTool;
 class ConstantBrushFalloff;
 class LinearBrushFalloff;
@@ -62,7 +74,7 @@ class BoxVolumeBrushKernel;
 class PaintIntVolumeOperation;
 class VolumeBrushTool;
 #ifdef EVENGINE_HAS_VOXEL
-class VoxelWorldTarget;
+using VoxelWorldTarget = eve::voxel_editing::VoxelWorldTarget;
 #endif
 class EditorAutomationProvider;
 class EditorTargetCoordinator;
@@ -104,6 +116,10 @@ public:
     EditorCommandService& commandService() { return commandService_; }
     /** @brief Return the immutable command registry owned by this editor module. */
     const EditorCommandService& commandService() const { return commandService_; }
+    /** @brief Return the open, generation-safe registry used to discover linked domain editing providers. */
+    editing::ExtensionProviderRegistry& extensionProviders() { return extensionProviders_; }
+    /** @brief Return the immutable domain editing provider registry. */
+    const editing::ExtensionProviderRegistry& extensionProviders() const { return extensionProviders_; }
     /**
      * @brief Register a borrowed editable target for UI, script and automation access.
      * @param target Target owned by the caller and kept alive until unregisterEditingTarget().
@@ -116,6 +132,13 @@ public:
      * @return Applied when removed, or NoOp when the target was not registered.
      */
     [[nodiscard]] EditorResult<void> unregisterEditingTarget(const TargetId& target);
+    /**
+     * @brief Bind a registered target to a host session without exposing the coordinator.
+     * @param session Session owned by the caller.
+     * @param target Registered target identity.
+     * @return Applied or a structured lookup failure.
+     */
+    [[nodiscard]] EditorResult<void> bindEditingTarget(EditorSession& session, const TargetId& target);
     /** @brief Adapt existing fields to capability-based editor targets. */
     TileBufferTarget* newTileBufferTarget(const std::string& id, TileBuffer* buffer);
 #ifdef EVENGINE_HAS_MAP
@@ -206,9 +229,10 @@ public:
 #endif
 
 private:
-    EditorCommandService                      commandService_;
-    std::unique_ptr<EditorTargetCoordinator>  targets_;
-    std::unique_ptr<EditorAutomationProvider> automation_;
+    editing::ExtensionProviderRegistry extensionProviders_;
+    EditorCommandService                       commandService_;
+    std::unique_ptr<EditorTargetCoordinator>   targets_;
+    std::unique_ptr<EditorAutomationProvider>  automation_;
 };
 
 }  // namespace eve::editor

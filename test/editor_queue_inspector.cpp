@@ -1,11 +1,11 @@
-#include "editor/EditorQueueInspector.h"
+#include "queue_editing/QueueInspector.h"
 
 #include "orders/CommandQueue.h"
 #include "production/Production.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::queue_editing;
 
 TEST_CASE("editor.queue.inspector_copies_orders_without_borrowing_runtime_storage") {
     eve::orders::CommandQueue queue;

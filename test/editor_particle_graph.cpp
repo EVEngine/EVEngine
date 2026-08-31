@@ -1,11 +1,12 @@
-#include "editor/EditorParticleGraph.h"
+#include "particles_editing/ParticleGraph.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include <algorithm>
 
-using namespace eve::editor;
+using namespace eve::particles_editing;
+using namespace eve::editing;
 
 namespace {
 

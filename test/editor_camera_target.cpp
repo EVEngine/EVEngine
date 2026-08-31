@@ -1,9 +1,10 @@
-#include "editor/EditorCameraTarget.h"
+#include "camera_editing/CameraTarget.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::camera_editing;
+using namespace eve::editing;
 
 namespace {
 void apply(CameraDocumentTarget& target, EditorResult<DomainOperation> operation) {

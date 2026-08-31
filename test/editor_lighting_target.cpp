@@ -1,4 +1,4 @@
-#include "editor/EditorLightingTarget.h"
+#include "lighting_editing/LightingTarget.h"
 
 #include "daynight/DayNight.h"
 #include "graphics/Light.h"
@@ -7,7 +7,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::lighting_editing;
+using namespace eve::editing;
 
 namespace {
 

@@ -1,11 +1,12 @@
-#include "editor/EditorDialogueGraph.h"
+#include "dialogue_editing/DialogueGraph.h"
 
 #include "dialogue/ConversationAuthoring.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::dialogue_editing;
+using namespace eve::editing;
 
 namespace {
 

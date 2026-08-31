@@ -1,7 +1,7 @@
-#include "editor/EditorNetworkTelemetry.h"
+#include "network_editing/NetworkTelemetry.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-using namespace eve::editor;
+using namespace eve::network_editing;
 TEST_CASE("editor.network.telemetry_computes_rates_and_bounds_history") {
     NetworkTelemetryModel model(2);
     NetworkTelemetrySample a;a.revision=1;a.timeSeconds=1;a.sentBytes=100;a.receivedBytes=200;a.completions=10;a.errors=1;

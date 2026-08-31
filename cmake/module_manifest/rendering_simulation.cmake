@@ -2,6 +2,13 @@
 # L4 -- rendering extensions and simulation
 # ---------------------------------------------------------------------------
 
+eve_declare_module(NAME material_graphics_editing LAYER 4
+                   DEPS graphics material_editing
+                   GROUP 3d web)
+eve_declare_module(NAME graphics_editing LAYER 4
+                   DEPS editing graphics image
+                   GROUP 2d 3d web)
+
 # Typed bridge from admitted runtime packages into backend-owned GPU resources.
 eve_declare_module(NAME asset_graphics LAYER 4
                    DEPS asset graphics
@@ -29,6 +36,10 @@ eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
                    DEPS data filesystem graphics grid
                    THIRDPARTY poco
                    GROUP 2d 3d)
+eve_declare_module(NAME map_editing LAYER 4
+                   DEPS editing
+                   OPTIONAL_DEPS map
+                   GROUP 3d web)
 eve_declare_module(NAME buildingfx LIB EVBuildingFx LAYER 4 SCRIPT BuildingFx SLOT buildingfx
                    DEPS building graphics)
 # Weapon definitions, entities, mounts and fire logic. Standalone so buildings /
@@ -76,7 +87,8 @@ eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack
                    DEPS graphics image model3d
                    GROUP 2d)
 eve_declare_module(NAME housegen LIB EVHouseGen LAYER 4 SCRIPT HouseGen
-                   DEPS data graphics image model3d)
+                   DEPS data graphics image model3d
+                   GROUP 3d)
 eve_declare_module(NAME card LAYER 4 SCRIPT Card
                    DEPS attributes decision definitions effects graphics transaction)
 eve_declare_module(NAME demo LAYER 4 SCRIPT Demo

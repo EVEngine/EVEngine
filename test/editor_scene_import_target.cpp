@@ -1,7 +1,8 @@
-#include "editor/EditorSceneImportTarget.h"
+#include "sceneloader_editing/SceneImportTarget.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-using namespace eve::editor;
+using namespace eve::sceneloader_editing;
+using namespace eve::editing;
 namespace{SelectionSnapshot select(const SceneImportTarget&t){SelectionSnapshot s;s.channel="scene-import";s.items.push_back({SelectionDomain::Asset,TargetId(t.targetId()),StableId(t.targetId()),"scene-import"});return s;}void apply(SceneImportTarget&t,EditorResult<DomainOperation>op){REQUIRE(op.value);REQUIRE(t.applyDomainOperation(*op.value).isAccepted());}}
 TEST_CASE("editor.scene_import.presets_expand_and_custom_edits_are_reversible"){
  SceneImportTarget target("castle.import");const auto selection=select(target);apply(target,target.makeSet(selection,PropertyPath("source"),"castle.glb",PropertySetMode::Absolute));auto mobile=target.makeSet(selection,PropertyPath("preset"),"mobile",PropertySetMode::Absolute);REQUIRE(mobile.value);REQUIRE(target.applyDomainOperation(*mobile.value).isAccepted());CHECK(!target.value().importAnimations);CHECK(!target.value().importLights);CHECK(target.value().mipmaps);

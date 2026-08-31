@@ -1,0 +1,6 @@
+#include "social_editing/SocialDocument.h"
+#include "social/SocialGraph.h"
+
+namespace eve::social_editing {
+EditorResult<void> SocialRuntimeApplier::apply(const SocialDocumentTarget&document,social::SocialGraph*runtime)const{if(!runtime)return EditorResult<void>::error(EditorStatus::Rejected,RuleId("editor.social.runtime"),"Live SocialGraph is required");const auto diagnostics=document.validate();for(const auto&d:diagnostics)if(d.severity==DiagnosticSeverity::Error){EditorResult<void>r;r.status=EditorStatus::Rejected;r.diagnostics=diagnostics;return r;}runtime->clear();for(const auto&e:document.edges()){bool accepted=false;if(e.kind=="owner")accepted=runtime->setOwner(e.source.value(),e.target.value());else if(e.kind=="controller")accepted=runtime->setController(e.source.value(),e.target.value());else if(e.kind=="assignment")accepted=runtime->assign(e.source.value(),e.type,e.target.value());else accepted=runtime->setRelation(e.source.value(),e.target.value(),e.type,e.weight);if(!accepted)return EditorResult<void>::error(EditorStatus::Failed,RuleId("editor.social.runtime-edge"),"Social runtime rejected an authored edge");}return EditorResult<void>::applied();}
+} // namespace eve::social_editing

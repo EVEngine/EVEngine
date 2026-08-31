@@ -1,11 +1,12 @@
-#include "editor/EditorPcgGraph.h"
+#include "procgen_editing/PcgGraph.h"
 #include "procgen/PointGraph.h"
 
 #include "zeroerr/unittest.h"
 
 #include <algorithm>
 
-using namespace eve::editor;
+using namespace eve::procgen_editing;
+using namespace eve::editing;
 
 TEST_CASE("editor.pcgGraph.reflectsNodesAndCompilesPointGraphAsset") {
     PcgPointGraphDomain domain;

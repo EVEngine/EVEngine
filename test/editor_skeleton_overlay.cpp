@@ -1,4 +1,4 @@
-#include "editor/EditorSkeletonOverlay.h"
+#include "animation_editing/SkeletonOverlay.h"
 
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
@@ -8,12 +8,12 @@
 
 #include <algorithm>
 
-using namespace eve::editor;
+using namespace eve::animation_editing;
+using namespace eve::editing;
 
 namespace {
 
-const EditorGizmoPrimitive* primitive(const EditorGizmoSnapshot& snapshot,
-                                      const std::string& id) {
+const GizmoPrimitive* primitive(const GizmoSnapshot& snapshot, const std::string& id) {
     const auto found = std::find_if(snapshot.primitives.begin(), snapshot.primitives.end(),
                                     [&](const auto& value) { return value.id == id; });
     return found == snapshot.primitives.end() ? nullptr : &*found;

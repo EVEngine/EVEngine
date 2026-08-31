@@ -5,6 +5,7 @@
 #include "common/EditorAutomation.h"
 #include "common/RenderCapture.h"
 #include "editor/Editor.h"
+#include "editor/EditorSession.h"
 #include "editor/EditorMaterialTarget.h"
 #include "editor/EditorSceneTarget.h"
 #include "graphics/RenderSystem3D.h"
@@ -317,4 +318,49 @@ TEST_CASE("editor.automation_publishes_material_transactions_to_live_renderable"
     ecs::DestroyEntity(renderable);
     auto stale = renderInspection->inspectRenderable3D(id, generation);
     REQUIRE_NOT(stale.ok());
+}
+
+TEST_CASE("editor.composition.developer_runtime_and_automation_share_target_transaction_path") {
+    SceneDocumentTarget scene("level.shared-host-path");
+    addSceneObject(scene, "player");
+
+    Editor editor;
+    REQUIRE(editor.registerEditingTarget(scene).isAccepted());
+
+    auto developer = std::unique_ptr<EditorSession>(editor.newSession());
+    REQUIRE(editor.bindEditingTarget(*developer, TargetId(scene.targetId())).isAccepted());
+    const CommandId transform("scene.transform.set.v1");
+    const EditorValue developerPayload = EditorValue::Object{
+        {"object", "player"}, {"position", EditorValue::Array{1.0, 2.0, 3.0}}};
+    auto developerPlan = developer->planCommand(transform, developerPayload);
+    REQUIRE(developerPlan.value);
+    REQUIRE(developer->executePlan(*developerPlan.value, developerPayload).isAccepted());
+
+    auto* automation = eve::cap::query<eve::IEditorAutomation>();
+    REQUIRE(automation != nullptr);
+    const std::string developerUndo = automation->invoke(
+        "undo", R"({"target":"level.shared-host-path"})");
+    CHECK(developerUndo.find("\"status\":\"applied\"") != std::string::npos);
+
+    auto runtime = std::unique_ptr<EditorSession>(editor.newSession());
+    HostProfile runtimeProfile = HostProfile::runtimeBuilder();
+    runtimeProfile.allowCommand(transform);
+    runtime->setHostProfile(std::move(runtimeProfile));
+    REQUIRE(editor.bindEditingTarget(*runtime, TargetId(scene.targetId())).isAccepted());
+    const EditorValue runtimePayload = EditorValue::Object{
+        {"object", "player"}, {"position", EditorValue::Array{7.0, 8.0, 9.0}}};
+    auto runtimePlan = runtime->planCommand(transform, runtimePayload);
+    REQUIRE(runtimePlan.value);
+    REQUIRE(runtime->executePlan(*runtimePlan.value, runtimePayload).isAccepted());
+
+    const std::string runtimeUndo = automation->invoke(
+        "undo", R"({"target":"level.shared-host-path"})");
+    CHECK(runtimeUndo.find("\"status\":\"applied\"") != std::string::npos);
+    const auto restored = scene.readTransform(ObjectId("player"));
+    REQUIRE(restored.value);
+    CHECK_EQ(restored.value->x, 0.0);
+    CHECK_EQ(restored.value->y, 0.0);
+    CHECK_EQ(restored.value->z, 0.0);
+
+    CHECK(editor.unregisterEditingTarget(TargetId(scene.targetId())).isAccepted());
 }

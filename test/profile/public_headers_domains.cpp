@@ -2,6 +2,7 @@
 // or unit-test runner is linked here; this catches accidental transitive-header
 // dependencies before a profile attempts a real build.
 #include "action/Action.h"
+#include "editing/EditingAuthority.h"
 #include "physics/PhysicsHandles.h"
 #include "physics/PhysicsLink.h"
 #include "physics/SimulationBackend.h"

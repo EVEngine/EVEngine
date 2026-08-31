@@ -1,11 +1,12 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "editor/EditorGraph.h"
+#include "material_editing/MaterialGraph.h"
 
 #include <string>
 
-using namespace eve::editor;
+using namespace eve::material_editing;
+using namespace eve::editing;
 
 namespace {
 

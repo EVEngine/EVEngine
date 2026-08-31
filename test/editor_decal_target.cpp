@@ -1,4 +1,4 @@
-#include "editor/EditorDecalTarget.h"
+#include "decal_editing/DecalTarget.h"
 
 #include "decal/DecalManager.h"
 #include "zeroerr/assert.h"
@@ -6,7 +6,8 @@
 
 #include <map>
 
-using namespace eve::editor;
+using namespace eve::decal_editing;
+using namespace eve::editing;
 
 namespace {
 SelectionSnapshot selection(const char* target) {

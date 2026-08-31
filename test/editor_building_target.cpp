@@ -1,4 +1,4 @@
-#include "editor/EditorBuildingTarget.h"
+#include "building_editing/BuildingTarget.h"
 
 #include "building/BuildingDef.h"
 #include "building/PlacementWorld.h"
@@ -6,7 +6,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::building_editing;
 
 namespace {
 

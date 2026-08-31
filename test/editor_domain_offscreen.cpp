@@ -14,6 +14,7 @@
 #include <memory>
 
 using namespace eve::editor;
+using namespace eve::editing;
 
 namespace {
 class Canvas final : public eve::graphics::Canvas {
@@ -40,7 +41,7 @@ public:
 };
 
 GraphDocumentData particleGraph() {
-    ParticleGraphDomain domain;
+    eve::particles_editing::ParticleGraphDomain domain;
     GraphDocument document;
     for (const char* type : {"emission", "motion", "collision", "renderer", "output"}) {
         auto node = domain.makeNode(GraphNodeId(type), type); REQUIRE(node.value);
@@ -87,7 +88,8 @@ TEST_CASE("editor.particles.offscreen_preview_compiles_and_budget_checks_before_
     Backend backend; auto* token=reinterpret_cast<eve::graphics::Graphics*>(&backend);
     GraphicsOffscreenPreviewService offscreen(token,&backend,&backend); int draws=0;
     ParticleOffscreenPreviewService renderer(&offscreen,
-        [&](const ParticleGraphCompileResult& compiled,const ParticleGraphPreviewResult& estimate,auto*,auto*) {
+        [&](const eve::particles_editing::ParticleGraphCompileResult& compiled,
+            const eve::particles_editing::ParticleGraphPreviewResult& estimate, auto*, auto*) {
             CHECK_EQ(compiled.documentRevision,estimate.documentRevision);++draws;return EditorResult<void>::applied(); });
     ParticleOffscreenPreviewRequest request;request.previewId=StableId("particles");request.graph=particleGraph();
     auto artifact=renderer.render(request);REQUIRE(artifact.value);CHECK_EQ(draws,1);
@@ -101,8 +103,8 @@ class ParticlePresenter final : public IParticleOffscreenPresenter {
 public:
     int draws = 0;
     EditorResult<void> draw(const ParticleOffscreenPreviewRequest& request,
-                            const ParticleGraphCompileResult& compiled,
-                            const ParticleGraphPreviewResult& estimate,
+                            const eve::particles_editing::ParticleGraphCompileResult& compiled,
+                            const eve::particles_editing::ParticleGraphPreviewResult& estimate,
                             eve::graphics::Graphics*, eve::graphics::Canvas*) override {
         CHECK_EQ(request.graph.revision, compiled.documentRevision);
         CHECK_EQ(compiled.documentRevision, estimate.documentRevision);
@@ -120,7 +122,7 @@ TEST_CASE("editor.particles.offscreen_preview_dispatches_isolated_presenter_cont
     auto artifact=renderer.render(request); REQUIRE(artifact.value);
     CHECK_EQ(presenter.draws,1);
     ParticleEmitterOffscreenPresenter runtime;
-    ParticleGraphDomain domain; const auto compiled=domain.compile(request.graph);
+    eve::particles_editing::ParticleGraphDomain domain; const auto compiled=domain.compile(request.graph);
     const auto estimate=domain.preview(request.graph,request.seconds,request.fixedStep,request.particleBudget);
     request.graph.revision++;
     CHECK_EQ(static_cast<int>(runtime.draw(request,compiled,estimate,nullptr,nullptr).status),

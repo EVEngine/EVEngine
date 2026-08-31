@@ -349,8 +349,8 @@ std::string EditorAutomationProvider::createTarget(const EditorValue::Object& re
     if (ownedTargets_.contains(target))
         return errorJson(EditorStatus::Conflict, "editor.automation.target-exists", "Target already exists");
 
-    std::unique_ptr<IEditableTarget>       owned;
-    std::unique_ptr<IMaterialRuntimeSink> ownedMaterialSink;
+    std::unique_ptr<IEditableTarget>                            owned;
+    std::unique_ptr<material_editing::IMaterialRuntimeSink> ownedMaterialSink;
     if (type == "scene") {
         auto scene = std::make_unique<SceneDocumentTarget>(target.value());
         const std::string object = stringField(request, "object");

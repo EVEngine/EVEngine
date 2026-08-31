@@ -1,7 +1,7 @@
-#include "editor/EditorInputMapTarget.h"
+#include "input_editing/InputMapTarget.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-using namespace eve::editor;
+using namespace eve::input_editing;
 namespace{void apply(InputMapTarget&t,EditorResult<DomainOperation>op){REQUIRE(op.value);REQUIRE(t.applyDomainOperation(*op.value).isAccepted());}}
 TEST_CASE("editor.input_map.evaluates_composite_axis_deadzone_and_buttons"){
  InputMapTarget target("game.input");apply(target,target.makeCreateAction({ObjectId("move"),"move-x","axis1d"}));apply(target,target.makeCreateAction({ObjectId("jump"),"jump","button"}));apply(target,target.makeCreateBinding({ObjectId("left"),ObjectId("move"),"keyboard","A",-1,0,false}));apply(target,target.makeCreateBinding({ObjectId("right"),ObjectId("move"),"keyboard","D",1,0,false}));apply(target,target.makeCreateBinding({ObjectId("stick"),ObjectId("move"),"gamepad","leftx",1,.2,false}));apply(target,target.makeCreateBinding({ObjectId("space"),ObjectId("jump"),"keyboard","Space",1,0,false}));InputMapEvaluator evaluator;auto result=evaluator.evaluate(target,{{"keyboard","D",1},{"gamepad","leftx",.6},{"keyboard","Space",1}});REQUIRE(result.value);CHECK_EQ(result.value->at("move-x"),1.0);CHECK_EQ(result.value->at("jump"),1.0);

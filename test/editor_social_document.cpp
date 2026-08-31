@@ -1,9 +1,10 @@
-#include "editor/EditorSocialDocument.h"
+#include "social_editing/SocialDocument.h"
 #include "social/SocialGraph.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::social_editing;
+using namespace eve::editing;
 
 TEST_CASE("editor.social.graph_edges_are_reversible_validated_and_publishable") {
     SocialDocumentTarget document("diplomacy");

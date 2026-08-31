@@ -26,7 +26,7 @@ GraphNodeRecord asyncOutputNode() {
 TEST_CASE("editor.v2.task_queue_is_queryable_and_cancellable") {
     EditorTaskService tasks;
     auto              blocker = tasks.submit("blocker", [](const EditorTaskContext& context) {
-        while (!context.cancelled()) std::this_thread::sleep_for(1ms);
+        while (!context.isCancellationRequested()) std::this_thread::sleep_for(1ms);
         EditorTaskOutcome result;
         result.status = EditorStatus::Cancelled;
         return result;
@@ -36,7 +36,7 @@ TEST_CASE("editor.v2.task_queue_is_queryable_and_cancellable") {
     REQUIRE(queued.isAccepted());
     CHECK(tasks.cancel(*queued.value).isAccepted());
     CHECK(tasks.cancel(*blocker.value).isAccepted());
-    CHECK(tasks.waitIdle(2s));
+    CHECK(tasks.waitIdle(2s).isAccepted());
     CHECK_EQ(static_cast<int>(tasks.snapshot(*queued.value).value->state),
              static_cast<int>(EditorTaskState::Cancelled));
     CHECK_EQ(static_cast<int>(tasks.snapshot(*blocker.value).value->state),
@@ -52,7 +52,7 @@ TEST_CASE("editor.v2.material_compile_runs_on_background_task_service") {
     const DocumentId document("document:async-material");
     auto             task = materials.compileAsync(document, graph.snapshot(domain.domain()), domain, tasks);
     REQUIRE(task.isAccepted());
-    CHECK(tasks.waitIdle(2s));
+    CHECK(tasks.waitIdle(2s).isAccepted());
     auto result = materials.result(*task.value);
     REQUIRE(result.isAccepted());
     CHECK_EQ(static_cast<int>(result.value->status), static_cast<int>(EditorStatus::Applied));

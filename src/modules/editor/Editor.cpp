@@ -22,6 +22,7 @@
 #include "editor/TransformGizmo.h"
 #include "editor/VolumeBrushTool.h"
 #include "material_editing/MaterialEditingCommands.h"
+#include "procgen_graphics_editing/HeightmapMesh.h"
 #include "scene_editing/SceneEditingCommands.h"
 
 #include "graphics/Graphics.h"
@@ -282,136 +283,6 @@ bool registerScriptCommand(Editor* editor, const std::string& id, const std::str
 
 }  // namespace
 
-#ifdef EVENGINE_HAS_PROCGEN
-namespace {
-
-#ifdef EVENGINE_HAS_PROCGEN
-struct HeightmapArrays {
-    std::vector<float>    pos;
-    std::vector<float>    nrm;
-    std::vector<float>    uv;
-    std::vector<uint32_t> idx;
-};
-
-/** Terrain mesh: two triangles per cell, 6 vertices per quad. When
- *  smoothNormals is set, vertex normals come from the height-field gradient
- *  (continuous bowls); otherwise each triangle is flat-shaded. */
-void buildHeightmapArrays(const eve::procgen::Heightmap& hm, float cell, float hScale, HeightmapArrays& out,
-                          bool smoothNormals) {
-    out.pos.clear();
-    out.nrm.clear();
-    out.uv.clear();
-    out.idx.clear();
-    const int w = hm.getWidth();
-    const int h = hm.getHeight();
-    if (w < 2 || h < 2) return;
-    const float uw = float(w - 1);
-    const float uh = float(h - 1);
-
-    // Per-grid-vertex normals from central differences of the height field.
-    std::vector<float> smoothNrm;
-    if (smoothNormals) {
-        smoothNrm.resize(size_t(w) * size_t(h) * 3);
-        auto hs = [&](int x, int z) {
-            x = std::clamp(x, 0, w - 1);
-            z = std::clamp(z, 0, h - 1);
-            return hm.height(x, z);
-        };
-        for (int z = 0; z < h; ++z) {
-            for (int x = 0; x < w; ++x) {
-                const float dhdx = (hs(x + 1, z) - hs(x - 1, z)) * 0.5f * hScale / cell;
-                const float dhdz = (hs(x, z + 1) - hs(x, z - 1)) * 0.5f * hScale / cell;
-                float       nx   = -dhdx;
-                float       ny   = 1.f;
-                float       nz   = -dhdz;
-                const float len  = std::sqrt(nx * nx + ny * ny + nz * nz);
-                if (len > 1e-8f) {
-                    nx /= len;
-                    ny /= len;
-                    nz /= len;
-                }
-                float* n = &smoothNrm[(size_t(z) * w + x) * 3];
-                n[0]     = nx;
-                n[1]     = ny;
-                n[2]     = nz;
-            }
-        }
-
-        // Smooth terrain can share the heightmap's grid vertices. Positions,
-        // normals and UVs change while sculpting; the indexed topology does not.
-        out.pos.reserve(size_t(w) * size_t(h) * 3u);
-        out.nrm.reserve(size_t(w) * size_t(h) * 3u);
-        out.uv.reserve(size_t(w) * size_t(h) * 2u);
-        out.idx.reserve(size_t(w - 1) * size_t(h - 1) * 6u);
-        for (int z = 0; z < h; ++z) {
-            for (int x = 0; x < w; ++x) {
-                out.pos.insert(out.pos.end(), {float(x) * cell, hm.height(x, z) * hScale, float(z) * cell});
-                const float* n = &smoothNrm[(size_t(z) * size_t(w) + size_t(x)) * 3u];
-                out.nrm.insert(out.nrm.end(), {n[0], n[1], n[2]});
-                out.uv.insert(out.uv.end(), {float(x) / uw, float(z) / uh});
-            }
-        }
-        for (int z = 0; z < h - 1; ++z) {
-            for (int x = 0; x < w - 1; ++x) {
-                const uint32_t i00 = uint32_t(z * w + x);
-                const uint32_t i10 = i00 + 1u;
-                const uint32_t i01 = i00 + uint32_t(w);
-                const uint32_t i11 = i01 + 1u;
-                out.idx.insert(out.idx.end(), {i00, i01, i10, i10, i01, i11});
-            }
-        }
-        return;
-    }
-
-    auto addTri = [&](float ax, float az, float ay, float bx, float bz, float by, float cx, float cz, float cy) {
-        const float    p0x = ax * cell, p0y = ay * hScale, p0z = az * cell;
-        const float    p1x = bx * cell, p1y = by * hScale, p1z = bz * cell;
-        const float    p2x = cx * cell, p2y = cy * hScale, p2z = cz * cell;
-        const uint32_t base = uint32_t(out.pos.size() / 3);
-        out.pos.insert(out.pos.end(), {p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z});
-        if (smoothNormals) {
-            const float* n0 = &smoothNrm[(size_t(int(az)) * w + int(ax)) * 3];
-            const float* n1 = &smoothNrm[(size_t(int(bz)) * w + int(bx)) * 3];
-            const float* n2 = &smoothNrm[(size_t(int(cz)) * w + int(cx)) * 3];
-            out.nrm.insert(out.nrm.end(), {n0[0], n0[1], n0[2], n1[0], n1[1], n1[2], n2[0], n2[1], n2[2]});
-        } else {
-            const float e1x = p1x - p0x, e1y = p1y - p0y, e1z = p1z - p0z;
-            const float e2x = p2x - p0x, e2y = p2y - p0y, e2z = p2z - p0z;
-            float       nx  = e1y * e2z - e1z * e2y;
-            float       ny  = e1z * e2x - e1x * e2z;
-            float       nz  = e1x * e2y - e1y * e2x;
-            const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
-            if (len > 1e-8f) {
-                nx /= len;
-                ny /= len;
-                nz /= len;
-            }
-            out.nrm.insert(out.nrm.end(), {nx, ny, nz, nx, ny, nz, nx, ny, nz});
-        }
-        out.uv.insert(out.uv.end(), {ax / uw, az / uh, bx / uw, bz / uh, cx / uw, cz / uh});
-        out.idx.insert(out.idx.end(), {base, base + 1, base + 2});
-    };
-
-    for (int y = 0; y < h - 1; ++y) {
-        for (int x = 0; x < w - 1; ++x) {
-            const float h00 = hm.height(x, y);
-            const float h10 = hm.height(x + 1, y);
-            const float h01 = hm.height(x, y + 1);
-            const float h11 = hm.height(x + 1, y + 1);
-            // Grid is XZ; y in the function is the XZ "row" axis.
-            // Counter-clockwise when viewed from above (+Y).  Besides matching
-            // the renderer's front face, this keeps the flat-shaded cross
-            // product pointing upward instead of into the terrain.
-            addTri(float(x), float(y), h00, float(x), float(y + 1), h01, float(x + 1), float(y), h10);
-            addTri(float(x + 1), float(y), h10, float(x), float(y + 1), h01, float(x + 1), float(y + 1), h11);
-        }
-    }
-}
-#endif
-
-}  // namespace
-#endif
-
 Editor::Editor()
     : targets_(std::make_unique<EditorTargetCoordinator>(commandService_)),
       automation_(std::make_unique<EditorAutomationProvider>(commandService_, *targets_)) {
@@ -430,6 +301,10 @@ EditorResult<void> Editor::unregisterEditingTarget(const TargetId& target) {
     auto result = targets_->unregisterTarget(target);
     if (result.status == EditorStatus::Applied) automation_->targetUnregistered(target);
     return result;
+}
+
+EditorResult<void> Editor::bindEditingTarget(EditorSession& session, const TargetId& target) {
+    return targets_->bind(session, target);
 }
 
 TransformGizmo* Editor::newGizmo() { return new TransformGizmo(); }
@@ -470,7 +345,7 @@ TileBufferTarget* Editor::newTileBufferTarget(const std::string& id, TileBuffer*
 
 #ifdef EVENGINE_HAS_MAP
 TileLayerTarget* Editor::newTileLayerTarget(const std::string& id, map::TileLayer* layer) {
-    return new TileLayerTarget(id, layer);
+    return eve::map_editing::createTileLayerTarget(id, layer).release();
 }
 #endif
 
@@ -498,76 +373,38 @@ VolumeBrushTool*         Editor::newVolumeBrushTool(const std::string& id, const
 
 #ifdef EVENGINE_HAS_VOXEL
 VoxelWorldTarget* Editor::newVoxelWorldTarget(const std::string& id, voxel::VoxelWorld* world) {
-    return new VoxelWorldTarget(id, world);
+    return eve::voxel_editing::createVoxelWorldTarget(id, world).release();
 }
 #endif
 
 #ifdef EVENGINE_HAS_PROCGEN
 HeightmapTarget* Editor::newHeightmapTarget(const std::string& id, procgen::Heightmap* heightmap) {
-    return new HeightmapTarget(id, heightmap);
+    return eve::procgen_editing::createHeightmapTarget(id, heightmap).release();
 }
 
 int Editor::applyHeightmapBrush(procgen::Heightmap* hm, float centerX, float centerY, float radius, float strength) {
-    if (!hm || radius < 0.f || strength == 0.f) return 0;
-    const int   minX    = std::max(0, int(std::floor(centerX - radius)));
-    const int   maxX    = std::min(hm->getWidth() - 1, int(std::ceil(centerX + radius)));
-    const int   minY    = std::max(0, int(std::floor(centerY - radius)));
-    const int   maxY    = std::min(hm->getHeight() - 1, int(std::ceil(centerY + radius)));
-    const float edge    = radius + 0.5f;
-    int         changed = 0;
-    for (int y = minY; y <= maxY; ++y) {
-        for (int x = minX; x <= maxX; ++x) {
-            const float dx       = float(x) - centerX;
-            const float dy       = float(y) - centerY;
-            const float distance = std::sqrt(dx * dx + dy * dy);
-            if (distance > radius) continue;
-            const float falloff   = 1.f - distance / edge;
-            const float oldHeight = hm->height(x, y);
-            const float newHeight = std::clamp(oldHeight + strength * falloff, 0.f, 1.f);
-            if (newHeight == oldHeight) continue;
-            hm->setHeight(x, y, newHeight);
-            ++changed;
-        }
-    }
-    return changed;
+    auto result = eve::procgen_editing::applyHeightmapBrush(hm, centerX, centerY, radius, strength);
+    return result.value.value_or(0);
 }
 
 graphics::Mesh* Editor::newHeightmapMesh(procgen::Heightmap* hm, float cellSize, float heightScale) {
-    auto* gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
-    if (!gfx || !hm) return nullptr;
-    HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a, false);
-    if (a.idx.empty()) return nullptr;
-    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), a.idx.data(),
-                                  int(a.idx.size()));
+    auto created = eve::procgen_graphics_editing::createHeightmapMesh(hm, cellSize, heightScale, false);
+    return created.value.value_or(nullptr);
 }
 
 bool Editor::updateHeightmapMesh(graphics::Mesh* mesh, graphics::Graphics* gfx, procgen::Heightmap* hm, float cellSize,
                                  float heightScale) {
-    if (!mesh || !gfx || !hm) return false;
-    HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a, false);
-    if (a.idx.empty()) return false;
-    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), nullptr, 0);
+    return eve::procgen_graphics_editing::updateHeightmapMesh(mesh, gfx, hm, cellSize, heightScale, false).isAccepted();
 }
 
 graphics::Mesh* Editor::newHeightmapMeshSmooth(procgen::Heightmap* hm, float cellSize, float heightScale) {
-    auto* gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
-    if (!gfx || !hm) return nullptr;
-    HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a, true);
-    if (a.idx.empty()) return nullptr;
-    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), a.idx.data(),
-                                  int(a.idx.size()));
+    auto created = eve::procgen_graphics_editing::createHeightmapMesh(hm, cellSize, heightScale, true);
+    return created.value.value_or(nullptr);
 }
 
 bool Editor::updateHeightmapMeshSmooth(graphics::Mesh* mesh, graphics::Graphics* gfx, procgen::Heightmap* hm,
                                        float cellSize, float heightScale) {
-    if (!mesh || !gfx || !hm) return false;
-    HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a, true);
-    if (a.idx.empty()) return false;
-    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), nullptr, 0);
+    return eve::procgen_graphics_editing::updateHeightmapMesh(mesh, gfx, hm, cellSize, heightScale, true).isAccepted();
 }
 #endif
 
@@ -965,7 +802,9 @@ void Editor::expose(ssq::Table& table) {
         return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
     });
     voxelTarget.addFunc("readInt3", &VoxelWorldTarget::readInt3);
-    voxelTarget.addFunc("writeInt3", &VoxelWorldTarget::writeInt3);
+    voxelTarget.addFunc("writeInt3", [](VoxelWorldTarget* self, int x, int y, int z, int value) {
+        return self && self->writeInt3(x, y, z, value) == editing::FieldWriteStatus::Applied;
+    });
     voxelTarget.addFunc("clearDirtyVolume", &VoxelWorldTarget::clearDirtyVolume);
     voxelTarget.addFunc("getDirtyMinX", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().minX : 0; });
     voxelTarget.addFunc("getDirtyMinY", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().minY : 0; });

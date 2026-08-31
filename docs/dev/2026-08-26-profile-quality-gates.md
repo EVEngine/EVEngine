@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | `minimal` | 最小可运行客户端 | 有 |
 | `2d` / `3d` | 对应客户端模块集合 | 有 |
+| `runtime-3d` | 与 `3d` 相同的运行时集合，但排除 `editor`、`editing` 和全部领域 editing satellite | 有 |
 | `web` | WebGPU/Emscripten 客户端集合 | 有，需工具链 |
 | `procgen-core-only` | 只验证 procgen 核心边界 | 无 |
 | `physics-core-only` | 只验证 physics 核心边界 | 无 |
@@ -20,6 +21,9 @@
 core/headless profile 会关闭 native host、window、renderer 和 unit-test；
 `eve_profile_smoke` 只依赖已选择的模块、独立 public-header translation unit，
 以及 capability present/absent probe，不替代完整单元测试。
+
+`runtime-3d` 不是 hostless profile：它仍构建窗口和 renderer，但 resolver 会拒绝任何通过
+显式开关或依赖闭包重新引入的编辑模块，用于证明可发布的 3D runtime 不链接 authoring 实现。
 
 ## 本地命令
 
