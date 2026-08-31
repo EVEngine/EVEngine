@@ -2327,11 +2327,13 @@ Result<resource::Receipt> RTS::sellScriptBuilding(Building& building) {
         return failure<resource::Receipt>(DiagnosticCode::InvalidArgument,
             "RTS building definition lacks a sale cost", "building.definition");
     double costNumber = -1.0;
-    if (const auto* integer = costIt->second.getIf<std::int64_t>()) costNumber = *integer;
+    if (const auto* integer = costIt->second.getIf<std::int64_t>())
+        costNumber = static_cast<double>(*integer);
     else if (const auto* real = costIt->second.getIf<double>()) costNumber = *real;
     double ratio = 0.5;
     if (const auto ratioIt = object->find("sellRefundRatio"); ratioIt != object->end()) {
-        if (const auto* integer = ratioIt->second.getIf<std::int64_t>()) ratio = *integer;
+        if (const auto* integer = ratioIt->second.getIf<std::int64_t>())
+            ratio = static_cast<double>(*integer);
         else if (const auto* real = ratioIt->second.getIf<double>()) ratio = *real;
         else ratio = -1.0;
     }
