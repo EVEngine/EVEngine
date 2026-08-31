@@ -152,6 +152,32 @@ int getGpuResidentOffsetAlignmentScript(Gpgpu *gpgpu) {
     return eve::kGpuResidentStorageOffsetAlignment;
 }
 
+std::string submitSequenceAsyncScript(Sequence *sequence) {
+    if (!sequence) return "failed";
+    (void)sequence->submitAsync();
+    return sequence->getStatusName();
+}
+
+std::string pollSequenceScript(Sequence *sequence) {
+    if (!sequence) return "failed";
+    (void)sequence->poll();
+    return sequence->getStatusName();
+}
+
+std::string waitSequenceScript(Sequence *sequence) {
+    if (!sequence) return "failed";
+    (void)sequence->wait();
+    return sequence->getStatusName();
+}
+
+void setShaderScript(ShaderSystem *system, ComputeShader *shader) {
+    if (system) system->setShader(shader, false);
+}
+
+void dispatchShaderSystemScript(ShaderSystem *system, int entityCount, float deltaTime) {
+    if (system) system->dispatch(entityCount, deltaTime);
+}
+
 void writeGpuDrivenInstanceScript(Gpgpu *gpgpu, GpuBuffer *buffer, int instanceIndex, ssq::Array model, int meshId,
                                   int materialId, int flags, int lodGroupId) {
     (void)gpgpu;
@@ -291,21 +317,9 @@ void Gpgpu::expose(ssq::Table &table) {
     seq.addFunc("recordDownload", &Sequence::recordDownload);
     seq.addFunc("recordDispatch", &Sequence::recordDispatch);
     seq.addFunc("submit", &Sequence::submit);
-    seq.addFunc("submitAsync", std::function<std::string(Sequence *)>([](Sequence *self) {
-                    if (!self) return std::string("failed");
-                    (void)self->submitAsync();
-                    return self->getStatusName();
-                }));
-    seq.addFunc("poll", std::function<std::string(Sequence *)>([](Sequence *self) {
-                    if (!self) return std::string("failed");
-                    (void)self->poll();
-                    return self->getStatusName();
-                }));
-    seq.addFunc("wait", std::function<std::string(Sequence *)>([](Sequence *self) {
-                    if (!self) return std::string("failed");
-                    (void)self->wait();
-                    return self->getStatusName();
-                }));
+    seq.addFunc("submitAsync", submitSequenceAsyncScript);
+    seq.addFunc("poll", pollSequenceScript);
+    seq.addFunc("wait", waitSequenceScript);
     seq.addFunc("getStatus", &Sequence::getStatusName);
 
     // Native ECS↔GPU helper (used by eve.ShaderSystem script class).
@@ -316,10 +330,7 @@ void Gpgpu::expose(ssq::Table &table) {
     ecsSys.addFunc("setGpgpu", &ShaderSystem::setGpgpu);
     ecsSys.addFunc("getGpgpu", &ShaderSystem::getGpgpu);
     ecsSys.addFunc("setShaderSource", &ShaderSystem::setShaderSource);
-    ecsSys.addFunc("setShader", std::function<void(ShaderSystem *, ComputeShader *)>(
-                                    [](ShaderSystem *self, ComputeShader *s) {
-                                        if (self) self->setShader(s, false);
-                                    }));
+    ecsSys.addFunc("setShader", setShaderScript);
     ecsSys.addFunc("getShader", &ShaderSystem::getShader);
     ecsSys.addFunc("setLocalSize", &ShaderSystem::setLocalSize);
     ecsSys.addFunc("getLocalSize", &ShaderSystem::getLocalSize);
@@ -332,10 +343,7 @@ void Gpgpu::expose(ssq::Table &table) {
     ecsSys.addFunc("getDownloadCount", &ShaderSystem::getDownloadCount);
     ecsSys.addFunc("getDispatchCount", &ShaderSystem::getDispatchCount);
     ecsSys.addFunc("resetStatistics", &ShaderSystem::resetStatistics);
-    ecsSys.addFunc("dispatch", std::function<void(ShaderSystem *, int, float)>(
-                                   [](ShaderSystem *self, int n, float dt) {
-                                       if (self) self->dispatch(n, dt);
-                                   }));
+    ecsSys.addFunc("dispatch", dispatchShaderSystemScript);
     ecsSys.addFunc("recordDispatch", &ShaderSystem::recordDispatch);
     ecsSys.addFunc("clearBuffers", &ShaderSystem::clearBuffers);
 

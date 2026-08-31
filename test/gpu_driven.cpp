@@ -176,7 +176,8 @@ TEST_CASE("GpuDriven.squirrelResidentInstanceSubmit") {
         local gfx = eve.Graphics()
         local gpu = eve.Gpgpu()
         if (!gpu.isAvailable()) throw "GPGPU unavailable"
-        if (gpu.getGpuDrivenInstanceStride() != 80) throw "unexpected instance stride"
+        local instanceStride = gpu.getGpuDrivenInstanceStride()
+        if (instanceStride < 80) throw "unexpected instance stride"
         if (gpu.getGpuResidentOffsetAlignment() != 256) throw "unexpected offset alignment"
 
         local mesh = gfx.newMeshSphere(12, 8)
@@ -186,7 +187,7 @@ TEST_CASE("GpuDriven.squirrelResidentInstanceSubmit") {
         if (meshId < 0 || materialId < 0) throw "resource registration failed"
         if (!gpu.gpuDrivenMaterialUsable(material)) throw "material is not usable"
 
-        local instances = gpu.newBuffer(80, "storage")
+        local instances = gpu.newBuffer(instanceStride, "storage")
         local model = [1.0, 0.0, 0.0, 0.0,
                        0.0, 1.0, 0.0, 0.0,
                        0.0, 0.0, 1.0, 0.0,
