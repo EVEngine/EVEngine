@@ -6,6 +6,7 @@
 
 #include "graphics/vulkan/Graphics.h"
 #include "common/Exception.h"
+#include "graphics/CubemapPrefilter.h"
 
 #include <algorithm>
 #include <cmath>
@@ -367,28 +368,7 @@ std::vector<uint8_t> buildMipChain2D(const uint8_t *rgba, uint32_t width, uint32
  */
 std::vector<uint8_t> buildMipChainCube(const uint8_t *rgbaFaces, uint32_t faceSize,
                                        uint32_t mipLevels) {
-    const uint32_t faceBytes = rgba8MipBytes(faceSize, faceSize);
-    std::vector<std::vector<uint8_t>> faceChains(6);
-    for (uint32_t f = 0; f < 6; ++f) {
-        faceChains[f] = buildMipChain2D(rgbaFaces + size_t(f) * faceBytes, faceSize, faceSize,
-                                        mipLevels);
-    }
-
-    std::vector<uint8_t> packed;
-    uint32_t w = faceSize;
-    uint32_t h = faceSize;
-    size_t faceOffsets[6] = {0, 0, 0, 0, 0, 0};
-    for (uint32_t level = 0; level < mipLevels; ++level) {
-        const uint32_t levelBytes = rgba8MipBytes(w, h);
-        for (uint32_t f = 0; f < 6; ++f) {
-            const uint8_t *src = faceChains[f].data() + faceOffsets[f];
-            packed.insert(packed.end(), src, src + levelBytes);
-            faceOffsets[f] += levelBytes;
-        }
-        w = std::max(w >> 1, 1u);
-        h = std::max(h >> 1, 1u);
-    }
-    return packed;
+    return eve::graphics::buildGgxCubemapMipChain(rgbaFaces, faceSize, mipLevels);
 }
 
 TextureCreateInfo normalizeTextureInfo(TextureCreateInfo info) {

@@ -1,4 +1,7 @@
 #include "graphics/Graphics.h"
+#include "graphics/Bloom.h"
+#include "graphics/Exposure.h"
+#include "graphics/DepthPyramid.h"
 #include "common/Capability.h"
 #include "common/config.h"
 #include "font/FontData.h"
@@ -27,6 +30,8 @@
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"
+#include "graphics/ReflectionProbeCapture.h"
+#include "graphics/ReflectionProbeRegistry.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
@@ -176,14 +181,19 @@ void Graphics::renderScene3DToCanvas(Canvas *canvas, Camera3D *camera) {
 Shader* Graphics::prepareSceneColorResolveShader(Texture* scene) {
     if (!scene) return nullptr;
     AntiAliasing* aa = pipelineAntiAliasing();
+    const bool doAA = !renderControl_ || renderControl_->isEnabled("aa") || renderControl_->isEnabled("taa");
     aa->setMode("fxaa");
-    const bool doAA = !renderControl_ || renderControl_->isEnabled("aa");
     if (doAA) {
-        aa->setQuality("medium");
+        const std::string requested =
+            renderControl_ ? renderControl_->getPostProcessQuality() : "high";
+        const std::string quality = requested == "ultra" ? "high" : requested;
+        if (aa->getQuality() != quality) aa->setQuality(quality);
     } else {
-        aa->setFloat("edgeThreshold", 1.f);
-        aa->setFloat("edgeThresholdMin", 1.f);
-        aa->setFloat("subpix", 0.f);
+        if (aa->getMode() == "fxaa") {
+            aa->setFloat("edgeThreshold", 1.f);
+            aa->setFloat("edgeThresholdMin", 1.f);
+            aa->setFloat("subpix", 0.f);
+        }
     }
     aa->prepareSource(scene);
     return aa->getShader();
@@ -196,10 +206,9 @@ void Graphics::drawScene3DRGBA(float x, float y, float w, float h, float r, floa
     // blit multiplies that into SrcAlpha, so the planet composites against
     // the dark clear color and looks dim. Use the same opaque FXAA resolve
     // as the engine auto-composite path (aa shader writes alpha = 1).
-    if (Shader* sh = prepareSceneColorResolveShader(scene))
-        drawTexturedRectShader(scene, sh, x, y, w, h, Color(r, g, b, a));
-    else
-        drawTexturedRect(scene, x, y, w, h, Color(r, g, b, a));
+    Texture *resolved = prepareFinalSceneTexture(scene);
+    drawTexturedRectShaderUV(resolved, nullptr, x, y, w, h, 0.f, 0.f, 1.f, 1.f,
+                             Color(r, g, b, a), false, BlendMode::Opaque);
 }
 
 void Graphics::drawCanvasRGBA(Canvas* canvas, float x, float y, float w, float h, float r, float g, float b, float a) {
@@ -233,6 +242,7 @@ void Graphics::expose(ssq::Table& table) {
     canvasCls.addFunc("getWidth", &Canvas::getWidth);
     canvasCls.addFunc("getHeight", &Canvas::getHeight);
     canvasCls.addFunc("getTexture", &Canvas::getTexture);
+    canvasCls.addFunc("newHDRImageData", &Canvas::newHDRImageData);
 
 #ifndef EVENGINE_WEBGPU
     auto fontCls =
@@ -352,6 +362,25 @@ void Graphics::expose(ssq::Table& table) {
     cam.addFunc("setAmbient", &Camera3D::setAmbient);
     cam.addFunc("setEnvMap", &Camera3D::setEnvMap);
     cam.addFunc("setEnvIntensity", &Camera3D::setEnvIntensity);
+    cam.addFunc("setExposure", &Camera3D::setExposure);
+    cam.addFunc("getExposure", &Camera3D::getExposure);
+    cam.addFunc("setAutoExposure", &Camera3D::setAutoExposure);
+    cam.addFunc("isAutoExposure", &Camera3D::isAutoExposure);
+    cam.addFunc("setBloom", &Camera3D::setBloom);
+    cam.addFunc("getBloomIntensity", &Camera3D::getBloomIntensity);
+    cam.addFunc("getBloomThreshold", &Camera3D::getBloomThreshold);
+    cam.addFunc("setEnvProbe", &Camera3D::setEnvProbe);
+    cam.addFunc("clearEnvProbe", &Camera3D::clearEnvProbe);
+    cam.addFunc("hasEnvProbe", &Camera3D::hasEnvProbe);
+    cam.addFunc("getEnvProbeCenterX", &Camera3D::getEnvProbeCenterX);
+    cam.addFunc("getEnvProbeCenterY", &Camera3D::getEnvProbeCenterY);
+    cam.addFunc("getEnvProbeCenterZ", &Camera3D::getEnvProbeCenterZ);
+    cam.addFunc("getEnvProbeExtentX", &Camera3D::getEnvProbeExtentX);
+    cam.addFunc("getEnvProbeExtentY", &Camera3D::getEnvProbeExtentY);
+    cam.addFunc("getEnvProbeExtentZ", &Camera3D::getEnvProbeExtentZ);
+    cam.addFunc("setReflectionProbe", &Camera3D::setReflectionProbe);
+    cam.addFunc("clearReflectionProbe", &Camera3D::clearReflectionProbe);
+    cam.addFunc("getReflectionProbeCount", &Camera3D::getReflectionProbeCount);
     cam.addFunc("screenToRay", &Camera3D::screenToRay);
     cam.addFunc("getScreenRayOriginX", &Camera3D::getScreenRayOriginX);
     cam.addFunc("getScreenRayOriginY", &Camera3D::getScreenRayOriginY);
@@ -432,6 +461,8 @@ void Graphics::expose(ssq::Table& table) {
     ent.addFunc("getParallaxMinLayers", &Renderable3D::getParallaxMinLayers);
     ent.addFunc("getParallaxMaxLayers", &Renderable3D::getParallaxMaxLayers);
     ent.addFunc("setVisible", &Renderable3D::setVisible);
+    ent.addFunc("setReflectionCaptureMask", &Renderable3D::setReflectionCaptureMask);
+    ent.addFunc("getReflectionCaptureMask", &Renderable3D::getReflectionCaptureMask);
     ent.addFunc("setReceiveLight", &Renderable3D::setReceiveLight);
     ent.addFunc("setCastShadow", &Renderable3D::setCastShadow);
     ent.addFunc("setReceiveShadow", &Renderable3D::setReceiveShadow);
@@ -545,6 +576,10 @@ void Graphics::expose(ssq::Table& table) {
     rctrl.addFunc("enable", &RenderControl::enable);
     rctrl.addFunc("disable", &RenderControl::disable);
     rctrl.addFunc("isEnabled", &RenderControl::isEnabled);
+    rctrl.addFunc("setReflectionQuality", &RenderControl::setReflectionQuality);
+    rctrl.addFunc("getReflectionQuality", &RenderControl::getReflectionQuality);
+    rctrl.addFunc("setPostProcessQuality", &RenderControl::setPostProcessQuality);
+    rctrl.addFunc("getPostProcessQuality", &RenderControl::getPostProcessQuality);
     rctrl.addFunc("compile", &RenderControl::compile);
     rctrl.addFunc("isCompiled", &RenderControl::isCompiled);
     rctrl.addFunc("getPassCount", &RenderControl::getPassCount);
@@ -637,6 +672,10 @@ void Graphics::expose(ssq::Table& table) {
     grassField.addFunc("setFrameDuration", &GrassField::setFrameDuration);
     grassField.addFunc("getFrameDuration", &GrassField::getFrameDuration);
     grassField.addFunc("draw", static_cast<void (GrassField::*)()>(&GrassField::draw));
+    grassField.addFunc("setReflectionCaptureEnabled", &GrassField::setReflectionCaptureEnabled);
+    grassField.addFunc("getReflectionCaptureEnabled", &GrassField::getReflectionCaptureEnabled);
+    grassField.addFunc("setReflectionCaptureMask", &GrassField::setReflectionCaptureMask);
+    grassField.addFunc("getReflectionCaptureMask", &GrassField::getReflectionCaptureMask);
     grassField.addFunc("getDenseMesh", &GrassField::getDenseMesh);
     grassField.addFunc("getSparseMesh", &GrassField::getSparseMesh);
     grassField.addFunc("getShader", &GrassField::getShader);
@@ -672,8 +711,130 @@ void Graphics::expose(ssq::Table& table) {
     waterfall.addFunc("getSunIntensity", &Waterfall::getSunIntensity);
     waterfall.addFunc("bindParams", &Waterfall::bindParams);
     waterfall.addFunc("draw", &Waterfall::draw);
+    waterfall.addFunc("setReflectionCaptureEnabled", &Waterfall::setReflectionCaptureEnabled);
+    waterfall.addFunc("getReflectionCaptureEnabled", &Waterfall::getReflectionCaptureEnabled);
+    waterfall.addFunc("setReflectionCaptureMask", &Waterfall::setReflectionCaptureMask);
+    waterfall.addFunc("getReflectionCaptureMask", &Waterfall::getReflectionCaptureMask);
     waterfall.addFunc("getShader", &Waterfall::getShader);
     waterfall.addFunc("getMesh", &Waterfall::getMesh);
+    auto probeCapture = table.addClass<ReflectionProbeCapture>(
+        "ReflectionProbeCapture",
+        std::function<ReflectionProbeCapture *()>([]() -> ReflectionProbeCapture * {
+            return nullptr;
+        }),
+        true);
+    probeCapture.addFunc("configure", &ReflectionProbeCapture::configure);
+    probeCapture.addFunc("requestCapture", &ReflectionProbeCapture::requestCapture);
+    probeCapture.addFunc("queueCapture", &ReflectionProbeCapture::queueCapture);
+    probeCapture.addFunc("update", &ReflectionProbeCapture::update);
+    probeCapture.addFunc("getFaceCanvas", &ReflectionProbeCapture::getFaceCanvas);
+    probeCapture.addFunc("isCapturePending", &ReflectionProbeCapture::isCapturePending);
+    probeCapture.addFunc("isRecaptureQueued", &ReflectionProbeCapture::isRecaptureQueued);
+    probeCapture.addFunc("isCaptureComplete", &ReflectionProbeCapture::isCaptureComplete);
+    probeCapture.addFunc("getRevision", &ReflectionProbeCapture::getRevision);
+    probeCapture.addFunc("stageCapturedFaces", &ReflectionProbeCapture::stageCapturedFaces);
+    probeCapture.addFunc("getStagingCubemap", &ReflectionProbeCapture::getStagingCubemap);
+    probeCapture.addFunc("getStagedRevision", &ReflectionProbeCapture::getStagedRevision);
+    probeCapture.addFunc("filterAndPublish", &ReflectionProbeCapture::filterAndPublish);
+    probeCapture.addFunc("getActiveCubemap", &ReflectionProbeCapture::getActiveCubemap);
+    probeCapture.addFunc("getPublishedRevision", &ReflectionProbeCapture::getPublishedRevision);
+    probeCapture.addFunc("setUpdateMode", &ReflectionProbeCapture::setUpdateMode);
+    probeCapture.addFunc("getUpdateMode", &ReflectionProbeCapture::getUpdateMode);
+    probeCapture.addFunc("setRefreshInterval", &ReflectionProbeCapture::setRefreshInterval);
+    probeCapture.addFunc("getRefreshInterval", &ReflectionProbeCapture::getRefreshInterval);
+    probeCapture.addFunc("setCaptureMask", &ReflectionProbeCapture::setCaptureMask);
+    probeCapture.addFunc("getCaptureMask", &ReflectionProbeCapture::getCaptureMask);
+    probeCapture.addFunc("setEnvironmentLighting",
+                         &ReflectionProbeCapture::setEnvironmentLighting);
+    probeCapture.addFunc("getEnvironmentLighting",
+                         &ReflectionProbeCapture::getEnvironmentLighting);
+    probeCapture.addFunc("getEnvironmentLightingIntensity",
+                         &ReflectionProbeCapture::getEnvironmentLightingIntensity);
+    probeCapture.addFunc("setSkyColor", &ReflectionProbeCapture::setSkyColor);
+    probeCapture.addFunc("setSkyFaceColor", &ReflectionProbeCapture::setSkyFaceColor);
+    probeCapture.addFunc("setSkyFaceTexture", &ReflectionProbeCapture::setSkyFaceTexture);
+    probeCapture.addFunc("getSkyFaceTexture", &ReflectionProbeCapture::getSkyFaceTexture);
+    probeCapture.addFunc("setSkyFaceTextureScale",
+                         &ReflectionProbeCapture::setSkyFaceTextureScale);
+    probeCapture.addFunc("getSkyFaceTextureScale",
+                         &ReflectionProbeCapture::getSkyFaceTextureScale);
+    probeCapture.addFunc("getSkyFaceColor", &ReflectionProbeCapture::getSkyFaceColor);
+    probeCapture.addFunc("getSkyR", &ReflectionProbeCapture::getSkyR);
+    probeCapture.addFunc("getSkyG", &ReflectionProbeCapture::getSkyG);
+    probeCapture.addFunc("getSkyB", &ReflectionProbeCapture::getSkyB);
+    probeCapture.addFunc("getSkyIntensity", &ReflectionProbeCapture::getSkyIntensity);
+    probeCapture.addFunc("getPendingFaceCount", &ReflectionProbeCapture::getPendingFaceCount);
+    probeCapture.addFunc("getLastCapturedFaceCount",
+                         &ReflectionProbeCapture::getLastCapturedFaceCount);
+    probeCapture.addFunc("getTotalCapturedFaceCount",
+                         &ReflectionProbeCapture::getTotalCapturedFaceCount);
+    probeCapture.addFunc("getLastFilterSampleCount",
+                         &ReflectionProbeCapture::getLastFilterSampleCount);
+    probeCapture.addFunc("setGpuBudgetMs", &ReflectionProbeCapture::setGpuBudgetMs);
+    probeCapture.addFunc("getGpuBudgetMs", &ReflectionProbeCapture::getGpuBudgetMs);
+    probeCapture.addFunc("reportGpuDurationMs", &ReflectionProbeCapture::reportGpuDurationMs);
+    probeCapture.addFunc("getSmoothedGpuDurationMs",
+                         &ReflectionProbeCapture::getSmoothedGpuDurationMs);
+    probeCapture.addFunc("getAdaptiveFaceBudget",
+                         &ReflectionProbeCapture::getAdaptiveFaceBudget);
+    probeCapture.addFunc("getAdaptiveFilterSamples",
+                         &ReflectionProbeCapture::getAdaptiveFilterSamples);
+    probeCapture.addFunc("tickAdaptive", &ReflectionProbeCapture::tickAdaptive);
+    probeCapture.addFunc("tick", &ReflectionProbeCapture::tick);
+    probeCapture.addFunc("configureInfluence", &ReflectionProbeCapture::configureInfluence);
+    probeCapture.addFunc("getInfluenceExtentX", &ReflectionProbeCapture::getInfluenceExtentX);
+    probeCapture.addFunc("getInfluenceExtentY", &ReflectionProbeCapture::getInfluenceExtentY);
+    probeCapture.addFunc("getInfluenceExtentZ", &ReflectionProbeCapture::getInfluenceExtentZ);
+    probeCapture.addFunc("getInfluenceIntensity", &ReflectionProbeCapture::getInfluenceIntensity);
+    probeCapture.addFunc("getInfluenceBlendDistance",
+                         &ReflectionProbeCapture::getInfluenceBlendDistance);
+    probeCapture.addFunc("getInfluencePriority", &ReflectionProbeCapture::getInfluencePriority);
+    probeCapture.addFunc("applyConfiguredToCamera",
+                         &ReflectionProbeCapture::applyConfiguredToCamera);
+    probeCapture.addFunc("applyToCamera", &ReflectionProbeCapture::applyToCamera);
+    probeCapture.addFunc("getResolution", &ReflectionProbeCapture::getResolution);
+    probeCapture.addFunc("getCenterX", &ReflectionProbeCapture::getCenterX);
+    probeCapture.addFunc("getCenterY", &ReflectionProbeCapture::getCenterY);
+    probeCapture.addFunc("getCenterZ", &ReflectionProbeCapture::getCenterZ);
+    probeCapture.addFunc("getCaptureFarDistance",
+                         &ReflectionProbeCapture::getCaptureFarDistance);
+    probeCapture.addFunc("setCaptureLodDistanceScale",
+                         &ReflectionProbeCapture::setCaptureLodDistanceScale);
+    probeCapture.addFunc("getCaptureLodDistanceScale",
+                         &ReflectionProbeCapture::getCaptureLodDistanceScale);
+    probeCapture.addFunc("setCaptureTransparent",
+                         &ReflectionProbeCapture::setCaptureTransparent);
+    probeCapture.addFunc("getCaptureTransparent",
+                         &ReflectionProbeCapture::getCaptureTransparent);
+    probeCapture.addFunc("setCaptureClusteredLighting",
+                         &ReflectionProbeCapture::setCaptureClusteredLighting);
+    probeCapture.addFunc("getCaptureClusteredLighting",
+                         &ReflectionProbeCapture::getCaptureClusteredLighting);
+    auto probeRegistry = table.addClass<ReflectionProbeRegistry>(
+        "ReflectionProbeRegistry",
+        std::function<ReflectionProbeRegistry *()>([]() -> ReflectionProbeRegistry * {
+            return nullptr;
+        }),
+        true);
+    probeRegistry.addFunc("add", &ReflectionProbeRegistry::add);
+    probeRegistry.addFunc("remove", &ReflectionProbeRegistry::remove);
+    probeRegistry.addFunc("clear", &ReflectionProbeRegistry::clear);
+    probeRegistry.addFunc("getCount", &ReflectionProbeRegistry::getCount);
+    probeRegistry.addFunc("getLastSelectedCount", &ReflectionProbeRegistry::getLastSelectedCount);
+    probeRegistry.addFunc("getLastCapturedFaceCount",
+                          &ReflectionProbeRegistry::getLastCapturedFaceCount);
+    probeRegistry.addFunc("getLastPublishedCount",
+                          &ReflectionProbeRegistry::getLastPublishedCount);
+    probeRegistry.addFunc("setSelectionHysteresis",
+                          &ReflectionProbeRegistry::setSelectionHysteresis);
+    probeRegistry.addFunc("getSelectionHysteresis",
+                          &ReflectionProbeRegistry::getSelectionHysteresis);
+    probeRegistry.addFunc("getLastCandidateCount",
+                          &ReflectionProbeRegistry::getLastCandidateCount);
+    probeRegistry.addFunc("queueCapture", &ReflectionProbeRegistry::queueCapture);
+    probeRegistry.addFunc("queueCaptureAABB", &ReflectionProbeRegistry::queueCaptureAABB);
+    probeRegistry.addFunc("tick", &ReflectionProbeRegistry::tick);
+    probeRegistry.addFunc("updateCamera", &ReflectionProbeRegistry::updateCamera);
     auto water = table.addClass<Water>("Water", std::function<Water*()>([]() -> Water* { return nullptr; }), true);
     water.addFunc("createPlane", &Water::createPlane);
     water.addFunc("update", &Water::update);
@@ -707,6 +868,10 @@ void Graphics::expose(ssq::Table& table) {
     water.addFunc("getViewportHeight", &Water::getViewportHeight);
     water.addFunc("bindParams", &Water::bindParams);
     water.addFunc("draw", &Water::draw);
+    water.addFunc("setReflectionCaptureEnabled", &Water::setReflectionCaptureEnabled);
+    water.addFunc("getReflectionCaptureEnabled", &Water::getReflectionCaptureEnabled);
+    water.addFunc("setReflectionCaptureMask", &Water::setReflectionCaptureMask);
+    water.addFunc("getReflectionCaptureMask", &Water::getReflectionCaptureMask);
     water.addFunc("getShader", &Water::getShader);
     water.addFunc("getMesh", &Water::getMesh);
 
@@ -781,10 +946,14 @@ void Graphics::expose(ssq::Table& table) {
     gi.addFunc("setCamera", &GlobalIllumination::setCamera);
     gi.addFunc("setRadius", &GlobalIllumination::setRadius);
     gi.addFunc("setIntensity", &GlobalIllumination::setIntensity);
+    gi.addFunc("setThickness", &GlobalIllumination::setThickness);
+    gi.addFunc("setResolutionScale", &GlobalIllumination::setResolutionScale);
     gi.addFunc("setLightDirection", &GlobalIllumination::setLightDirection);
     gi.addFunc("setLightColor", &GlobalIllumination::setLightColor);
     gi.addFunc("getRadius", &GlobalIllumination::getRadius);
     gi.addFunc("getIntensity", &GlobalIllumination::getIntensity);
+    gi.addFunc("getThickness", &GlobalIllumination::getThickness);
+    gi.addFunc("getResolutionScale", &GlobalIllumination::getResolutionScale);
     gi.addFunc("hasParam", &GlobalIllumination::hasParam);
     gi.addFunc("setFloat", &GlobalIllumination::setFloat);
     gi.addFunc("getFloat", &GlobalIllumination::getFloat);
@@ -800,17 +969,27 @@ void Graphics::expose(ssq::Table& table) {
     ssr.addFunc("setCamera", &ScreenSpaceReflection::setCamera);
     ssr.addFunc("setEnabled", &ScreenSpaceReflection::setEnabled);
     ssr.addFunc("getEnabled", &ScreenSpaceReflection::getEnabled);
+    ssr.addFunc("setQuality", &ScreenSpaceReflection::setQuality);
+    ssr.addFunc("getQuality", &ScreenSpaceReflection::getQuality);
     ssr.addFunc("setMaxDistance", &ScreenSpaceReflection::setMaxDistance);
     ssr.addFunc("setStepLength", &ScreenSpaceReflection::setStepLength);
     ssr.addFunc("setMaxSteps", &ScreenSpaceReflection::setMaxSteps);
     ssr.addFunc("setThickness", &ScreenSpaceReflection::setThickness);
     ssr.addFunc("setStrength", &ScreenSpaceReflection::setStrength);
+    ssr.addFunc("setMaxRoughness", &ScreenSpaceReflection::setMaxRoughness);
+    ssr.addFunc("setResolutionScale", &ScreenSpaceReflection::setResolutionScale);
     ssr.addFunc("getStrength", &ScreenSpaceReflection::getStrength);
+    ssr.addFunc("getMaxRoughness", &ScreenSpaceReflection::getMaxRoughness);
+    ssr.addFunc("getResolutionScale", &ScreenSpaceReflection::getResolutionScale);
     ssr.addFunc("hasParam", &ScreenSpaceReflection::hasParam);
     ssr.addFunc("setFloat", &ScreenSpaceReflection::setFloat);
     ssr.addFunc("getFloat", &ScreenSpaceReflection::getFloat);
     ssr.addFunc("applyFromScene", &ScreenSpaceReflection::applyFromScene);
-    ssr.addFunc("applyFromSceneTo", &ScreenSpaceReflection::applyFromSceneTo);
+    ssr.addFunc(
+        "applyFromSceneTo",
+        static_cast<void (ScreenSpaceReflection::*)(Graphics *, Texture *, Texture *, Texture *,
+                                                     Texture *, Canvas *)>(
+            &ScreenSpaceReflection::applyFromSceneTo));
     ssr.addFunc("getShader", &ScreenSpaceReflection::getShader);
 
     auto aa = table.addClass<AntiAliasing>(
@@ -884,6 +1063,8 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
     cls.addFunc("newWaterfall", &Graphics::newWaterfall);
+    cls.addFunc("newReflectionProbeCapture", &Graphics::newReflectionProbeCapture);
+    cls.addFunc("newReflectionProbeRegistry", &Graphics::newReflectionProbeRegistry);
     cls.addFunc("newWater", &Graphics::newWater);
     cls.addFunc("newShaderFromSpvFile",
                 static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShaderFromSpvFile));
@@ -976,6 +1157,71 @@ AntiAliasing* Graphics::pipelineAntiAliasing() {
     return pipelineAA_.get();
 }
 
+Bloom* Graphics::pipelineBloom() {
+    if (!pipelineBloom_) pipelineBloom_ = std::make_unique<Bloom>(this);
+    return pipelineBloom_.get();
+}
+
+Exposure* Graphics::pipelineExposure() {
+    if (!pipelineExposure_) pipelineExposure_ = std::make_unique<Exposure>(this);
+    return pipelineExposure_.get();
+}
+
+DepthPyramid* Graphics::pipelineDepthPyramid() {
+    if (!pipelineDepthPyramid_) pipelineDepthPyramid_ = std::make_unique<DepthPyramid>(this);
+    return pipelineDepthPyramid_.get();
+}
+
+Texture* Graphics::prepareFinalSceneTexture(Texture *scene, Texture *motion) {
+    if (!scene) return nullptr;
+    Texture *resolved = scene;
+    AntiAliasing *aa = pipelineAntiAliasing();
+    const bool temporal = renderControl_ && renderControl_->isEnabled("taa");
+    const bool spatial = !renderControl_ || renderControl_->isEnabled("aa");
+    const std::string requested = renderControl_ ? renderControl_->getPostProcessQuality() : "high";
+    const std::string quality = requested == "ultra" ? "high" : requested;
+    if (aa->getQuality() != quality) aa->setQuality(quality);
+    if (temporal) {
+        aa->setMode("taa");
+        resolved = aa->resolveTemporal(this, scene, motion);
+    } else if (spatial) {
+        aa->setMode("fxaa");
+        const int width = std::max(scene->getWidth(), 1);
+        const int height = std::max(scene->getHeight(), 1);
+        if (!spatialAAResolve_ || spatialAAResolveWidth_ != width ||
+            spatialAAResolveHeight_ != height) {
+            spatialAAResolve_ = newHDRCanvas(width, height);
+            spatialAAResolveWidth_ = width;
+            spatialAAResolveHeight_ = height;
+        }
+        aa->applyTo(this, scene, spatialAAResolve_);
+        resolved = spatialAAResolve_->getTexture();
+    }
+    Texture *meterSource = resolved;
+    resolved = pipelineBloom()->apply(resolved, getSceneBloomIntensity(),
+                                      getSceneBloomThreshold());
+    return pipelineExposure()->apply(resolved, getSceneExposure(), getSceneAutoExposure(),
+                                     getSceneAutoExposureMinEV(), getSceneAutoExposureMaxEV(),
+                                     meterSource);
+}
+
+Canvas *Graphics::pipelineReflectionComposite(int width, int height) {
+    width = std::max(width, 1);
+    height = std::max(height, 1);
+    if (!reflectionComposite_ || reflectionCompositeWidth_ != width ||
+        reflectionCompositeHeight_ != height) {
+        reflectionComposite_ = newHDRCanvas(width, height);
+        reflectionCompositeWidth_ = width;
+        reflectionCompositeHeight_ = height;
+    }
+    return reflectionComposite_;
+}
+
+ScreenSpaceReflection* Graphics::pipelineScreenSpaceReflection() {
+    if (!pipelineSSR_) pipelineSSR_ = std::make_unique<ScreenSpaceReflection>(this);
+    return pipelineSSR_.get();
+}
+
 Outline* Graphics::pipelineOutline() {
     if (!pipelineOutline_) pipelineOutline_ = std::make_unique<Outline>(this);
     return pipelineOutline_.get();
@@ -991,6 +1237,13 @@ GrassField* Graphics::newGrassField() { return new GrassField(this); }
 
 Waterfall* Graphics::newWaterfall() { return new Waterfall(this); }
 Water*     Graphics::newWater() { return new Water(this); }
+ReflectionProbeCapture *Graphics::newReflectionProbeCapture() {
+    return new ReflectionProbeCapture(this);
+}
+
+ReflectionProbeRegistry *Graphics::newReflectionProbeRegistry() {
+    return new ReflectionProbeRegistry();
+}
 
 Mesh* Graphics::newMeshCube(float size) {
     const float h = size * 0.5f;

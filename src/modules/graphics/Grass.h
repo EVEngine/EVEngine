@@ -142,7 +142,7 @@ public:
     };
 
     explicit GrassField(Graphics *gfx);
-    ~GrassField() = default;
+    ~GrassField();
 
     GrassField(const GrassField &) = delete;
     GrassField &operator=(const GrassField &) = delete;
@@ -160,6 +160,15 @@ public:
 
     void draw(const glm::mat4 &model);
     void draw();
+
+    /** @brief Enable or disable inclusion in reflection-probe captures. */
+    void setReflectionCaptureEnabled(bool enabled) { reflectionCaptureEnabled_ = enabled; }
+    /** @brief Return whether this field is included in reflection-probe captures. */
+    bool getReflectionCaptureEnabled() const { return reflectionCaptureEnabled_; }
+    /** @brief Set the reflection-capture visibility layer mask. */
+    void setReflectionCaptureMask(uint32_t mask) { reflectionCaptureMask_ = mask; }
+    /** @brief Return the reflection-capture visibility layer mask. */
+    uint32_t getReflectionCaptureMask() const { return reflectionCaptureMask_; }
 
     Mesh *getDenseMesh() const { return denseMesh_; }
     Mesh *getSparseMesh() const { return sparseMesh_; }
@@ -179,6 +188,10 @@ private:
     int sparseCount_ = 0;
     float time_ = 0.f;
     float frameDuration_ = 0.12f;
+    glm::mat4 lastModel_{1.f};
+    uint64_t captureDrawerToken_ = 0;
+    uint32_t reflectionCaptureMask_ = 0xffffffffu;
+    bool reflectionCaptureEnabled_ = true;
 };
 
 }  // namespace eve::graphics

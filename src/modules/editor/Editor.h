@@ -11,6 +11,7 @@ namespace eve {
 namespace graphics {
 class Graphics;
 class Mesh;
+class ReflectionProbeCapture;
 }  // namespace graphics
 #ifdef EVENGINE_HAS_PROCGEN
 namespace procgen {
@@ -32,6 +33,7 @@ class VoxelWorld;
 namespace eve::editor {
 
 class TransformGizmo;
+class ReflectionProbeVisualizer;
 class GizmoManager;
 class TileBuffer;
 class Brush;
@@ -80,6 +82,12 @@ public:
 
     TransformGizmo* newGizmo();
     GizmoManager*   newGizmoManager();
+    /**
+     * @brief Create a renderer-independent visualizer for a runtime reflection probe.
+     * @ownership The caller owns the returned visualizer; the borrowed probe must outlive it.
+     */
+    ReflectionProbeVisualizer* newReflectionProbeVisualizer(
+        graphics::ReflectionProbeCapture* probe);
 
     TileBuffer* newTileBuffer(int width, int height);
     Brush*      newBrush();

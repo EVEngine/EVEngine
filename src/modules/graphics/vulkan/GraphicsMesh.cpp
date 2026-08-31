@@ -670,6 +670,17 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.parallax =
             glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers,
                       mesh3dAlphaCutoff);
+        ubo.envProbeCenter = glm::vec4(mesh3dEnvProbeCenter, 1.f);
+        ubo.envProbeExtent = glm::vec4(mesh3dEnvProbeExtent, 0.f);
+        for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
+            if (i >= mesh3dReflectionProbes.count) continue;
+            const auto &probe = mesh3dReflectionProbes.probes[i];
+            if (!probe.cubemap || !probe.cubemap->gpuHandle ||
+                !static_cast<GpuTexture *>(probe.cubemap->gpuHandle)->isCube)
+                continue;
+            ubo.reflectionProbeCenter[i] = glm::vec4(probe.center, probe.intensity);
+            ubo.reflectionProbeExtent[i] = glm::vec4(probe.extent, probe.blendDistance);
+        }
 
         auto &cfslots = currentMesh3dClusteredFrameSlots();
         if (cfslots.drawIndex >= cfslots.capacity) {
@@ -719,6 +730,15 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.parallax =
         glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers,
                   mesh3dAlphaCutoff);
+    for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
+        if (i >= mesh3dReflectionProbes.count) continue;
+        const auto &probe = mesh3dReflectionProbes.probes[i];
+        if (!probe.cubemap || !probe.cubemap->gpuHandle ||
+            !static_cast<GpuTexture *>(probe.cubemap->gpuHandle)->isCube)
+            continue;
+        ubo.reflectionProbeCenter[i] = glm::vec4(probe.center, probe.intensity);
+        ubo.reflectionProbeExtent[i] = glm::vec4(probe.extent, probe.blendDistance);
+    }
     if (mesh->hasGpuSkinning()) {
         const int paletteCount = std::min(mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
         ubo.skinInfo.x         = static_cast<float>(paletteCount);
@@ -767,11 +787,13 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     const uint32_t dynOffsets[2] = {uboOffset, shadowOffset};
 
     if (shader) {
-        if (offscreen3DPassOpen)
-            throw Exception("drawMeshShader: custom mesh shader in offscreen 3D pass is unsupported");
         auto *gs = static_cast<GpuShader *>(shader->gpuHandle);
-        vk::Pipeline activePipeline = gs->mesh3dPipeline;
-        if (shader->isXray()) {
+        vk::Pipeline activePipeline = offscreen3DPassOpen
+                                          ? (offscreen3DHDRActive
+                                                 ? gs->mesh3dHdrOffscreenPipeline
+                                                 : gs->mesh3dOffscreenPipeline)
+                                          : gs->mesh3dPipeline;
+        if (shader->isXray() && !offscreen3DPassOpen) {
             // X-ray silhouette pass: depth test/write off + alpha blend so the
             // occluded part paints over the building. The pipeline is created
             // with the shader (see newMeshShaderFromSpv); do not compile it
@@ -795,7 +817,9 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         const size_t pipelineIndex =
             mesh3dPipelineIndex(blend, depthWrite, mesh3dSurfaceDoubleSided);
         const vk::Pipeline pipe = offscreen3DPassOpen
-                                      ? offscreen3DSurfacePipelines[pipelineIndex]
+                                      ? (offscreen3DHDRActive
+                                             ? hdrOffscreen3DSurfacePipelines[pipelineIndex]
+                                             : offscreen3DSurfacePipelines[pipelineIndex])
                                       : mesh3dSurfacePipelines[pipelineIndex];
         if (pipe != lastMesh3dPipeline) {
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);

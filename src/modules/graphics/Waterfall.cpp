@@ -2,6 +2,7 @@
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/RenderSystem3D.h"
 #include "graphics/shaders/WaterfallWgsl.h"
 #include "graphics/shaders/waterfall_mesh_frag_spv.inc"
 
@@ -57,7 +58,15 @@ std::string Waterfall::paramName(int index) {
 Waterfall::Waterfall(Graphics *gfx) : gfx_(gfx) {
     shader_ = newWaterfallShader(gfx);
     bindParams();
+    captureDrawerToken_ = RenderSystem3D::addCaptureExtraDrawer(
+        0xffffffffu,
+        [this](Graphics &, const Camera3D::Data &, const glm::mat4 &, float, uint32_t mask) {
+            if (!reflectionCaptureEnabled_ || (reflectionCaptureMask_ & mask) == 0u) return;
+            draw();
+        });
 }
+
+Waterfall::~Waterfall() { RenderSystem3D::removeCaptureExtraDrawer(captureDrawerToken_); }
 
 void Waterfall::createSheet(float width, float height, int segX, int segY) {
     createCurvedSheet(width, height, segX, segY, 0.f, 0.f);

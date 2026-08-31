@@ -2,6 +2,9 @@
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/RenderControl.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/shaders/WaterWgsl.h"
 #include "graphics/shaders/water_frag_spv.inc"
 
@@ -60,7 +63,15 @@ std::string Water::paramName(int index) {
 Water::Water(Graphics *gfx) : gfx_(gfx) {
     shader_ = newWaterShader(gfx);
     bindParams();
+    captureDrawerToken_ = RenderSystem3D::addCaptureExtraDrawer(
+        0xffffffffu,
+        [this](Graphics &, const Camera3D::Data &, const glm::mat4 &, float, uint32_t mask) {
+            if (!reflectionCaptureEnabled_ || (reflectionCaptureMask_ & mask) == 0u) return;
+            drawReflectionCapture();
+        });
 }
+
+Water::~Water() { RenderSystem3D::removeCaptureExtraDrawer(captureDrawerToken_); }
 
 void Water::createPlane(float sizeX, float sizeZ, int segX, int segZ) {
     segX = std::max(1, segX);
@@ -157,7 +168,37 @@ void Water::bindParams() {
 
 void Water::draw() {
     if (!gfx_ || !mesh_ || !shader_) return;
+    bindParams();
+    const int drawableW = gfx_->getPixelWidth() > 0 ? gfx_->getPixelWidth() : gfx_->getWidth();
+    const int drawableH = gfx_->getPixelHeight() > 0 ? gfx_->getPixelHeight() : gfx_->getHeight();
+    const float viewportW = viewportW_ > 0.f ? viewportW_ : float(drawableW);
+    const float viewportH = viewportH_ > 0.f ? viewportH_ : float(drawableH);
+    shader_->sendFloat("viewportW", std::max(viewportW, 1.f));
+    shader_->sendFloat("viewportH", std::max(viewportH, 1.f));
+
+    Texture *reflection = nullptr;
+    RenderControl *rc = gfx_->getRenderControl();
+    if (ssrEnabled_ && rc && rc->isEnabled("ssr")) {
+        ScreenSpaceReflection *ssr = gfx_->pipelineScreenSpaceReflection();
+        if (ssr->hasValidHistory()) reflection = ssr->getReflectionTexture();
+    }
+    shader_->sendFloat("ssrEnabled", reflection ? 1.f : 0.f);
+    gfx_->setMesh3DHeightTexture(reflection);
     gfx_->drawMeshShader(mesh_, glm::mat4(1.f), nullptr, glm::vec4(1.f), shader_);
+    gfx_->setMesh3DHeightTexture(nullptr);
+}
+
+void Water::drawReflectionCapture() {
+    if (!gfx_ || !mesh_ || !shader_) return;
+    bindParams();
+    // Probe captures must never sample the main-view SSR history: that creates
+    // view-dependent feedback and recursively bakes an old reflection into the cube.
+    shader_->sendFloat("ssrEnabled", 0.f);
+    gfx_->setMesh3DHeightTexture(nullptr);
+    gfx_->drawMeshShader(mesh_, glm::mat4(1.f), nullptr, glm::vec4(1.f), shader_);
+    // Restore the authored state for a subsequent main-view draw in the same frame.
+    shader_->sendFloat("ssrEnabled", ssrEnabled_ ? 1.f : 0.f);
+    shader_->sendFloat("ssrStrength", ssrStrength_);
 }
 
 }  // namespace eve::graphics

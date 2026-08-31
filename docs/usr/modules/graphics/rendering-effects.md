@@ -91,6 +91,29 @@ rc.enable("gi");   // 默认已开
 rc.compile();
 ```
 
+### AAA 时域反射链（TAA + RTGI + SSR）
+
+`"reflectionChain"` 一次启用 TAA、fullscreen RTGI、PBR 感知 SSR 及其 GBuffer 依赖，并默认关闭重复的硬件 MSAA 成本。基础材质的环境 IBL 是 SSR 未命中、出屏和高粗糙度区域的后备反射；SSR 结果按时域置信度覆盖，避免屏幕边界硬切。
+
+```squirrel
+local rc = gfx.getRenderControl();
+rc.setPostProcessQuality("high"); // low | medium | high | ultra
+rc.enable("reflectionChain");
+rc.compile();
+```
+
+室内或盒状空间可在相机环境 cubemap 上启用 box-projected reflection probe，使墙面和物体反射对应有限房间而不是无限远天空：
+
+```squirrel
+camera.setEnvMap(roomCubemap);
+camera.setEnvIntensity(1.0);
+camera.setEnvProbe(0, 2, 0, 8, 2, 6); // center xyz, half-extent xyz
+```
+
+只有位于 probe AABB 内的 fragment 会修正镜面反射方向；盒外自动使用普通环境方向。`camera.clearEnvProbe()` 恢复无限远 IBL。任一 extent 为零时 probe 视为关闭。
+
+运行时切档会同步更新 TAA、RTGI 与 SSR，并废弃不兼容的历史帧；`ultra` 在 TAA 上映射到其最高 `high` 档，在 RTGI/SSR 上使用原生 `ultra`。关闭 `reflectionChain` 会同步关闭三个子链路；如果需要逐项调试，也可分别启用 `"taa"`、`"rtgi"`、`"ssr"`。
+
 ### 抗锯齿（硬件 MSAA + 经典后处理）
 
 **硬件 MSAA**（3D 模型/体素边缘效果最好）：3D scene color pass 默认 4x 多重采样再 resolve。用 `RenderControl "msaa"`（默认开）开关，`gfx.setMsaaSamples(n)` 设采样数（0/1=关，2/4/8 按设备能力 clamp）：

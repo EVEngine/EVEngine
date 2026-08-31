@@ -27,6 +27,8 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 cloud;
     vec4 cloudWind;
     vec4 bindlessEnv;
+    vec4 envProbeCenter;
+    vec4 envProbeExtent;
     vec4 skinInfo;
     mat4 skinBones[128];
 } ubo;

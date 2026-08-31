@@ -15,6 +15,20 @@
 
 namespace eve::graphics {
 
+struct ReflectionProbeUpload {
+    static constexpr int kMaxProbes = 2;
+    struct Probe {
+        Texture *cubemap = nullptr;
+        glm::vec3 center{0.f};
+        glm::vec3 extent{0.f};
+        float intensity = 0.f;
+        float blendDistance = 0.f;
+        int priority = 0;
+    };
+    Probe probes[kMaxProbes]{};
+    int count = 0;
+};
+
 class Canvas;
 class Camera3D;
 class Mesh;
@@ -64,6 +78,8 @@ public:
     virtual void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
                                  float windAngle, float coverage, float detail) = 0;
     virtual void setMesh3DEnv(Texture *cube, float intensity) = 0;
+    virtual void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) = 0;
+    virtual void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) = 0;
     virtual void setMesh3DShadows(const ShadowUpload &upload) = 0;
     virtual void setMesh3DShadowReceive(bool receive) = 0;
 
@@ -76,11 +92,15 @@ public:
     virtual void beginGBufferPass(int width, int height) = 0;
     virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
                                  float nearZ, float farZ, Texture *albedo = nullptr,
-                                 float tintR = 1.f, float tintG = 1.f, float tintB = 1.f) = 0;
+                                 float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                                 float motionX = 0.f, float motionY = 0.f,
+                                 float roughness = 0.45f, float metallic = 0.f) = 0;
     virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
                                       float nearZ, float farZ, Texture *albedo = nullptr,
                                       float tintR = 1.f, float tintG = 1.f,
-                                      float tintB = 1.f) = 0;
+                                      float tintB = 1.f, float motionX = 0.f,
+                                      float motionY = 0.f, float roughness = 0.45f,
+                                      float metallic = 0.f) = 0;
     virtual void endGBufferPass() = 0;
 
     virtual void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,

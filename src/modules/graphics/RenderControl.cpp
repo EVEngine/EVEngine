@@ -1,10 +1,16 @@
 #include "graphics/RenderControl.h"
 
+#include "graphics/AntiAliasing.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
+#include "graphics/ScreenSpaceReflection.h"
+
 namespace eve::graphics {
 namespace {
 
 const char *kKnownFeatures[] = {"depthTest", "shadow",     "gbuffer", "gbufferAlbedo",
                                 "forward",   "hair",       "clustered", "ao", "gi", "aa", "msaa",
+                                "rtgi",      "taa",        "ssr",      "reflectionChain",
                                 "outline",   "gpuDriven", "visResolve", "frustumCull", "decal",
                                 "atmosphere", "volumetricFog", "fogLocalVolumes", "fogTemporal"};
 
@@ -27,7 +33,11 @@ RenderControl::RenderControl() {
     features_["clustered"] = true;
     features_["ao"] = true;
     features_["gi"] = true;
+    features_["rtgi"] = false;
     features_["aa"] = true;
+    features_["taa"] = false;
+    features_["ssr"] = false;
+    features_["reflectionChain"] = false;
     features_["msaa"] = true;
     features_["outline"] = false;
     features_["gpuDriven"] = false;  // stage 1 opt-in; off until runtime-verified
@@ -54,12 +64,39 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     const bool cur = it == features_.end() ? false : it->second;
     if (cur == enabled) return;
     features_[feature] = enabled;
+    if (gfx_ && (feature == "ssr" || feature == "rtgi" || feature == "reflectionChain")) {
+        gfx_->pipelineScreenSpaceReflection()->invalidateHistory();
+        gfx_->pipelineGlobalIllumination()->invalidateHistory();
+    }
+    if (gfx_ && (feature == "taa" || feature == "reflectionChain"))
+        gfx_->pipelineAntiAliasing()->invalidateTemporalHistory();
     if (feature == "gbufferAlbedo" && enabled) features_["gbuffer"] = true;
     if (feature == "ao" && enabled) features_["gbuffer"] = true;
     if (feature == "outline" && enabled) features_["gbuffer"] = true;
     if (feature == "decal" && enabled) features_["gbuffer"] = true;
     // Stage 2 GPU cull needs the GBuffer depth as its HZB source.
     if (feature == "gpuDriven" && enabled) features_["gbuffer"] = true;
+    if ((feature == "ssr" || feature == "rtgi" || feature == "reflectionChain") && enabled)
+        features_["gbuffer"] = true;
+    if (feature == "reflectionChain" && enabled) {
+        features_["aa"] = true;
+        features_["taa"] = true;
+        features_["msaa"] = false;
+        features_["rtgi"] = true;
+        features_["ssr"] = true;
+    }
+    if (feature == "reflectionChain" && !enabled) {
+        features_["taa"] = false;
+        features_["rtgi"] = false;
+        features_["ssr"] = false;
+        if (gfx_) gfx_->pipelineScreenSpaceReflection()->setEnabled(false);
+    }
+    if ((feature == "taa" || feature == "rtgi" || feature == "ssr") && !enabled)
+        features_["reflectionChain"] = false;
+    if (feature == "taa" && enabled) {
+        features_["aa"] = true;
+        features_["msaa"] = false;
+    }
     if ((feature == "volumetricFog" || feature == "fogLocalVolumes" ||
          feature == "fogTemporal") && enabled) {
         features_["atmosphere"] = true;
@@ -78,6 +115,9 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
         features_["gbufferAlbedo"] = false;
         features_["ao"] = false;
         features_["gi"] = false;
+        features_["rtgi"] = false;
+        features_["ssr"] = false;
+        features_["reflectionChain"] = false;
         features_["outline"] = false;
         features_["decal"] = false;
     }
@@ -91,6 +131,13 @@ void RenderControl::disable(const std::string &feature) { setFeature(feature, fa
 bool RenderControl::isEnabled(const std::string &feature) const {
     auto it = features_.find(feature);
     return it != features_.end() && it->second;
+}
+
+void RenderControl::setReflectionQuality(const std::string &quality) {
+    reflectionQuality_ = quality == "low" || quality == "medium" || quality == "high" ||
+                                 quality == "ultra"
+                             ? quality
+                             : "high";
 }
 
 void RenderControl::compile() {

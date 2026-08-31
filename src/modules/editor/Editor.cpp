@@ -16,6 +16,7 @@
 #include "editor/FieldBrushTool.h"
 #include "editor/FieldTargets.h"
 #include "editor/GizmoManager.h"
+#include "editor/ReflectionProbeVisualizer.h"
 #include "editor/ScriptEditorTool.h"
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
@@ -25,6 +26,7 @@
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/ReflectionProbeCapture.h"
 #ifdef EVENGINE_HAS_PROCGEN
 #include "procgen/heightmap/Heightmap.h"
 #endif
@@ -434,6 +436,11 @@ TransformGizmo* Editor::newGizmo() { return new TransformGizmo(); }
 
 GizmoManager* Editor::newGizmoManager() { return new GizmoManager(); }
 
+ReflectionProbeVisualizer* Editor::newReflectionProbeVisualizer(
+    graphics::ReflectionProbeCapture* probe) {
+    return new ReflectionProbeVisualizer(probe);
+}
+
 TileBuffer* Editor::newTileBuffer(int width, int height) { return new TileBuffer(width, height); }
 
 Brush* Editor::newBrush() { return new Brush(); }
@@ -629,6 +636,24 @@ void Editor::expose(ssq::Table& table) {
     gizmo.addFunc("getPartDirZ", &TransformGizmo::getPartDirZ);
     gizmo.addFunc("getPartLength", &TransformGizmo::getPartLength);
     gizmo.addFunc("getPartRadius", &TransformGizmo::getPartRadius);
+
+    auto probeVisualizer = table.addClass<ReflectionProbeVisualizer>(
+        "ReflectionProbeVisualizer",
+        std::function<ReflectionProbeVisualizer*()>([]() -> ReflectionProbeVisualizer* {
+            return nullptr;
+        }),
+        true);
+    probeVisualizer.addFunc("setExtents", &ReflectionProbeVisualizer::setExtents);
+    probeVisualizer.addFunc("getLineCount", &ReflectionProbeVisualizer::getLineCount);
+    probeVisualizer.addFunc("getLineStart", &ReflectionProbeVisualizer::getLineStart);
+    probeVisualizer.addFunc("getLineEnd", &ReflectionProbeVisualizer::getLineEnd);
+    probeVisualizer.addFunc("getColorR", &ReflectionProbeVisualizer::getColorR);
+    probeVisualizer.addFunc("getColorG", &ReflectionProbeVisualizer::getColorG);
+    probeVisualizer.addFunc("getColorB", &ReflectionProbeVisualizer::getColorB);
+    probeVisualizer.addFunc("getCenterX", &ReflectionProbeVisualizer::getCenterX);
+    probeVisualizer.addFunc("getCenterY", &ReflectionProbeVisualizer::getCenterY);
+    probeVisualizer.addFunc("getCenterZ", &ReflectionProbeVisualizer::getCenterZ);
+    probeVisualizer.addFunc("getStatusLabel", &ReflectionProbeVisualizer::getStatusLabel);
 
     auto mgr = table.addClass<GizmoManager>(
         "GizmoManager", std::function<GizmoManager*()>([]() -> GizmoManager* { return nullptr; }), true);
@@ -1152,6 +1177,7 @@ void Editor::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Editor::getName);
     cls.addFunc("newGizmo", &Editor::newGizmo);
     cls.addFunc("newGizmoManager", &Editor::newGizmoManager);
+    cls.addFunc("newReflectionProbeVisualizer", &Editor::newReflectionProbeVisualizer);
     cls.addFunc("newTileBuffer", &Editor::newTileBuffer);
     cls.addFunc("newBrush", &Editor::newBrush);
     cls.addFunc("newToolbar", &Editor::newToolbar);

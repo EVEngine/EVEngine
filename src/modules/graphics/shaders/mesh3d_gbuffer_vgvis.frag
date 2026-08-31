@@ -41,14 +41,17 @@ layout(location = 3) out uvec2 outVisID;
 layout(location = 4) out vec2 outVisBary;
 
 void main() {
-    outNormal = vec4(normalize(vWorldNormal) * 0.5 + 0.5, 1.0);
+    uint rough3 = uint(round(clamp(ubo.cameraPos.w, 0.0, 1.0) * 7.0));
+    uint metal3 = uint(round(clamp(ubo.ambient.w, 0.0, 1.0) * 7.0));
+    outNormal = vec4(normalize(vWorldNormal) * 0.5 + 0.5,
+                     float(rough3 | (metal3 << 3)) / 255.0);
 
     float z = clamp(vNdcZ, 0.0, 1.0);
     float nearZ = max(ubo.clipInfo.x, 1e-4);
     float farZ = max(ubo.clipInfo.y, nearZ + 1e-4);
     float zEye = (nearZ * farZ) / max(farZ - z * (farZ - nearZ), 1e-6);
     float linear01 = clamp((zEye - nearZ) / (farZ - nearZ), 0.0, 1.0);
-    outDepth = vec4(linear01, linear01, linear01, 1.0);
+    outDepth = vec4(linear01, 0.5, 0.5, 1.0);
     // Flat placeholder albedo; the resolve does the actual (flat) shading.
     outAlbedo = vec4(vec3(0.8), linear01);
 

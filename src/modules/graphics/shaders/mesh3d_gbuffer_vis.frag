@@ -4,7 +4,6 @@
 #include "gpudriven_tables.glsl"
 #include "tex_cell_bomb.glsl"
 #include "parallax_map.glsl"
-#include "tonemap.glsl"
 
 layout(location = 0) in vec3 vWorldNormal;
 layout(location = 1) in float vNdcZ;
@@ -35,6 +34,12 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 cloud;
     vec4 cloudWind;
     vec4 bindlessEnv;
+    vec4 envProbeCenter;
+    vec4 envProbeExtent;
+    vec4 skinInfo;
+    mat4 skinBones[128];
+    vec4 reflectionProbeCenter[2];
+    vec4 reflectionProbeExtent[2];
 } ubo;
 
 layout(set = 1, binding = 0) uniform sampler2D textures[1024];
@@ -81,14 +86,17 @@ void main() {
     if (base.a < 0.5)
         discard;
 
-    outNormal = vec4(normalize(vWorldNormal) * 0.5 + 0.5, 1.0);
+    uint rough3 = uint(round(clamp(ubo.cameraPos.w, 0.0, 1.0) * 7.0));
+    uint metal3 = uint(round(clamp(ubo.ambient.w, 0.0, 1.0) * 7.0));
+    outNormal = vec4(normalize(vWorldNormal) * 0.5 + 0.5,
+                     float(rough3 | (metal3 << 3)) / 255.0);
 
     float z = clamp(vNdcZ, 0.0, 1.0);
     float nearZ = max(ubo.clipInfo.x, 1e-4);
     float farZ = max(ubo.clipInfo.y, nearZ + 1e-4);
     float zEye = (nearZ * farZ) / max(farZ - z * (farZ - nearZ), 1e-6);
     float linear01 = clamp((zEye - nearZ) / (farZ - nearZ), 0.0, 1.0);
-    outDepth = vec4(linear01, linear01, linear01, 1.0);
+    outDepth = vec4(linear01, 0.5, 0.5, 1.0);
     // A = linear depth so SSGI can sample albedo+depth with one sampler.
     outAlbedo = vec4(base.rgb, linear01);
 

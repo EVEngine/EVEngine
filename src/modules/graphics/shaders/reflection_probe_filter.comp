@@ -1,0 +1,83 @@
+#version 450
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+layout(set = 0, binding = 0) uniform samplerCube sourceCube;
+layout(rgba16f, set = 0, binding = 1) uniform writeonly image2DArray targetMip;
+layout(push_constant) uniform Params {
+    float roughness;
+    uint sampleCount;
+    uint diffuseMode;
+    uint targetSize;
+} params;
+
+const float PI = 3.14159265358979323846;
+
+float radicalInverse(uint bits) {
+    bits = (bits << 16u) | (bits >> 16u);
+    bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+    bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+    bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+    bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+    return float(bits) * 2.3283064365386963e-10;
+}
+
+vec2 hammersley(uint i, uint count) {
+    return vec2(float(i) / float(count), radicalInverse(i));
+}
+
+vec3 faceDirection(uint face, vec2 uv) {
+    vec2 p = uv * 2.0 - 1.0;
+    if (face == 0u) return normalize(vec3(1.0, -p.y, -p.x));
+    if (face == 1u) return normalize(vec3(-1.0, -p.y, p.x));
+    if (face == 2u) return normalize(vec3(p.x, 1.0, p.y));
+    if (face == 3u) return normalize(vec3(p.x, -1.0, -p.y));
+    if (face == 4u) return normalize(vec3(p.x, -p.y, 1.0));
+    return normalize(vec3(-p.x, -p.y, -1.0));
+}
+
+mat3 tangentFrame(vec3 n) {
+    vec3 up = abs(n.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
+    vec3 x = normalize(cross(up, n));
+    return mat3(x, cross(n, x), n);
+}
+
+vec3 sampleGGX(vec2 xi, float roughness, vec3 n) {
+    float a = max(roughness * roughness, 0.001);
+    float phi = 2.0 * PI * xi.x;
+    float cosTheta = sqrt((1.0 - xi.y) / (1.0 + (a * a - 1.0) * xi.y));
+    float sinTheta = sqrt(max(1.0 - cosTheta * cosTheta, 0.0));
+    return tangentFrame(n) * vec3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
+}
+
+void main() {
+    uvec3 id = gl_GlobalInvocationID;
+    if (id.x >= params.targetSize || id.y >= params.targetSize || id.z >= 6u) return;
+    vec2 uv = (vec2(id.xy) + 0.5) / float(params.targetSize);
+    vec3 n = faceDirection(id.z, uv);
+    vec3 sum = vec3(0.0);
+    float weight = 0.0;
+    uint count = clamp(params.sampleCount, 8u, 512u);
+    for (uint i = 0u; i < 512u; ++i) {
+        if (i >= count) break;
+        vec2 xi = hammersley(i, count);
+        vec3 l;
+        float noL;
+        if (params.diffuseMode != 0u) {
+            float phi = 2.0 * PI * xi.x;
+            float cosTheta = sqrt(1.0 - xi.y);
+            float sinTheta = sqrt(xi.y);
+            l = tangentFrame(n) * vec3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
+            noL = max(dot(n, l), 0.0);
+        } else {
+            vec3 h = sampleGGX(xi, params.roughness, n);
+            l = normalize(2.0 * dot(n, h) * h - n);
+            noL = max(dot(n, l), 0.0);
+        }
+        if (noL > 0.0) {
+            float sampleWeight = params.diffuseMode != 0u ? 1.0 : noL;
+            sum += textureLod(sourceCube, l, 0.0).rgb * sampleWeight;
+            weight += sampleWeight;
+        }
+    }
+    imageStore(targetMip, ivec3(id), vec4(sum / max(weight, 1e-5), 1.0));
+}

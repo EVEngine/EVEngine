@@ -1,6 +1,10 @@
 #include "graphics/webgpu/Graphics.h"
 #include "graphics/Batcher.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/CubemapPrefilter.h"
+#include "graphics/shaders/ReflectionProbeWgsl.h"
+#include "graphics/GBuffer.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
@@ -56,7 +60,8 @@ namespace {
 
 // Forward declaration for the readback helper (defined in the Readback section).
 bool copyTextureToCpu(wgpu::Instance &instance, wgpu::Device &device, wgpu::Queue &queue,
-                      wgpu::Texture src, int width, int height, std::vector<uint8_t> &outRgba);
+                      wgpu::Texture src, int width, int height, std::vector<uint8_t> &outRgba,
+                      int bytesPerPixel = 4);
 
 // A shared default sampler used when no texture is provided.
 wgpu::Sampler createLinearSampler(wgpu::Device &dev) {
@@ -172,12 +177,14 @@ void Graphics::initWithWindow(void *nativeWindow) {
         x11Chain.window = wminfo.info.x11.window;
         nativeSurfDesc.nextInChain = &x11Chain;
         surface = instance.CreateSurface(&nativeSurfDesc);
+#if defined(SDL_VIDEO_DRIVER_WAYLAND)
     } else if (wminfo.subsystem == SDL_SYSWM_WAYLAND) {
         wgpu::SurfaceSourceWaylandSurface wlChain{};
         wlChain.display = wminfo.info.wl.display;
         wlChain.surface = wminfo.info.wl.surface;
         nativeSurfDesc.nextInChain = &wlChain;
         surface = instance.CreateSurface(&nativeSurfDesc);
+#endif
     } else {
         throw Exception("WebGPU: unsupported SDL window subsystem on Linux");
     }
@@ -218,7 +225,20 @@ void Graphics::initWithWindow(void *nativeWindow) {
     WGPUSurfaceCapabilities caps{};
     if (wgpuSurfaceGetCapabilities(surface.Get(), adapter.Get(), &caps) == WGPUStatus_Success &&
         caps.formatCount > 0) {
+        // Match Vulkan's display-space convention: the scene tone-map pass
+        // writes sRGB-encoded values to UNORM, then UI is composited without
+        // an additional hardware transfer function. Fall back only when the
+        // platform does not expose either common UNORM surface format.
         surfaceFormat = caps.formats[0];
+        for (size_t i = 0; i < caps.formatCount; ++i) {
+            if (caps.formats[i] == WGPUTextureFormat_BGRA8Unorm) {
+                surfaceFormat = caps.formats[i];
+                break;
+            }
+            if (caps.formats[i] == WGPUTextureFormat_RGBA8Unorm) {
+                surfaceFormat = caps.formats[i];
+            }
+        }
     }
     wgpuSurfaceCapabilitiesFreeMembers(caps);
 #endif
@@ -423,6 +443,15 @@ wgpu::BindGroupLayout Graphics::make2DBindGroupLayout() {
     b.buffer(4, wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment,
              wgpu::BufferBindingType::Uniform, true,
              std::max<uint32_t>(Shader::kPushConstantBytes, uint32_t(sizeof(Lighting2DUBO))));
+    b.texture(5, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::e2D);
+    b.sampler(6, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
+    b.texture(7, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::e2D);
+    b.sampler(8, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
+    b.texture(9, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::e2D);
+    b.sampler(10, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
     return b.build(device, "eve_2d");
 }
 
@@ -466,9 +495,14 @@ wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
         b.texture(i, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
                   wgpu::TextureViewDimension::e2D);
     }
-    // 15: custom mesh shader external parameters (vertex + fragment).
+    // Custom mesh shaders may use their external parameters for vertex
+    // deformation as well as fragment shading (for example grass billboards).
     b.buffer(15, wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment,
              wgpu::BufferBindingType::Uniform, true, Shader::kPushConstantBytes);
+    b.texture(16, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::Cube);
+    b.texture(17, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::Cube);
     return b.build(device, "eve_mesh3d");
 }
 
@@ -583,6 +617,11 @@ wgpu::BindGroupLayout Graphics::makeMesh3DClusteredBindGroupLayout() {
         b.texture(i, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
                   wgpu::TextureViewDimension::e2D);
     }
+
+    b.texture(18, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::Cube);
+    b.texture(19, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::Cube);
     return b.build(device, "eve_mesh3d_clustered");
 }
 
@@ -759,25 +798,162 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
 }
 
 wgpu::RenderPipeline make2DTexturedPipeline(wgpu::Device &dev, wgpu::PipelineLayout layout,
-                                            WGPUTextureFormat format, BlendMode mode) {
-    wgpu::VertexAttribute attrs[3] = {};
-    attrs[0].format = wgpu::VertexFormat::Float32x2;
+                                            WGPUTextureFormat format, BlendMode mode,
+                                            bool toneMapScene = false) {
+    WGPUVertexAttribute attrs[3] = {};
+    attrs[0].format = WGPUVertexFormat_Float32x2;
     attrs[0].offset = 0;
     attrs[0].shaderLocation = 0;
-    attrs[1].format = wgpu::VertexFormat::Float32x4;
+    attrs[1].format = WGPUVertexFormat_Float32x4;
     attrs[1].offset = 8;
     attrs[1].shaderLocation = 1;
-    attrs[2].format = wgpu::VertexFormat::Float32x2;
+    attrs[2].format = WGPUVertexFormat_Float32x2;
     attrs[2].offset = 24;
     attrs[2].shaderLocation = 2;
+    WGPUVertexBufferLayout vb{};
+    fillVertexLayout(vb, 32, attrs, 3);
 
-    PipelineBuilder b;
-    b.vertexLayout(32, wgpu::VertexStepMode::Vertex, attrs, 3);
-    b.shader(makeWgslModule(dev, kTexturedVertWgsl), "vs_main",
-             makeWgslModule(dev, kTexturedFragWgsl), "fs_main");
-    b.layout(layout);
-    b.colorTarget(format, mode);
-    return b.build(dev);
+    WGPUColorTargetState target{};
+    target.format = format;
+    target.writeMask = WGPUColorWriteMask_All;
+    WGPUBlendState bs = alphaBlend();
+    if (mode == BlendMode::Additive)
+        bs = additiveBlend();
+    else if (mode == BlendMode::Premultiplied)
+        bs = premultipliedBlend();
+    else if (mode == BlendMode::Multiply)
+        bs = multiplyBlend();
+    else if (mode == BlendMode::Opaque)
+        bs = noBlend();
+    if (mode != BlendMode::Opaque) target.blend = &bs;
+
+    WGPURenderPipelineDescriptor pd{};
+    pd.label = sv("eve_textured2d");
+    pd.layout = layout.Get();
+    wgpu::ShaderModule vertModule = makeWgslModule(dev, kTexturedVertWgsl);
+    static constexpr const char *kSceneTonemapFragWgsl = R"wgsl(
+struct FSIn {
+    @location(0) color: vec4f,
+    @location(1) uv: vec2f,
+};
+@group(0) @binding(0) var colorTex: texture_2d<f32>;
+@group(0) @binding(2) var colorSampler: sampler;
+@group(0) @binding(1) var rawSceneTex: texture_2d<f32>;
+@group(0) @binding(3) var rawSceneSampler: sampler;
+fn acesFitted(c0: vec3f) -> vec3f {
+    let c = max(c0, vec3f(0.0));
+    return clamp((c * (2.51 * c + vec3f(0.03))) /
+                 (c * (2.43 * c + vec3f(0.59)) + vec3f(0.14)),
+                 vec3f(0.0), vec3f(1.0));
+}
+fn linearToSrgb(c: vec3f) -> vec3f {
+    let low = c * 12.92;
+    let high = 1.055 * pow(max(c, vec3f(0.0)), vec3f(1.0 / 2.4)) - vec3f(0.055);
+    return select(low, high, c > vec3f(0.0031308));
+}
+fn automaticExposure(packedLimits: f32, raw: bool) -> f32 {
+    var logLuminance: array<f32, 16>;
+    var sampleIndex = 0;
+    for (var y = 0; y < 4; y = y + 1) {
+        for (var x = 0; x < 4; x = x + 1) {
+            let uv = (vec2f(f32(x), f32(y)) + vec2f(0.5)) * 0.25;
+            var sampleColor = textureSampleLevel(colorTex, colorSampler, uv, 0.0).rgb;
+            if (raw) {
+                sampleColor = textureSampleLevel(rawSceneTex, rawSceneSampler, uv, 0.0).rgb;
+            }
+            sampleColor = max(sampleColor, vec3f(0.0));
+            let luminance = dot(sampleColor, vec3f(0.2126, 0.7152, 0.0722));
+            logLuminance[sampleIndex] = log2(clamp(luminance, 0.0001, 65504.0));
+            sampleIndex += 1;
+        }
+    }
+    for (var i = 1; i < 16; i = i + 1) {
+        let value = logLuminance[i];
+        var j = i - 1;
+        while (j >= 0 && logLuminance[j] > value) {
+            logLuminance[j + 1] = logLuminance[j];
+            j -= 1;
+        }
+        logLuminance[j + 1] = value;
+    }
+    var trimmedLogSum = 0.0;
+    for (var i = 2; i < 14; i = i + 1) {
+        trimmedLogSum += logLuminance[i];
+    }
+    let geometricMean = exp2(trimmedLogSum * (1.0 / 12.0));
+    let packed = round(packedLimits);
+    let minEV = (packed - floor(packed * (1.0 / 256.0)) * 256.0) *
+                (1.0 / 8.0) - 16.0;
+    let maxEV = floor(packed * (1.0 / 256.0)) * (1.0 / 8.0) - 16.0;
+    return clamp(0.18 / max(geometricMean, 0.0001), exp2(minEV), exp2(maxEV));
+}
+fn bloomPrefilter(color: vec3f, threshold: f32) -> vec3f {
+    let brightness = max(color.r, max(color.g, color.b));
+    let knee = max(threshold * 0.1, 0.01);
+    let soft = clamp((brightness - threshold + knee) / (2.0 * knee), 0.0, 1.0);
+    let contribution = max(brightness - threshold, soft * soft * knee);
+    return color * (contribution / max(brightness, 0.0001));
+}
+fn sampleBloom(uv: vec2f, threshold: f32) -> vec3f {
+    let texel = 1.0 / vec2f(textureDimensions(colorTex));
+    var bloom = bloomPrefilter(textureSampleLevel(colorTex, colorSampler, uv, 0.0).rgb,
+                               threshold) * 0.2;
+    let offsets = array<vec2f, 12>(
+        vec2f(2.00, 0.00), vec2f(-1.47, 1.35), vec2f(0.17, -1.99), vec2f(1.22, 1.58),
+        vec2f(4.22, -2.68), vec2f(-4.92, -0.87), vec2f(3.04, 3.97), vec2f(-0.44, -4.98),
+        vec2f(-5.28, 7.28), vec2f(8.89, -1.41), vec2f(-7.82, -4.46), vec2f(2.07, 8.76));
+    let weights = array<f32, 12>(
+        0.10, 0.10, 0.10, 0.10,
+        0.06, 0.06, 0.06, 0.06,
+        0.04, 0.04, 0.04, 0.04);
+    for (var q = 0; q < 12; q = q + 1) {
+        bloom += bloomPrefilter(textureSampleLevel(colorTex, colorSampler,
+                                uv + offsets[q] * texel, 0.0).rgb, threshold) * weights[q];
+    }
+    return bloom;
+}
+@fragment
+fn fs_main(in: FSIn) -> @location(0) vec4f {
+    let hdr = textureSample(colorTex, colorSampler, in.uv);
+    let exposure = 1.0; // Applied once by the dedicated HDR pre-exposure pass.
+    let encodeSrgb = in.color.a >= 65536.0;
+    let bloomPacked = round(in.color.a) - floor(round(in.color.a) * (1.0 / 65536.0)) * 65536.0;
+    let bloomIntensity = (bloomPacked - floor(bloomPacked * (1.0 / 256.0)) * 256.0) *
+                         (1.0 / 32.0);
+    let bloomThreshold = floor(bloomPacked * (1.0 / 256.0)) * (1.0 / 16.0);
+    var bloom = vec3f(0.0);
+    if (bloomIntensity > 0.0) {
+        bloom = sampleBloom(in.uv, bloomThreshold);
+    }
+    var displayColor = acesFitted((hdr.rgb + bloom * bloomIntensity) * exposure);
+    if (encodeSrgb) {
+        displayColor = linearToSrgb(displayColor);
+    }
+    return vec4f(displayColor, hdr.a);
+}
+)wgsl";
+    wgpu::ShaderModule fragModule =
+        makeWgslModule(dev, toneMapScene ? kSceneTonemapFragWgsl : kTexturedFragWgsl);
+    pd.vertex.module = vertModule.Get();
+    pd.vertex.entryPoint = sv("vs_main");
+    pd.vertex.bufferCount = 1;
+    pd.vertex.buffers = &vb;
+    WGPUFragmentState fs{};
+    fs.module = fragModule.Get();
+    fs.entryPoint = sv("fs_main");
+    fs.targetCount = 1;
+    fs.targets = &target;
+    pd.fragment = &fs;
+    pd.primitive.topology = WGPUPrimitiveTopology_TriangleList;
+    pd.primitive.frontFace = WGPUFrontFace_CCW;
+    pd.primitive.cullMode = WGPUCullMode_None;
+    pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
+    pd.depthStencil = nullptr;
+    pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
+    return dev.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
 wgpu::RenderPipeline make2DLitPipeline(wgpu::Device &dev, wgpu::PipelineLayout layout,
@@ -809,77 +985,96 @@ wgpu::RenderPipeline make2DLitPipeline(wgpu::Device &dev, wgpu::PipelineLayout l
 void Graphics::create2DPipelines() {
     tex2DSetLayout = make2DBindGroupLayout();
     tex2DPipelineLayout = make2DPipelineLayout();
+
+    colorPipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Alpha);
+    texturedPipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat,
+                                              BlendMode::Alpha);
+    colorAdditivePipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Additive);
+    texturedAdditivePipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat,
+                                                      BlendMode::Additive);
+    colorPremultipliedPipeline =
+        make2DColorPipeline(device, surfaceFormat, BlendMode::Premultiplied);
+    texturedPremultipliedPipeline = make2DTexturedPipeline(
+        device, tex2DPipelineLayout, surfaceFormat, BlendMode::Premultiplied);
+    colorMultiplyPipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Multiply);
+    texturedMultiplyPipeline = make2DTexturedPipeline(
+        device, tex2DPipelineLayout, surfaceFormat, BlendMode::Multiply);
+    colorOpaquePipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Opaque);
+    texturedOpaquePipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat,
+                                                    BlendMode::Opaque);
+    sceneTonemapPipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat,
+                                                  BlendMode::Opaque, true);
+    lit2dPipeline = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, true);
+
+    offscreenColorPipeline = make2DColorPipeline(device, WGPUTextureFormat_RGBA8Unorm,
+                                                 BlendMode::Alpha);
+    offscreenTexturedPipeline = make2DTexturedPipeline(device, tex2DPipelineLayout,
+                                                       WGPUTextureFormat_RGBA8Unorm,
+                                                       BlendMode::Alpha);
+    offscreenColorAdditivePipeline = make2DColorPipeline(device, WGPUTextureFormat_RGBA8Unorm,
+                                                         BlendMode::Additive);
+    offscreenTexturedAdditivePipeline =
+        make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm,
+                               BlendMode::Additive);
+    offscreenColorPremultipliedPipeline = make2DColorPipeline(
+        device, WGPUTextureFormat_RGBA8Unorm, BlendMode::Premultiplied);
+    offscreenTexturedPremultipliedPipeline = make2DTexturedPipeline(
+        device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm,
+        BlendMode::Premultiplied);
+    offscreenColorMultiplyPipeline = make2DColorPipeline(
+        device, WGPUTextureFormat_RGBA8Unorm, BlendMode::Multiply);
+    offscreenTexturedMultiplyPipeline = make2DTexturedPipeline(
+        device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Multiply);
+    offscreenColorOpaquePipeline = make2DColorPipeline(device, WGPUTextureFormat_RGBA8Unorm,
+                                                       BlendMode::Opaque);
+    offscreenTexturedOpaquePipeline =
+        make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm,
+                               BlendMode::Opaque);
+    hdrOffscreenTexturedPipeline =
+        make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float,
+                               BlendMode::Alpha);
+    hdrOffscreenTexturedOpaquePipeline =
+        make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float,
+                               BlendMode::Opaque);
+    offscreenLitPipeline = make2DLitPipeline(device, tex2DPipelineLayout,
+                                             WGPUTextureFormat_RGBA8Unorm, true);
 }
 
 wgpu::RenderPipeline Graphics::get2DColorPipeline(BlendMode blend, bool offscreen) {
-    wgpu::RenderPipeline *pipeline = nullptr;
     switch (blend) {
         case BlendMode::Additive:
-            pipeline = offscreen ? &offscreenColorAdditivePipeline : &colorAdditivePipeline;
-            break;
+            return offscreen ? offscreenColorAdditivePipeline : colorAdditivePipeline;
         case BlendMode::Premultiplied:
-            pipeline = offscreen ? &offscreenColorPremultipliedPipeline
-                                 : &colorPremultipliedPipeline;
-            break;
+            return offscreen ? offscreenColorPremultipliedPipeline : colorPremultipliedPipeline;
         case BlendMode::Multiply:
-            pipeline = offscreen ? &offscreenColorMultiplyPipeline : &colorMultiplyPipeline;
-            break;
+            return offscreen ? offscreenColorMultiplyPipeline : colorMultiplyPipeline;
         case BlendMode::Opaque:
-            pipeline = offscreen ? &offscreenColorOpaquePipeline : &colorOpaquePipeline;
-            break;
+            return offscreen ? offscreenColorOpaquePipeline : colorOpaquePipeline;
         case BlendMode::Alpha:
         default:
-            pipeline = offscreen ? &offscreenColorPipeline : &colorPipeline;
-            break;
+            return offscreen ? offscreenColorPipeline : colorPipeline;
     }
-    if (!*pipeline) {
-        const WGPUTextureFormat format =
-            offscreen ? WGPUTextureFormat_RGBA8Unorm : surfaceFormat;
-        *pipeline = make2DColorPipeline(device, format, blend);
-    }
-    return *pipeline;
 }
 
 wgpu::RenderPipeline Graphics::get2DTexturedPipeline(BlendMode blend, bool offscreen) {
-    wgpu::RenderPipeline *pipeline = nullptr;
     switch (blend) {
         case BlendMode::Additive:
-            pipeline = offscreen ? &offscreenTexturedAdditivePipeline
-                                 : &texturedAdditivePipeline;
-            break;
+            return offscreen ? offscreenTexturedAdditivePipeline : texturedAdditivePipeline;
         case BlendMode::Premultiplied:
-            pipeline = offscreen ? &offscreenTexturedPremultipliedPipeline
-                                 : &texturedPremultipliedPipeline;
-            break;
+            return offscreen ? offscreenTexturedPremultipliedPipeline
+                             : texturedPremultipliedPipeline;
         case BlendMode::Multiply:
-            pipeline = offscreen ? &offscreenTexturedMultiplyPipeline
-                                 : &texturedMultiplyPipeline;
-            break;
+            return offscreen ? offscreenTexturedMultiplyPipeline : texturedMultiplyPipeline;
         case BlendMode::Opaque:
-            pipeline = offscreen ? &offscreenTexturedOpaquePipeline
-                                 : &texturedOpaquePipeline;
-            break;
+            return offscreen ? offscreenTexturedOpaquePipeline : texturedOpaquePipeline;
         case BlendMode::Alpha:
         default:
-            pipeline = offscreen ? &offscreenTexturedPipeline : &texturedPipeline;
-            break;
+            return offscreen ? offscreenTexturedPipeline : texturedPipeline;
     }
-    if (!*pipeline) {
-        const WGPUTextureFormat format =
-            offscreen ? WGPUTextureFormat_RGBA8Unorm : surfaceFormat;
-        *pipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, format, blend);
-    }
-    return *pipeline;
 }
 
 wgpu::RenderPipeline Graphics::get2DLitPipeline(bool offscreen) {
-    wgpu::RenderPipeline &pipeline = offscreen ? offscreenLitPipeline : lit2dPipeline;
-    if (!pipeline) {
-        const WGPUTextureFormat format =
-            offscreen ? WGPUTextureFormat_RGBA8Unorm : surfaceFormat;
-        pipeline = make2DLitPipeline(device, tex2DPipelineLayout, format, true);
-    }
-    return pipeline;
+    return offscreen ? offscreenLitPipeline : lit2dPipeline;
 }
 
 void Graphics::createMesh3DPipelines() {
@@ -1631,12 +1826,15 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
     td.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst;
     gpu->texture = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
 
-    for (int f = 0; f < 6; ++f) {
-        const uint8_t *pixels = rgbaFaces + size_t(f) * faceSize * faceSize * 4u;
-        int mipW = faceSize;
-        int mipH = faceSize;
-        std::vector<uint8_t> current;
-        for (uint32_t mip = 0; mip < gpu->mipLevels; ++mip) {
+    const std::vector<uint8_t> mipChain =
+        buildGgxCubemapMipChain(rgbaFaces, uint32_t(faceSize), gpu->mipLevels);
+    size_t mipOffset = 0;
+    int mipW = faceSize;
+    int mipH = faceSize;
+    for (uint32_t mip = 0; mip < gpu->mipLevels; ++mip) {
+        const size_t mipFaceBytes = size_t(mipW) * mipH * 4u;
+        for (int f = 0; f < 6; ++f) {
+            const uint8_t *pixels = mipChain.data() + mipOffset + size_t(f) * mipFaceBytes;
             WGPUTexelCopyBufferLayout layout{};
             layout.offset = 0;
             layout.bytesPerRow = static_cast<uint32_t>(mipW * 4);
@@ -1651,32 +1849,10 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
                                static_cast<uint64_t>(mipW) * mipH * 4,
                                reinterpret_cast<const wgpu::TexelCopyBufferLayout*>(&layout),
                                reinterpret_cast<const wgpu::Extent3D*>(&extent));
-
-            if (mip + 1 >= gpu->mipLevels) continue;
-            const int nextW = std::max(mipW / 2, 1);
-            const int nextH = std::max(mipH / 2, 1);
-            std::vector<uint8_t> next(size_t(nextW) * nextH * 4u);
-            for (int y = 0; y < nextH; ++y) {
-                const int y0 = std::min(y * 2, mipH - 1);
-                const int y1 = std::min(y0 + 1, mipH - 1);
-                for (int x = 0; x < nextW; ++x) {
-                    const int x0 = std::min(x * 2, mipW - 1);
-                    const int x1 = std::min(x0 + 1, mipW - 1);
-                    for (int c = 0; c < 4; ++c) {
-                        const uint32_t sum =
-                            pixels[(size_t(y0) * mipW + x0) * 4u + c] +
-                            pixels[(size_t(y0) * mipW + x1) * 4u + c] +
-                            pixels[(size_t(y1) * mipW + x0) * 4u + c] +
-                            pixels[(size_t(y1) * mipW + x1) * 4u + c];
-                        next[(size_t(y) * nextW + x) * 4u + c] = uint8_t((sum + 2u) / 4u);
-                    }
-                }
-            }
-            current = std::move(next);
-            pixels = current.data();
-            mipW = nextW;
-            mipH = nextH;
         }
+        mipOffset += mipFaceBytes * 6u;
+        mipW = std::max(mipW / 2, 1);
+        mipH = std::max(mipH / 2, 1);
     }
 
     WGPUTextureViewDescriptor vd{};
@@ -1699,6 +1875,299 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
     ownedGpuTextures.push_back(std::move(gpu));
     ownedTextures.push_back(std::unique_ptr<Texture>(tex));
     return tex;
+}
+
+Texture *Graphics::newHDRCubemap(int faceSize) {
+    if (faceSize <= 0) throw Exception("newHDRCubemap: invalid face size");
+    auto gpu = std::make_unique<GpuTexture>();
+    gpu->width = faceSize;
+    gpu->height = faceSize;
+    gpu->isCube = true;
+    gpu->isHDR = true;
+    gpu->mipLevels = uint32_t(mipmapCountForSize(faceSize, faceSize));
+    gpu->samplerState = TextureSampler::linear();
+    gpu->samplerState.mipmap = MipmapMode::Linear;
+
+    WGPUTextureDescriptor td{};
+    td.label = sv("eve_hdr_reflection_probe_staging");
+    td.dimension = WGPUTextureDimension_2D;
+    td.size = {static_cast<uint32_t>(faceSize), static_cast<uint32_t>(faceSize), 6};
+    td.sampleCount = 1;
+    td.format = WGPUTextureFormat_RGBA16Float;
+    td.mipLevelCount = gpu->mipLevels;
+    td.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst |
+               WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment;
+    gpu->texture = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor *>(&td));
+
+    WGPUTextureViewDescriptor vd{};
+    vd.format = WGPUTextureFormat_RGBA16Float;
+    vd.dimension = WGPUTextureViewDimension_Cube;
+    vd.baseMipLevel = 0;
+    vd.mipLevelCount = gpu->mipLevels;
+    vd.baseArrayLayer = 0;
+    vd.arrayLayerCount = 6;
+    gpu->view = gpu->texture.CreateView(reinterpret_cast<const wgpu::TextureViewDescriptor *>(&vd));
+    gpu->sampler = makeSampler(gpu->samplerState, gpu->mipLevels);
+
+    auto *texture = new Texture();
+    texture->width = faceSize;
+    texture->height = faceSize;
+    texture->mipmapCount = int(gpu->mipLevels);
+    texture->sampler = gpu->samplerState;
+    texture->gpuHandle = gpu.get();
+    ownedGpuTextures.push_back(std::move(gpu));
+    ownedTextures.emplace_back(texture);
+    return texture;
+}
+
+bool Graphics::copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int face) {
+    auto *canvas = dynamic_cast<OffscreenCanvas *>(source);
+    if (!canvas || !canvas->hdr || !cubemap || !cubemap->gpuHandle || face < 0 || face >= 6)
+        return false;
+    auto *target = static_cast<GpuTexture *>(cubemap->gpuHandle);
+    if (!target->isCube || !target->isHDR || target->width != canvas->width ||
+        target->height != canvas->height)
+        return false;
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    WGPUTexelCopyTextureInfo src{};
+    src.texture = canvas->color.Get();
+    src.mipLevel = 0;
+    src.aspect = WGPUTextureAspect_All;
+    src.origin = {0, 0, 0};
+    WGPUTexelCopyTextureInfo dst{};
+    dst.texture = target->texture.Get();
+    dst.mipLevel = 0;
+    dst.aspect = WGPUTextureAspect_All;
+    dst.origin = {0, 0, static_cast<uint32_t>(face)};
+    WGPUExtent3D extent{static_cast<uint32_t>(canvas->width),
+                        static_cast<uint32_t>(canvas->height), 1};
+    encoder.CopyTextureToTexture(reinterpret_cast<const wgpu::TexelCopyTextureInfo *>(&src),
+                                 reinterpret_cast<const wgpu::TexelCopyTextureInfo *>(&dst),
+                                 reinterpret_cast<const wgpu::Extent3D *>(&extent));
+    wgpu::CommandBuffer command = encoder.Finish();
+    queue.Submit(1, &command);
+    return true;
+}
+
+bool Graphics::copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
+                                        Texture *cubemap) {
+    if (!sources || faceCount < 1 || faceCount > 6 || !cubemap || !cubemap->gpuHandle)
+        return false;
+    auto *target = static_cast<GpuTexture *>(cubemap->gpuHandle);
+    if (!target->isCube || !target->isHDR) return false;
+
+    std::array<OffscreenCanvas *, 6> canvases{};
+    for (int face = 0; face < faceCount; ++face) {
+        auto *canvas = dynamic_cast<OffscreenCanvas *>(sources[face]);
+        if (!canvas || !canvas->hdr || target->width != canvas->width ||
+            target->height != canvas->height)
+            return false;
+        canvases[static_cast<size_t>(face)] = canvas;
+    }
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    for (int face = 0; face < faceCount; ++face) {
+        const auto *canvas = canvases[static_cast<size_t>(face)];
+        WGPUTexelCopyTextureInfo src{};
+        src.texture = canvas->color.Get();
+        src.mipLevel = 0;
+        src.aspect = WGPUTextureAspect_All;
+        src.origin = {0, 0, 0};
+        WGPUTexelCopyTextureInfo dst{};
+        dst.texture = target->texture.Get();
+        dst.mipLevel = 0;
+        dst.aspect = WGPUTextureAspect_All;
+        dst.origin = {0, 0, static_cast<uint32_t>(face)};
+        WGPUExtent3D extent{static_cast<uint32_t>(canvas->width),
+                            static_cast<uint32_t>(canvas->height), 1};
+        encoder.CopyTextureToTexture(reinterpret_cast<const wgpu::TexelCopyTextureInfo *>(&src),
+                                     reinterpret_cast<const wgpu::TexelCopyTextureInfo *>(&dst),
+                                     reinterpret_cast<const wgpu::Extent3D *>(&extent));
+    }
+    wgpu::CommandBuffer command = encoder.Finish();
+    queue.Submit(1, &command);
+    return true;
+}
+
+bool Graphics::filterHDRReflectionCubemap(Texture *cubemap, int sampleCount) {
+    if (!cubemap || !cubemap->gpuHandle) return false;
+    auto *target = static_cast<GpuTexture *>(cubemap->gpuHandle);
+    if (!target->isCube || !target->isHDR || target->mipLevels < 2) return false;
+    sampleCount = std::clamp(sampleCount, 8, 512);
+    wgpuInstanceProcessEvents(instance.Get());
+    OffscreenTimestampReadback *timestampSlot = nullptr;
+    if (offscreenTimestampSupported && offscreenTimestampQuerySet &&
+        offscreenTimestampResolveBuffer) {
+        for (size_t candidate = 0; candidate < offscreenTimestampReadbacks.size(); ++candidate) {
+            const size_t index =
+                (offscreenTimestampReadbackCursor + candidate) % offscreenTimestampReadbacks.size();
+            if (!offscreenTimestampReadbacks[index].pending) {
+                timestampSlot = &offscreenTimestampReadbacks[index];
+                offscreenTimestampReadbackCursor =
+                    (index + 1) % offscreenTimestampReadbacks.size();
+                break;
+            }
+        }
+    }
+
+    if (!reflectionProbeFilterPipeline) {
+        WGPUBindGroupLayoutEntry entries[3]{};
+        entries[0].binding = 0;
+        entries[0].visibility = WGPUShaderStage_Fragment;
+        entries[0].texture.sampleType = WGPUTextureSampleType_Float;
+        entries[0].texture.viewDimension = WGPUTextureViewDimension_Cube;
+        entries[1].binding = 1;
+        entries[1].visibility = WGPUShaderStage_Fragment;
+        entries[1].sampler.type = WGPUSamplerBindingType_Filtering;
+        entries[2].binding = 2;
+        entries[2].visibility = WGPUShaderStage_Fragment;
+        entries[2].buffer.type = WGPUBufferBindingType_Uniform;
+        entries[2].buffer.hasDynamicOffset = true;
+        entries[2].buffer.minBindingSize = 16;
+        WGPUBindGroupLayoutDescriptor bgl{};
+        bgl.label = sv("eve_reflection_probe_filter_bgl");
+        bgl.entryCount = 3;
+        bgl.entries = entries;
+        reflectionProbeFilterSetLayout = device.CreateBindGroupLayout(
+            reinterpret_cast<const wgpu::BindGroupLayoutDescriptor *>(&bgl));
+        WGPUBindGroupLayout rawLayout = reflectionProbeFilterSetLayout.Get();
+        WGPUPipelineLayoutDescriptor pld{};
+        pld.label = sv("eve_reflection_probe_filter_layout");
+        pld.bindGroupLayoutCount = 1;
+        pld.bindGroupLayouts = &rawLayout;
+        reflectionProbeFilterPipelineLayout = device.CreatePipelineLayout(
+            reinterpret_cast<const wgpu::PipelineLayoutDescriptor *>(&pld));
+
+        wgpu::ShaderModule module = makeWgslModule(device, shaders::kReflectionProbeFilterWgsl);
+        WGPUColorTargetState colorTarget{};
+        colorTarget.format = WGPUTextureFormat_RGBA16Float;
+        colorTarget.writeMask = WGPUColorWriteMask_All;
+        WGPUFragmentState fragment{};
+        fragment.module = module.Get();
+        fragment.entryPoint = sv("fs_main");
+        fragment.targetCount = 1;
+        fragment.targets = &colorTarget;
+        WGPURenderPipelineDescriptor pipeline{};
+        pipeline.label = sv("eve_reflection_probe_filter");
+        pipeline.layout = reflectionProbeFilterPipelineLayout.Get();
+        pipeline.vertex.module = module.Get();
+        pipeline.vertex.entryPoint = sv("vs_main");
+        pipeline.fragment = &fragment;
+        pipeline.primitive.topology = WGPUPrimitiveTopology_TriangleList;
+        pipeline.primitive.frontFace = WGPUFrontFace_CCW;
+        pipeline.primitive.cullMode = WGPUCullMode_None;
+        pipeline.multisample.count = 1;
+        pipeline.multisample.mask = 0xFFFFFFFFu;
+        reflectionProbeFilterPipeline = device.CreateRenderPipeline(
+            reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&pipeline));
+    }
+
+    const uint32_t passCount = (target->mipLevels - 1u) * 6u;
+    WGPUBufferDescriptor bufferDesc{};
+    bufferDesc.label = sv("eve_reflection_probe_filter_params");
+    bufferDesc.size = uint64_t(passCount) * 256u;
+    bufferDesc.usage = WGPUBufferUsage_Uniform | WGPUBufferUsage_CopyDst;
+    wgpu::Buffer paramsBuffer =
+        device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&bufferDesc));
+    WGPUTextureViewDescriptor sourceViewDesc{};
+    sourceViewDesc.format = WGPUTextureFormat_RGBA16Float;
+    sourceViewDesc.dimension = WGPUTextureViewDimension_Cube;
+    sourceViewDesc.baseMipLevel = 0;
+    sourceViewDesc.mipLevelCount = 1;
+    sourceViewDesc.baseArrayLayer = 0;
+    sourceViewDesc.arrayLayerCount = 6;
+    wgpu::TextureView sourceView = target->texture.CreateView(
+        reinterpret_cast<const wgpu::TextureViewDescriptor *>(&sourceViewDesc));
+    WGPUBindGroupEntry groupEntries[3]{};
+    groupEntries[0].binding = 0;
+    groupEntries[0].textureView = sourceView.Get();
+    groupEntries[1].binding = 1;
+    groupEntries[1].sampler = target->sampler.Get();
+    groupEntries[2].binding = 2;
+    groupEntries[2].buffer = paramsBuffer.Get();
+    groupEntries[2].size = 16;
+    WGPUBindGroupDescriptor groupDesc{};
+    groupDesc.label = sv("eve_reflection_probe_filter_group");
+    groupDesc.layout = reflectionProbeFilterSetLayout.Get();
+    groupDesc.entryCount = 3;
+    groupDesc.entries = groupEntries;
+    wgpu::BindGroup group =
+        device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor *>(&groupDesc));
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    uint32_t passIndex = 0;
+    for (uint32_t mip = 1; mip < target->mipLevels; ++mip) {
+        const bool diffuse = mip + 1u == target->mipLevels;
+        const float roughness = diffuse ? 1.f : float(mip) / float(target->mipLevels - 1u);
+        for (uint32_t face = 0; face < 6; ++face, ++passIndex) {
+            const float params[4] = {float(face), roughness, diffuse ? 1.f : 0.f,
+                                     float(sampleCount)};
+            queue.WriteBuffer(paramsBuffer, uint64_t(passIndex) * 256u, params, sizeof(params));
+            WGPUTextureViewDescriptor viewDesc{};
+            viewDesc.format = WGPUTextureFormat_RGBA16Float;
+            viewDesc.dimension = WGPUTextureViewDimension_2D;
+            viewDesc.baseMipLevel = mip;
+            viewDesc.mipLevelCount = 1;
+            viewDesc.baseArrayLayer = face;
+            viewDesc.arrayLayerCount = 1;
+            wgpu::TextureView faceView = target->texture.CreateView(
+                reinterpret_cast<const wgpu::TextureViewDescriptor *>(&viewDesc));
+            WGPURenderPassColorAttachment attachment{};
+            attachment.view = faceView.Get();
+            attachment.loadOp = WGPULoadOp_Clear;
+            attachment.storeOp = WGPUStoreOp_Store;
+            WGPURenderPassDescriptor passDesc{};
+            passDesc.colorAttachmentCount = 1;
+            passDesc.colorAttachments = &attachment;
+            WGPUPassTimestampWrites timestampWrites{};
+            if (timestampSlot) {
+                timestampWrites.querySet = offscreenTimestampQuerySet.Get();
+                timestampWrites.beginningOfPassWriteIndex = passIndex == 0 ? 0 : UINT32_MAX;
+                timestampWrites.endOfPassWriteIndex =
+                    passIndex + 1u == passCount ? 1 : UINT32_MAX;
+                passDesc.timestampWrites = &timestampWrites;
+            }
+            wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(
+                reinterpret_cast<const wgpu::RenderPassDescriptor *>(&passDesc));
+            pass.SetPipeline(reflectionProbeFilterPipeline);
+            const uint32_t offset = passIndex * 256u;
+            pass.SetBindGroup(0, group, 1, &offset);
+            pass.Draw(3);
+            pass.End();
+        }
+    }
+    if (timestampSlot) {
+        encoder.ResolveQuerySet(offscreenTimestampQuerySet, 0, 2,
+                                offscreenTimestampResolveBuffer, 0);
+        encoder.CopyBufferToBuffer(offscreenTimestampResolveBuffer, 0, timestampSlot->buffer, 0,
+                                   sizeof(uint64_t) * 2);
+    }
+    wgpu::CommandBuffer command = encoder.Finish();
+    queue.Submit(1, &command);
+    if (timestampSlot) {
+        timestampSlot->pending = true;
+        WGPUBufferMapCallbackInfo callback{};
+        callback.mode = WGPUCallbackMode_AllowProcessEvents;
+        callback.callback = [](WGPUMapAsyncStatus status, WGPUStringView,
+                               void *userdata1, void *) {
+            auto *slot = static_cast<OffscreenTimestampReadback *>(userdata1);
+            if (status == WGPUMapAsyncStatus_Success && slot && slot->owner) {
+                const auto *ticks = static_cast<const uint64_t *>(
+                    slot->buffer.GetConstMappedRange(0, sizeof(uint64_t) * 2));
+                if (ticks && ticks[1] >= ticks[0]) {
+                    slot->owner->completedOffscreenTimestampMs.fetch_add(
+                        float(ticks[1] - ticks[0]) * 1.0e-6f);
+                }
+                slot->buffer.Unmap();
+            }
+            if (slot) slot->pending = false;
+        };
+        callback.userdata1 = timestampSlot;
+        wgpuBufferMapAsync(timestampSlot->buffer.Get(), WGPUMapMode_Read, 0,
+                           sizeof(uint64_t) * 2, callback);
+    }
+    return true;
 }
 
 void Graphics::setTextureSampler(Texture *texture, const TextureSampler &sampler) {
@@ -1805,10 +2274,15 @@ GpuTexture *Graphics::gpuForTextureOrWhite(Texture *t) const {
     return g ? g : whiteTexture;
 }
 
-wgpu::BindGroup Graphics::makeTex2DBindGroup(GpuTexture *color, GpuTexture *depth) {
+wgpu::BindGroup Graphics::makeTex2DBindGroup(GpuTexture *color, GpuTexture *depth,
+                                             GpuTexture *motion, GpuTexture *extra,
+                                             GpuTexture *specular) {
     GpuTexture *c = color ? color : whiteTexture;
     GpuTexture *d = depth ? depth : c;
-    WGPUBindGroupEntry entries[5]{};
+    GpuTexture *m = motion ? motion : c;
+    GpuTexture *e = extra ? extra : c;
+    GpuTexture *s = specular ? specular : c;
+    WGPUBindGroupEntry entries[11]{};
     entries[0].binding = 0;
     entries[0].textureView = c->view.Get();
     entries[1].binding = 1;
@@ -1821,10 +2295,22 @@ wgpu::BindGroup Graphics::makeTex2DBindGroup(GpuTexture *color, GpuTexture *dept
     entries[4].buffer = currentUboArena().buffer.Get();  // replaced per-draw via dynamic offset
     entries[4].size =
         std::max<uint32_t>(Shader::kPushConstantBytes, uint32_t(sizeof(Lighting2DUBO)));
+    entries[5].binding = 5;
+    entries[5].textureView = m->view.Get();
+    entries[6].binding = 6;
+    entries[6].sampler = m->sampler.Get();
+    entries[7].binding = 7;
+    entries[7].textureView = e->view.Get();
+    entries[8].binding = 8;
+    entries[8].sampler = e->sampler.Get();
+    entries[9].binding = 9;
+    entries[9].textureView = s->view.Get();
+    entries[10].binding = 10;
+    entries[10].sampler = s->sampler.Get();
     WGPUBindGroupDescriptor desc{};
     desc.label = sv("eve_tex2d_group");
     desc.layout = tex2DSetLayout.Get();
-    desc.entryCount = 5;
+    desc.entryCount = 11;
     desc.entries = entries;
     return device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
 }
@@ -1836,6 +2322,15 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     GpuTexture *a = albedo ? albedo : whiteTexture;
     GpuTexture *n = normal ? normal : flatNormalTexture;
     GpuTexture *e = env ? env : defaultEnvCubemap;
+    auto localProbe = [&](int index) -> GpuTexture * {
+        if (index < mesh3dReflectionProbes.count) {
+            GpuTexture *gpu = gpuForTexture(mesh3dReflectionProbes.probes[index].cubemap);
+            if (gpu && gpu->isCube) return gpu;
+        }
+        return defaultEnvCubemap;
+    };
+    GpuTexture *probe0 = localProbe(0);
+    GpuTexture *probe1 = localProbe(1);
     GpuTexture *h = height ? height : flatHeightTexture3D;
     GpuTexture *d = depth ? depth : flatDepthTexture3D;
     GpuTexture *shadow = shadowDepthArray ? shadowDepthArray : defaultShadowTex;
@@ -1861,12 +2356,14 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
                          reinterpret_cast<uintptr_t>(aoView_.Get()),
                          reinterpret_cast<uintptr_t>(decalAlbedoView.Get()),
                          reinterpret_cast<uintptr_t>(decalNormalView.Get()),
-                         reinterpret_cast<uintptr_t>(decalParamsView.Get())};
+                         reinterpret_cast<uintptr_t>(decalParamsView.Get()),
+                         reinterpret_cast<uintptr_t>(probe0->view.Get()),
+                         reinterpret_cast<uintptr_t>(probe1->view.Get())};
     auto cached = meshBindGroupCache_.find(key);
     if (cached != meshBindGroupCache_.end()) return cached->second;
     if (meshBindGroupCache_.size() >= kMaxMeshBindGroupCache) meshBindGroupCache_.clear();
 
-    WGPUBindGroupEntry entries[16]{};
+    WGPUBindGroupEntry entries[18]{};
     entries[0].binding = 0;
     entries[0].buffer = currentUboArena().buffer.Get();
     entries[0].size = sizeof(Mesh3DUBO);
@@ -1906,6 +2403,10 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     entries[15].binding = 15;
     entries[15].buffer = currentUboArena().buffer.Get();
     entries[15].size = Shader::kPushConstantBytes;
+    entries[16].binding = 16;
+    entries[16].textureView = probe0->view.Get();
+    entries[17].binding = 17;
+    entries[17].textureView = probe1->view.Get();
 
     (void)frameUboOffset;
     (void)shadowUboOffset;
@@ -1913,7 +2414,7 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     WGPUBindGroupDescriptor desc{};
     desc.label = sv("eve_mesh_group");
     desc.layout = mesh3dSetLayout.Get();
-    desc.entryCount = 16;
+    desc.entryCount = 18;
     desc.entries = entries;
     wgpu::BindGroup bg =
         device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
@@ -1929,6 +2430,15 @@ wgpu::BindGroup Graphics::makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTe
     GpuTexture *a = albedo ? albedo : whiteTexture;
     GpuTexture *n = normal ? normal : flatNormalTexture3D;
     GpuTexture *e = env ? env : defaultEnvCubemap;
+    auto localProbe = [&](int index) -> GpuTexture * {
+        if (index < mesh3dReflectionProbes.count) {
+            GpuTexture *gpu = gpuForTexture(mesh3dReflectionProbes.probes[index].cubemap);
+            if (gpu && gpu->isCube) return gpu;
+        }
+        return defaultEnvCubemap;
+    };
+    GpuTexture *probe0 = localProbe(0);
+    GpuTexture *probe1 = localProbe(1);
     GpuTexture *h = height ? height : flatHeightTexture3D;
     GpuTexture *d = depth ? depth : flatDepthTexture3D;
     GpuTexture *shadow = shadowDepthArray ? shadowDepthArray : defaultShadowTex;
@@ -1942,7 +2452,7 @@ wgpu::BindGroup Graphics::makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTe
         decalParamsView = decalSlots[lastDecalSlot].paramsView;
     }
 
-    WGPUBindGroupEntry entries[18]{};
+    WGPUBindGroupEntry entries[20]{};
     entries[0].binding = 0;
     entries[0].buffer = currentUboArena().buffer.Get();
     entries[0].size = sizeof(Mesh3DClusteredUBO);
@@ -1984,13 +2494,17 @@ wgpu::BindGroup Graphics::makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTe
     entries[16].textureView = decalNormalView.Get();
     entries[17].binding = 17;
     entries[17].textureView = decalParamsView.Get();
+    entries[18].binding = 18;
+    entries[18].textureView = probe0->view.Get();
+    entries[19].binding = 19;
+    entries[19].textureView = probe1->view.Get();
 
     (void)frameUboOffset;
     (void)shadowUboOffset;
     WGPUBindGroupDescriptor desc{};
     desc.label = sv("eve_mesh3d_clustered_group");
     desc.layout = mesh3dClusteredSetLayout.Get();
-    desc.entryCount = 18;
+    desc.entryCount = 20;
     desc.entries = entries;
     return device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
 }
@@ -2557,6 +3071,67 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
     noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
 }
 
+void Graphics::drawTexturedRectShaderDepthMotion(Texture *color, Texture *depth, Texture *motion,
+                                                 Shader *shader, float x, float y, float w,
+                                                 float h, const Color &tint) {
+    if (!color) {
+        drawSolidRect(x, y, w, h, tint);
+        return;
+    }
+    if (texturedBatches.empty() || texturedBatches.back().texture != color ||
+        texturedBatches.back().shader != shader || texturedBatches.back().depth != depth ||
+        texturedBatches.back().motion != motion ||
+        texturedBatches.back().blend != BlendMode::Opaque) {
+        TexturedBatch batch{color, depth, shader, BlendMode::Opaque, Batcher{}};
+        batch.motion = motion;
+        texturedBatches.push_back(std::move(batch));
+    }
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f, false);
+    noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
+}
+
+void Graphics::drawTexturedRectShader4(Texture *color, Texture *depth, Texture *motion,
+                                       Texture *extra, Shader *shader, float x, float y, float w,
+                                       float h, const Color &tint) {
+    if (!color) {
+        drawSolidRect(x, y, w, h, tint);
+        return;
+    }
+    if (texturedBatches.empty() || texturedBatches.back().texture != color ||
+        texturedBatches.back().shader != shader || texturedBatches.back().depth != depth ||
+        texturedBatches.back().motion != motion || texturedBatches.back().extra != extra ||
+        texturedBatches.back().blend != BlendMode::Opaque) {
+        TexturedBatch batch{color, depth, shader, BlendMode::Opaque, Batcher{}};
+        batch.motion = motion;
+        batch.extra = extra;
+        texturedBatches.push_back(std::move(batch));
+    }
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f, false);
+    noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
+}
+
+void Graphics::drawTexturedRectShader5(Texture *color, Texture *depth, Texture *motion,
+                                       Texture *extra, Texture *specular, Shader *shader, float x,
+                                       float y, float w, float h, const Color &tint) {
+    if (!color) {
+        drawSolidRect(x, y, w, h, tint);
+        return;
+    }
+    if (texturedBatches.empty() || texturedBatches.back().texture != color ||
+        texturedBatches.back().shader != shader || texturedBatches.back().depth != depth ||
+        texturedBatches.back().motion != motion || texturedBatches.back().extra != extra ||
+        texturedBatches.back().specular != specular ||
+        texturedBatches.back().blend != BlendMode::Opaque) {
+        TexturedBatch batch{color, depth, shader, BlendMode::Opaque, Batcher{}};
+        batch.motion = motion;
+        batch.extra = extra;
+        batch.specular = specular;
+        texturedBatches.push_back(std::move(batch));
+    }
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f, false);
+    noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
+}
+
 void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w,
                                      float h, float u0, float v0, float u1, float v1,
                                      const Color &color) {
@@ -2686,6 +3261,9 @@ void Graphics::drawTexturedBatch(wgpu::RenderPassEncoder pass, TexturedBatch &tb
 
     GpuTexture *gpu = gpuForTexture(tb.texture);
     GpuTexture *depthGpu = gpuForTexture(tb.depth);
+    GpuTexture *motionGpu = gpuForTexture(tb.motion);
+    GpuTexture *extraGpu = gpuForTexture(tb.extra);
+    GpuTexture *specularGpu = gpuForTexture(tb.specular);
     auto &uboArena = currentUboArena();
     ensureUboArena(uboArena, uboArena.used + 256);
 
@@ -2697,15 +3275,45 @@ void Graphics::drawTexturedBatch(wgpu::RenderPassEncoder pass, TexturedBatch &tb
                           Shader::kPushConstantBytes);
     }
 
-    wgpu::BindGroup bg = makeTex2DBindGroup(gpu, depthGpu);
+    wgpu::BindGroup bg = makeTex2DBindGroup(gpu, depthGpu, motionGpu, extraGpu, specularGpu);
     uint32_t offsets[1] = {pushOffset};
 
     wgpu::RenderPipeline pipe;
     if (tb.shader && tb.shader->gpuHandle) {
         auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
-        pipe = offscreen ? gs->offscreenPipeline : gs->swapchainPipeline;
+        const bool hdr = format == WGPUTextureFormat_RGBA16Float;
+        if (tb.blend == BlendMode::Opaque)
+            pipe = hdr ? gs->hdrOffscreenOpaquePipeline
+                       : (offscreen ? gs->offscreenOpaquePipeline : gs->swapchainOpaquePipeline);
+        else
+            pipe = hdr ? gs->hdrOffscreenPipeline
+                       : (offscreen ? gs->offscreenPipeline : gs->swapchainPipeline);
     } else {
-        pipe = get2DTexturedPipeline(tb.blend, offscreen);
+        switch (tb.blend) {
+            case BlendMode::Additive:
+                pipe = offscreen ? offscreenTexturedAdditivePipeline : texturedAdditivePipeline;
+                break;
+            case BlendMode::Premultiplied:
+                pipe = offscreen ? offscreenTexturedPremultipliedPipeline
+                                 : texturedPremultipliedPipeline;
+                break;
+            case BlendMode::Multiply:
+                pipe = offscreen ? offscreenTexturedMultiplyPipeline
+                                 : texturedMultiplyPipeline;
+                break;
+            case BlendMode::Opaque:
+                pipe = format == WGPUTextureFormat_RGBA16Float
+                           ? hdrOffscreenTexturedOpaquePipeline
+                           : (offscreen ? offscreenTexturedOpaquePipeline
+                                        : texturedOpaquePipeline);
+                break;
+            case BlendMode::Alpha:
+            default:
+                pipe = format == WGPUTextureFormat_RGBA16Float
+                           ? hdrOffscreenTexturedPipeline
+                           : (offscreen ? offscreenTexturedPipeline : texturedPipeline);
+                break;
+        }
     }
     if (!pipe) return;
     pass.SetPipeline(pipe);
@@ -2797,13 +3405,30 @@ void Graphics::end3DFrameToCanvas() {
     auto &vertexArena = currentVertexArena();
     vertexArena.reset();
 
+    wgpuInstanceProcessEvents(instance.Get());
+    OffscreenTimestampReadback *timestampSlot = nullptr;
+    if (offscreenTimestampSupported && offscreenTimestampQuerySet &&
+        offscreenTimestampResolveBuffer) {
+        for (size_t candidate = 0; candidate < offscreenTimestampReadbacks.size(); ++candidate) {
+            const size_t index =
+                (offscreenTimestampReadbackCursor + candidate) % offscreenTimestampReadbacks.size();
+            if (!offscreenTimestampReadbacks[index].pending) {
+                timestampSlot = &offscreenTimestampReadbacks[index];
+                offscreenTimestampReadbackCursor =
+                    (index + 1) % offscreenTimestampReadbacks.size();
+                break;
+            }
+        }
+    }
+
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     WGPURenderPassColorAttachment color{};
     color.view = canvas->colorView.Get();
     color.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
     color.loadOp = WGPULoadOp_Clear;
     color.storeOp = WGPUStoreOp_Store;
-    color.clearValue = {clearColor.r, clearColor.g, clearColor.b, clearColor.a};
+    const Color canvasClear = canvas->clearRequested ? canvas->clearColor : clearColor;
+    color.clearValue = {canvasClear.r, canvasClear.g, canvasClear.b, canvasClear.a};
     WGPURenderPassDepthStencilAttachment depth{};
     depth.view = canvas->depthView.Get();
     depth.depthClearValue = 1.f;
@@ -2815,12 +3440,50 @@ void Graphics::end3DFrameToCanvas() {
     descriptor.colorAttachmentCount = 1;
     descriptor.colorAttachments = &color;
     descriptor.depthStencilAttachment = &depth;
+    WGPUPassTimestampWrites timestampWrites{};
+    if (timestampSlot) {
+        timestampWrites.querySet = offscreenTimestampQuerySet.Get();
+        timestampWrites.beginningOfPassWriteIndex = 0;
+        timestampWrites.endOfPassWriteIndex = 1;
+        descriptor.timestampWrites = &timestampWrites;
+    }
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(
         reinterpret_cast<const wgpu::RenderPassDescriptor *>(&descriptor));
-    flushMesh3D(pass, WGPUTextureFormat_RGBA8Unorm, true);
+    flushMesh3D(pass,
+                canvas->isHDR() ? WGPUTextureFormat_RGBA16Float
+                                : WGPUTextureFormat_RGBA8Unorm,
+                true);
     pass.End();
+    if (timestampSlot) {
+        encoder.ResolveQuerySet(offscreenTimestampQuerySet, 0, 2,
+                                offscreenTimestampResolveBuffer, 0);
+        encoder.CopyBufferToBuffer(offscreenTimestampResolveBuffer, 0, timestampSlot->buffer, 0,
+                                   sizeof(uint64_t) * 2);
+    }
     wgpu::CommandBuffer command = encoder.Finish();
     queue.Submit(1, &command);
+    if (timestampSlot) {
+        timestampSlot->pending = true;
+        WGPUBufferMapCallbackInfo callback{};
+        callback.mode = WGPUCallbackMode_AllowProcessEvents;
+        callback.callback = [](WGPUMapAsyncStatus status, WGPUStringView,
+                               void *userdata1, void *) {
+            auto *slot = static_cast<OffscreenTimestampReadback *>(userdata1);
+            if (status == WGPUMapAsyncStatus_Success && slot && slot->owner) {
+                const auto *ticks = static_cast<const uint64_t *>(
+                    slot->buffer.GetConstMappedRange(0, sizeof(uint64_t) * 2));
+                if (ticks && ticks[1] >= ticks[0]) {
+                    const float milliseconds = float(ticks[1] - ticks[0]) * 1.0e-6f;
+                    slot->owner->completedOffscreenTimestampMs.fetch_add(milliseconds);
+                }
+                slot->buffer.Unmap();
+            }
+            if (slot) slot->pending = false;
+        };
+        callback.userdata1 = timestampSlot;
+        wgpuBufferMapAsync(timestampSlot->buffer.Get(), WGPUMapMode_Read, 0,
+                           sizeof(uint64_t) * 2, callback);
+    }
     canvas->clearRequested = false;
     active3DCanvas = nullptr;
     frame3DStarted = false;
@@ -2949,6 +3612,15 @@ void Graphics::setMesh3DEnv(Texture *cube, float intensity) {
     mesh3dEnvTexture   = cube;
     mesh3dEnvIntensity = intensity;
 }
+
+void Graphics::setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) {
+    mesh3dEnvProbeCenter = center;
+    mesh3dEnvProbeExtent = glm::max(extent, glm::vec3(0.f));
+}
+
+void Graphics::setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) {
+    mesh3dReflectionProbes = upload;
+}
 void Graphics::setMesh3DShadows(const ShadowUpload &upload) { mesh3dShadows = upload; }
 void Graphics::setMesh3DShadowReceive(bool receive) { mesh3dShadowReceive = receive; }
 
@@ -2999,7 +3671,8 @@ void Graphics::beginGBufferPass(int width, int height) {
 }
 
 void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                               float farZ, Texture *albedo, float tintR, float tintG, float tintB) {
+                               float farZ, Texture *albedo, float tintR, float tintG, float tintB,
+                               float motionX, float motionY, float roughness, float metallic) {
     if (!mesh || !mesh->gpuHandle) return;
     GbufferDraw d;
     d.mesh = mesh;
@@ -3009,12 +3682,16 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     d.nearZ = nearZ;
     d.farZ = farZ;
     d.tint = glm::vec4(tintR, tintG, tintB, 1.f);
+    d.motion = glm::vec2(motionX, motionY);
+    d.roughness = roughness;
+    d.metallic = metallic;
     gbufferPassDraws.push_back(d);
 }
 
 void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
                                     float nearZ, float farZ, Texture *albedo, float tintR,
-                                    float tintG, float tintB) {
+                                    float tintG, float tintB, float motionX, float motionY,
+                                    float roughness, float metallic) {
     if (!mesh || !mesh->gpuHandle) return;
     GbufferDraw d;
     d.mesh = mesh;
@@ -3024,6 +3701,9 @@ void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm:
     d.nearZ = nearZ;
     d.farZ = farZ;
     d.tint = glm::vec4(tintR, tintG, tintB, 1.f);
+    d.motion = glm::vec2(motionX, motionY);
+    d.roughness = roughness;
+    d.metallic = metallic;
     d.alphaTest = true;
     gbufferPassDraws.push_back(d);
 }
@@ -3166,9 +3846,10 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
 
 void Graphics::createSceneColorResources(int width, int height) {
     if (!device) return;
-    const bool featureMsaa = !renderControl_ || renderControl_->isEnabled("msaa");
-    // WebGPU only supports 1x and 4x multisampling; clamp anything >= 2 to 4.
-    const uint32_t want = featureMsaa && msaaSamples >= 2 ? 4u : 1u;
+    // Keep the main WebGPU scene single-sampled. Dawn/Metal does not complete
+    // the current MSAA resolve followed by synchronous scene readback chain.
+    // Temporal AA remains available; Vulkan owns the multisampled main path.
+    const uint32_t want = 1u;
     if (sceneColorWidth == width && sceneColorHeight == height && sceneColorSamples == want &&
         !sceneColorSlots.empty())
         return;
@@ -3506,6 +4187,16 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
             const float aoStrength =
                 (renderControl_ && renderControl_->isEnabled("ao")) ? mesh3dSsaoIntensity : 0.f;
             cubo.surface = glm::vec4(surfaceCode, d.alphaCutoff, aoStrength, 0.f);
+            cubo.envProbeCenter = glm::vec4(mesh3dEnvProbeCenter, 1.f);
+            cubo.envProbeExtent = glm::vec4(mesh3dEnvProbeExtent, 0.f);
+            for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
+                if (i >= mesh3dReflectionProbes.count) continue;
+                const auto &probe = mesh3dReflectionProbes.probes[i];
+                GpuTexture *gpu = gpuForTexture(probe.cubemap);
+                if (!gpu || !gpu->isCube) continue;
+                cubo.reflectionProbeCenter[i] = glm::vec4(probe.center, probe.intensity);
+                cubo.reflectionProbeExtent[i] = glm::vec4(probe.extent, probe.blendDistance);
+            }
             queue.WriteBuffer(uboArena.buffer, d.clusteredUboOffset, &cubo, sizeof(cubo));
             continue;
         }
@@ -3535,6 +4226,16 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         ubo.clipInfo = glm::vec4(mesh3dNear, mesh3dFar, 0.f, 0.f);
         ubo.cloud = mesh3dCloud;
         ubo.cloudWind = mesh3dCloudWind;
+        ubo.envProbeCenter = glm::vec4(mesh3dEnvProbeCenter, 1.f);
+        ubo.envProbeExtent = glm::vec4(mesh3dEnvProbeExtent, 0.f);
+        for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
+            if (i >= mesh3dReflectionProbes.count) continue;
+            const auto &probe = mesh3dReflectionProbes.probes[i];
+            GpuTexture *gpu = gpuForTexture(probe.cubemap);
+            if (!gpu || !gpu->isCube) continue;
+            ubo.reflectionProbeCenter[i] = glm::vec4(probe.center, probe.intensity);
+            ubo.reflectionProbeExtent[i] = glm::vec4(probe.extent, probe.blendDistance);
+        }
         ubo.lightColor.w = mesh3dEnvIntensity;
         if (d.mesh && d.mesh->hasGpuSkinning()) {
             const int count = std::min(d.mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
@@ -3709,12 +4410,20 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
         SkinPassUBO ubo;
         ubo.mvp = d.mvp;
         ubo.model = d.model;
-        auto u8 = [](float value) {
-            return uint32_t(std::lround(std::clamp(value, 0.f, 1.f) * 255.f));
+        auto u6 = [](float value) {
+            return uint32_t(std::lround(std::clamp(value, 0.f, 1.f) * 63.f));
         };
-        const uint32_t packedTint = u8(d.tint.r) | (u8(d.tint.g) << 8) | (u8(d.tint.b) << 16) |
-                                    (255u << 24);
-        ubo.clip = glm::vec4(d.nearZ, d.farZ, glm::uintBitsToFloat(packedTint), 0.f);
+        const uint32_t rough3 =
+            uint32_t(std::lround(std::clamp(d.roughness, 0.f, 1.f) * 7.f));
+        const uint32_t metal3 =
+            uint32_t(std::lround(std::clamp(d.metallic, 0.f, 1.f) * 7.f));
+        const uint32_t packedTint = u6(d.tint.r) | (u6(d.tint.g) << 6) | (u6(d.tint.b) << 12) |
+                                    (rough3 << 18) | (metal3 << 21);
+        auto motion12 = [](float value) {
+            return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
+        };
+        const uint32_t packedMotion = motion12(d.motion.x) | (motion12(d.motion.y) << 12);
+        ubo.clip = glm::vec4(d.nearZ, d.farZ, float(packedTint), float(packedMotion));
         if (d.mesh->hasGpuSkinning()) {
             const int count = std::min(d.mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
             ubo.skinInfo.x = static_cast<float>(count);
@@ -4351,6 +5060,12 @@ Canvas *Graphics::newCanvas(int width, int height) {
     return c;
 }
 
+Canvas *Graphics::newHDRCanvas(int width, int height) {
+    auto *c = new OffscreenCanvas(this, width, height, true);
+    ownedCanvases.push_back(std::unique_ptr<eve::graphics::Canvas>(c));
+    return c;
+}
+
 void Graphics::setCanvas(Canvas *canvas) {
     if (activeCanvas && canvas != activeCanvas) {
         flush2DToCanvas(static_cast<OffscreenCanvas *>(activeCanvas));
@@ -4380,7 +5095,9 @@ void Graphics::flush2DToCanvas(OffscreenCanvas *canvas) {
     rp.colorAttachmentCount = 1;
     rp.colorAttachments = &ca;
     wgpu::RenderPassEncoder pass = enc.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
-    flush2D(pass, canvas->getWidth(), canvas->getHeight(), WGPUTextureFormat_RGBA8Unorm);
+    flush2D(pass, canvas->getWidth(), canvas->getHeight(),
+            canvas->isHDR() ? WGPUTextureFormat_RGBA16Float
+                            : WGPUTextureFormat_RGBA8Unorm);
     pass.End();
     wgpu::CommandBuffer cmd = enc.Finish();
     queue.Submit(1, &cmd);
@@ -4434,9 +5151,10 @@ image::ImageData *Graphics::newImageData() {
 namespace {
 
 bool copyTextureToCpu(wgpu::Instance &instance, wgpu::Device &device, wgpu::Queue &queue,
-                      wgpu::Texture src, int width, int height, std::vector<uint8_t> &outRgba) {
+                      wgpu::Texture src, int width, int height, std::vector<uint8_t> &outRgba,
+                      int bytesPerPixel) {
     if (!src) return false;
-    uint64_t bytesPerRow = static_cast<uint64_t>(width * 4);
+    uint64_t bytesPerRow = static_cast<uint64_t>(width) * bytesPerPixel;
     bytesPerRow = (bytesPerRow + 255) / 256 * 256;  // copy alignment 256
     uint64_t size = bytesPerRow * height;
 
@@ -4505,11 +5223,57 @@ bool copyTextureToCpu(wgpu::Instance &instance, wgpu::Device &device, wgpu::Queu
 
     const uint8_t* data = static_cast<const uint8_t*>(dst.GetConstMappedRange(0, size));
     if (!data) return false;
-    outRgba.resize(static_cast<size_t>(width) * height * 4);
+    const size_t tightRowBytes = static_cast<size_t>(width) * bytesPerPixel;
+    outRgba.resize(tightRowBytes * height);
     for (int y = 0; y < height; ++y)
-        std::memcpy(outRgba.data() + size_t(y) * width * 4, data + size_t(y) * bytesPerRow, size_t(width) * 4);
+        std::memcpy(outRgba.data() + size_t(y) * tightRowBytes,
+                    data + size_t(y) * bytesPerRow, tightRowBytes);
     dst.Unmap();
     return true;
+}
+
+float decodeHalf(uint16_t value) {
+    const uint32_t sign = uint32_t(value & 0x8000u) << 16u;
+    uint32_t exponent = (value >> 10u) & 0x1fu;
+    uint32_t mantissa = value & 0x03ffu;
+    uint32_t bits = 0;
+    if (exponent == 0) {
+        if (mantissa == 0) {
+            bits = sign;
+        } else {
+            exponent = 1;
+            while ((mantissa & 0x0400u) == 0) {
+                mantissa <<= 1u;
+                --exponent;
+            }
+            mantissa &= 0x03ffu;
+            bits = sign | ((exponent + 112u) << 23u) | (mantissa << 13u);
+        }
+    } else if (exponent == 31u) {
+        bits = sign | 0x7f800000u | (mantissa << 13u);
+    } else {
+        bits = sign | ((exponent + 112u) << 23u) | (mantissa << 13u);
+    }
+    float result = 0.f;
+    std::memcpy(&result, &bits, sizeof(result));
+    return result;
+}
+
+float hdrToDisplay(float value) {
+    const float linear = std::max(value, 0.f);
+    const float mapped = std::clamp((linear * (2.51f * linear + 0.03f)) /
+                                        (linear * (2.43f * linear + 0.59f) + 0.14f),
+                                    0.f, 1.f);
+    return mapped <= 0.0031308f ? mapped * 12.92f
+                               : 1.055f * std::pow(mapped, 1.f / 2.4f) - 0.055f;
+}
+
+Color hdrPixelToColor(const uint8_t *pixel) {
+    uint16_t channels[4]{};
+    std::memcpy(channels, pixel, sizeof(channels));
+    return Color(hdrToDisplay(decodeHalf(channels[0])), hdrToDisplay(decodeHalf(channels[1])),
+                 hdrToDisplay(decodeHalf(channels[2])),
+                 std::clamp(decodeHalf(channels[3]), 0.f, 1.f));
 }
 
 }  // namespace
@@ -4522,7 +5286,11 @@ Color Graphics::getPixelImpl(OffscreenCanvas* canvas, int x, int y) {
     wgpu::Texture src = canvas ? canvas->color
                                : (sceneColorSlots.empty() ? nullptr
                                                           : sceneColorSlots[lastPresentSlot].color);
-    if (!src || !copyTextureToCpu(instance, device, queue, src, w, h, rgba)) return clearColor;
+    const bool hdrScene = canvas == nullptr && sceneColorFormat == WGPUTextureFormat_RGBA16Float;
+    if (!src || !copyTextureToCpu(instance, device, queue, src, w, h, rgba,
+                                  hdrScene ? 8 : 4))
+        return clearColor;
+    if (hdrScene) return hdrPixelToColor(rgba.data() + (size_t(y) * w + x) * 8);
     const uint8_t *p = rgba.data() + (size_t(y) * w + x) * 4;
     return Color(p[0] / 255.f, p[1] / 255.f, p[2] / 255.f, p[3] / 255.f);
 }
@@ -4535,9 +5303,33 @@ image::ImageData *Graphics::newImageDataImpl(OffscreenCanvas *canvas) {
     wgpu::Texture src = canvas ? canvas->color
                                : (sceneColorSlots.empty() ? nullptr
                                                           : sceneColorSlots[lastPresentSlot].color);
-    if (src && copyTextureToCpu(instance, device, queue, src, w, h, rgba)) {
-        std::memcpy(img->getData(), rgba.data(), rgba.size());
+    const bool hdrScene = canvas == nullptr && sceneColorFormat == WGPUTextureFormat_RGBA16Float;
+    if (src && copyTextureToCpu(instance, device, queue, src, w, h, rgba,
+                                hdrScene ? 8 : 4)) {
+        if (!hdrScene) {
+            std::memcpy(img->getData(), rgba.data(), rgba.size());
+        } else {
+            auto *dst = static_cast<uint8_t *>(img->getData());
+            for (size_t pixel = 0; pixel < size_t(w) * h; ++pixel) {
+                const Color color = hdrPixelToColor(rgba.data() + pixel * 8);
+                dst[pixel * 4 + 0] = uint8_t(std::clamp(color.r * 255.f, 0.f, 255.f));
+                dst[pixel * 4 + 1] = uint8_t(std::clamp(color.g * 255.f, 0.f, 255.f));
+                dst[pixel * 4 + 2] = uint8_t(std::clamp(color.b * 255.f, 0.f, 255.f));
+                dst[pixel * 4 + 3] = uint8_t(std::clamp(color.a * 255.f, 0.f, 255.f));
+            }
+        }
     }
+    return img;
+}
+
+image::ImageData *Graphics::newHDRImageDataImpl(OffscreenCanvas *canvas) {
+    if (!canvas || !canvas->hdr) return nullptr;
+    const int w = canvas->getWidth();
+    const int h = canvas->getHeight();
+    std::vector<uint8_t> rgba16f;
+    if (!copyTextureToCpu(instance, device, queue, canvas->color, w, h, rgba16f, 8)) return nullptr;
+    auto *img = new image::ImageData(w, h, "RGBA16F");
+    std::memcpy(img->getData(), rgba16f.data(), rgba16f.size());
     return img;
 }
 
@@ -4942,6 +5734,18 @@ Shader *Graphics::newShaderFromWgsl(const std::string &vertWgsl,
                                 /*depth*/ false, /*mesh3d*/ false,
                                 /*hair*/ false, /*shadow*/ false,
                                 /*gbuffer*/ false, tex2DPipelineLayout);
+    gpu->swapchainOpaquePipeline = buildPipelineFromWgsl(
+        device, tex2DPipelineLayout, WGPUTextureFormat(surfaceFormat), vert, fragWgsl, false,
+        false, false, false, false, false, 1u);
+    gpu->offscreenOpaquePipeline = buildPipelineFromWgsl(
+        device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, vert, fragWgsl, false, false,
+        false, false, false, false, 1u);
+    gpu->hdrOffscreenPipeline = createPipelineForShader(
+        gpu.get(), wgpu::TextureFormat::RGBA16Float, false, false, false, false, false,
+        tex2DPipelineLayout);
+    gpu->hdrOffscreenOpaquePipeline = buildPipelineFromWgsl(
+        device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, vert, fragWgsl, false, false,
+        false, false, false, false, 1u);
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eSprite2D);

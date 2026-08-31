@@ -125,10 +125,13 @@ void Graphics::begin3DFrame() {
 
 void Graphics::ensureOffscreen3DResources() {
     auto &dev = getDevice();
-    if (!offscreen3DRenderPass) {
-        offscreen3DRenderPass =
+    auto createResources = [&](vk::Format colorFormat, vkb::BuiltRenderPass &renderPass,
+                               vk::Pipeline &meshPipeline,
+                               std::array<vk::Pipeline, kMesh3DPipelineVariants> &surfacePipelines) {
+        if (renderPass) return;
+        renderPass =
             dev.createRenderPass()
-                .addSampledColorAttachment(vk::Format::eR8G8B8A8Unorm)
+                .addSampledColorAttachment(colorFormat)
                 .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear,
                                     vk::AttachmentStoreOp::eDontCare)
                 .addSubpass(vkb::SubpassBuilder()
@@ -137,23 +140,27 @@ void Graphics::ensureOffscreen3DResources() {
                                     1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
                 .addExternalShaderReadDependencies()
                 .build();
-        offscreen3DMeshPipeline = createMesh3DStylePipeline(
+        meshPipeline = createMesh3DStylePipeline(
             embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
-            offscreen3DRenderPass, vk::SampleCountFlagBits::e1);
+            renderPass, vk::SampleCountFlagBits::e1);
         for (int blendValue = 0; blendValue < 5; ++blendValue) {
             const auto blend = BlendMode(blendValue);
             for (int depthValue = 0; depthValue < 2; ++depthValue) {
                 for (int doubleValue = 0; doubleValue < 2; ++doubleValue) {
                     const size_t index =
                         mesh3dPipelineIndex(blend, depthValue != 0, doubleValue != 0);
-                    offscreen3DSurfacePipelines[index] = createMesh3DStylePipeline(
+                    surfacePipelines[index] = createMesh3DStylePipeline(
                         embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv),
-                        mesh3dPipelineLayout, offscreen3DRenderPass, vk::SampleCountFlagBits::e1,
+                        mesh3dPipelineLayout, renderPass, vk::SampleCountFlagBits::e1,
                         blend, depthValue != 0, doubleValue != 0);
                 }
             }
         }
-    }
+    };
+    createResources(vk::Format::eR8G8B8A8Unorm, offscreen3DRenderPass,
+                    offscreen3DMeshPipeline, offscreen3DSurfacePipelines);
+    createResources(vk::Format::eR16G16B16A16Sfloat, hdrOffscreen3DRenderPass,
+                    hdrOffscreen3DMeshPipeline, hdrOffscreen3DSurfacePipelines);
     if (!offscreen3DPool) {
         vk::CommandPoolCreateInfo poolInfo{};
         poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
@@ -167,6 +174,14 @@ void Graphics::ensureOffscreen3DResources() {
         vk::FenceCreateInfo fenceInfo{};
         fenceInfo.flags = vk::FenceCreateFlagBits::eSignaled;  // first wait passes immediately
         offscreen3DFence = dev->createFence(fenceInfo);
+        const auto &limits = dev.physical_device.properties.limits;
+        if (limits.timestampComputeAndGraphics && limits.timestampPeriod > 0.f) {
+            vk::QueryPoolCreateInfo queryInfo{};
+            queryInfo.queryType = vk::QueryType::eTimestamp;
+            queryInfo.queryCount = 2;
+            offscreen3DTimestampQueryPool = dev->createQueryPool(queryInfo);
+            offscreen3DTimestampPeriodNs = limits.timestampPeriod;
+        }
     }
 }
 
@@ -176,6 +191,12 @@ void Graphics::destroyOffscreen3DResources() {
         dev->destroyFence(offscreen3DFence);
         offscreen3DFence = nullptr;
     }
+    if (offscreen3DTimestampQueryPool) {
+        dev->destroyQueryPool(offscreen3DTimestampQueryPool);
+        offscreen3DTimestampQueryPool = nullptr;
+    }
+    offscreen3DTimestampPeriodNs = 0.f;
+    lastOffscreen3DGpuDurationMs = 0.f;
     if (offscreen3DPool) {
         dev->destroyCommandPool(offscreen3DPool);
         offscreen3DPool = nullptr;
@@ -185,13 +206,25 @@ void Graphics::destroyOffscreen3DResources() {
         device->destroyPipeline(offscreen3DMeshPipeline);
         offscreen3DMeshPipeline = nullptr;
     }
+    if (hdrOffscreen3DMeshPipeline) {
+        device->destroyPipeline(hdrOffscreen3DMeshPipeline);
+        hdrOffscreen3DMeshPipeline = nullptr;
+    }
     for (auto &pipeline : offscreen3DSurfacePipelines) {
+        if (pipeline) device->destroyPipeline(pipeline);
+        pipeline = nullptr;
+    }
+    for (auto &pipeline : hdrOffscreen3DSurfacePipelines) {
         if (pipeline) device->destroyPipeline(pipeline);
         pipeline = nullptr;
     }
     if (offscreen3DRenderPass) {
         device->destroyRenderPass(offscreen3DRenderPass);
         offscreen3DRenderPass = {};
+    }
+    if (hdrOffscreen3DRenderPass) {
+        device->destroyRenderPass(hdrOffscreen3DRenderPass);
+        hdrOffscreen3DRenderPass = {};
     }
 }
 
@@ -213,16 +246,23 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     ensureOffscreen3DResources();
     oc->ensure3D();
     offscreen3DCanvas = oc;
+    offscreen3DHDRActive = oc->isHDR();
 
     if (offscreen3DFence) (void)device->waitForFences(1, &offscreen3DFence, VK_TRUE, UINT64_MAX);
     vk::CommandBufferBeginInfo beginInfo{};
     offscreen3DCB.begin(beginInfo);
+    lastOffscreen3DGpuDurationMs = 0.f;
+    if (offscreen3DTimestampQueryPool) {
+        offscreen3DCB.resetQueryPool(offscreen3DTimestampQueryPool, 0, 2);
+        offscreen3DCB.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe,
+                                     offscreen3DTimestampQueryPool, 0);
+    }
     std::array<vk::ClearValue, 2> clears{};
     clears[0].color =
         vk::ClearColorValue(std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, 1.f});
     clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
     vk::RenderPassBeginInfo rpBegin{};
-    rpBegin.renderPass = offscreen3DRenderPass;
+    rpBegin.renderPass = getOffscreen3DRenderPass(offscreen3DHDRActive);
     rpBegin.framebuffer = oc->framebuffer3D();
     rpBegin.renderArea =
         vk::Rect2D{{0, 0}, {uint32_t(oc->getWidth()), uint32_t(oc->getHeight())}};
@@ -257,6 +297,10 @@ void Graphics::end3DFrameToCanvas() {
         offscreen3DCanvas->colorImage().setLayout(offscreen3DCB,
                                                   vk::ImageLayout::eShaderReadOnlyOptimal);
     }
+    if (offscreen3DTimestampQueryPool) {
+        offscreen3DCB.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe,
+                                     offscreen3DTimestampQueryPool, 1);
+    }
     offscreen3DCB.end();
 
     // Submit the offscreen render directly to the graphics queue (no present),
@@ -269,8 +313,20 @@ void Graphics::end3DFrameToCanvas() {
     (void)device.getQueue(vkb::QueueType::graphics).submit(1, &submitInfo, offscreen3DFence);
     if (offscreen3DFence)
         (void)device->waitForFences(1, &offscreen3DFence, VK_TRUE, UINT64_MAX);
+    if (offscreen3DTimestampQueryPool && offscreen3DTimestampPeriodNs > 0.f) {
+        std::array<uint64_t, 2> ticks{};
+        const vk::Result queryResult = device->getQueryPoolResults(
+            offscreen3DTimestampQueryPool, 0, uint32_t(ticks.size()), sizeof(ticks), ticks.data(),
+            sizeof(uint64_t), vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
+        if (queryResult == vk::Result::eSuccess && ticks[1] >= ticks[0]) {
+            const double nanoseconds =
+                double(ticks[1] - ticks[0]) * double(offscreen3DTimestampPeriodNs);
+            lastOffscreen3DGpuDurationMs = float(nanoseconds * 1.0e-6);
+        }
+    }
 
     offscreen3DPassOpen = false;
+    offscreen3DHDRActive = false;
     offscreen3DCanvas = nullptr;
 }
 
@@ -526,6 +582,17 @@ void Graphics::setMesh3DEnv(Texture *cube, float intensity) {
     if (!cube) mesh3dEnvIntensity = 0.f;
 }
 
+void Graphics::setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) {
+    mesh3dEnvProbeCenter = center;
+    mesh3dEnvProbeExtent = glm::max(extent, glm::vec3(0.f));
+    mesh3dFrameUbo.envProbeCenter = glm::vec4(mesh3dEnvProbeCenter, 1.f);
+    mesh3dFrameUbo.envProbeExtent = glm::vec4(mesh3dEnvProbeExtent, 0.f);
+}
+
+void Graphics::setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) {
+    mesh3dReflectionProbes = upload;
+}
+
 void Graphics::setMesh3DShadows(const ShadowUpload &upload) { mesh3dShadows = upload; }
 
 void Graphics::setMesh3DShadowReceive(bool receive) { mesh3dShadowReceive = receive; }
@@ -652,7 +719,8 @@ void Graphics::beginGBufferPass(int w, int h) {
 }
 
 void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                               float farZ, Texture *albedo, float tintR, float tintG, float tintB) {
+                               float farZ, Texture *albedo, float tintR, float tintG, float tintB,
+                               float motionX, float motionY, float roughness, float metallic) {
     if (!gbufferPassActive) throw Exception("drawMeshGBuffer: call beginGBufferPass first");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBuffer: null mesh");
     GBufferDraw d{};
@@ -662,20 +730,28 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
     d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
     d.push.modelR2 = glm::vec4(model[0][2], model[1][2], model[2][2], model[3][2]);
-    auto u8 = [](float x) -> uint32_t {
-        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f));
+    auto u6 = [](float x) -> uint32_t {
+        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
     };
     // A float exactly represents every integer through 24 bits. Numeric packing avoids
     // NaN canonicalization and subnormal flush-to-zero corrupting bit-cast payloads.
-    const uint32_t packedTint = u8(tintR) | (u8(tintG) << 8) | (u8(tintB) << 16);
-    d.push.clip = glm::vec4(nearZ, farZ, float(packedTint), 0.f);
+    const uint32_t rough3 = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 7.f));
+    const uint32_t metal3 = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 7.f));
+    const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) |
+                                (rough3 << 18) | (metal3 << 21);
+    auto motion12 = [](float value) {
+        return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
+    };
+    const uint32_t packedMotion = motion12(motionX) | (motion12(motionY) << 12);
+    d.push.clip = glm::vec4(nearZ, farZ, float(packedTint), float(packedMotion));
     prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
     gbufferPassDraws.push_back(d);
 }
 
 void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
                                     float nearZ, float farZ, Texture *albedo, float tintR,
-                                    float tintG, float tintB) {
+                                    float tintG, float tintB, float motionX, float motionY,
+                                    float roughness, float metallic) {
     if (!gbufferPassActive) throw Exception("drawMeshGBufferAlpha: call beginGBufferPass first");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBufferAlpha: null mesh");
     GBufferDraw d{};
@@ -686,11 +762,18 @@ void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm:
     d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
     d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
     d.push.modelR2 = glm::vec4(model[0][2], model[1][2], model[2][2], model[3][2]);
-    auto u8 = [](float x) -> uint32_t {
-        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f));
+    auto u6 = [](float x) -> uint32_t {
+        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
     };
-    const uint32_t packedTint = u8(tintR) | (u8(tintG) << 8) | (u8(tintB) << 16);
-    d.push.clip = glm::vec4(nearZ, farZ, float(packedTint), 0.f);
+    const uint32_t rough3 = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 7.f));
+    const uint32_t metal3 = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 7.f));
+    const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) |
+                                (rough3 << 18) | (metal3 << 21);
+    auto motion12 = [](float value) {
+        return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
+    };
+    const uint32_t packedMotion = motion12(motionX) | (motion12(motionY) << 12);
+    d.push.clip = glm::vec4(nearZ, farZ, float(packedTint), float(packedMotion));
     prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
     gbufferPassDraws.push_back(d);
 }
@@ -976,7 +1059,19 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     ASSERT(fslots.uboRing.buffer);
     ASSERT(fslots.shadowRing.buffer);
 
-    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex, depthTex,
+    auto probeTexture = [&](int index) -> GpuTexture * {
+        if (index < mesh3dReflectionProbes.count) {
+            Texture *texture = mesh3dReflectionProbes.probes[index].cubemap;
+            if (texture && texture->gpuHandle) {
+                auto *gpu = static_cast<GpuTexture *>(texture->gpuHandle);
+                if (gpu->isCube) return gpu;
+            }
+        }
+        return static_cast<GpuTexture *>(defaultEnvCubemap->gpuHandle);
+    };
+    GpuTexture *probe0 = probeTexture(0);
+    GpuTexture *probe1 = probeTexture(1);
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, depthTex,
                      decalAlbedo, decalNormal, decalParams};
     auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
@@ -987,7 +1082,7 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     alloc.pSetLayouts = &mesh3dSetLayout;
     vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
-    vkb::DescriptorSetUpdater updater(12, 12, 0);
+    vkb::DescriptorSetUpdater updater(15, 15, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
         .buffer(fslots.uboRing.buffer, 0, fslots.uboRing.size)
@@ -1011,6 +1106,12 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
         .image(vkb::SampledImage::forLaterSample(decalNormal->sampler, decalNormal->imageView()))
         .beginImages(10, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(decalParams->sampler, decalParams->imageView()))
+        .beginImages(16, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(probe0->sampler, probe0->imageView()))
+        .beginImages(17, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(probe1->sampler, probe1->imageView()))
+        .beginImages(20, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(shadowRawSampler, currentShadowArrayView()))
         .update(device.instance);
 
     vkb::BoundSet bound = std::move(unbound).publish();
