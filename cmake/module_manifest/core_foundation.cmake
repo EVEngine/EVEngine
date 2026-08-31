@@ -97,9 +97,6 @@ eve_declare_module(NAME pixelworld_replay LAYER 1
 eve_declare_module(NAME pixelworld_streaming LAYER 1
                    DEPS asset pixelworld
                    GROUP 2d 3d web)
-eve_declare_module(NAME pixelworld_editor LAYER 6 SCRIPT PixelWorldEditorModule SLOT pixelworldEditor
-                   DEPS pixelworld ui
-                   GROUP 2d 3d web)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
                    DEPS action attributes decision definitions effects inventory settlement)
 # L0 -- foundation (continued)

@@ -143,6 +143,9 @@ eve_declare_module(NAME procgen_graphics_editing LAYER 6
 eve_declare_module(NAME domain_gizmo_editing LAYER 6
                    DEPS audio_editing editing lighting_editing physics_editing
                    GROUP 3d web)
+eve_declare_module(NAME pixelworld_editor LAYER 6 SCRIPT PixelWorldEditorModule SLOT pixelworldEditor
+                   DEPS pixelworld ui
+                   GROUP 2d 3d web)
 # Runtime bridge from capability-selected packages into executable PointGraphs.
 eve_declare_module(NAME asset_procgen LAYER 6
                    DEPS asset procgen
