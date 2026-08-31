@@ -414,14 +414,38 @@ bool RuntimeGeneration::failGeneration(ProcgenCellRequest* request) {
 }
 
 bool RuntimeGeneration::completeCleanup(ProcgenCellRequest* request) {
-    if (!request) return false;
-    const CellKey key{request->level_, request->x_, request->z_};
-    const auto    found = cells_.find(key);
-    if (found == cells_.end() || found->second.state != State::Cleanup ||
-        request->ticket_ != found->second.ticket)
-        return false;
-    cells_.erase(found);
-    return true;
+    std::vector<const ProcgenCellRequest*> requests{request};
+    auto                                   completed = completeCleanupsAtomic(requests);
+    return completed.ok();
+}
+
+Result<uint64_t> RuntimeGeneration::completeCleanupsAtomic(const std::vector<const ProcgenCellRequest*>& requests) {
+    if (requests.empty())
+        return Result<uint64_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "cleanup transaction requires at least one request", "requests"));
+
+    std::vector<CellKey> keys;
+    keys.reserve(requests.size());
+    std::unordered_set<CellKey, CellKeyHash> uniqueKeys;
+    uniqueKeys.reserve(requests.size());
+    for (const auto* request : requests) {
+        if (!request)
+            return Result<uint64_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "cleanup transaction contains a null request", "requests"));
+        const CellKey key{request->level_, request->x_, request->z_};
+        if (!uniqueKeys.insert(key).second)
+            return Result<uint64_t>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "cleanup transaction contains a duplicate cell", "requests"));
+        const auto found = cells_.find(key);
+        if (found == cells_.end() || found->second.state != State::Cleanup || request->seed_ != cellSeed(key) ||
+            request->ticket_ != found->second.ticket)
+            return Result<uint64_t>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "cleanup transaction contains a stale request", "requests"));
+        keys.push_back(key);
+    }
+
+    for (const auto& key : keys) cells_.erase(key);
+    return Result<uint64_t>::success(static_cast<uint64_t>(keys.size()));
 }
 
 bool RuntimeGeneration::hasCell(int level, int x, int z) const {

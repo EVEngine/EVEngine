@@ -295,7 +295,7 @@ revision 反而更高则返回冲突，不会用旧 RuntimeGeneration 状态覆�
 
 cleanup 边界同时退出多个 cell 时，先调用
 `removeCellInstancesAtomic(prefix, requests)` 原子移除所有 Scene batch；只有成功后才逐个调用各自
-`RuntimeGeneration.completeCleanup(request)`。失败时参与 batch 全部保持可见，cleanup ticket 也仍归
+`RuntimeGeneration.completeCleanupsAtomic(requests)`（每个 RuntimeGeneration 各调用一次）。失败时参与 batch 全部保持可见，cleanup ticket 也仍归
 调用方所有。该入口只承诺 Scene 可见状态的事务性，不把两个独立权威 owner 的顺序调用描述成
 跨模块两阶段事务。
 

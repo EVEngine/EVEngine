@@ -89,9 +89,9 @@ TEST_CASE("procgen.runtimeGeneration.partitionsAndPublishesCells") {
     runtime->setMaxGenerating(1);
     runtime->setFrameTimeBudget(2.f);
     CHECK_EQ(runtime->getFrameTimeBudget(), 2.f);
-    runtime->beginFrame();
     runtime->updateSource(5.f, 5.f, 1.f, 0.f);
     CHECK(runtime->getPendingGenerateCount() > 0);
+    runtime->beginFrame();
 
     auto request = ownRequest(runtime->nextGenerate());
     REQUIRE(bool(request));
@@ -254,11 +254,91 @@ TEST_CASE("procgen.runtimeGeneration.rejectsStaleAsyncCleanupTickets") {
     REQUIRE(bool(stale));
     runtime->updateSource(5.f, 5.f, 1.f, 0.f);
     runtime->updateSource(100.f, 100.f, 1.f, 0.f);
+    std::vector<const ProcgenCellRequest*> staleRequests{stale.get()};
+    auto                                   staleResult = runtime->completeCleanupsAtomic(staleRequests);
+    CHECK(!staleResult.ok());
     CHECK(!runtime->completeCleanup(stale.get()));
     auto current = ownRequest(runtime->nextCleanup());
     REQUIRE(bool(current));
     CHECK_NE(current->getTicket(), stale->getTicket());
     CHECK(runtime->completeCleanup(current.get()));
+}
+
+TEST_CASE("procgen.runtimeGeneration.completesCleanupTicketsAtomically") {
+    Procgen proc;
+    auto    runtime = requireRuntime(proc, 79);
+    runtime->addLevel(10.f, 16.f, 1.5f);
+    runtime->setMaxGenerating(8);
+    runtime->updateSource(5.f, 5.f, 1.f, 0.f);
+
+    auto firstGenerated  = ownRequest(runtime->nextGenerate());
+    auto secondGenerated = ownRequest(runtime->nextGenerate());
+    REQUIRE(bool(firstGenerated));
+    REQUIRE(bool(secondGenerated));
+    PointSet output;
+    REQUIRE(runtime->completeGeneration(firstGenerated.get(), &output));
+    REQUIRE(runtime->completeGeneration(secondGenerated.get(), &output));
+    runtime->updateSource(1000.f, 1000.f, 1.f, 0.f);
+
+    auto firstCleanup  = ownRequest(runtime->nextCleanup());
+    auto secondCleanup = ownRequest(runtime->nextCleanup());
+    REQUIRE(bool(firstCleanup));
+    REQUIRE(bool(secondCleanup));
+    std::vector<const ProcgenCellRequest*> empty;
+    auto                                   emptyResult = runtime->completeCleanupsAtomic(empty);
+    REQUIRE(!emptyResult.ok());
+    CHECK(runtime->isRequestCurrent(firstCleanup.get()));
+    CHECK(runtime->isRequestCurrent(secondCleanup.get()));
+    std::vector<const ProcgenCellRequest*> duplicate{firstCleanup.get(), firstCleanup.get()};
+    auto                                   duplicateResult = runtime->completeCleanupsAtomic(duplicate);
+    REQUIRE(!duplicateResult.ok());
+    CHECK(runtime->isRequestCurrent(firstCleanup.get()));
+    CHECK(runtime->isRequestCurrent(secondCleanup.get()));
+
+    auto otherRuntime = requireRuntime(proc, 80);
+    otherRuntime->addLevel(10.f, 16.f, 1.5f);
+    std::vector<const ProcgenCellRequest*> wrongOwner{firstCleanup.get()};
+    auto                                   wrongOwnerResult = otherRuntime->completeCleanupsAtomic(wrongOwner);
+    REQUIRE(!wrongOwnerResult.ok());
+    CHECK(runtime->isRequestCurrent(firstCleanup.get()));
+
+    std::vector<const ProcgenCellRequest*> requests{firstCleanup.get(), secondCleanup.get()};
+    auto                                   completed = runtime->completeCleanupsAtomic(requests);
+    REQUIRE(completed.ok());
+    CHECK_EQ(completed.value(), uint64_t(2));
+    CHECK(!runtime->isRequestCurrent(firstCleanup.get()));
+    CHECK(!runtime->isRequestCurrent(secondCleanup.get()));
+}
+
+TEST_CASE("procgen.runtimeGeneration.squirrelCompletesCleanupTicketsAtomically") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local procgen = eve.Procgen();
+        local runtimeResult = procgen.newRuntimeGeneration(81);
+        local pointsResult = procgen.sampleGrid(1, 1, 1.0, 18, 0.0);
+        if (runtimeResult.ok && pointsResult.ok) {
+            local runtime = runtimeResult.value;
+            local points = pointsResult.value;
+            runtime.addLevel(10.0, 16.0, 1.5);
+            runtime.setMaxGenerating(8);
+            runtime.updateSource(5.0, 5.0, 1.0, 0.0);
+            local first = runtime.nextGenerate();
+            local second = runtime.nextGenerate();
+            if (first != null && second != null && runtime.completeGeneration(first, points) &&
+                runtime.completeGeneration(second, points)) {
+                runtime.updateSource(1000.0, 1000.0, 1.0, 0.0);
+                local firstCleanup = runtime.nextCleanup();
+                local secondCleanup = runtime.nextCleanup();
+                local completed = runtime.completeCleanupsAtomic([firstCleanup, secondCleanup]);
+                if (completed.ok && completed.value == "2" &&
+                    !runtime.isRequestCurrent(firstCleanup) && !runtime.isRequestCurrent(secondCleanup))
+                    result = "ok";
+            }
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 
 TEST_CASE("procgen.runtimeGeneration.enforcesResidentCellReservations") {

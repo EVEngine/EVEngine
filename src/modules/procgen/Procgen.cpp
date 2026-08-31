@@ -3024,6 +3024,20 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("completeGeneration", &RuntimeGeneration::completeGeneration);
     runtimeGeneration.addFunc("failGeneration", &RuntimeGeneration::failGeneration);
     runtimeGeneration.addFunc("completeCleanup", &RuntimeGeneration::completeCleanup);
+    runtimeGeneration.addFunc("completeCleanupsAtomic", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value,
+                                                                                             ssq::Array requestArray) {
+        std::vector<const ProcgenCellRequest*> requests;
+        requests.reserve(requestArray.size());
+        for (size_t index = 0; index < requestArray.size(); ++index)
+            requests.push_back(requestArray.get<ProcgenCellRequest*>(index));
+        return eve::script::projectResult(
+            vm,
+            value
+                ? value->completeCleanupsAtomic(requests)
+                : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                       "completeCleanupsAtomic requires RuntimeGeneration", "runtime"),
+            [](std::uint64_t completed) { return eve::Value(std::to_string(completed)); });
+    });
     runtimeGeneration.addFunc("hasCell", &RuntimeGeneration::hasCell);
     runtimeGeneration.addFunc("getCellOutput", &RuntimeGeneration::getCellOutput);
     runtimeGeneration.addFunc("getCellRevision", &RuntimeGeneration::getCellRevision);

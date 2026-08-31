@@ -148,6 +148,19 @@ public:
     bool failGeneration(ProcgenCellRequest* request);
     /** @brief Acknowledge cleanup after consumers have removed spawned content. */
     bool completeCleanup(ProcgenCellRequest* request);
+    /**
+     * @brief Atomically acknowledge several cleanup tickets owned by this scheduler.
+     * @param requests
+     * Non-empty unique cleanup requests.
+     * @return Number of erased cells, or a structured failure with no cell
+     * changed.
+     * @ownership Request references are borrowed only for this call and are not retained.
+     *
+     * @thread Call synchronously on the scheduler-owning thread.
+     * @reentrant Not reentrant for this
+     * RuntimeGeneration.
+     */
+    [[nodiscard]] Result<uint64_t> completeCleanupsAtomic(const std::vector<const ProcgenCellRequest*>& requests);
 
     bool      hasCell(int level, int x, int z) const;
     PointSet* getCellOutput(int level, int x, int z) const;
