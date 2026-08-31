@@ -49,9 +49,9 @@ struct VirtualTexturePageId {
 /**
  * @brief CPU images and sampling metadata for one atomically publishable physical cache.
  *
- * Slot zero contains a whole-surface fallback. Resident virtual pages occupy the remaining slots;
- * page-table blue is one for a resident page and zero for fallback. Red/green contain normalized
- * physical-slot centres. Upload all three images before publishing the associated material state.
+ * Slot zero contains a coarse whole-surface substitute. Resident virtual pages occupy the remaining
+ * slots; page-table blue is one for a resident page and zero for the substitute. Red/green contain
+ * normalized physical-slot centres. Upload all three images before publishing the associated material state.
  */
 struct VirtualTextureResidentSet {
     std::unique_ptr<image::ImageData> albedoAtlas;
@@ -99,14 +99,14 @@ public:
     [[nodiscard]] eve::Result<std::shared_ptr<const image::ImageData>> requestNormalPage(int pageX, int pageY,
                                                                                          int mipLevel);
 
-    /** @brief Bake the complete mip-zero albedo fallback without exposing cache internals. */
+    /** @brief Bake the complete mip-zero albedo substitute used for nonresident pages. */
     [[nodiscard]] eve::Result<std::unique_ptr<image::ImageData>> bakeAlbedo();
 
-    /** @brief Bake the complete mip-zero tangent-space normal fallback. */
+    /** @brief Bake the complete mip-zero tangent-space normal substitute for nonresident pages. */
     [[nodiscard]] eve::Result<std::unique_ptr<image::ImageData>> bakeNormal();
 
     /**
-     * @brief Build an atlas, page table, and whole-surface fallback for selected mip-zero pages.
+     * @brief Build an atlas, page table, and whole-surface substitute for selected mip-zero pages.
      * @param residentPages Unique page coordinates to publish as resident.
      * @return A self-contained immutable upload transaction, or a validation failure.
      */
