@@ -13,6 +13,8 @@
 
 namespace eve::inventory {
 
+class InventorySaveSession;
+
 /** @brief 格子型物品容器（脚本可直接操作）。 */
 class Bag {
 public:
@@ -105,6 +107,7 @@ public:
 
 private:
     friend class InventorySystem;
+    friend class InventorySaveSession;
 
     std::string id_;
     std::string kind_ = "backpack";

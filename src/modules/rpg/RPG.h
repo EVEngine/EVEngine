@@ -18,6 +18,7 @@
 
 #include "common/Module.h"
 #include "rpg/LevelSystem.h"
+#include "rpg/BattleVictory.h"
 #include "rpg/RPGActor.h"
 #include "rpg/StatusTypes.h"
 #include "rpg/SkillTypes.h"
@@ -38,7 +39,11 @@ namespace eve::rpg {
 struct SettlementContext;
 class Tracker;
 class Battle;
+class Party;
 class GameState;
+class WorldState;
+class StoryEventSession;
+struct WorldLootRequest;
 
 /** @brief RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。 */
 class RPG : public Module {
@@ -57,6 +62,14 @@ public:
      * result.
      */
     RPGActor *newActor();
+    /**
+     * @brief Create an empty generation-safe party roster.
+     * @return Owned nullable party; the caller is responsible for destruction.
+     * @ownership The caller owns the Party, which never owns its linked actors.
+     * @lifetime Valid until caller destruction; linked actors may independently become stale.
+     * @thread Call and use on the RPG simulation thread.
+     */
+    Party *newParty();
 
     /** @brief 效果定义注册（数据驱动，进程级注册表）。 */
     int registerEffectsFromJson(const std::string &json);
@@ -70,8 +83,129 @@ public:
 
     /** @brief 任务定义注册。 */
     int registerQuestsFromJson(const std::string &json);
+    /**
+     * @brief Strictly validate and atomically replace the process-local quest catalogue.
+     * @return Committed definition count or a structured failure; the previous catalogue survives failure.
+     * @thread Call on the owning simulation/content thread.
+     * @reentrancy Does not invoke script callbacks.
+     */
+    [[nodiscard]] eve::Result<int> replaceQuestsFromJson(const std::string &json);
     void clearQuestDefinitions();
     int getQuestDefinitionCount();
+    /** @brief Return whether one exact quest definition is present in the current catalogue. */
+    bool hasQuestDefinition(const std::string &id) const;
+    /**
+     * @brief Atomically complete one ready quest and apply all item/attribute rewards.
+     * @return Committed reward-entry count, or a structured failure without observable mutation.
+     * @thread Call on the authoritative state owners' simulation thread.
+     * @reentrancy Inventory observers run only after the complete state is committed.
+     */
+    [[nodiscard]] eve::Result<int> claimQuestRewards(Tracker *tracker, GameState *gameState,
+                                                      inventory::Bag *bag, const std::string &questId);
+    /**
+     * @brief Atomically settle one persistent loot object across world, quest, state and inventory owners.
+     * @return Committed-effect count, or a structured failure without observable mutation.
+     * @thread Call on the authoritative owners' simulation thread.
+     * @reentrancy Inventory observers run only after all owners are committed.
+     */
+    [[nodiscard]] eve::Result<int> collectWorldLoot(Tracker *tracker, GameState *gameState,
+                                                     inventory::Bag *bag,
+                                                     const WorldLootRequest &request);
+    /**
+     * @brief Atomically settle one victorious persistent encounter.
+     * @return Levels and learned skills after the complete settlement, or structured failure.
+     * @thread Call on the authoritative owners' simulation thread.
+     * @reentrancy No callbacks are invoked; level events are poll-only.
+     */
+    [[nodiscard]] eve::Result<BattleVictoryReceipt>
+    settleBattleVictory(RPGActor *actor, Tracker *tracker, GameState *gameState,
+                        const BattleVictoryRequest &request);
+    /** @brief Atomically debit GameState currency and add purchased items to Bag. */
+    [[nodiscard]] eve::Result<int> buyFromShop(GameState *gameState, inventory::Bag *bag,
+                                                const std::string &currencyId,
+                                                const std::string &itemId, int quantity,
+                                                double unitPrice);
+    /** @brief Atomically remove sold items from Bag and credit GameState currency. */
+    [[nodiscard]] eve::Result<int> sellToShop(GameState *gameState, inventory::Bag *bag,
+                                               const std::string &currencyId,
+                                               const std::string &itemId, int quantity,
+                                               double unitPrice);
+    /** @brief Strictly validate and atomically replace the authoritative shop catalogue. */
+    [[nodiscard]] eve::Result<int> replaceShopOffersFromJson(const std::string &json);
+    /** @brief Return the committed shop-offer count. */
+    int getShopOfferCount() const;
+    /** @brief Clear the shop catalogue for teardown or failed initial publication rollback. */
+    void clearShopOffers();
+    /** @brief Return whether an exact shop offer id exists. */
+    bool hasShopOffer(const std::string &offerId) const;
+    std::string getShopOfferId(int index) const;
+    std::string getShopOfferItemId(int index) const;
+    std::string getShopOfferName(int index) const;
+    std::string getShopOfferDescription(int index) const;
+    int getShopOfferBuyPrice(int index) const;
+    int getShopOfferSellPrice(int index) const;
+    /** @brief Buy using the item and price from the authoritative shop catalogue. */
+    [[nodiscard]] eve::Result<int> buyShopOffer(GameState *gameState, inventory::Bag *bag,
+                                                const std::string &currencyId,
+                                                const std::string &offerId, int quantity);
+    /** @brief Sell using the item and price from the authoritative shop catalogue. */
+    [[nodiscard]] eve::Result<int> sellShopOffer(GameState *gameState, inventory::Bag *bag,
+                                                 const std::string &currencyId,
+                                                 const std::string &offerId, int quantity);
+    /** @brief Strictly replace the data-driven encounter catalogue. */
+    [[nodiscard]] eve::Result<int> replaceEncountersFromJson(const std::string &json);
+    void clearEncounters();
+    bool hasEncounter(const std::string &encounterId) const;
+    int getEncounterMemberCount(const std::string &encounterId) const;
+    /**
+     * @brief Create the first member through the single-enemy compatibility facade.
+     * @return Borrowed nullable actor owned by the RPG ECS world.
+     * @ownership The RPG ECS world owns the actor; callers release it through RPGActor::release().
+     * @lifetime Valid until release, RPG teardown, or owning ECS world reset.
+     * @thread Call on the owning simulation thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    RPGActor *newEncounterActor(const std::string &encounterId);
+    /**
+     * @brief Create one indexed member from an encounter composition.
+     * @return Borrowed nullable actor owned by the RPG ECS world.
+     * @ownership The RPG ECS world owns the actor; callers release it through RPGActor::release().
+     * @lifetime Valid until release, RPG teardown, or owning ECS world reset.
+     * @thread Call on the owning simulation thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    RPGActor *newEncounterMemberActor(const std::string &encounterId, int memberIndex);
+    std::string getEncounterDisplayName(const std::string &encounterId) const;
+    double getEncounterMaxHp(const std::string &encounterId) const;
+    std::string getEncounterMemberDisplayName(const std::string &encounterId, int memberIndex) const;
+    double getEncounterMemberMaxHp(const std::string &encounterId, int memberIndex) const;
+    /** @brief Strictly replace ordered companion/AI battle tactics. */
+    [[nodiscard]] eve::Result<int> replaceBattleTacticsFromJson(const std::string &json);
+    void clearBattleTactics();
+    /** @brief Select and queue one action from a registered tactics definition. */
+    [[nodiscard]] eve::Result<std::string> queueBattleTactic(Battle *battle, RPGActor *actor,
+                                                             const std::string &tacticsId);
+    /** @brief Strictly validate and atomically replace versioned story-event content. */
+    [[nodiscard]] eve::Result<int> replaceStoryEventsFromJson(const std::string &json);
+    /** @brief Clear story-event content during teardown or content-package rollback. */
+    void clearStoryEvents();
+    /** @brief Return the number of committed story-event definitions. */
+    int getStoryEventCount() const;
+    /** @brief Return whether an exact story-event id exists. */
+    bool hasStoryEvent(const std::string &eventId) const;
+    /**
+     * @brief Create an empty caller-owned story-event session.
+     * @return Owned nullable session; caller destroys it after use.
+     * @ownership The caller owns the session; it owns no GameState or presentation object.
+     * @thread Create and use on the RPG simulation thread.
+     * @reentrancy Construction invokes no callbacks.
+     */
+    StoryEventSession *newStoryEventSession();
+    /** @brief Settle a victory using only rewards declared by the encounter catalogue. */
+    [[nodiscard]] eve::Result<BattleVictoryReceipt>
+    settleEncounterVictory(RPGActor *actor, Tracker *tracker, GameState *gameState,
+                           const std::string &encounterId, const std::string &mapId,
+                           const std::string &objectId);
     /**
      * @brief 创建一个新的目标追踪器（任务日志 / 成就 / 教程各建一份）。
      * @return Owned nullable tracker created with new; the caller must destroy it.
@@ -144,6 +278,16 @@ public:
      * @lifetime Valid until the caller destroys it; not retained by RPG.
      */
     GameState *newGameState();
+
+    /**
+     * @brief Create a typed per-map object-state adapter over one GameState owner.
+     * @param gameState Borrowed authoritative state that must outlive the returned adapter.
+     * @return Caller-owned adapter, or null when gameState is null.
+     * @ownership Caller destroys the adapter; it never owns GameState.
+     * @thread Create and use on the GameState owning simulation thread.
+     * @reentrancy No callbacks are invoked.
+     */
+    WorldState *newWorldState(GameState *gameState);
     /**
      * @brief 进程级全局游戏状态（借用，不销毁）。
      * @return Borrowed nullable global GameState owned by the process.

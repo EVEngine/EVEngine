@@ -1,0 +1,83 @@
+{
+  "width": 20,
+  "height": 12,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "origin": [160, 82],
+  "autoReload": true,
+  "layers": [
+    {
+      "type": "tilelayer",
+      "name": "ground",
+      "layer": 0,
+      "data": [
+        2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,2,2,1,1,1,1,1,2,2,1,1,1,1,2,1,1,2,
+        2,1,1,1,2,1,1,2,2,1,1,1,1,2,1,1,2,1,1,2,
+        2,1,1,1,1,1,1,1,2,1,1,1,1,2,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,2,2,1,1,1,1,1,2,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,2,1,1,2,2,1,2,1,1,2,2,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,2,1,1,1,2,
+        2,1,1,1,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
+      ]
+    },
+    {
+      "type": "objectgroup",
+      "name": "events",
+      "objects": [
+        { "name": "forest_spawn", "type": "spawn", "x": 2, "y": 5, "width": 0, "height": 0 },
+        {
+          "name": "village_gate",
+          "type": "portal",
+          "x": 1,
+          "y": 5,
+          "width": 0,
+          "height": 0,
+          "properties": [
+            { "name": "targetMap", "type": "string", "value": "village" },
+            { "name": "targetX", "type": "int", "value": 17 },
+            { "name": "targetY", "type": "int", "value": 5 },
+            { "name": "facingX", "type": "int", "value": -1 },
+            { "name": "facingY", "type": "int", "value": 0 }
+          ]
+        },
+        {
+          "name": "ranger",
+          "type": "quest_npc",
+          "x": 6,
+          "y": 8,
+          "width": 0,
+          "height": 0,
+          "properties": [
+            { "name": "questId", "type": "string", "value": "quest.ranger_cache" },
+            { "name": "dialogueBase", "type": "string", "value": "forest.ranger" },
+            { "name": "speakerName", "type": "string", "value": "雾林巡守" }
+          ]
+        },
+        { "name": "forest_slime", "type": "encounter", "x": 10, "y": 5, "width": 0, "height": 0, "properties": [{"name":"encounterId","type":"string","value":"slime.forest"}] },
+        {
+          "name": "forest_cache",
+          "type": "loot",
+          "x": 15,
+          "y": 3,
+          "width": 0,
+          "height": 0,
+          "properties": [
+            { "name": "displayName", "type": "string", "value": "巡守物资箱" },
+            { "name": "requiredQuest", "type": "string", "value": "quest.ranger_cache" },
+            { "name": "itemId", "type": "string", "value": "potion" },
+            { "name": "itemCount", "type": "int", "value": 1 },
+            { "name": "gold", "type": "int", "value": 10 },
+            { "name": "notifyTopic", "type": "string", "value": "interact" },
+            { "name": "notifyTarget", "type": "string", "value": "forest_cache" },
+            { "name": "notifyAmount", "type": "int", "value": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}

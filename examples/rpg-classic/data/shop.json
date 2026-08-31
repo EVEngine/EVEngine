@@ -1,5 +1,5 @@
 [
-  {"id": "potion", "name": "治疗药水", "desc": "恢复 25 生命", "price": 20},
-  {"id": "iron_sword", "name": "铁剑", "desc": "攻击 +8", "price": 120},
-  {"id": "leather_armor", "name": "皮甲", "desc": "防御 +6", "price": 90}
+  {"id": "potion", "itemId": "potion", "name": "治疗药水", "desc": "恢复 25 生命", "buyPrice": 20, "sellPrice": 10},
+  {"id": "iron_sword", "itemId": "iron_sword", "name": "铁剑", "desc": "攻击 +8", "buyPrice": 120, "sellPrice": 60},
+  {"id": "leather_armor", "itemId": "leather_armor", "name": "皮甲", "desc": "防御 +6", "buyPrice": 90, "sellPrice": 45}
 ]

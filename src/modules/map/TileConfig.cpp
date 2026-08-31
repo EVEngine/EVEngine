@@ -886,6 +886,19 @@ void parseObjectGroup(Poco::JSON::Object::Ptr group, std::vector<MapObject> &out
         mo.width = o->has("width") ? asFloat(o->get("width"), 0.f) : 0.f;
         mo.height = o->has("height") ? asFloat(o->get("height"), 0.f) : 0.f;
         if (o->has("gid")) mo.gid = uint32_t(asInt(o->get("gid"), 0));
+        if (o->has("properties")) {
+            try {
+                auto properties = o->getArray("properties");
+                for (size_t propertyIndex = 0; properties && propertyIndex < properties->size();
+                     ++propertyIndex) {
+                    auto property = properties->getObject(static_cast<unsigned int>(propertyIndex));
+                    if (!property || !property->has("name") || !property->has("value")) continue;
+                    const std::string name = asString(property->get("name"));
+                    if (!name.empty()) mo.properties.emplace(name, asString(property->get("value")));
+                }
+            } catch (...) {
+            }
+        }
         out.push_back(std::move(mo));
     }
 }
