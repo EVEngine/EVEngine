@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Export.h"
+#include "common/Result.h"
 
 #include <cstdint>
 #include <string>
@@ -22,6 +23,16 @@ struct EVENGINE_API ProcgenInstanceDesc {
     uint32_t    seed   = 1;
 };
 
+/** @brief Identity-based, revision-checked mutation of one procedural scene batch. */
+struct EVENGINE_API ProcgenInstanceDelta {
+    uint64_t                         baseRevision   = 0;
+    uint64_t                         targetRevision = 0;
+    std::vector<ProcgenInstanceDesc> added;
+    std::vector<ProcgenInstanceDesc> updated;
+    std::vector<std::string>         removed;
+    std::vector<std::string>         targetOrder;
+};
+
 /**
  * @brief Optional scene consumer for procedural instance batches.
  *
@@ -39,6 +50,16 @@ public:
                             const std::vector<ProcgenInstanceDesc>& instances) = 0;
     /** @brief Remove the visible contents of a batch. */
     virtual bool removeBatch(const std::string& batchId) = 0;
+    /**
+     * @brief Apply one prevalidated identity delta atomically to an existing batch.
+     * @return The committed target revision, or a structured stale/validation/provider failure.
+     * @thread Called synchronously on the scene-owning thread; implementations must not retain references.
+     * @reentrant Not reentrant for the same batch.
+     */
+    [[nodiscard]] virtual Result<uint64_t> applyDelta(const std::string& batchId,
+                                                       const ProcgenInstanceDelta& delta) = 0;
+    /** @brief Current committed revision of a batch, or zero when it is absent. */
+    virtual uint64_t batchRevision(const std::string& batchId) const = 0;
     /** @brief Number of currently published instances in a batch. */
     virtual int instanceCount(const std::string& batchId) const = 0;
     /** @brief Instances newly created by the batch's latest successful apply. */

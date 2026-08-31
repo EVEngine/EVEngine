@@ -202,8 +202,63 @@ public:
         TransformSystem::updateHost(host);
         counts_[batchId] = int(instances.size());
         ids_[batchId]    = std::move(nextIds);
+        instances_[batchId] = instances;
+        revisions_[batchId] = revisions_[batchId] + 1;
         stats_[batchId]  = stats;
         return true;
+    }
+
+    eve::Result<uint64_t> applyDelta(const std::string& batchId,
+                                     const eve::ProcgenInstanceDelta& delta) override {
+        const auto current = revisions_.find(batchId);
+        if (batchId.empty() || current == revisions_.end())
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "procedural scene batch is not published", "batchId"));
+        if (delta.baseRevision == 0 || current->second != delta.baseRevision ||
+            delta.targetRevision != delta.baseRevision + 1)
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "procedural scene delta revision is stale", "baseRevision"));
+
+        std::unordered_map<std::string, eve::ProcgenInstanceDesc> staged;
+        for (const auto& instance : instances_.at(batchId)) staged.emplace(instance.id, instance);
+        for (const auto& id : delta.removed)
+            if (id.empty() || staged.erase(id) != 1)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "procedural scene delta removes an unknown identity", "removed"));
+        for (const auto& instance : delta.updated) {
+            if (instance.id.empty() || staged.find(instance.id) == staged.end())
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "procedural scene delta updates an unknown identity", "updated"));
+            staged[instance.id] = instance;
+        }
+        for (const auto& instance : delta.added) {
+            if (instance.id.empty() || !staged.emplace(instance.id, instance).second)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "procedural scene delta adds a duplicate identity", "added"));
+        }
+        if (staged.size() != delta.targetOrder.size())
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "procedural scene delta target order is incomplete", "targetOrder"));
+        std::vector<eve::ProcgenInstanceDesc> target;
+        target.reserve(delta.targetOrder.size());
+        for (const auto& id : delta.targetOrder) {
+            auto found = staged.find(id);
+            if (found == staged.end())
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "procedural scene delta target order has unknown identity", "targetOrder"));
+            target.push_back(found->second);
+            staged.erase(found);
+        }
+        if (!staged.empty() || !applyBatch(batchId, target))
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "procedural scene provider rejected delta commit", "batchId"));
+        revisions_[batchId] = delta.targetRevision;
+        return eve::Result<uint64_t>::success(delta.targetRevision);
+    }
+
+    uint64_t batchRevision(const std::string& batchId) const override {
+        const auto found = revisions_.find(batchId);
+        return found == revisions_.end() ? 0 : found->second;
     }
 
     bool removeBatch(const std::string& batchId) override {
@@ -222,6 +277,8 @@ public:
         stats_[batchId] = stats;
         counts_.erase(batchId);
         ids_.erase(batchId);
+        instances_.erase(batchId);
+        revisions_.erase(batchId);
         return true;
     }
 
@@ -252,6 +309,8 @@ private:
     const std::unordered_set<std::string> emptyIds_;
     std::unordered_map<std::string, int> counts_;
     std::unordered_map<std::string, std::unordered_set<std::string>> ids_;
+    std::unordered_map<std::string, std::vector<eve::ProcgenInstanceDesc>> instances_;
+    std::unordered_map<std::string, uint64_t> revisions_;
     std::unordered_map<std::string, Stats> stats_;
 };
 

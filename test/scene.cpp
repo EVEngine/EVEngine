@@ -259,6 +259,7 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     CHECK_EQ(sink->instanceCount("biome/0/0"), 2);
     CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 2);
     CHECK_EQ(sink->lastReusedCount("biome/0/0"), 0);
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(1));
 
     auto hostResult = mod->findHost("__pcg/biome/0/0");
     REQUIRE(hostResult.ok());
@@ -275,23 +276,46 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     auto *pooledRenderable = eve::graphics::Renderable3D::create();
     REQUIRE(host->linkRenderable3D("tree-1", pooledRenderable));
 
-    instances.resize(1);
-    instances[0].x = 7.f;
-    CHECK(sink->applyBatch("biome/0/0", instances));
-    CHECK_EQ(sink->instanceCount("biome/0/0"), 1);
-    CHECK_EQ(host->getNodeCount(), 2);
+    eve::ProcgenInstanceDelta delta;
+    delta.baseRevision   = 1;
+    delta.targetRevision = 2;
+    instances[0].x       = 7.f;
+    delta.updated.push_back(instances[0]);
+    delta.removed.push_back("rock-2");
+    eve::ProcgenInstanceDesc flower;
+    flower.id    = "flower-3";
+    flower.asset = "lily";
+    flower.y     = 4.f;
+    delta.added.push_back(flower);
+    delta.targetOrder = {"flower-3", "tree-1"};
+    auto applied = sink->applyDelta("biome/0/0", delta);
+    REQUIRE(applied.ok());
+    CHECK_EQ(applied.value(), uint64_t(2));
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(2));
+    CHECK_EQ(sink->instanceCount("biome/0/0"), 2);
+    CHECK_EQ(host->getNodeCount(), 3);
     auto updatedTreeResult = host->findById("tree-1");
     REQUIRE(updatedTreeResult.ok());
     CHECK(approxEq(updatedTreeResult.value()->x, 7.f));
     auto removedRockResult = host->findById("rock-2");
     CHECK(!removedRockResult.ok());
+    auto flowerResult = host->findById("flower-3");
+    REQUIRE(flowerResult.ok());
+    CHECK(approxEq(flowerResult.value()->y, 4.f));
     CHECK_EQ(host->linkCount("tree-1"), 1);
-    CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 0);
+    CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 1);
     CHECK_EQ(sink->lastReusedCount("biome/0/0"), 1);
     CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 1);
 
+    delta.baseRevision = 1;
+    delta.updated[0].x = 99.f;
+    auto stale = sink->applyDelta("biome/0/0", delta);
+    CHECK(!stale.ok());
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(2));
+    CHECK(approxEq(host->findById("tree-1").value()->x, 7.f));
+
     CHECK(sink->removeBatch("biome/0/0"));
-    CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 1);
+    CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 2);
     ecs::DestroyEntity(pooledRenderable);
     CHECK_EQ(sink->instanceCount("biome/0/0"), 0);
     CHECK_EQ(host->getNodeCount(), 1);

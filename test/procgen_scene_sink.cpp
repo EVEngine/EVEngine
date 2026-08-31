@@ -30,14 +30,24 @@ public:
         }
         stats.removed = int(oldIds.size());
         batches[batchId] = instances;
+        revisions[batchId] = revisions[batchId] + 1;
         latest[batchId]  = stats;
         return true;
+    }
+    eve::Result<uint64_t> applyDelta(const std::string&, const eve::ProcgenInstanceDelta&) override {
+        return eve::Result<uint64_t>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "mock delta path is not configured"));
+    }
+    uint64_t batchRevision(const std::string& batchId) const override {
+        const auto found = revisions.find(batchId);
+        return found == revisions.end() ? 0 : found->second;
     }
     bool removeBatch(const std::string& batchId) override {
         const auto found = batches.find(batchId);
         if (found == batches.end()) return false;
         latest[batchId] = {0, 0, int(found->second.size())};
         batches.erase(found);
+        revisions.erase(batchId);
         return true;
     }
     int instanceCount(const std::string& batchId) const override {
@@ -63,6 +73,7 @@ public:
         int removed = 0;
     };
     std::unordered_map<std::string, std::vector<eve::ProcgenInstanceDesc>> batches;
+    std::unordered_map<std::string, uint64_t> revisions;
     std::unordered_map<std::string, Stats> latest;
 };
 
