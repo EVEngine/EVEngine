@@ -459,6 +459,13 @@ position/quaternion，并接受 selected bone、retarget mapping 与 mask。它�
 只有成功且 revision 仍匹配的 artifact 才能 publish。自定义 mesh、分辨率、相机距离及材质交叉字段会在
 调用 renderer 前校验。
 
+`MaterialStudioController` 在这些底层契约上提供实时编辑会话。UI 在 slider、颜色选择器或资产槽开始交互时
+调用 `beginInteraction()`，把中间值传给 `updateInteraction()`，并用宿主的单调毫秒时间调用 `tick()`。
+中间值只进入 owned draft 和隔离预览；`commitInteraction()` 才把最终值作为一个事务发布，因此一次拖拽只
+生成一条 undo 记录。`cancelInteraction()` 不修改 live material。默认预览间隔约 33ms，也可通过
+`setPreviewRate()` 在 1–240 Hz 内调整。完整布局、状态、生命周期与失败契约见
+[`实时材质 Studio 设计`](../../dev/2026-08-31-realtime-material-studio.md)。
+
 `Light3DDocumentTarget` 和 `EnvironmentDocumentTarget` 实现标准 `IPropertyProvider`、可逆 operation、
 snapshot/load 与结构化诊断。Light 覆盖 type、position/direction、HDR color/intensity、radius、shadow
 及 volumetric；Environment 覆盖 static/DayNight/Weather mode、sky/ambient/exposure、时钟/大气、
