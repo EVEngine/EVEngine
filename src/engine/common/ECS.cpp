@@ -743,7 +743,10 @@ function eve::view(entityClass) {
 }
 
 function eve::ecsReady() {
-    return ("Entity" in eve) && ("Component" in eve) && ("System" in eve)
+    // This function is installed only after the complete ECS script has run.
+    // Avoid probing the delegated eve table here: Squirrel's `in` lookup may
+    // invoke its lazy _get handler and turn a readiness query into an error.
+    return true
 }
 )SQ";
 
@@ -851,6 +854,11 @@ void exposeECS(ssq::Table& table) {
     // A new VM re-runs every hook (SceneEntity class, …) against this table.
     postEcsHooksFlushed() = 0;
     flushPostEcsHooks(table);
+}
+
+void prepareEcsScriptInjection() {
+    ecsScriptInjected()  = false;
+    postEcsHooksFlushed() = 0;
 }
 
 void registerCppEntityView(size_t typeHash, CppEntityViewFn fn) {

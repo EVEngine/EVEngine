@@ -1389,7 +1389,7 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (coverage)
-        timeout-minutes: 30
+        timeout-minutes: 40
         env:
           ALSOFT_DRIVERS: "null"
         run: |

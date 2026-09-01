@@ -159,6 +159,7 @@ protected:
     static void exposeVM(ssq::VM& vm);
 
 private:
+    static int ensureScriptEcs();
     static int exposeAllForCompatibility();
 
     // Keep unordered_map lookup and lazy-creation code out of the two public
