@@ -69,3 +69,18 @@ TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
         "if (\"getPlatform\" in compatSystem) throw \"native System leaked into script ECS\"\n",
         "eager-native-binding.nut");
 }
+
+TEST_CASE("moduleExpose.lazyGraphicsPreservesReturnedSpriteSurface") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    ModuleManager::expose(runtime);
+
+    runtime.runSource("g <- eve.Graphics()\n", "lazy-graphics-instance.nut");
+    REQUIRE(ModuleManager::expose_pending() >= 0);
+    runtime.runSource(R"(
+        s <- g.newSprite2D()
+        if (!(s instanceof eve.Sprite2D)) throw "wrong Sprite2D class after pending exposers"
+        s.setBlend("alpha")
+        s.setAnchor(0.25, 0.75)
+        s.destroy()
+    )", "lazy-graphics-sprite.nut");
+}
