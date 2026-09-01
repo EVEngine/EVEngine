@@ -53,10 +53,18 @@ PROFILES = (
 )
 HOSTLESS = {"procgen-core-only", "physics-core-only", "asset-core-only", "headless", "server"}
 RUNTIME_ONLY = {"runtime-3d"}
+EDITOR_ADAPTERS = {"tilelayer_target", "heightmap_target", "voxelworld_target"}
 
 
 def is_editor_module(name: str) -> bool:
-    return name in {"editor", "editing"} or name.endswith("_editing")
+    return (
+        name in {"editor", "editing"}
+        or name in EDITOR_ADAPTERS
+        or name.endswith("_editing")
+        or name.endswith("_editor")
+    )
+
+
 CORE_SEEDS = {
     "procgen-core-only": ("common",),
     "physics-core-only": ("common", "platform_event"),

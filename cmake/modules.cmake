@@ -181,7 +181,7 @@ function(eve_resolve_modules)
         endif()
 
         if(EVENGINE_PROFILE STREQUAL "runtime-3d" AND
-           m MATCHES "^(editor|editing|.*_editing)$")
+           m MATCHES "^(editor|editing|.*_editing|.*_editor|tilelayer_target|heightmap_target|voxelworld_target)$")
             set(_on FALSE)
         endif()
 
@@ -229,7 +229,7 @@ function(eve_resolve_modules)
 
     if(EVENGINE_PROFILE STREQUAL "runtime-3d")
         foreach(m IN LISTS _wanted)
-            if(m MATCHES "^(editor|editing|.*_editing)$")
+            if(m MATCHES "^(editor|editing|.*_editing|.*_editor|tilelayer_target|heightmap_target|voxelworld_target)$")
                 message(FATAL_ERROR
                     "Runtime-only profile '${EVENGINE_PROFILE}' acquired editing module '${m}'")
             endif()

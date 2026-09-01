@@ -97,6 +97,7 @@ eve_declare_module(NAME voxel_editing LAYER 6
                    DEPS editing
                    OPTIONAL_DEPS voxel
                    GROUP 3d)
+# L7 -- domain editor adapters
 eve_declare_module(NAME tilelayer_target LAYER 7 SCRIPT TileLayerTargetModule SLOT tileLayerTarget
                    DEPS editor map map_editing
                    GROUP 3d)
@@ -152,6 +153,7 @@ eve_declare_module(NAME stylize_editor LAYER 7 DEPS editor graphics_editor styli
 eve_declare_module(NAME ui_editor LAYER 7 DEPS editor ui_editing GROUP 3d web)
 eve_declare_module(NAME virtualgeometry_editor LAYER 7 DEPS editor virtualgeometry_editing GROUP 3d)
 eve_declare_module(NAME voxel_editor LAYER 7 DEPS editor voxel_editing GROUP 3d)
+# L6 -- orchestration (continued)
 eve_declare_module(NAME virtualgeometry_editing LAYER 6
                    DEPS editing virtualgeometry
                    GROUP 3d)
