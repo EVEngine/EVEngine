@@ -345,6 +345,10 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 debug
+        # A PR that changes the third-party patch/cache key must do a full cold
+        # dependency plus engine/test build. Recent windows-2025 runners can
+        # exceed 40 minutes without any compiler failure, so retain a bounded
+        # hang guard while allowing the cold build to finish.
         timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
