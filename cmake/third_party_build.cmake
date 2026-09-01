@@ -181,6 +181,19 @@ function(check_third_party_project name repo)
         list(APPEND _eve_tp_cmake_args
             "-DCMAKE_CXX_COMPILER_LAUNCHER:STRING=${_eve_tp_cxx_launcher}")
     endif()
+    if(CMAKE_C_COMPILER_LAUNCHER OR CMAKE_CXX_COMPILER_LAUNCHER)
+        # Assimp otherwise finds Strawberry Perl's ccache.exe and installs it
+        # as a global RULE_LAUNCH_COMPILE, double-wrapping every dependency
+        # compile ahead of the launcher supplied above.
+        list(APPEND _eve_tp_cmake_args -DASSIMP_BUILD_USE_CCACHE=OFF)
+    endif()
+    if(MSVC AND (CMAKE_C_COMPILER_LAUNCHER OR CMAKE_CXX_COMPILER_LAUNCHER))
+        # Cached MSVC objects must be self-contained. /Zi makes parallel
+        # compiles share a PDB that sccache cannot read while cl.exe owns it.
+        list(APPEND _eve_tp_cmake_args
+            -DCMAKE_POLICY_DEFAULT_CMP0141=NEW
+            -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded)
+    endif()
     # Windows only: force md/mdd before any add_subdirectory so squirrel/OpenAL
     # match the names the engine already links. Do not set these on Apple/Linux.
     if(WIN32)
