@@ -163,19 +163,20 @@ function(check_third_party_project name repo)
         -DEVENGINE_THIRD_PARTY_GROUPS=${_eve_tp_groups_arg}
         -DEVENGINE_BUILD_HOST=${EVENGINE_BUILD_HOST})
     # ExternalProject configures the dependency aggregate in a separate CMake
-    # process, so it does not inherit the parent's compiler launcher cache
-    # variables. Pass them explicitly; otherwise a fresh Windows runner can
-    # auto-detect Strawberry Perl's unrelated ccache.exe and then fail to
-    # execute our .cmd compiler wrapper. ExternalProject's LIST_SEPARATOR
-    # preserves compound launchers such as `cmake -E env ... sccache` as one
-    # cache value across the child configure command.
-    if(CMAKE_C_COMPILER_LAUNCHER)
+    # process, so non-MSVC builds must receive the parent's compiler launcher
+    # explicitly. LIST_SEPARATOR preserves compound launchers such as
+    # `cmake -E env ... sccache` as one child cache value.
+    # The Windows dependency install is cached as one Actions artifact. Do not
+    # also put its objects through sccache: several vendored projects force
+    # /Zi and /Fd, so sccache treats their shared PDB as an output and races
+    # parallel cl.exe processes. The engine build keeps its parent launcher.
+    if(CMAKE_C_COMPILER_LAUNCHER AND NOT MSVC)
         string(REPLACE ";" "|" _eve_tp_c_launcher
             "${CMAKE_C_COMPILER_LAUNCHER}")
         list(APPEND _eve_tp_cmake_args
             "-DCMAKE_C_COMPILER_LAUNCHER:STRING=${_eve_tp_c_launcher}")
     endif()
-    if(CMAKE_CXX_COMPILER_LAUNCHER)
+    if(CMAKE_CXX_COMPILER_LAUNCHER AND NOT MSVC)
         string(REPLACE ";" "|" _eve_tp_cxx_launcher
             "${CMAKE_CXX_COMPILER_LAUNCHER}")
         list(APPEND _eve_tp_cmake_args
@@ -183,16 +184,9 @@ function(check_third_party_project name repo)
     endif()
     if(CMAKE_C_COMPILER_LAUNCHER OR CMAKE_CXX_COMPILER_LAUNCHER)
         # Assimp otherwise finds Strawberry Perl's ccache.exe and installs it
-        # as a global RULE_LAUNCH_COMPILE, double-wrapping every dependency
-        # compile ahead of the launcher supplied above.
+        # as a global RULE_LAUNCH_COMPILE. That either double-wraps the
+        # supplied launcher or, on MSVC, cannot execute our .cmd wrapper.
         list(APPEND _eve_tp_cmake_args -DASSIMP_BUILD_USE_CCACHE=OFF)
-    endif()
-    if(MSVC AND (CMAKE_C_COMPILER_LAUNCHER OR CMAKE_CXX_COMPILER_LAUNCHER))
-        # Cached MSVC objects must be self-contained. /Zi makes parallel
-        # compiles share a PDB that sccache cannot read while cl.exe owns it.
-        list(APPEND _eve_tp_cmake_args
-            -DCMAKE_POLICY_DEFAULT_CMP0141=NEW
-            -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded)
     endif()
     # Windows only: force md/mdd before any add_subdirectory so squirrel/OpenAL
     # match the names the engine already links. Do not set these on Apple/Linux.
