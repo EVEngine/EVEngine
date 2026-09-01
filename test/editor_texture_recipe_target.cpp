@@ -8,12 +8,12 @@ SelectionSnapshot select(const TextureRecipeTarget& target) {
     SelectionSnapshot selection;
     selection.channel = "texture-recipe";
     selection.items.push_back({SelectionDomain::Asset, TargetId(target.targetId()),
-                               StableId(target.targetId()), "texture-recipe"});
+                               StableId(target.targetId().value()), "texture-recipe"});
     return selection;
 }
 void apply(TextureRecipeTarget& target, EditorResult<DomainOperation> operation) {
-    REQUIRE(operation.value);
-    REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());
+    REQUIRE(operation.ok());
+    REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }
 }
 TEST_CASE("editor.texture_recipe.reflects_schema_and_reverses_parameters") {
@@ -24,15 +24,15 @@ TEST_CASE("editor.texture_recipe.reflects_schema_and_reverses_parameters") {
     REQUIRE(schema.find(PropertyPath("param.seamless")));
     auto width = target.makeSet(selection, PropertyPath("param.width"), int64_t{16},
                                 PropertySetMode::Absolute);
-    REQUIRE(width.value);
-    REQUIRE(target.applyDomainOperation(*width.value).isAccepted());
+    REQUIRE(width.ok());
+    REQUIRE(target.applyDomainOperation(width.value()).ok());
     CHECK_EQ(*target.read(selection, PropertyPath("param.width")).value.getIf<int64_t>(), int64_t{16});
-    DomainOperation undo = *width.value;
-    undo.payload = width.value->inverse;
-    REQUIRE(target.applyDomainOperation(undo).isAccepted());
+    DomainOperation undo = width.value();
+    undo.payload = width.value().inverse;
+    REQUIRE(target.applyDomainOperation(undo).ok());
     CHECK_NE(*target.read(selection, PropertyPath("param.width")).value.getIf<int64_t>(), int64_t{16});
     CHECK_EQ(static_cast<int>(target.makeSet(selection, PropertyPath("param.width"), int64_t{5000},
-                                             PropertySetMode::Absolute).status),
+                                             PropertySetMode::Absolute).code()),
              static_cast<int>(EditorStatus::Rejected));
 }
 TEST_CASE("editor.texture_recipe_snapshot_is_atomic_and_preview_is_deterministic") {
@@ -46,16 +46,16 @@ TEST_CASE("editor.texture_recipe_snapshot_is_atomic_and_preview_is_deterministic
     auto* content = (*root)["content"].getIf<EditorValue::Object>();
     auto* values = (*content)["values"].getIf<EditorValue::Object>();
     (*values)["width"] = int64_t{0};
-    CHECK_EQ(static_cast<int>(target.loadSnapshot(invalid).status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(target.loadSnapshot(invalid).code()), static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(target.snapshotValue(), before);
     TextureRecipePreviewRuntime runtime;
     auto first = runtime.generate(target);
-    REQUIRE(first.value);
-    CHECK_EQ(first.value->width, 16);
-    CHECK_EQ(first.value->height, 12);
-    CHECK_NE(first.value->checksum, std::uint64_t{0});
+    REQUIRE(first.ok());
+    CHECK_EQ(first.value().width, 16);
+    CHECK_EQ(first.value().height, 12);
+    CHECK_NE(first.value().checksum, std::uint64_t{0});
     auto second = runtime.generate(target);
-    REQUIRE(second.value);
-    CHECK_EQ(second.value->checksum, first.value->checksum);
+    REQUIRE(second.ok());
+    CHECK_EQ(second.value().checksum, first.value().checksum);
     CHECK_EQ(runtime.revision(), target.revision());
 }

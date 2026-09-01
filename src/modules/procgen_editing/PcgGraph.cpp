@@ -14,7 +14,13 @@ namespace {
 
 template <class T>
 EditorResult<T> pcgGraphError(const char* rule, std::string message) {
-    return EditorResult<T>::error(EditorStatus::Rejected, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(EditorStatus::Rejected, RuleId(rule), std::move(message));
+}
+
+EditorDiagnostic pcgDiagnostic(const char* rule, DiagnosticSeverity severity,
+                               std::string message) {
+    return eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId(rule),
+                                        severity, std::move(message));
 }
 
 const GraphNodeRecord* findNode(const GraphDocumentData& graph, const GraphNodeId& id) {
@@ -58,9 +64,9 @@ GraphConnectionDecision PcgPointGraphDomain::canConnect(const GraphPinRecord& fr
                        to.direction == GraphPinDirection::Input && from.type == "point" &&
                        to.type == "point" && from.node != to.node;
     if (!decision.allowed)
-        decision.diagnostics.push_back(
-            {RuleId("editor.pcg.invalid-connection"), DiagnosticSeverity::Error,
-             "PCG graph connections require point output-to-input pins on distinct nodes"});
+        decision.diagnostics.push_back(pcgDiagnostic(
+            "editor.pcg.invalid-connection", DiagnosticSeverity::Error,
+            "PCG graph connections require point output-to-input pins on distinct nodes"));
     return decision;
 }
 
@@ -91,7 +97,7 @@ EditorResult<GraphNodeRecord> PcgPointGraphDomain::makeNode(const GraphNodeId& i
                              GraphPinDirection::Input});
     node.pins.push_back(
         {GraphPinId(id.value() + ".out"), id, "point", GraphPinDirection::Output});
-    return EditorResult<GraphNodeRecord>::applied(std::move(node));
+    return eve::editing::applied<GraphNodeRecord>(std::move(node));
 }
 
 PcgGraphMigrationResult PcgPointGraphDomain::migrate(const GraphDocumentData& graph) const {
@@ -100,9 +106,9 @@ PcgGraphMigrationResult PcgPointGraphDomain::migrate(const GraphDocumentData& gr
     result.graph       = graph;
     if (graph.domain != domain()) {
         result.status = EditorStatus::Rejected;
-        result.diagnostics.push_back({RuleId("editor.pcg.wrong-domain"),
-                                      DiagnosticSeverity::Error,
-                                      "Graph is not a procgen.point document"});
+        result.diagnostics.push_back(pcgDiagnostic("editor.pcg.wrong-domain",
+                                                   DiagnosticSeverity::Error,
+                                                   "Graph is not a procgen.point document"));
         return result;
     }
     if (graph.schemaVersion == 1) {
@@ -111,10 +117,10 @@ PcgGraphMigrationResult PcgPointGraphDomain::migrate(const GraphDocumentData& gr
     }
     if (graph.schemaVersion != 0) {
         result.status = EditorStatus::Unsupported;
-        result.diagnostics.push_back(
-            {RuleId("editor.pcg.unsupported-schema"), DiagnosticSeverity::Error,
-             "Unsupported procgen.point graph schemaVersion: " +
-                 std::to_string(graph.schemaVersion)});
+        result.diagnostics.push_back(pcgDiagnostic(
+            "editor.pcg.unsupported-schema", DiagnosticSeverity::Error,
+            "Unsupported procgen.point graph schemaVersion: " +
+                std::to_string(graph.schemaVersion)));
         return result;
     }
 
@@ -123,20 +129,20 @@ PcgGraphMigrationResult PcgPointGraphDomain::migrate(const GraphDocumentData& gr
     migratedNodes.reserve(graph.nodes.size());
     for (const auto& legacy : graph.nodes) {
         auto canonical = makeNode(legacy.id, legacy.type);
-        if (!canonical.value) {
+        if (!canonical.ok()) {
             result.status = EditorStatus::Rejected;
-            result.diagnostics.push_back(
-                {RuleId("editor.pcg.migration-unknown-operation"), DiagnosticSeverity::Error,
-                 "Cannot migrate unknown PCG operation: " + legacy.type});
+            result.diagnostics.push_back(pcgDiagnostic(
+                "editor.pcg.migration-unknown-operation", DiagnosticSeverity::Error,
+                "Cannot migrate unknown PCG operation: " + legacy.type));
             return result;
         }
-        auto* defaults = canonical.value->properties.getIf<EditorValue::Object>();
+        auto* defaults = canonical.value().properties.getIf<EditorValue::Object>();
         const auto* properties = legacy.properties.getIf<EditorValue::Object>();
         if (legacy.properties.type() != EditorValue::Type::Null && !properties) {
             result.status = EditorStatus::Rejected;
-            result.diagnostics.push_back(
-                {RuleId("editor.pcg.migration-invalid-properties"), DiagnosticSeverity::Error,
-                 "Legacy PCG node properties must be an object: " + legacy.id.value()});
+            result.diagnostics.push_back(pcgDiagnostic(
+                "editor.pcg.migration-invalid-properties", DiagnosticSeverity::Error,
+                "Legacy PCG node properties must be an object: " + legacy.id.value()));
             return result;
         }
         if (properties)
@@ -148,21 +154,21 @@ PcgGraphMigrationResult PcgPointGraphDomain::migrate(const GraphDocumentData& gr
             const int ordinal = pin.direction == GraphPinDirection::Input ? input++ : output++;
             int canonicalOrdinal = 0;
             const auto replacement = std::find_if(
-                canonical.value->pins.begin(), canonical.value->pins.end(),
+                canonical.value().pins.begin(), canonical.value().pins.end(),
                 [&](const GraphPinRecord& candidate) {
                     if (candidate.direction != pin.direction) return false;
                     return canonicalOrdinal++ == ordinal;
                 });
-            if (replacement == canonical.value->pins.end()) continue;
+            if (replacement == canonical.value().pins.end()) continue;
             if (!pinRemap.emplace(pin.id.value(), replacement->id).second) {
                 result.status = EditorStatus::Rejected;
-                result.diagnostics.push_back(
-                    {RuleId("editor.pcg.migration-duplicate-pin"), DiagnosticSeverity::Error,
-                     "Legacy PCG graph contains duplicate pin id: " + pin.id.value()});
+                result.diagnostics.push_back(pcgDiagnostic(
+                    "editor.pcg.migration-duplicate-pin", DiagnosticSeverity::Error,
+                    "Legacy PCG graph contains duplicate pin id: " + pin.id.value()));
                 return result;
             }
         }
-        migratedNodes.push_back(std::move(*canonical.value));
+        migratedNodes.push_back(std::move(canonical.value()));
     }
     result.graph.nodes = std::move(migratedNodes);
     for (auto& edge : result.graph.edges) {
@@ -173,9 +179,9 @@ PcgGraphMigrationResult PcgPointGraphDomain::migrate(const GraphDocumentData& gr
     }
     result.graph.schemaVersion = 1;
     result.status              = EditorStatus::Applied;
-    result.diagnostics.push_back(
-        {RuleId("editor.pcg.migrated-v0-v1"), DiagnosticSeverity::Info,
-         "Migrated procgen.point graph schemaVersion 0 to 1"});
+    result.diagnostics.push_back(pcgDiagnostic("editor.pcg.migrated-v0-v1",
+                                               DiagnosticSeverity::Info,
+                                               "Migrated procgen.point graph schemaVersion 0 to 1"));
     return result;
 }
 
@@ -194,16 +200,18 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
     for (const auto& node : source.nodes) {
         if (!compiled.addNode(node.id.value(), node.type)) {
             result.status = EditorStatus::Failed;
-            result.diagnostics.push_back({RuleId("editor.pcg.invalid-node"), DiagnosticSeverity::Error,
-                                          "Unknown or duplicated PCG node: " + node.id.value()});
+            result.diagnostics.push_back(pcgDiagnostic("editor.pcg.invalid-node",
+                                                       DiagnosticSeverity::Error,
+                                                       "Unknown or duplicated PCG node: " +
+                                                           node.id.value()));
             return result;
         }
         const auto* properties = node.properties.getIf<EditorValue::Object>();
         if (!properties) {
             result.status = EditorStatus::Failed;
-            result.diagnostics.push_back(
-                {RuleId("editor.pcg.invalid-properties"), DiagnosticSeverity::Error,
-                 "PCG node properties must be an object: " + node.id.value()});
+            result.diagnostics.push_back(pcgDiagnostic(
+                "editor.pcg.invalid-properties", DiagnosticSeverity::Error,
+                "PCG node properties must be an object: " + node.id.value()));
             return result;
         }
         for (const auto& [key, value] : *properties) {
@@ -242,11 +250,11 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
             }
             if (!applied) {
                 result.status = EditorStatus::Failed;
-                result.diagnostics.push_back(
-                    {RuleId(parameterIndex < 0 ? "editor.pcg.unknown-property"
-                                               : "editor.pcg.property-type-mismatch"),
-                     DiagnosticSeverity::Error,
-                     "Invalid PCG property " + node.id.value() + "." + key});
+                result.diagnostics.push_back(pcgDiagnostic(
+                    parameterIndex < 0 ? "editor.pcg.unknown-property"
+                                       : "editor.pcg.property-type-mismatch",
+                    DiagnosticSeverity::Error,
+                    "Invalid PCG property " + node.id.value() + "." + key));
                 return result;
             }
         }
@@ -265,9 +273,9 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
                 !nested.deserializeDefinition(*definitionText) ||
                 !compiled.setNodeSubgraph(node.id.value(), &nested, *inputText, *outputText)) {
                 result.status = EditorStatus::Failed;
-                result.diagnostics.push_back(
-                    {RuleId("editor.pcg.invalid-subgraph"), DiagnosticSeverity::Error,
-                     "PCG subgraph node requires a valid definition and input/output node ids"});
+                result.diagnostics.push_back(pcgDiagnostic(
+                    "editor.pcg.invalid-subgraph", DiagnosticSeverity::Error,
+                    "PCG subgraph node requires a valid definition and input/output node ids"));
                 return result;
             }
         }
@@ -276,9 +284,9 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
         const auto* parameters = source.parameters.getIf<EditorValue::Object>();
         if (!parameters) {
             result.status = EditorStatus::Failed;
-            result.diagnostics.push_back(
-                {RuleId("editor.pcg.invalid-parameters"), DiagnosticSeverity::Error,
-                 "PCG graph parameters must be an object"});
+            result.diagnostics.push_back(pcgDiagnostic("editor.pcg.invalid-parameters",
+                                                       DiagnosticSeverity::Error,
+                                                       "PCG graph parameters must be an object"));
             return result;
         }
         for (const auto& [name, value] : *parameters) {
@@ -294,9 +302,9 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
             if (!nodeId || !parameterKey ||
                 !compiled.exposeParameter(name, *nodeId, *parameterKey)) {
                 result.status = EditorStatus::Failed;
-                result.diagnostics.push_back(
-                    {RuleId("editor.pcg.invalid-parameter-binding"), DiagnosticSeverity::Error,
-                     "Invalid PCG graph parameter binding: " + name});
+                result.diagnostics.push_back(pcgDiagnostic(
+                    "editor.pcg.invalid-parameter-binding", DiagnosticSeverity::Error,
+                    "Invalid PCG graph parameter binding: " + name));
                 return result;
             }
         }
@@ -310,16 +318,18 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
         const std::string inputKey = to ? to->id.value() : std::string();
         if (!inputKey.empty() && connectedInputs.find(inputKey) != connectedInputs.end()) {
             result.status = EditorStatus::Failed;
-            result.diagnostics.push_back(
-                {RuleId("editor.pcg.duplicate-input"), DiagnosticSeverity::Error,
-                 "PCG input pin has more than one incoming edge: " + inputKey});
+            result.diagnostics.push_back(pcgDiagnostic(
+                "editor.pcg.duplicate-input", DiagnosticSeverity::Error,
+                "PCG input pin has more than one incoming edge: " + inputKey));
             return result;
         }
         if (!from || !to || !toNode || !canConnect(*from, *to).allowed || slot < 0 ||
             !compiled.connect(from->node.value(), to->node.value(), slot)) {
             result.status = EditorStatus::Failed;
-            result.diagnostics.push_back({RuleId("editor.pcg.invalid-edge"), DiagnosticSeverity::Error,
-                                          "Invalid PCG graph edge: " + edge.id.value()});
+            result.diagnostics.push_back(pcgDiagnostic("editor.pcg.invalid-edge",
+                                                       DiagnosticSeverity::Error,
+                                                       "Invalid PCG graph edge: " +
+                                                           edge.id.value()));
             return result;
         }
         connectedInputs.emplace(inputKey, edge.id);
@@ -328,8 +338,8 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
     procgen::PointGraph structuralCheck;
     if (!structuralCheck.deserializeDefinition(result.definition)) {
         result.status = EditorStatus::Failed;
-        result.diagnostics.push_back({RuleId("editor.pcg.cycle"), DiagnosticSeverity::Error,
-                                      structuralCheck.getError()});
+        result.diagnostics.push_back(pcgDiagnostic("editor.pcg.cycle", DiagnosticSeverity::Error,
+                                                   structuralCheck.getError()));
         result.definition.clear();
         return result;
     }
@@ -352,37 +362,37 @@ PcgGraphPreviewResult PcgPointGraphDomain::preview(const GraphDocumentData& grap
     }
     if (!previewInput || inputNode.empty() || outputNode.empty()) {
         result.status = EditorStatus::Rejected;
-        result.diagnostics.push_back(
-            {RuleId("editor.pcg.preview-invalid-input"), DiagnosticSeverity::Error,
-             "PCG preview requires input/output node ids and point input"});
+        result.diagnostics.push_back(pcgDiagnostic(
+            "editor.pcg.preview-invalid-input", DiagnosticSeverity::Error,
+            "PCG preview requires input/output node ids and point input"));
         return result;
     }
     procgen::PointGraph runtime;
     if (!runtime.deserializeDefinition(compiled.definition)) {
         result.status = EditorStatus::Failed;
-        result.diagnostics.push_back(
-            {RuleId("editor.pcg.preview-bind-failed"), DiagnosticSeverity::Error,
-             "PCG preview definition could not be loaded"});
+        result.diagnostics.push_back(pcgDiagnostic("editor.pcg.preview-bind-failed",
+                                                   DiagnosticSeverity::Error,
+                                                   "PCG preview definition could not be loaded"));
         return result;
     }
     runtime.setExecutionNodeBudget(nodeBudget);
     runtime.setMaxNodeOutputPoints(pointBudget);
     if (!runtime.setNodePoints(inputNode, previewInput)) {
         result.status = EditorStatus::Failed;
-        result.diagnostics.push_back(
-            {RuleId("editor.pcg.preview-bind-failed"), DiagnosticSeverity::Error,
-             runtime.getError().empty() ? "PCG preview input node is invalid: " + inputNode
-                                        : runtime.getError()});
+        result.diagnostics.push_back(pcgDiagnostic(
+            "editor.pcg.preview-bind-failed", DiagnosticSeverity::Error,
+            runtime.getError().empty() ? "PCG preview input node is invalid: " + inputNode
+                                       : runtime.getError()));
         return result;
     }
     std::unique_ptr<procgen::PointSet> output(runtime.execute(outputNode));
     if (!output) {
         result.status = runtime.wasCancelled() ? EditorStatus::Cancelled : EditorStatus::Failed;
-        result.diagnostics.push_back(
-            {RuleId(runtime.wasCancelled() ? "editor.pcg.preview-cancelled"
-                                           : "editor.pcg.preview-execution-failed"),
-             runtime.wasCancelled() ? DiagnosticSeverity::Info : DiagnosticSeverity::Error,
-             runtime.getError()});
+        result.diagnostics.push_back(pcgDiagnostic(
+            runtime.wasCancelled() ? "editor.pcg.preview-cancelled"
+                                   : "editor.pcg.preview-execution-failed",
+            runtime.wasCancelled() ? DiagnosticSeverity::Info : DiagnosticSeverity::Error,
+            runtime.getError()));
         return result;
     }
     result.outputCount = output->getCount();

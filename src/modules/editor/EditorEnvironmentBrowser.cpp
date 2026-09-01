@@ -28,63 +28,62 @@ EditorResult<EnvironmentAssetCard> EnvironmentAssetBrowser::card(const AssetReco
     const auto* faces = facesEntry ? facesEntry->getIf<int64_t>() : nullptr;
     static const std::set<std::string> layouts{"cubemap", "horizontal-cross", "vertical-cross", "equirectangular"};
     if (!layout || !layouts.contains(*layout) || !width || !height || *width <= 0 || *height <= 0) {
-        result.diagnostics.push_back({RuleId("editor.environment.invalid-map-metadata"),
-            DiagnosticSeverity::Error, "Environment map requires supported layout and positive dimensions"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::InvalidArgument, RuleId("editor.environment.invalid-map-metadata"),
+            DiagnosticSeverity::Error, "Environment map requires supported layout and positive dimensions"));
     } else {
         result.layout = *layout; result.width = static_cast<int>(*width); result.height = static_cast<int>(*height);
         result.faceCount = faces ? static_cast<int>(*faces) : (*layout == "cubemap" ? 6 : 1);
         if (*layout == "cubemap" && result.faceCount != 6)
-            result.diagnostics.push_back({RuleId("editor.environment.cubemap-face-count"),
-                DiagnosticSeverity::Error, "Cubemap assets require exactly six faces"});
+            result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::InvalidArgument, RuleId("editor.environment.cubemap-face-count"),
+                DiagnosticSeverity::Error, "Cubemap assets require exactly six faces"));
         if (*layout == "equirectangular" && *width != *height * 2)
-            result.diagnostics.push_back({RuleId("editor.environment.equirectangular-aspect"),
-                DiagnosticSeverity::Warning, "Equirectangular maps normally use a 2:1 aspect ratio"});
+            result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::InvalidArgument, RuleId("editor.environment.equirectangular-aspect"),
+                DiagnosticSeverity::Warning, "Equirectangular maps normally use a 2:1 aspect ratio"));
     }
-    if (record.artifacts.empty()) result.diagnostics.push_back({RuleId("editor.environment.missing-artifact"),
-        DiagnosticSeverity::Error, "Environment asset has no imported artifact"});
+    if (record.artifacts.empty())
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.environment.missing-artifact"),
+            DiagnosticSeverity::Error, "Environment asset has no imported artifact"));
     if (record.status != AssetStatus::Ready && record.status != AssetStatus::Warning)
-        result.diagnostics.push_back({RuleId("editor.environment.asset-not-ready"),
-            DiagnosticSeverity::Error, "Environment asset is not ready for preview or assignment"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.environment.asset-not-ready"),
+            DiagnosticSeverity::Error, "Environment asset is not ready for preview or assignment"));
     const bool error = std::any_of(result.diagnostics.begin(), result.diagnostics.end(),
-        [](const EditorDiagnostic& diagnostic) { return diagnostic.severity == DiagnosticSeverity::Error; });
-    if (error) {
-        EditorResult<EnvironmentAssetCard> failed; failed.status = EditorStatus::Rejected;
-        failed.value = std::move(result); failed.diagnostics = failed.value->diagnostics; return failed;
-    }
-    return EditorResult<EnvironmentAssetCard>::applied(std::move(result));
+        [](const EditorDiagnostic& diagnostic) { return diagnostic.severity() == DiagnosticSeverity::Error; });
+    if (error)
+        return EditorResult<EnvironmentAssetCard>::failure(
+            eve::Status(EditorStatus::Rejected, result.diagnostics));
+    return eve::editing::applied<EnvironmentAssetCard>(std::move(result));
 }
 
 EditorResult<EnvironmentAssetPage> EnvironmentAssetBrowser::query(
     std::string text, std::size_t offset, std::size_t limit,
     std::optional<std::uint64_t> generation) const {
     if (!database_ || limit == 0)
-        return EditorResult<EnvironmentAssetPage>::error(EditorStatus::Rejected,
+        return eve::editing::failed<EnvironmentAssetPage>(EditorStatus::Rejected,
             RuleId("editor.environment.invalid-browser-query"), "Environment browser requires AssetDB and positive page size");
     AssetQuery filter; filter.typeIds = {"cubemap", "image.cubemap", "environment-map"};
     filter.text = std::move(text);
     auto page = database_->query(filter, offset, limit, generation);
-    if (!page.value) {
-        EditorResult<EnvironmentAssetPage> failed; failed.status = page.status;
-        failed.diagnostics = std::move(page.diagnostics); return failed;
-    }
-    EnvironmentAssetPage result; result.nextOffset = page.value->nextOffset;
-    result.hasMore = page.value->hasMore; result.generation = page.value->generation;
-    for (const auto& record : page.value->values) {
+    if (!page.ok()) return EditorResult<EnvironmentAssetPage>::failure(page.status());
+    EnvironmentAssetPage result; result.nextOffset = page.value().nextOffset;
+    result.hasMore = page.value().hasMore; result.generation = page.value().generation;
+    for (const auto& record : page.value().values) {
         auto value = card(record);
-        if (value.value) result.values.push_back(std::move(*value.value));
+        if (value.ok()) result.values.push_back(value.value());
     }
-    return EditorResult<EnvironmentAssetPage>::applied(std::move(result));
+    return eve::editing::applied<EnvironmentAssetPage>(std::move(result));
 }
 
 EditorResult<EnvironmentAssetCard> EnvironmentAssetBrowser::select(const AssetGuid& asset) const {
-    if (!database_ || asset.empty()) return EditorResult<EnvironmentAssetCard>::error(EditorStatus::Rejected,
+    if (!database_ || asset.empty()) return eve::editing::failed<EnvironmentAssetCard>(EditorStatus::Rejected,
         RuleId("editor.environment.invalid-selection"), "Environment selection requires AssetDB and asset id");
     auto found = database_->find(asset);
-    if (!found.value) {
-        EditorResult<EnvironmentAssetCard> failed; failed.status = found.status;
-        failed.diagnostics = std::move(found.diagnostics); return failed;
-    }
-    return card(*found.value);
+    if (!found.ok()) return EditorResult<EnvironmentAssetCard>::failure(found.status());
+    return card(found.value());
 }
 
 }  // namespace eve::editor

@@ -1,41 +1,11 @@
 #include "editor/EditorTransactionService.h"
 
+#include "editor/EditorResultProjection.h"
+
 #include <utility>
 
 namespace eve::editor {
 namespace {
-
-EditorStatus editorStatus(eve::StatusCode status) noexcept {
-    switch (status) {
-        case eve::StatusCode::Rejected: return EditorStatus::Rejected;
-        case eve::StatusCode::Conflict: return EditorStatus::Conflict;
-        case eve::StatusCode::NotFound: return EditorStatus::NotFound;
-        case eve::StatusCode::Unsupported: return EditorStatus::Unsupported;
-        case eve::StatusCode::Cancelled: return EditorStatus::Cancelled;
-        case eve::StatusCode::Ok:
-        case eve::StatusCode::Applied:
-        case eve::StatusCode::NoOp:
-        case eve::StatusCode::Pending:
-        case eve::StatusCode::Failed: return EditorStatus::Failed;
-    }
-    return EditorStatus::Failed;
-}
-
-RuleId diagnosticRule(const eve::Diagnostic& diagnostic) {
-    if (!diagnostic.path().empty()) return RuleId(diagnostic.path());
-    std::string rule = "editor.transaction.";
-    rule.append(eve::diagnosticCodeName(diagnostic.code()));
-    return RuleId(std::move(rule));
-}
-
-template <class Output>
-EditorResult<Output> projectFailure(const eve::Status& status) {
-    EditorResult<Output> result;
-    result.status = editorStatus(status.code());
-    for (const auto& diagnostic : status.diagnostics())
-        result.diagnostics.push_back({diagnosticRule(diagnostic), DiagnosticSeverity::Error, diagnostic.message()});
-    return result;
-}
 
 TransactionState transactionState(eve::transaction::CoordinatorState state) noexcept {
     switch (state) {
@@ -66,24 +36,21 @@ TransactionReceipt projectRecord(const EditorTransactionRecord& record) {
 }  // namespace
 
 EditorResult<TransactionId> LocalTransactionBackend::project(eve::Result<TransactionId>&& result) {
-    if (!result.ok()) return projectFailure<TransactionId>(result.status());
-    return EditorResult<TransactionId>::applied(std::move(result).takeValue());
+    return projectCommonResult(std::move(result));
 }
 
 EditorResult<void> LocalTransactionBackend::project(eve::Result<void>&& result) {
-    if (!result.ok()) return projectFailure<void>(result.status());
-    return EditorResult<void>::applied();
+    return projectCommonResult(std::move(result));
 }
 
 EditorResult<TransactionReceipt> LocalTransactionBackend::project(eve::Result<EditorTransactionRecord>&& result) {
-    if (!result.ok()) return projectFailure<TransactionReceipt>(result.status());
+    if (!result.ok()) return projectCommonFailure<TransactionReceipt>(result.status());
     EditorTransactionRecord record = std::move(result).takeValue();
-    return EditorResult<TransactionReceipt>::applied(projectRecord(record));
+    return eve::editing::applied<TransactionReceipt>(projectRecord(record));
 }
 
 EditorResult<EditorDryRunReport> LocalTransactionBackend::project(eve::Result<EditorDryRunReport>&& result) {
-    if (!result.ok()) return projectFailure<EditorDryRunReport>(result.status());
-    return EditorResult<EditorDryRunReport>::applied(std::move(result).takeValue());
+    return projectCommonResult(std::move(result));
 }
 
 EditorResult<void> LocalTransactionBackend::setAuthority(IEditAuthority* authority) {
@@ -92,7 +59,7 @@ EditorResult<void> LocalTransactionBackend::setAuthority(IEditAuthority* authori
 
 EditorResult<TransactionId> LocalTransactionBackend::begin(TransactionSpec specification) {
     if (specification.id.empty() || specification.target.empty())
-        return EditorResult<TransactionId>::error(EditorStatus::Rejected,
+        return eve::editing::failed<TransactionId>(EditorStatus::Rejected,
                                                   RuleId("editor.transaction.invalid-specification"),
                                                   "Transaction id and target are required");
     return project(consumer_.begin(std::move(specification)));

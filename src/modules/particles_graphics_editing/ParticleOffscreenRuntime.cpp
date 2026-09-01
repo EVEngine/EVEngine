@@ -9,7 +9,7 @@
 namespace eve::particles_graphics_editing {
 namespace {
 template <class T> EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object=value.getIf<EditorValue::Object>(); if(!object)return nullptr;
@@ -42,7 +42,7 @@ EditorResult<void> ParticleEmitterOffscreenPresenter::draw(
     if(!emitter.get())return fail<void>(EditorStatus::Failed,"editor.particles.preview-emitter",
                                         "Could not create an isolated particle emitter");
     auto applied=ParticleGraphRuntimeBuilder().apply(request.graph,emitter.get(),textures_);
-    if(!applied.isAccepted())return applied;
+    if(!applied.ok())return applied;
     emitter.get()->setGpuSimulation(false);
     emitter.get()->setAutoRandomSeed(false);
     emitter.get()->setCanvas(canvas);
@@ -62,7 +62,7 @@ EditorResult<void> ParticleEmitterOffscreenPresenter::draw(
                                        "Particle emitter rejected deterministic preview stepping");
     }
     particles::ParticleRenderSystem::renderEmitter(graphics,emitter.get());
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::particles_graphics_editing

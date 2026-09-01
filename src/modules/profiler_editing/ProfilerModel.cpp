@@ -11,7 +11,7 @@ namespace {
 
 template <class T>
 EditorResult<T> failure(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 bool finiteNonNegative(double value) { return std::isfinite(value) && value >= 0.0; }
@@ -33,7 +33,7 @@ EditorResult<void> EditorProfilerModel::configure(EditorProfilerBudgets budgets)
     }
     budgets_ = budgets;
     while (history_.size() > budgets_.historyFrames) history_.pop_front();
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorResult<void> EditorProfilerModel::ingest(EditorProfilerFrame frame) {
@@ -56,7 +56,7 @@ EditorResult<void> EditorProfilerModel::ingest(EditorProfilerFrame frame) {
     }
     history_.push_back(std::move(frame));
     while (history_.size() > budgets_.historyFrames) history_.pop_front();
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 void EditorProfilerModel::clear() { history_.clear(); }
@@ -115,21 +115,24 @@ std::vector<EditorDiagnostic> EditorProfilerModel::diagnostics() const {
     if (history_.empty()) return result;
     const auto& frame = history_.back();
     if (budgets_.cpuFrameMs > 0.0 && frame.cpuFrameMs > budgets_.cpuFrameMs) {
-        result.push_back({RuleId("editor.profiler.cpu-budget"), DiagnosticSeverity::Warning,
-                          "CPU frame time exceeds the editor budget"});
+        result.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.profiler.cpu-budget"),
+            DiagnosticSeverity::Warning, "CPU frame time exceeds the editor budget"));
     }
     if (frame.gpuTimingAvailable && budgets_.gpuFrameMs > 0.0 &&
         frame.gpuFrameMs > budgets_.gpuFrameMs) {
-        result.push_back({RuleId("editor.profiler.gpu-budget"), DiagnosticSeverity::Warning,
-                          "GPU frame time exceeds the editor budget"});
+        result.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.profiler.gpu-budget"),
+            DiagnosticSeverity::Warning, "GPU frame time exceeds the editor budget"));
     }
     if (budgets_.zoneSelfMs > 0.0) {
         for (const auto& zone : frame.zones) {
             if (zone.selfMs > budgets_.zoneSelfMs) {
-                result.push_back({RuleId("editor.profiler.zone-budget"),
-                                  DiagnosticSeverity::Warning,
-                                  "Profiler zone exceeds its self-time budget: " + zone.module +
-                                      "/" + zone.name});
+                result.push_back(eve::editing::ruleDiagnostic(
+                    eve::DiagnosticCode::PreconditionViolation,
+                    RuleId("editor.profiler.zone-budget"), DiagnosticSeverity::Warning,
+                    "Profiler zone exceeds its self-time budget: " + zone.module + "/" +
+                        zone.name));
             }
         }
     }

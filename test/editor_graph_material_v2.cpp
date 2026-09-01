@@ -33,8 +33,8 @@ GraphNodeRecord outputNode(const char* id) {
 TEST_CASE("editor.v2.graph_core_is_domain_neutral_and_revisioned") {
     GraphDocument       graph;
     MaterialGraphDomain material;
-    CHECK(graph.createNode(constantNode("constant")).isAccepted());
-    CHECK(graph.createNode(outputNode("output")).isAccepted());
+    CHECK(graph.createNode(constantNode("constant")).ok());
+    CHECK(graph.createNode(outputNode("output")).ok());
     CHECK_EQ(graph.revision(), static_cast<Revision>(2));
 
     const GraphPinRecord* from = graph.findPin(GraphPinId("constant.out"));
@@ -43,13 +43,13 @@ TEST_CASE("editor.v2.graph_core_is_domain_neutral_and_revisioned") {
     CHECK(to != nullptr);
     GraphConnectionDecision allowed = material.canConnect(*from, *to);
     CHECK(allowed.allowed);
-    CHECK(graph.connect({StableId("edge-1"), from->id, to->id}, allowed).isAccepted());
+    CHECK(graph.connect({StableId("edge-1"), from->id, to->id}, allowed).ok());
     CHECK_EQ(graph.revision(), static_cast<Revision>(3));
     CHECK_EQ(graph.snapshot(material.domain()).edges.size(), static_cast<std::size_t>(1));
 
     GraphConnectionDecision rejected = material.canConnect(*to, *from);
     CHECK(!rejected.allowed);
-    CHECK_EQ(static_cast<int>(graph.connect({StableId("edge-2"), to->id, from->id}, rejected).status),
+    CHECK_EQ(static_cast<int>(graph.connect({StableId("edge-2"), to->id, from->id}, rejected).code()),
              static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(graph.revision(), static_cast<Revision>(3));
 }
@@ -59,14 +59,14 @@ TEST_CASE("editor.v2.material_compile_failure_keeps_last_successful_preview") {
     MaterialGraphDomain   domain;
     MaterialEditorService materials;
     DocumentId            document("document:material");
-    CHECK(graph.createNode(outputNode("output")).isAccepted());
+    CHECK(graph.createNode(outputNode("output")).ok());
 
     auto firstTask = materials.compile(document, graph.snapshot(domain.domain()), domain);
-    CHECK(firstTask.isAccepted());
-    auto firstResult = materials.result(*firstTask.value);
-    CHECK(firstResult.isAccepted());
-    CHECK_EQ(static_cast<int>(firstResult.value->status), static_cast<int>(EditorStatus::Applied));
-    CHECK(materials.publishPreview(document, graph.revision(), *firstTask.value).isAccepted());
+    CHECK(firstTask.ok());
+    auto firstResult = materials.result(firstTask.value());
+    CHECK(firstResult.ok());
+    CHECK_EQ(static_cast<int>(firstResult.value().status), static_cast<int>(EditorStatus::Applied));
+    CHECK(materials.publishPreview(document, graph.revision(), firstTask.value()).ok());
     const std::string firstPreview = materials.previewArtifact(document);
     CHECK(!firstPreview.empty());
 
@@ -74,12 +74,12 @@ TEST_CASE("editor.v2.material_compile_failure_keeps_last_successful_preview") {
     invalid.id         = GraphNodeId("error");
     invalid.type       = "material.error";
     invalid.properties = EditorValue::Object{};
-    CHECK(graph.createNode(std::move(invalid)).isAccepted());
+    CHECK(graph.createNode(std::move(invalid)).ok());
     auto failedTask = materials.compile(document, graph.snapshot(domain.domain()), domain);
-    CHECK(failedTask.isAccepted());
-    CHECK_EQ(static_cast<int>(materials.result(*failedTask.value).value->status),
+    CHECK(failedTask.ok());
+    CHECK_EQ(static_cast<int>(materials.result(failedTask.value()).value().status),
              static_cast<int>(EditorStatus::Failed));
-    CHECK_EQ(static_cast<int>(materials.publishPreview(document, graph.revision(), *failedTask.value).status),
+    CHECK_EQ(static_cast<int>(materials.publishPreview(document, graph.revision(), failedTask.value()).code()),
              static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(materials.previewArtifact(document), firstPreview);
 }
@@ -89,17 +89,17 @@ TEST_CASE("editor.v2.material_stale_compile_cannot_replace_preview") {
     MaterialGraphDomain   domain;
     MaterialEditorService materials;
     DocumentId            document("document:material-stale");
-    CHECK(graph.createNode(outputNode("output")).isAccepted());
+    CHECK(graph.createNode(outputNode("output")).ok());
     auto task = materials.compile(document, graph.snapshot(domain.domain()), domain);
-    CHECK(task.isAccepted());
+    CHECK(task.ok());
 
     CHECK(
-        graph.setNodeProperties(GraphNodeId("output"), EditorValue::Object{{"opacity", EditorValue(0.5)}}).isAccepted());
-    auto stale = materials.publishPreview(document, graph.revision(), *task.value);
-    CHECK_EQ(static_cast<int>(stale.status), static_cast<int>(EditorStatus::Conflict));
+        graph.setNodeProperties(GraphNodeId("output"), EditorValue::Object{{"opacity", EditorValue(0.5)}}).ok());
+    auto stale = materials.publishPreview(document, graph.revision(), task.value());
+    CHECK_EQ(static_cast<int>(stale.code()), static_cast<int>(EditorStatus::Conflict));
     CHECK(materials.previewArtifact(document).empty());
 
     auto currentTask = materials.compile(document, graph.snapshot(domain.domain()), domain);
-    CHECK(materials.publishPreview(document, graph.revision(), *currentTask.value).isAccepted());
+    CHECK(materials.publishPreview(document, graph.revision(), currentTask.value()).ok());
     CHECK(materials.previewArtifact(document).find("r2") != std::string::npos);
 }

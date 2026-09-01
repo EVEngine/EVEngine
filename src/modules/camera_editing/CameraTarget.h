@@ -68,8 +68,8 @@ class CameraDocumentTarget final : public virtual IEditableTarget,
                                    public IPropertyProvider {
 public:
     explicit CameraDocumentTarget(std::string id);
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;

@@ -22,8 +22,8 @@ class TransformPropertyTarget final : public IDomainOperationTarget, public IDom
 public:
     explicit TransformPropertyTarget(unsigned long long initialRevision = 0) : revision_(initialRevision) {}
 
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion         dirtyRegion() const override { return {}; }
     void               clearDirtyRegion() override {}
 
@@ -34,23 +34,23 @@ public:
     [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override {
         auto* typed = dynamic_cast<TransformPropertyTarget*>(candidate.get());
         if (!typed)
-            return EditorResult<void>::error(EditorStatus::Rejected, RuleId("scene.property.candidate"),
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("scene.property.candidate"),
                                              "Compensation candidate has an incompatible type");
         position_ = typed->position_;
         revision_ = typed->revision_;
-        return EditorResult<void>::applied();
+        return eve::editing::applied<void>();
     }
 
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override {
         if (operation.type != "scene.transform.position.set.v1")
-            return EditorResult<void>::error(EditorStatus::Unsupported, RuleId("scene.property.unsupported"),
+            return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("scene.property.unsupported"),
                                              "Unsupported property operation");
         if (!operation.payload.getIf<EditorValue::Array>())
-            return EditorResult<void>::error(EditorStatus::Rejected, RuleId("scene.property.invalid-value"),
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("scene.property.invalid-value"),
                                              "Position must be an array");
         position_ = operation.payload;
         ++revision_;
-        return EditorResult<void>::applied();
+        return eve::editing::applied<void>();
     }
 
     const EditorValue& position() const { return position_; }
@@ -107,7 +107,7 @@ public:
     EditorResult<DomainOperation> makeSet(const SelectionSnapshot&, const PropertyPath& path, const EditorValue& value,
                                           PropertySetMode mode) const override {
         if (path != PropertyPath("transform.position") || mode != PropertySetMode::Absolute)
-            return EditorResult<DomainOperation>::error(EditorStatus::Unsupported, RuleId("scene.property.unsupported"),
+            return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("scene.property.unsupported"),
                                                         "Only absolute position changes are supported");
         DomainOperation operation;
         operation.type       = "scene.transform.position.set.v1";
@@ -116,7 +116,7 @@ public:
         operation.inverse    = target_->position();
         operation.hasInverse = true;
         operation.affectedProperties.push_back(path.value());
-        return EditorResult<DomainOperation>::applied(std::move(operation));
+        return eve::editing::applied<DomainOperation>(std::move(operation));
     }
 
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
@@ -185,15 +185,15 @@ TEST_CASE("editor.v2.property_presenters_share_schema_and_command_intent") {
         developerPresenter.editIntent(schema, selection, PropertyPath("transform.position"), desired);
     auto runtimeIntent =
         runtimePresenter.editIntent(schema, selection, PropertyPath("transform.position"), desired, runtime);
-    CHECK(developerIntent.isAccepted());
-    CHECK(runtimeIntent.isAccepted());
-    CHECK(developerIntent.value->command == runtimeIntent.value->command);
-    CHECK(developerIntent.value->payload == runtimeIntent.value->payload);
+    CHECK(developerIntent.ok());
+    CHECK(runtimeIntent.ok());
+    CHECK(developerIntent.value().command == runtimeIntent.value().command);
+    CHECK(developerIntent.value().payload == runtimeIntent.value().payload);
     CHECK(target.position() != desired);
 
     auto hidden = runtimePresenter.editIntent(schema, selection, PropertyPath("debug.internal-name"),
                                               EditorValue("changed"), runtime);
-    CHECK_EQ(static_cast<int>(hidden.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(hidden.code()), static_cast<int>(EditorStatus::Rejected));
 }
 
 TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
@@ -215,24 +215,19 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
                   [&](const CommandRequest& request) {
                       const auto* payload = request.payload.getIf<EditorValue::Object>();
                       if (!payload || !payload->contains("path") || !payload->contains("value"))
-                          return EditorResult<CommandPlan>::error(EditorStatus::Rejected,
+                          return eve::editing::failed<CommandPlan>(EditorStatus::Rejected,
                                                                   RuleId("editor.property.payload"),
                                                                   "Property command payload is incomplete");
                       const auto* path = payload->at("path").getIf<std::string>();
                       if (!path)
-                          return EditorResult<CommandPlan>::error(
+                          return eve::editing::failed<CommandPlan>(
                               EditorStatus::Rejected, RuleId("editor.property.path"), "Property path must be a string");
                       auto operation = provider.makeSet(selection, PropertyPath(*path), payload->at("value"),
                                                         PropertySetMode::Absolute);
-                      if (!operation.isAccepted()) {
-                          EditorResult<CommandPlan> failed;
-                          failed.status      = operation.status;
-                          failed.diagnostics = std::move(operation.diagnostics);
-                          return failed;
-                      }
+                      if (!operation.ok()) return EditorResult<CommandPlan>::failure(operation.status());
                       CommandPlan plan;
-                      plan.operations.push_back(std::move(*operation.value));
-                      return EditorResult<CommandPlan>::applied(std::move(plan));
+                      plan.operations.push_back(std::move(operation).takeValue());
+                      return eve::editing::applied<CommandPlan>(std::move(plan));
                   },
                   [&](const CommandRequest&, const CommandPlan& plan) {
                       TransactionSpec specification;
@@ -241,19 +236,19 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
                       specification.target       = plan.target;
                       specification.baseRevision = plan.baseRevision;
                       auto begun                 = backend.begin(std::move(specification));
-                      if (!begun.isAccepted())
-                          return EditorResult<TransactionReceipt>::error(begun.status, RuleId("editor.property.begin"),
+                      if (!begun.ok())
+                          return eve::editing::failed<TransactionReceipt>(begun.code(), RuleId("editor.property.begin"),
                                                                          "Could not begin property transaction");
                       for (const DomainOperation& operation : plan.operations) {
                           const auto appended = backend.append(operation);
-                          if (!appended.isAccepted())
-                              return EditorResult<TransactionReceipt>::error(
+                          if (!appended.ok())
+                              return eve::editing::failed<TransactionReceipt>(
                                   EditorStatus::Failed, RuleId("editor.property.append"),
                                   "Could not append the planned property operation");
                       }
                       return backend.commit();
                   })
-              .isAccepted());
+              .ok());
 
     DeveloperPropertyPresenter developerPresenter;
     RuntimePropertyPresenter   gamePresenter;
@@ -264,9 +259,9 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
     EditorValue firstPosition = EditorValue::Array{4.0, 5.0, 6.0};
     auto        developerIntent =
         developerPresenter.editIntent(schema, selection, PropertyPath("transform.position"), firstPosition);
-    auto developerPlan = developerSession.planCommand(developerIntent.value->command, developerIntent.value->payload);
-    CHECK(developerPlan.isAccepted());
-    CHECK(developerSession.executePlan(*developerPlan.value, developerIntent.value->payload).isAccepted());
+    auto developerPlan = developerSession.planCommand(developerIntent.value().command, developerIntent.value().payload);
+    CHECK(developerPlan.ok());
+    CHECK(developerSession.executePlan(developerPlan.value(), developerIntent.value().payload).ok());
     CHECK(target.position() == firstPosition);
 
     HostProfile runtime = HostProfile::runtimeBuilder();
@@ -278,9 +273,9 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
     EditorValue secondPosition = EditorValue::Array{7.0, 8.0, 9.0};
     auto        gameIntent =
         gamePresenter.editIntent(schema, selection, PropertyPath("transform.position"), secondPosition, runtime);
-    auto gamePlan = gameSession.planCommand(gameIntent.value->command, gameIntent.value->payload);
-    CHECK(gamePlan.isAccepted());
-    CHECK(gameSession.executePlan(*gamePlan.value, gameIntent.value->payload).isAccepted());
+    auto gamePlan = gameSession.planCommand(gameIntent.value().command, gameIntent.value().payload);
+    CHECK(gamePlan.ok());
+    CHECK(gameSession.executePlan(gamePlan.value(), gameIntent.value().payload).ok());
     CHECK(target.position() == secondPosition);
     CHECK(backend.canUndo());
 }
@@ -291,13 +286,13 @@ TEST_CASE("editor.v2.property_schema_rejects_type_range_and_read_only") {
     property.type            = PropertyType::Float;
     property.numeric.minimum = 0.0;
     property.numeric.maximum = 10.0;
-    CHECK(validatePropertyValue(property, EditorValue(5.0)).isAccepted());
-    CHECK_EQ(static_cast<int>(validatePropertyValue(property, EditorValue("fast")).status),
+    CHECK(validatePropertyValue(property, EditorValue(5.0)).ok());
+    CHECK_EQ(static_cast<int>(validatePropertyValue(property, EditorValue("fast")).code()),
              static_cast<int>(EditorStatus::Rejected));
-    CHECK_EQ(static_cast<int>(validatePropertyValue(property, EditorValue(12.0)).status),
+    CHECK_EQ(static_cast<int>(validatePropertyValue(property, EditorValue(12.0)).code()),
              static_cast<int>(EditorStatus::Rejected));
     property.flags = PropertyFlag::ReadOnly;
-    CHECK_EQ(static_cast<int>(validatePropertyValue(property, EditorValue(5.0)).status),
+    CHECK_EQ(static_cast<int>(validatePropertyValue(property, EditorValue(5.0)).code()),
              static_cast<int>(EditorStatus::Rejected));
 }
 
@@ -313,7 +308,7 @@ TEST_CASE("editor.v2.property_model_uses_transaction_backend_for_commit_undo_and
     bool legacySinkCalled = false;
     model.setEditSink([&](const PropertyEditIntent&) {
         legacySinkCalled = true;
-        return EditorResult<void>::applied();
+        return eve::editing::applied<void>();
     });
 
     const EditorValue desired = EditorValue::Array{10.0, 11.0, 12.0};
@@ -324,13 +319,13 @@ TEST_CASE("editor.v2.property_model_uses_transaction_backend_for_commit_undo_and
     CHECK(backend.canUndo());
 
     auto undone = model.undo();
-    CHECK(undone.isAccepted());
-    CHECK(undone.value.has_value());
+    CHECK(undone.ok());
+    CHECK(!undone.value().id.empty());
     CHECK(target.position() != desired);
 
     auto redone = model.redo();
-    CHECK(redone.isAccepted());
-    CHECK(redone.value.has_value());
+    CHECK(redone.ok());
+    CHECK(!redone.value().id.empty());
     CHECK(target.position() == desired);
 }
 
@@ -345,20 +340,17 @@ TEST_CASE("editor.v2.property_model_explicit_transaction_previews_without_mutati
     const EditorValue         desired = EditorValue::Array{13.0, 14.0, 15.0};
 
     auto begun = model.beginTransaction("Set transform position");
-    CHECK(begun.isAccepted());
-    CHECK(begun.value.has_value());
+    CHECK(begun.ok());
     const auto staged = model.write("transform.position", toPresentationValue(desired));
     CHECK(staged.accepted);
     CHECK(target.position() != desired);
 
     auto previewed = model.previewTransaction();
-    CHECK(previewed.isAccepted());
-    CHECK(previewed.value.has_value());
+    CHECK(previewed.ok());
     CHECK(target.position() != desired);
 
     auto committed = model.commitTransaction();
-    CHECK(committed.isAccepted());
-    CHECK(committed.value.has_value());
+    CHECK(committed.ok());
     CHECK(target.position() == desired);
 }
 
@@ -378,7 +370,7 @@ TEST_CASE("editor.v2.property_model_failed_commit_keeps_target_unchanged_and_is_
     CHECK(backend.active());
 
     auto discarded = model.rollbackTransaction();
-    CHECK(discarded.isAccepted());
+    CHECK(discarded.ok());
     CHECK(target.position() == before);
     CHECK(!backend.active());
 }
@@ -417,7 +409,7 @@ TEST_CASE("editor.v2.property_model_rejects_external_change_until_refresh_rebase
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(7));
 
     const auto refreshed = model.refresh();
-    CHECK(refreshed.isAccepted());
+    CHECK(refreshed.ok());
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(8));
     CHECK(model.read("transform.position") == std::optional<eve::Value>(toPresentationValue(external)));
 
@@ -436,20 +428,20 @@ TEST_CASE("editor.v2.property_model_external_change_conflict_preserves_failed_tr
                                     HostProfile::developer(), &backend);
 
     const auto begun = model.beginTransaction("stale property edit");
-    CHECK(begun.isAccepted());
+    CHECK(begun.ok());
     const auto staged = model.write("transform.position", toPresentationValue(EditorValue::Array{30.0, 31.0, 32.0}));
     CHECK(staged.accepted);
     const EditorValue external = EditorValue::Array{40.0, 41.0, 42.0};
     target.externalSet(external);
 
     const auto failed = model.commitTransaction();
-    CHECK(!failed.isAccepted());
-    CHECK_EQ(static_cast<int>(failed.status), static_cast<int>(EditorStatus::Conflict));
+    CHECK(!failed.ok());
+    CHECK_EQ(static_cast<int>(failed.code()), static_cast<int>(EditorStatus::Conflict));
     CHECK(target.position() == external);
     CHECK(backend.active());
 
     const auto discarded = model.rollbackTransaction();
-    CHECK(discarded.isAccepted());
+    CHECK(discarded.ok());
     CHECK(target.position() == external);
     CHECK(!backend.active());
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(12));
@@ -461,7 +453,7 @@ TEST_CASE("editor.v2.legacy_property_provider_fails_closed_without_implicit_zero
     LegacyPropertyProvider    legacy(std::move(revisionAware));
     SelectionSnapshot         selection = sceneSelection(target);
     EditorPropertyModel       model(legacy.schema(selection), selection, &legacy);
-    model.setEditSink([](const PropertyEditIntent&) { return EditorResult<void>::applied(); });
+    model.setEditSink([](const PropertyEditIntent&) { return eve::editing::applied<void>(); });
 
     const auto rejected = model.write("transform.position", toPresentationValue(EditorValue::Array{2.0, 3.0, 4.0}));
     CHECK(!rejected.accepted);

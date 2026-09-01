@@ -7,7 +7,7 @@ namespace {
 
 template <class T>
 EditorResult<T> mixerError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -37,34 +37,35 @@ EditorResult<void> AudioMixerTarget::applyDomainOperation(const DomainOperation&
         return mixerError<void>(EditorStatus::Rejected, "editor.audio.mixer-target",
                                 "Mixer operation targets another document");
     auto parsed = parseBus(operation.payload);
-    if (!parsed.isAccepted() || !parsed.value)
+    if (!parsed.ok())
         return mixerError<void>(EditorStatus::Rejected, "editor.audio.mixer-payload",
                                 "Mixer operation contains an invalid bus");
     if (operation.type == "audio.bus.create.v1") {
-        if (buses_.contains(parsed.value->id) ||
-            (!parsed.value->parent.empty() && !buses_.contains(parsed.value->parent)))
+        if (buses_.contains(parsed.value().id) ||
+            (!parsed.value().parent.empty() && !buses_.contains(parsed.value().parent)))
             return mixerError<void>(EditorStatus::Conflict, "editor.audio.bus-create",
                                     "Mixer bus already exists or its parent is missing");
-        buses_.emplace(parsed.value->id, *parsed.value);
+        buses_.emplace(parsed.value().id, parsed.value());
     } else if (operation.type == "audio.bus.delete.v1") {
-        if (parsed.value->id == ObjectId("master") || !buses_.contains(parsed.value->id) ||
-            !children(parsed.value->id).empty())
+        if (parsed.value().id == ObjectId("master") || !buses_.contains(parsed.value().id) ||
+            !children(parsed.value().id).empty())
             return mixerError<void>(EditorStatus::Rejected, "editor.audio.bus-delete",
                                     "Master, missing, or non-leaf mixer bus cannot be deleted");
-        buses_.erase(parsed.value->id);
+        buses_.erase(parsed.value().id);
     } else if (operation.type == "audio.bus.replace.v1") {
-        if (!buses_.contains(parsed.value->id) || parsed.value->id == ObjectId("master") ||
-            !buses_.contains(parsed.value->parent) || wouldCycle(parsed.value->id, parsed.value->parent))
+        if (!buses_.contains(parsed.value().id) || parsed.value().id == ObjectId("master") ||
+            !buses_.contains(parsed.value().parent) ||
+            wouldCycle(parsed.value().id, parsed.value().parent))
             return mixerError<void>(EditorStatus::Rejected, "editor.audio.bus-replace",
                                     "Mixer bus replacement produces an invalid hierarchy");
-        buses_[parsed.value->id] = *parsed.value;
+        buses_[parsed.value().id] = parsed.value();
     } else {
         return mixerError<void>(EditorStatus::Unsupported, "editor.audio.mixer-operation",
                                 "Unsupported mixer operation: " + operation.type);
     }
     ++revision_;
     dirty_.include(0, 0);
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::unique_ptr<IDomainOperationTarget> AudioMixerTarget::cloneDomainState() const {
@@ -78,7 +79,7 @@ EditorResult<void> AudioMixerTarget::commitDomainState(
         return mixerError<void>(EditorStatus::Conflict, "editor.audio.mixer-candidate-mismatch",
                                 "Mixer candidate belongs to another target");
     *this = *typed;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorResult<AudioBusSnapshot> AudioMixerTarget::bus(const ObjectId& id) const {
@@ -86,7 +87,7 @@ EditorResult<AudioBusSnapshot> AudioMixerTarget::bus(const ObjectId& id) const {
     if (found == buses_.end())
         return mixerError<AudioBusSnapshot>(EditorStatus::NotFound, "editor.audio.bus-not-found",
                                             "Mixer bus does not exist: " + id.value());
-    return EditorResult<AudioBusSnapshot>::applied(found->second);
+    return eve::editing::applied<AudioBusSnapshot>(found->second);
 }
 
 std::vector<ObjectId> AudioMixerTarget::children(const ObjectId& parent) const {
@@ -109,7 +110,7 @@ EditorResult<DomainOperation> AudioMixerTarget::makeCreate(AudioBusSnapshot bus)
     operation.inverse = operation.payload;
     operation.hasInverse = true;
     operation.affectedObjects.push_back({TargetId(id_), bus.id.value(), 0});
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> AudioMixerTarget::makeDelete(const ObjectId& id) const {
@@ -125,7 +126,7 @@ EditorResult<DomainOperation> AudioMixerTarget::makeDelete(const ObjectId& id) c
     operation.inverse = operation.payload;
     operation.hasInverse = true;
     operation.affectedObjects.push_back({TargetId(id_), id.value(), 0});
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> AudioMixerTarget::makeReplace(AudioBusSnapshot changed) const {
@@ -145,7 +146,7 @@ EditorResult<DomainOperation> AudioMixerTarget::makeReplace(AudioBusSnapshot cha
     operation.affectedObjects.push_back({TargetId(id_), changed.id.value(), 0});
     operation.affectedProperties = {"bus"};
     operation.mergeKey = "audio.bus:" + changed.id.value();
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 bool AudioMixerTarget::wouldCycle(const ObjectId& id, const ObjectId& parent) const {
@@ -183,7 +184,7 @@ EditorResult<AudioBusSnapshot> AudioMixerTarget::parseBus(const EditorValue& val
         !mute || !solo || !effects || effects->type() != EditorValue::Type::Array)
         return mixerError<AudioBusSnapshot>(EditorStatus::Rejected, "editor.audio.bus-value",
                                             "Mixer bus value is invalid");
-    return EditorResult<AudioBusSnapshot>::applied(
+    return eve::editing::applied<AudioBusSnapshot>(
         {ObjectId(*id), ObjectId(*parent), *name, *volume, *mute, *solo, *effects});
 }
 
@@ -210,8 +211,7 @@ EditorResult<void> AudioMixerTarget::loadSnapshot(const EditorValue& snapshot) {
     std::map<ObjectId, AudioBusSnapshot> candidate;
     for (const EditorValue& value : *buses) {
         auto parsed = parseBus(value);
-        if (!parsed.isAccepted() || !parsed.value ||
-            !candidate.emplace(parsed.value->id, *parsed.value).second)
+        if (!parsed.ok() || !candidate.emplace(parsed.value().id, parsed.value()).second)
             return mixerError<void>(EditorStatus::Rejected, "editor.audio.mixer-snapshot-bus",
                                     "Mixer snapshot contains an invalid or duplicate bus");
     }
@@ -239,7 +239,7 @@ EditorResult<void> AudioMixerTarget::loadSnapshot(const EditorValue& snapshot) {
     buses_ = std::move(candidate);
     ++revision_;
     dirty_.clear();
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::audio_editing

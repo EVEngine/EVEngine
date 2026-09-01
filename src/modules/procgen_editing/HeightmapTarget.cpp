@@ -36,14 +36,11 @@ std::unique_ptr<HeightmapTarget> createHeightmapTarget(std::string id,
 editing::Result<int> applyHeightmapBrush(procgen::Heightmap* heightmap, float centerX,
                                          float centerY, float radius, float strength) {
     if (!heightmap || radius < 0.0F)
-        return editing::Result<int>::error(
+        return eve::editing::failed<int>(
             editing::Status::Rejected, editing::RuleId("procgen.heightmap.invalid-brush"),
             "Heightmap brush requires a target and non-negative radius");
     if (strength == 0.0F) {
-        editing::Result<int> result;
-        result.status = editing::Status::NoOp;
-        result.value  = 0;
-        return result;
+        return editing::Result<int>::success(0, eve::Status::success(editing::Status::NoOp));
     }
     const int minX = std::max(0, static_cast<int>(std::floor(centerX - radius)));
     const int maxX = std::min(heightmap->getWidth() - 1, static_cast<int>(std::ceil(centerX + radius)));
@@ -64,7 +61,7 @@ editing::Result<int> applyHeightmapBrush(procgen::Heightmap* heightmap, float ce
             ++changed;
         }
     }
-    return editing::Result<int>::applied(changed);
+    return eve::editing::applied<int>(changed);
 }
 
 }  // namespace eve::procgen_editing

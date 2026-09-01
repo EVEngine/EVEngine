@@ -288,10 +288,10 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     REQUIRE(editor.commandService()
                 .registerCommand(std::move(editorCommand),
                                  [](const eve::editor::CommandContext&, const eve::editor::EditorValue&) {
-                                     return eve::editor::EditorResult<eve::editor::EditorValue>::applied(
+                                     return eve::editing::applied<eve::editor::EditorValue>(
                                          eve::editor::EditorValue("executed"));
                                  })
-                .isAccepted());
+                .ok());
 
     const int port = mcp.listen(0);
     REQUIRE(port > 0);

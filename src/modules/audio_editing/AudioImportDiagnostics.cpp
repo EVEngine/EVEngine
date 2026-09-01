@@ -18,16 +18,19 @@ AudioImportInspectionResult AudioImportDiagnosticsService::inspect(
         request.clippingThreshold > 1.0 || !std::isfinite(request.silenceThreshold) ||
         request.silenceThreshold < 0.0 || request.silenceThreshold >= request.clippingThreshold) {
         result.status = EditorStatus::Rejected;
-        result.diagnostics.push_back({RuleId("editor.audio.invalid-import-inspection"),
-            DiagnosticSeverity::Error, "Audio inspection requires valid identity, format, thresholds and bounded PCM"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::InvalidArgument, RuleId("editor.audio.invalid-import-inspection"),
+            DiagnosticSeverity::Error,
+            "Audio inspection requires valid identity, format, thresholds and bounded PCM"));
         return result;
     }
     const std::size_t frames = pcm.samples.size() / static_cast<std::size_t>(pcm.channels);
     result.duration = static_cast<double>(frames) / static_cast<double>(pcm.sampleRate);
     if (pcm.samples.size() > std::numeric_limits<std::size_t>::max() / sizeof(float)) {
         result.status = EditorStatus::Rejected;
-        result.diagnostics.push_back({RuleId("editor.audio.decoded-size-overflow"), DiagnosticSeverity::Error,
-                                      "Decoded audio size exceeds the host range"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::InvalidArgument, RuleId("editor.audio.decoded-size-overflow"),
+            DiagnosticSeverity::Error, "Decoded audio size exceeds the host range"));
         return result;
     }
     result.decodedBytes = pcm.samples.size() * sizeof(float);
@@ -43,8 +46,9 @@ AudioImportInspectionResult AudioImportDiagnosticsService::inspect(
                                              static_cast<std::size_t>(channel)];
             if (!std::isfinite(sample)) {
                 result.status = EditorStatus::Rejected;
-                result.diagnostics.push_back({RuleId("editor.audio.nonfinite-sample"), DiagnosticSeverity::Error,
-                                              "Decoded PCM contains a non-finite sample"});
+                result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                    eve::DiagnosticCode::InvalidArgument, RuleId("editor.audio.nonfinite-sample"),
+                    DiagnosticSeverity::Error, "Decoded PCM contains a non-finite sample"));
                 return result;
             }
             auto& statistics = result.channels[static_cast<std::size_t>(channel)];
@@ -62,20 +66,29 @@ AudioImportInspectionResult AudioImportDiagnosticsService::inspect(
         statistics.rms = std::sqrt(static_cast<double>(squares[channel] / frames));
         silent = silent && statistics.peak <= request.silenceThreshold;
         if (statistics.clippedSamples > 0)
-            result.diagnostics.push_back({RuleId("editor.audio.clipping"), DiagnosticSeverity::Warning,
-                "Audio channel " + std::to_string(channel) + " contains clipped samples"});
+            result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::PreconditionViolation, RuleId("editor.audio.clipping"),
+                DiagnosticSeverity::Warning,
+                "Audio channel " + std::to_string(channel) + " contains clipped samples"));
         if (std::abs(statistics.dcOffset) > 0.01)
-            result.diagnostics.push_back({RuleId("editor.audio.dc-offset"), DiagnosticSeverity::Warning,
-                "Audio channel " + std::to_string(channel) + " has significant DC offset"});
+            result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::PreconditionViolation, RuleId("editor.audio.dc-offset"),
+                DiagnosticSeverity::Warning,
+                "Audio channel " + std::to_string(channel) + " has significant DC offset"));
     }
-    if (silent) result.diagnostics.push_back({RuleId("editor.audio.silence"), DiagnosticSeverity::Warning,
-                                              "Decoded audio is effectively silent"});
+    if (silent)
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.audio.silence"),
+            DiagnosticSeverity::Warning, "Decoded audio is effectively silent"));
     if (result.recommendStreaming && !request.streaming)
-        result.diagnostics.push_back({RuleId("editor.audio.streaming-recommended"), DiagnosticSeverity::Warning,
-                                      "Long or memory-heavy audio should use streaming playback"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation,
+            RuleId("editor.audio.streaming-recommended"), DiagnosticSeverity::Warning,
+            "Long or memory-heavy audio should use streaming playback"));
     if (!result.recommendStreaming && request.streaming)
-        result.diagnostics.push_back({RuleId("editor.audio.static-recommended"), DiagnosticSeverity::Info,
-                                      "Short audio can avoid streaming overhead"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::None, RuleId("editor.audio.static-recommended"),
+            DiagnosticSeverity::Info, "Short audio can avoid streaming overhead"));
     result.status = EditorStatus::Applied;
     return result;
 }

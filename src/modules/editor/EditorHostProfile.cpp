@@ -28,17 +28,24 @@ HostProfile HostProfile::automation() {
 bool HostProfile::hasFeatures(HostFeature required) const { return (features_ & required) == required; }
 
 void HostProfile::allowCommand(CommandId id) {
-    if (id) allowedCommands_.insert(std::move(id));
+    if (!id) return;
+    deniedCommands_.erase(id);
+    allowedCommands_.insert(std::move(id));
 }
 
 void HostProfile::allowCommands(std::initializer_list<CommandId> ids) {
     for (const auto& id : ids) allowCommand(id);
 }
 
-void HostProfile::denyCommand(const CommandId& id) { allowedCommands_.erase(id); }
+void HostProfile::denyCommand(const CommandId& id) {
+    if (!id) return;
+    allowedCommands_.erase(id);
+    deniedCommands_.insert(id);
+}
 
 bool HostProfile::allowsCommand(const CommandId& id) const {
-    return id && (allowAllCommands_ || allowedCommands_.contains(id));
+    if (!id || deniedCommands_.contains(id)) return false;
+    return allowAllCommands_ || allowedCommands_.contains(id);
 }
 
 }  // namespace eve::editor

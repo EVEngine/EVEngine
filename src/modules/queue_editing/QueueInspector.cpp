@@ -23,12 +23,16 @@ QueueInspectionSnapshot RuntimeQueueInspector::capture(const orders::CommandQueu
                                 order->elapsedSeconds, order->timeoutSeconds, order->payload.toJson()});
         if (!std::isfinite(order->elapsedSeconds) || order->elapsedSeconds < 0.0 ||
             !std::isfinite(order->timeoutSeconds) || order->timeoutSeconds < 0.0)
-            result.diagnostics.push_back({RuleId("editor.queue.invalid-order-time"), DiagnosticSeverity::Error,
-                                          "Order " + order->id + " has invalid timing metadata"});
+            result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::PreconditionViolation,
+                RuleId("editor.queue.invalid-order-time"), DiagnosticSeverity::Error,
+                "Order " + order->id + " has invalid timing metadata"));
         if (order->timeoutSeconds > 0.0 && order->elapsedSeconds > order->timeoutSeconds &&
             order->state != orders::OrderState::Failed)
-            result.diagnostics.push_back({RuleId("editor.queue.overdue-order"), DiagnosticSeverity::Warning,
-                                          "Order " + order->id + " exceeded its timeout without failing"});
+            result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::PreconditionViolation, RuleId("editor.queue.overdue-order"),
+                DiagnosticSeverity::Warning,
+                "Order " + order->id + " exceeded its timeout without failing"));
     }
     for (int i = 0; i < queue.eventCount(); ++i) {
         const auto borrowed = queue.eventAt(i);
@@ -55,8 +59,10 @@ QueueInspectionSnapshot RuntimeQueueInspector::capture(const production::WorkQue
                                 task->priority, progress, duration, {}});
         if (!std::isfinite(progress) || !std::isfinite(duration) || progress < 0.0 || duration <= 0.0 ||
             progress > duration)
-            result.diagnostics.push_back({RuleId("editor.queue.invalid-production-progress"),
-                DiagnosticSeverity::Error, "Production task " + task->id + " has invalid progress"});
+            result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::PreconditionViolation,
+                RuleId("editor.queue.invalid-production-progress"), DiagnosticSeverity::Error,
+                "Production task " + task->id + " has invalid progress"));
     }
     for (int i = 0; i < queue.eventCount(); ++i) {
         const auto borrowed = queue.eventAt(i); const auto* event = borrowed ? &borrowed->get() : nullptr;

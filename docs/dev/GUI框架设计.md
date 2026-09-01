@@ -8,7 +8,7 @@
 > （ScrollList / virtualList，按滚动偏移只绘制可见行）；2026-08-19 再补 UI 内嵌渲染视口
 > （Viewport 控件：离屏 Canvas → 纹理注册 → Image 显示 + 输入路由），并新增
 > `Graphics::renderScene3DToCanvas`（RenderSystem3D::renderToCanvas 前向离屏 3D 通道）、
-> `editor.newHeightmapMesh / updateHeightmapMesh`（高度图 → 地形网格），
+> `heightmapTargets.newMesh / updateMesh`（高度图 → 地形网格），
 > 示例 `examples/terrain-editor`。
 > 2026-08-30 新增 3D 世界锚点：`UIHost::WorldAnchor` 由活动 `Camera3D` 投影到 retained
 > UI overlay，支持视锥外隐藏/安全边缘钳制、相机缺失/背后状态与距离缩放；HUD、头顶

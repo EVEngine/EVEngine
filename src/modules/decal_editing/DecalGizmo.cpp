@@ -5,8 +5,8 @@
 namespace eve::decal_editing {
 
 EditorGizmoSnapshot DecalGizmoPreviewService::build(const DecalDocumentTarget& document) const {
-    EditorGizmoSnapshot result; result.target=document.targetId();result.targetRevision=document.revision();
-    const auto diagnostics=document.validate();for(const auto&diagnostic:diagnostics)if(diagnostic.severity==DiagnosticSeverity::Error){result.status=EditorStatus::Rejected;result.diagnostics=diagnostics;return result;}
+    EditorGizmoSnapshot result; result.target=document.targetId().value();result.targetRevision=document.revision();
+    const auto diagnostics=document.validate();for(const auto&diagnostic:diagnostics)if(diagnostic.severity()==DiagnosticSeverity::Error){result.status=EditorStatus::Rejected;result.diagnostics=diagnostics;return result;}
     const auto&position=*document.value("transform.position")->getIf<EditorValue::Array>();
     const auto&normal=*document.value("transform.normal")->getIf<EditorValue::Array>();
     std::array<double,3> p{},n{};double length2=0;

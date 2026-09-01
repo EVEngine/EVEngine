@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <string>
 #include <utility>
+#include <vector>
 
 using namespace eve::editor;
 
@@ -42,24 +43,30 @@ public:
     PropertySchema schema(const SelectionSnapshot &) const override { return ::schema(); }
 
     PropertyReadResult read(const SelectionSnapshot &, const PropertyPath &path) const override {
-        if (path.value() == "movement.speed")
+        ++readCount;
+        if (path.value() == "movement.speed") {
+            if (speedState != PropertyReadState::Value) return {speedState, {}, {}};
             return {PropertyReadState::Value, EditorValue(speed), {}};
+        }
         if (path.value() == "debug.name")
-            return {PropertyReadState::Value, EditorValue("Actor #1"), {}};
+            return {PropertyReadState::Value, EditorValue(debugName), {}};
         return {};
     }
 
     EditorResult<DomainOperation> makeSet(const SelectionSnapshot &, const PropertyPath &,
                                           const EditorValue &, PropertySetMode) const override {
-        return EditorResult<DomainOperation>::applied({});
+        return eve::editing::applied<DomainOperation>({});
     }
 
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot &,
                                             const PropertyPath &) const override {
-        return EditorResult<DomainOperation>::applied({});
+        return eve::editing::applied<DomainOperation>({});
     }
 
     double speed = 4.0;
+    std::string debugName = "Actor #1";
+    PropertyReadState speedState = PropertyReadState::Value;
+    mutable std::size_t readCount = 0;
 };
 
 }  // namespace
@@ -83,7 +90,7 @@ TEST_CASE("editor.property_model_routes_runtime_writes_through_command_intent") 
         REQUIRE(payload != nullptr);
         CHECK_EQ(*payload->at("path").getIf<std::string>(), std::string("movement.speed"));
         provider.speed = *payload->at("value").getIf<double>();
-        return EditorResult<void>::applied();
+        return eve::editing::applied<void>();
     });
 
     std::string changedPath;
@@ -103,4 +110,89 @@ TEST_CASE("editor.property_model_value_conversion_preserves_nested_data") {
     source["values"] = EditorValue::Array{EditorValue(3), EditorValue("four")};
     const EditorValue original(std::move(source));
     CHECK(toEditorValue(toPresentationValue(original)) == original);
+}
+
+TEST_CASE("editor.property_model_reads_one_atomically_refreshed_snapshot") {
+    PropertyProvider provider;
+    SelectionSnapshot selection;
+    EditorPropertyModel model(schema(), selection, &provider);
+
+    REQUIRE(model.read("movement.speed").has_value());
+    CHECK_EQ(*model.read("movement.speed")->getIf<double>(), 4.0);
+    provider.speed = 8.0;
+    CHECK_EQ(*model.read("movement.speed")->getIf<double>(), 4.0);
+
+    REQUIRE(model.refresh().ok());
+    CHECK_EQ(*model.read("movement.speed")->getIf<double>(), 8.0);
+}
+
+TEST_CASE("editor.property_model_notifies_value_availability_transitions") {
+    PropertyProvider provider;
+    SelectionSnapshot selection;
+    EditorPropertyModel model(schema(), selection, &provider);
+
+    std::vector<eve::property_access::PropertyChangeState> states;
+    auto subscription = model.subscribe([&](const eve::property_access::PropertyChange &change) {
+        if (change.path == "movement.speed") states.push_back(change.state);
+    });
+
+    provider.speedState = PropertyReadState::Mixed;
+    REQUIRE(model.refresh().ok());
+    CHECK(model.read("movement.speed") == std::nullopt);
+    provider.speedState = PropertyReadState::Missing;
+    REQUIRE(model.refresh().ok());
+    CHECK(model.read("movement.speed") == std::nullopt);
+    provider.speedState = PropertyReadState::Value;
+    provider.speed = 12.0;
+    REQUIRE(model.refresh().ok());
+
+    REQUIRE_EQ(states.size(), static_cast<std::size_t>(3));
+    CHECK(static_cast<int>(states[0]) == static_cast<int>(eve::property_access::PropertyChangeState::Mixed));
+    CHECK(static_cast<int>(states[1]) == static_cast<int>(eve::property_access::PropertyChangeState::Missing));
+    CHECK(static_cast<int>(states[2]) == static_cast<int>(eve::property_access::PropertyChangeState::Value));
+    CHECK_EQ(*model.read("movement.speed")->getIf<double>(), 12.0);
+}
+
+TEST_CASE("editor.property_model_queues_reentrant_snapshot_notifications") {
+    PropertyProvider provider;
+    SelectionSnapshot selection;
+    EditorPropertyModel model(schema(), selection, &provider);
+
+    std::vector<std::pair<std::string, std::uint64_t>> notifications;
+    bool reentered = false;
+    auto subscription = model.subscribe([&](const eve::property_access::PropertyChange &change) {
+        notifications.emplace_back(change.path, change.revision);
+        if (change.path == "movement.speed" && !reentered) {
+            reentered = true;
+            REQUIRE(model.read("debug.name").has_value());
+            CHECK_EQ(*model.read("debug.name")->getIf<std::string>(), std::string("Actor #2"));
+            provider.speed = 6.0;
+            provider.debugName = "Actor #3";
+            REQUIRE(model.refresh().ok());
+        }
+    });
+
+    provider.speed = 5.0;
+    provider.debugName = "Actor #2";
+    REQUIRE(model.refresh().ok());
+
+    REQUIRE_EQ(notifications.size(), static_cast<std::size_t>(4));
+    CHECK_EQ(notifications[0].first, std::string("debug.name"));
+    CHECK_EQ(notifications[1].first, std::string("movement.speed"));
+    CHECK_EQ(notifications[2].first, std::string("debug.name"));
+    CHECK_EQ(notifications[3].first, std::string("movement.speed"));
+    CHECK_EQ(notifications[0].second, notifications[1].second);
+    CHECK(notifications[1].second < notifications[2].second);
+    CHECK_EQ(notifications[2].second, notifications[3].second);
+}
+
+TEST_CASE("editor.property_model_runtime_surface_requires_runtime_world_feature") {
+    PropertyProvider provider;
+    SelectionSnapshot selection;
+    HostProfile denied(HostKind::RuntimeBuilder);
+    EditorPropertyModel model(schema(), selection, &provider, PropertyModelSurface::Runtime, std::move(denied));
+
+    CHECK(model.schema().properties.empty());
+    CHECK(model.read("movement.speed") == std::nullopt);
+    CHECK_EQ(provider.readCount, static_cast<std::size_t>(0));
 }

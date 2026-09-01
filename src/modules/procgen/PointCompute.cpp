@@ -1,12 +1,10 @@
 #include "procgen/PointCompute.h"
 
-#if defined(EVENGINE_HAS_GPGPU) && EVENGINE_HAS_GPGPU
 #include "common/Module.h"
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/GpuBuffer.h"
 #include "gpgpu/Sequence.h"
-#endif
 
 #include <algorithm>
 #include <cmath>
@@ -14,6 +12,7 @@
 #include <exception>
 #include <limits>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace eve::procgen {
@@ -120,12 +119,10 @@ void main() {
 
 struct PointCompute::Impl {
     std::vector<float>                         packed;
-#if defined(EVENGINE_HAS_GPGPU) && EVENGINE_HAS_GPGPU
     std::unique_ptr<eve::gpgpu::GpuBuffer>     storage;
     std::unique_ptr<eve::gpgpu::GpuBuffer>     staging;
     std::unique_ptr<eve::gpgpu::ComputeShader> shader;
     std::unique_ptr<eve::gpgpu::Sequence>      sequence;
-#endif
     int                                        capacityBytes = 0;
     uint64_t                                   uploadCount             = 0;
     uint64_t                                   dispatchCount           = 0;
@@ -135,12 +132,10 @@ struct PointCompute::Impl {
     int                                        lastFusedTransformCount = 0;
 
     void reset() {
-#if defined(EVENGINE_HAS_GPGPU) && EVENGINE_HAS_GPGPU
         sequence.reset();
         shader.reset();
         staging.reset();
         storage.reset();
-#endif
         capacityBytes = 0;
     }
 };
@@ -163,10 +158,6 @@ bool PointCompute::transformChain(const PointSet& input, PointSet& output, const
         output = input;
         return true;
     }
-#if !defined(EVENGINE_HAS_GPGPU) || !EVENGINE_HAS_GPGPU
-    error_ = "compute device unavailable: gpgpu module is not present in this build profile";
-    return false;
-#else
     constexpr size_t bytesPerPoint = size_t(kPointFloats) * sizeof(float);
     if (size_t(input.getCount()) > size_t(std::numeric_limits<int>::max()) / bytesPerPoint) {
         error_ = "point data exceeds GPU buffer address range";
@@ -282,7 +273,6 @@ bool PointCompute::transformChain(const PointSet& input, PointSet& output, const
         impl_->reset();
     }
     return false;
-#endif
 }
 
 uint64_t PointCompute::getUploadCount() const { return impl_->uploadCount; }

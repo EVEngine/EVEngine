@@ -43,6 +43,9 @@ eve_declare_module(NAME building_editing LAYER 5
                    DEPS editing
                    OPTIONAL_DEPS building
                    GROUP 2d 3d web)
+eve_declare_module(NAME level_editing LAYER 5
+                   DEPS editing
+                   GROUP 2d 3d web)
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    DEPS animation data filesystem graphics ik
                    THIRDPARTY poco
@@ -94,6 +97,61 @@ eve_declare_module(NAME voxel_editing LAYER 6
                    DEPS editing
                    OPTIONAL_DEPS voxel
                    GROUP 3d)
+eve_declare_module(NAME tilelayer_target LAYER 7 SCRIPT TileLayerTargetModule SLOT tileLayerTarget
+                   DEPS editor map map_editing
+                   GROUP 3d)
+eve_declare_module(NAME heightmap_target LAYER 7 SCRIPT HeightmapTargetModule SLOT heightmapTarget
+                   DEPS editor procgen procgen_editing procgen_graphics_editing
+                   GROUP 3d)
+eve_declare_module(NAME voxelworld_target LAYER 7 SCRIPT VoxelWorldTargetModule SLOT voxelWorldTarget
+                   DEPS editor voxel voxel_editing
+                   GROUP 3d)
+# Domain-facing editor compatibility adapters. These modules preserve the
+# eve::editor type spellings without forcing the editor core to link every
+# domain editing implementation.
+eve_declare_module(NAME action_editor LAYER 7 SCRIPT ActionEditorModule SLOT actionEditor
+                   DEPS action animation editor GROUP 3d web)
+eve_declare_module(NAME animation_editor LAYER 7 DEPS animation_editing editor GROUP 3d web)
+eve_declare_module(NAME audio_editor LAYER 7 DEPS audio_editing editor GROUP 3d web)
+eve_declare_module(NAME avatar_editor LAYER 7 DEPS avatar_editing editor GROUP 3d)
+eve_declare_module(NAME biome_editor LAYER 7 DEPS biome_editing editor GROUP 3d)
+eve_declare_module(NAME building_editor LAYER 7 DEPS building_editing editor GROUP 2d 3d web)
+eve_declare_module(NAME domain_gizmo_editor LAYER 7 DEPS domain_gizmo_editing editor GROUP 3d web)
+eve_declare_module(NAME camera_editor LAYER 7 DEPS camera_editing domain_gizmo_editor editor GROUP 3d web)
+eve_declare_module(NAME crowd_editor LAYER 7 DEPS crowd_editing editor GROUP 2d 3d web)
+eve_declare_module(NAME decal_editor LAYER 7 DEPS decal_editing editor GROUP 3d web)
+eve_declare_module(NAME definitions_editor LAYER 7 DEPS definitions_editing editor GROUP 2d 3d web)
+eve_declare_module(NAME dialogue_editor LAYER 7 DEPS audio_editor dialogue_editing editor GROUP 3d web)
+eve_declare_module(NAME graphics_editor LAYER 7 SCRIPT GraphicsEditorModule SLOT graphicsEditor
+                   DEPS editor graphics graphics_editing GROUP 3d web)
+eve_declare_module(NAME fluids_editor LAYER 7 DEPS editor fluids fluids_editing graphics_editor GROUP 3d web)
+eve_declare_module(NAME hd2d_editor LAYER 7 DEPS editor hd2d_editing GROUP 3d)
+eve_declare_module(NAME housegen_editor LAYER 7 DEPS domain_gizmo_editor editor housegen_editing GROUP 3d)
+eve_declare_module(NAME input_editor LAYER 7 DEPS editor input_editing GROUP 2d 3d web)
+eve_declare_module(NAME lighting_editor LAYER 7 DEPS editor lighting_editing GROUP 3d web)
+eve_declare_module(NAME localization_editor LAYER 7 DEPS editor localization_editing GROUP 2d 3d web)
+eve_declare_module(NAME level_editor LAYER 7 DEPS editor level_editing
+                   SCRIPT LevelEditorModule SLOT levelEditor GROUP 2d 3d web)
+eve_declare_module(NAME map_editor LAYER 7 DEPS editor map_editing GROUP 2d 3d web)
+eve_declare_module(NAME material_editor LAYER 7 DEPS editor graphics_editor material_editing
+                   SCRIPT MaterialEditorModule SLOT materialEditor GROUP 3d web)
+eve_declare_module(NAME network_editor LAYER 7 DEPS editor network_editing GROUP 2d 3d web)
+eve_declare_module(NAME npc_ai_editor LAYER 7 DEPS editor npc_ai_editing GROUP 2d 3d web)
+eve_declare_module(NAME particles_editor LAYER 7 DEPS editor particles_editing particles_graphics_editing GROUP 2d 3d)
+eve_declare_module(NAME physics_editor LAYER 7 DEPS asset editor physics_editing GROUP 3d web)
+eve_declare_module(NAME procgen_editor LAYER 7 DEPS editor procgen_editing GROUP 3d)
+eve_declare_module(NAME profiler_editor LAYER 7 DEPS editor profiler_editing GROUP 3d web)
+eve_declare_module(NAME queue_editor LAYER 7 DEPS editor queue_editing GROUP 2d 3d web)
+eve_declare_module(NAME scene_editor LAYER 7 DEPS editor scene_editing OPTIONAL_DEPS scene
+                   SCRIPT SceneEditorModule SLOT sceneEditor GROUP 3d web)
+eve_declare_module(NAME sceneloader_editor LAYER 7 DEPS editor sceneloader_editing GROUP 3d web)
+eve_declare_module(NAME social_editor LAYER 7 DEPS editor social_editing GROUP 2d 3d web)
+eve_declare_module(NAME snow_editor LAYER 7 DEPS editor snow_editing GROUP 3d)
+eve_declare_module(NAME spritestack_editor LAYER 7 DEPS editor spritestack_editing GROUP 2d 3d)
+eve_declare_module(NAME stylize_editor LAYER 7 DEPS editor graphics_editor stylize_editing GROUP 3d web)
+eve_declare_module(NAME ui_editor LAYER 7 DEPS editor ui_editing GROUP 3d web)
+eve_declare_module(NAME virtualgeometry_editor LAYER 7 DEPS editor virtualgeometry_editing GROUP 3d)
+eve_declare_module(NAME voxel_editor LAYER 7 DEPS editor voxel_editing GROUP 3d)
 eve_declare_module(NAME virtualgeometry_editing LAYER 6
                    DEPS editing virtualgeometry
                    GROUP 3d)

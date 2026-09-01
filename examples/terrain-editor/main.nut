@@ -26,6 +26,8 @@ persist meshCooldown = 0.0
 persist terrainLayers = null
 persist analysisText = "not analyzed"
 
+heightmapTargets <- eve.HeightmapTargetModule()
+
 const W = 64;
 const H = 64;
 const CELL = 0.5;      // world units per heightmap cell
@@ -72,7 +74,7 @@ function analyzeTerrainLayers() {
 function rebuildMesh() {
     if (hm == null) return;
     if (terrainMesh == null) {
-        terrainMesh = editor.newHeightmapMeshSmooth(hm, CELL, HSCALE);
+        terrainMesh = heightmapTargets.newSmoothMesh(hm, CELL, HSCALE);
         if (terrainMesh == null) return;
         terrainEnt = eve.Renderable3D();
         terrainEnt.setMesh(terrainMesh);
@@ -82,7 +84,7 @@ function rebuildMesh() {
         terrainEnt.setPosition(0.0, 0.0, 0.0);
         terrainEnt.setVisible(true);
     } else {
-        editor.updateHeightmapMeshSmooth(terrainMesh, gfx, hm, CELL, HSCALE);
+        heightmapTargets.updateSmoothMesh(terrainMesh, gfx, hm, CELL, HSCALE);
     }
 }
 
@@ -198,7 +200,7 @@ eve_update = function(dt) {
                 local centerX = cellX.tointeger();
                 local centerZ = cellZ.tointeger();
                 local before = hm.height(centerX, centerZ);
-                local changed = editor.applyHeightmapBrush(
+                local changed = heightmapTargets.applyBrush(
                     hm, cellX, cellZ, brushR, dir * strength * clampf(dt * 60.0, 0.0, 2.0));
                 if (changed > 0) {
                     meshDirty = true;

@@ -6,8 +6,10 @@
 #include "common/RenderCapture.h"
 #include "editor/Editor.h"
 #include "editor/EditorSession.h"
-#include "editor/EditorMaterialTarget.h"
-#include "editor/EditorSceneTarget.h"
+#include "material_editor/MaterialEditorModule.h"
+#include "material_editor/EditorMaterialTarget.h"
+#include "scene_editor/SceneEditorModule.h"
+#include "scene_editor/EditorSceneTarget.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "scene/NodeDesc.h"
@@ -25,9 +27,9 @@ TEST_CASE("editor.v2.automation_capability_discovers_executes_plans_and_cancels"
     REQUIRE(editor.commandService()
                 .registerCommand(std::move(immediate),
                                  [](const CommandContext&, const EditorValue&) {
-                                     return EditorResult<EditorValue>::applied(EditorValue("tree-added"));
+                                     return eve::editing::applied<EditorValue>(EditorValue("tree-added"));
                                  })
-                .isAccepted());
+                .ok());
 
     CommandDescriptor planned;
     planned.id          = CommandId("park.build-path");
@@ -39,18 +41,20 @@ TEST_CASE("editor.v2.automation_capability_discovers_executes_plans_and_cancels"
                     [](const CommandRequest&) {
                         CommandPlan plan;
                         plan.summary = EditorValue("path-plan");
-                        return EditorResult<CommandPlan>::applied(std::move(plan));
+                        return eve::editing::applied<CommandPlan>(std::move(plan));
                     },
                     [](const CommandRequest&, const CommandPlan&) {
                         TransactionReceipt receipt;
                         receipt.id    = TransactionId("path-transaction");
                         receipt.state = TransactionState::Committed;
-                        return EditorResult<TransactionReceipt>::applied(std::move(receipt));
+                        return eve::editing::applied<TransactionReceipt>(std::move(receipt));
                     })
-                .isAccepted());
+                .ok());
 
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
+    CHECK(automation->invoke("target-create", R"({"target":"absent.scene","type":"scene"})")
+              .find("unsupported") != std::string::npos);
     const std::string commands = automation->invoke("commands", "{}");
     CHECK(commands.find("park.add-tree") != std::string::npos);
     CHECK(commands.find("park.build-path") != std::string::npos);
@@ -78,9 +82,8 @@ void addSceneObject(SceneDocumentTarget& target, const char* id) {
     request.id   = ObjectId(id);
     request.name = id;
     auto operation = target.makeCreate(request);
-    REQUIRE(operation.isAccepted());
-    REQUIRE(operation.value.has_value());
-    REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());
+    REQUIRE(operation.ok());
+    REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }
 
 }  // namespace
@@ -91,9 +94,11 @@ TEST_CASE("editor.automation.editing_commands_keep_level_histories_independent")
     addSceneObject(village, "player");
     addSceneObject(forest, "player");
 
-    Editor editor;
-    REQUIRE(editor.registerEditingTarget(village).isAccepted());
-    REQUIRE(editor.registerEditingTarget(forest).isAccepted());
+    Editor                          editor;
+    eve::scene_editor::SceneEditorModule       sceneAdapter;
+    eve::material_editor::MaterialEditorModule materialAdapter;
+    REQUIRE(editor.registerEditingTarget(village).ok());
+    REQUIRE(editor.registerEditingTarget(forest).ok());
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
 
@@ -114,38 +119,39 @@ TEST_CASE("editor.automation.editing_commands_keep_level_histories_independent")
 
     auto villageTransform = village.readTransform(ObjectId("player"));
     auto forestTransform  = forest.readTransform(ObjectId("player"));
-    REQUIRE(villageTransform.value.has_value());
-    REQUIRE(forestTransform.value.has_value());
-    CHECK(villageTransform.value->x == 1.0);
-    CHECK(forestTransform.value->x == 7.0);
+    REQUIRE(villageTransform.ok());
+    REQUIRE(forestTransform.ok());
+    CHECK(villageTransform.value().x == 1.0);
+    CHECK(forestTransform.value().x == 7.0);
 
     const std::string undone = automation->invoke("undo", R"({"target":"level.village"})");
     CHECK(undone.find("\"status\":\"applied\"") != std::string::npos);
     villageTransform = village.readTransform(ObjectId("player"));
     forestTransform  = forest.readTransform(ObjectId("player"));
-    REQUIRE(villageTransform.value.has_value());
-    REQUIRE(forestTransform.value.has_value());
-    CHECK(villageTransform.value->x == 0.0);
-    CHECK(forestTransform.value->x == 7.0);
+    REQUIRE(villageTransform.ok());
+    REQUIRE(forestTransform.ok());
+    CHECK(villageTransform.value().x == 0.0);
+    CHECK(forestTransform.value().x == 7.0);
 
     const std::string redone = automation->invoke("redo", R"({"target":"level.village"})");
     CHECK(redone.find("\"status\":\"applied\"") != std::string::npos);
     villageTransform = village.readTransform(ObjectId("player"));
-    REQUIRE(villageTransform.value.has_value());
-    CHECK(villageTransform.value->x == 1.0);
+    REQUIRE(villageTransform.ok());
+    CHECK(villageTransform.value().x == 1.0);
 
     const std::string inspected = automation->invoke("inspect", R"({"target":"level.forest"})");
     CHECK(inspected.find("\"id\":\"level.forest\"") != std::string::npos);
     CHECK(inspected.find("player") != std::string::npos);
 
-    CHECK(editor.unregisterEditingTarget(TargetId("level.village")).isAccepted());
-    CHECK(editor.unregisterEditingTarget(TargetId("level.forest")).isAccepted());
+    CHECK(editor.unregisterEditingTarget(TargetId("level.village")).ok());
+    CHECK(editor.unregisterEditingTarget(TargetId("level.forest")).ok());
 }
 
 TEST_CASE("editor.v2.automation_edits_material_through_the_same_transaction_path") {
     MaterialDocumentTarget material("material.player");
-    Editor                 editor;
-    REQUIRE(editor.registerEditingTarget(material).isAccepted());
+    Editor                                         editor;
+    eve::material_editor::MaterialEditorModule materialAdapter;
+    REQUIRE(editor.registerEditingTarget(material).ok());
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
 
@@ -160,11 +166,12 @@ TEST_CASE("editor.v2.automation_edits_material_through_the_same_transaction_path
     CHECK(undone.find("\"status\":\"applied\"") != std::string::npos);
     CHECK(material.snapshotValue().getIf<EditorValue::Object>()->at("shading.roughness") != EditorValue(0.65));
 
-    CHECK(editor.unregisterEditingTarget(TargetId("material.player")).isAccepted());
+    CHECK(editor.unregisterEditingTarget(TargetId("material.player")).ok());
 }
 
 TEST_CASE("editor.automation_owns_headless_targets_for_agent_lifecycle") {
-    Editor editor;
+    Editor                                   editor;
+    eve::scene_editor::SceneEditorModule sceneAdapter;
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
 
@@ -186,7 +193,8 @@ TEST_CASE("editor.automation_owns_headless_targets_for_agent_lifecycle") {
 }
 
 TEST_CASE("editor.automation_rx_observation_session_deduplicates_and_cancels") {
-    Editor editor;
+    Editor                                   editor;
+    eve::scene_editor::SceneEditorModule sceneAdapter;
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
 
@@ -233,6 +241,7 @@ TEST_CASE("editor.automation_binds_live_scene_host_and_preserves_host_ownership"
     eve::scene::SceneHost* host = mounted.value();
 
     Editor editor;
+    eve::scene_editor::SceneEditorModule sceneAdapter;
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
 
@@ -273,6 +282,7 @@ TEST_CASE("editor.automation_publishes_material_transactions_to_live_renderable"
     REQUIRE_EQ(initial.value().tintG, 0.3f);
 
     Editor editor;
+    eve::material_editor::MaterialEditorModule materialAdapter;
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
     const std::string handle = "{\"target\":\"agent.material\",\"type\":\"material-renderable3d\","
@@ -325,16 +335,17 @@ TEST_CASE("editor.composition.developer_runtime_and_automation_share_target_tran
     addSceneObject(scene, "player");
 
     Editor editor;
-    REQUIRE(editor.registerEditingTarget(scene).isAccepted());
+    eve::scene_editor::SceneEditorModule sceneAdapter;
+    REQUIRE(editor.registerEditingTarget(scene).ok());
 
-    auto developer = std::unique_ptr<EditorSession>(editor.newSession());
-    REQUIRE(editor.bindEditingTarget(*developer, TargetId(scene.targetId())).isAccepted());
+    auto developer = editor.newSession();
+    REQUIRE(editor.bindEditingTarget(*developer, TargetId(scene.targetId())).ok());
     const CommandId transform("scene.transform.set.v1");
     const EditorValue developerPayload = EditorValue::Object{
         {"object", "player"}, {"position", EditorValue::Array{1.0, 2.0, 3.0}}};
     auto developerPlan = developer->planCommand(transform, developerPayload);
-    REQUIRE(developerPlan.value);
-    REQUIRE(developer->executePlan(*developerPlan.value, developerPayload).isAccepted());
+    REQUIRE(developerPlan.ok());
+    REQUIRE(developer->executePlan(developerPlan.value(), developerPayload).ok());
 
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
@@ -342,25 +353,25 @@ TEST_CASE("editor.composition.developer_runtime_and_automation_share_target_tran
         "undo", R"({"target":"level.shared-host-path"})");
     CHECK(developerUndo.find("\"status\":\"applied\"") != std::string::npos);
 
-    auto runtime = std::unique_ptr<EditorSession>(editor.newSession());
+    auto runtime = editor.newSession();
     HostProfile runtimeProfile = HostProfile::runtimeBuilder();
     runtimeProfile.allowCommand(transform);
     runtime->setHostProfile(std::move(runtimeProfile));
-    REQUIRE(editor.bindEditingTarget(*runtime, TargetId(scene.targetId())).isAccepted());
+    REQUIRE(editor.bindEditingTarget(*runtime, TargetId(scene.targetId())).ok());
     const EditorValue runtimePayload = EditorValue::Object{
         {"object", "player"}, {"position", EditorValue::Array{7.0, 8.0, 9.0}}};
     auto runtimePlan = runtime->planCommand(transform, runtimePayload);
-    REQUIRE(runtimePlan.value);
-    REQUIRE(runtime->executePlan(*runtimePlan.value, runtimePayload).isAccepted());
+    REQUIRE(runtimePlan.ok());
+    REQUIRE(runtime->executePlan(runtimePlan.value(), runtimePayload).ok());
 
     const std::string runtimeUndo = automation->invoke(
         "undo", R"({"target":"level.shared-host-path"})");
     CHECK(runtimeUndo.find("\"status\":\"applied\"") != std::string::npos);
     const auto restored = scene.readTransform(ObjectId("player"));
-    REQUIRE(restored.value);
-    CHECK_EQ(restored.value->x, 0.0);
-    CHECK_EQ(restored.value->y, 0.0);
-    CHECK_EQ(restored.value->z, 0.0);
+    REQUIRE(restored.ok());
+    CHECK_EQ(restored.value().x, 0.0);
+    CHECK_EQ(restored.value().y, 0.0);
+    CHECK_EQ(restored.value().z, 0.0);
 
-    CHECK(editor.unregisterEditingTarget(TargetId(scene.targetId())).isAccepted());
+    CHECK(editor.unregisterEditingTarget(TargetId(scene.targetId())).ok());
 }

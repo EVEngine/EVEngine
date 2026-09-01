@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.21)
 
+# Keep Windows/Ninja compiler invocations below cmd.exe's command-line limit
+# (long include graphs and per-target flags) by letting Ninja pass flags
+# through response files.
+if(CMAKE_HOST_WIN32 AND CMAKE_GENERATOR MATCHES "Ninja")
+    set(CMAKE_NINJA_FORCE_RESPONSE_FILE ON CACHE BOOL
+        "Use response files for Windows Ninja compile and link commands" FORCE)
+endif()
+
 set(EVENGINE_BUILD_PLATFORM "" CACHE STRING
     "EVEngine target platform override; unlike legacy BUILD_PLATFORM this cannot collide with dependencies")
 

@@ -38,8 +38,8 @@ public:
 
     /** @brief Construct an empty JSON-object definition with stable identity. */
     DefinitionDocument(std::string type, std::string id, int version = 1);
-    const std::string& targetId() const override { return targetId_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(targetId_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;

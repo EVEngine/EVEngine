@@ -74,8 +74,8 @@ public:
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.building-placement"); }
     /** @brief Bind a borrowed world that must outlive the target. */
     BuildingPlacementTarget(std::string id, building::PlacementWorld* world);
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;

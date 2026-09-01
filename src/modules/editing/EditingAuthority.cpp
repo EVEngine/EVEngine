@@ -8,7 +8,7 @@ namespace {
 
 template <class T>
 Result<T> authorityError(Status status, const char* rule, std::string message) {
-    return Result<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 void appendAffected(TransactionReceipt& receipt, const DomainOperation& operation) {
@@ -29,7 +29,7 @@ Result<AuthorityPlan> LocalWorldAuthority::preflight(const TransactionSpec&     
     if (transaction.id.empty() || transaction.target.empty())
         return authorityError<AuthorityPlan>(Status::Rejected, "editor.authority.invalid-transaction",
                                              "Transaction id and target are required");
-    if (transaction.target.value() != target_->targetId())
+    if (transaction.target != target_->targetId())
         return authorityError<AuthorityPlan>(Status::Rejected, "editor.authority.target-mismatch",
                                              "Transaction target does not match the authority target");
     if (transaction.baseRevision != target_->revision())
@@ -51,7 +51,7 @@ Result<AuthorityPlan> LocalWorldAuthority::preflight(const TransactionSpec&     
     plan.transaction       = transaction;
     plan.validatedRevision = target_->revision();
     plan.operations.assign(operations.begin(), operations.end());
-    return Result<AuthorityPlan>::applied(std::move(plan));
+    return eve::editing::applied<AuthorityPlan>(std::move(plan));
 }
 
 Result<TransactionReceipt> LocalWorldAuthority::commit(const AuthorityPlan& plan) {
@@ -71,18 +71,16 @@ Result<TransactionReceipt> LocalWorldAuthority::commit(const AuthorityPlan& plan
     try {
         for (const DomainOperation& operation : plan.operations) {
             Result<void> result = target_->applyDomainOperation(operation);
-            if (!result.isAccepted()) {
+            if (!result.ok()) {
                 Result<void> rollback = rollbackApplied(plan.operations, appliedCount);
-                receipt.state         = rollback.isAccepted() ? TransactionState::Rejected : TransactionState::Failed;
+                receipt.state         = rollback.ok() ? TransactionState::Rejected : TransactionState::Failed;
                 receipt.afterRevision = target_->revision();
-                receipt.diagnostics   = std::move(result.diagnostics);
-                receipt.diagnostics.insert(receipt.diagnostics.end(), rollback.diagnostics.begin(),
-                                           rollback.diagnostics.end());
-                Result<TransactionReceipt> out;
-                out.status      = rollback.isAccepted() ? result.status : Status::Failed;
-                out.value       = receipt;
-                out.diagnostics = receipt.diagnostics;
-                return out;
+                receipt.diagnostics   = result.diagnostics();
+                const auto& rollbackDiagnostics = rollback.diagnostics();
+                receipt.diagnostics.insert(receipt.diagnostics.end(), rollbackDiagnostics.begin(),
+                                           rollbackDiagnostics.end());
+                const Status status = rollback.ok() ? result.code() : Status::Failed;
+                return Result<TransactionReceipt>::failure(eve::Status(status, std::move(receipt.diagnostics)));
             }
             ++appliedCount;
             appendAffected(receipt, operation);
@@ -103,7 +101,7 @@ Result<TransactionReceipt> LocalWorldAuthority::commit(const AuthorityPlan& plan
     receipt.authorityReceipt = "local:" + std::to_string(++receiptSequence_);
     committed_.emplace(receipt.id, CommittedEntry{receipt, plan.operations});
     commitOrder_.push_back(receipt.id);
-    return Result<TransactionReceipt>::applied(std::move(receipt));
+    return eve::editing::applied<TransactionReceipt>(std::move(receipt));
 }
 
 Result<TransactionReceipt> LocalWorldAuthority::compensate(const TransactionReceipt& receipt) {
@@ -138,84 +136,79 @@ Result<TransactionReceipt> LocalWorldAuthority::compensate(const TransactionRece
     compensation.state          = TransactionState::PendingAuthority;
     compensation.beforeRevision = target_->revision();
 
-    const auto failed = [&](Status status, std::string rule, std::string message) {
+    const auto makeFailure = [&](Status status, std::string rule, std::string message) {
         compensation.state         = TransactionState::Failed;
         compensation.afterRevision = target_->revision();
         if (compensation.diagnostics.empty())
             compensation.diagnostics.push_back(
-                {RuleId(std::move(rule)), DiagnosticSeverity::Error, std::move(message)});
-        Result<TransactionReceipt> out;
-        out.status      = status;
-        out.value       = compensation;
-        out.diagnostics = compensation.diagnostics;
-        return out;
+                ruleDiagnostic(diagnosticCodeForStatus(status), RuleId(std::move(rule)),
+                               DiagnosticSeverity::Error, std::move(message)));
+        return Result<TransactionReceipt>::failure(eve::Status(status, compensation.diagnostics));
     };
 
     std::unique_ptr<IDomainOperationTarget> candidate;
     try {
         candidate = staging->cloneDomainState();
     } catch (const std::exception& exception) {
-        return failed(Status::Failed, "editor.authority.candidate-exception",
+        return makeFailure(Status::Failed, "editor.authority.candidate-exception",
                       std::string("Could not clone compensation candidate: ") + exception.what());
     } catch (...) {
-        return failed(Status::Failed, "editor.authority.candidate-exception",
+        return makeFailure(Status::Failed, "editor.authority.candidate-exception",
                       "Could not clone compensation candidate");
     }
     if (!candidate)
-        return failed(Status::Unsupported, "editor.authority.staging-unavailable",
+        return makeFailure(Status::Unsupported, "editor.authority.staging-unavailable",
                       "Target did not provide a compensation candidate");
     if (candidate->targetId() != target_->targetId())
-        return failed(Status::Conflict, "editor.authority.candidate-mismatch",
+        return makeFailure(Status::Conflict, "editor.authority.candidate-mismatch",
                       "Compensation candidate belongs to another target");
 
     for (auto operation = entry->second.operations.rbegin(); operation != entry->second.operations.rend();
          ++operation) {
-        Result<void> result;
         try {
-            result = candidate->applyDomainOperation(inverseOf(*operation));
+            Result<void> result = candidate->applyDomainOperation(inverseOf(*operation));
+            if (!result.ok()) {
+                compensation.diagnostics = result.diagnostics();
+                return makeFailure(result.code(), "editor.authority.compensation-candidate-rejected",
+                              "Compensation candidate rejected an inverse operation");
+            }
         } catch (const std::exception& exception) {
-            compensation.diagnostics.push_back({RuleId("editor.authority.candidate-exception"),
-                                                DiagnosticSeverity::Error,
-                                                std::string("Compensation candidate threw: ") + exception.what()});
-            return failed(Status::Failed, "editor.authority.candidate-exception", "Compensation candidate threw");
+            compensation.diagnostics.push_back(ruleDiagnostic(
+                eve::DiagnosticCode::Failed, RuleId("editor.authority.candidate-exception"),
+                DiagnosticSeverity::Error,
+                std::string("Compensation candidate threw: ") + exception.what()));
+            return makeFailure(Status::Failed, "editor.authority.candidate-exception", "Compensation candidate threw");
         } catch (...) {
-            compensation.diagnostics.push_back({RuleId("editor.authority.candidate-exception"),
-                                                DiagnosticSeverity::Error,
-                                                "Compensation candidate threw an unknown exception"});
-            return failed(Status::Failed, "editor.authority.candidate-exception",
+            compensation.diagnostics.push_back(ruleDiagnostic(
+                eve::DiagnosticCode::Failed, RuleId("editor.authority.candidate-exception"),
+                DiagnosticSeverity::Error, "Compensation candidate threw an unknown exception"));
+            return makeFailure(Status::Failed, "editor.authority.candidate-exception",
                           "Compensation candidate threw an unknown exception");
-        }
-        if (!result.isAccepted()) {
-            compensation.diagnostics   = std::move(result.diagnostics);
-            return failed(result.status, "editor.authority.compensation-candidate-rejected",
-                          "Compensation candidate rejected an inverse operation");
         }
         appendAffected(compensation, *operation);
     }
 
-    Result<void> published;
     try {
-        published = staging->commitDomainState(std::move(candidate));
+        Result<void> published = staging->commitDomainState(std::move(candidate));
+        if (!published.ok()) {
+            compensation.diagnostics = published.diagnostics();
+            return makeFailure(published.code(), "editor.authority.candidate-publish-rejected",
+                          "Target rejected the compensation candidate");
+        }
     } catch (const std::exception& exception) {
-        return failed(Status::Failed, "editor.authority.candidate-publish-exception",
+        return makeFailure(Status::Failed, "editor.authority.candidate-publish-exception",
                       std::string("Could not publish compensation candidate: ") + exception.what());
     } catch (...) {
-        return failed(Status::Failed, "editor.authority.candidate-publish-exception",
+        return makeFailure(Status::Failed, "editor.authority.candidate-publish-exception",
                       "Could not publish compensation candidate");
     }
-    if (!published.isAccepted()) {
-        compensation.diagnostics = std::move(published.diagnostics);
-        return failed(published.status, "editor.authority.candidate-publish-rejected",
-                      "Target rejected the compensation candidate");
-    }
-
     compensation.state            = TransactionState::Committed;
     compensation.afterRevision    = target_->revision();
     compensation.authorityReceipt = "local:" + std::to_string(receiptSequence_);
     committed_.erase(entry);
     commitOrder_.pop_back();
     if (!commitOrder_.empty()) committed_.at(commitOrder_.back()).receipt.afterRevision = compensation.afterRevision;
-    return Result<TransactionReceipt>::applied(std::move(compensation));
+    return eve::editing::applied<TransactionReceipt>(std::move(compensation));
 }
 
 DomainOperation LocalWorldAuthority::inverseOf(const DomainOperation& operation) {
@@ -232,12 +225,12 @@ Result<void> LocalWorldAuthority::rollbackApplied(std::span<const DomainOperatio
     while (count > 0) {
         const DomainOperation& operation = operations[--count];
         if (!operation.hasInverse)
-            return Result<void>::error(Status::Failed, RuleId("editor.authority.rollback-impossible"),
+            return eve::editing::failed<void>(Status::Failed, RuleId("editor.authority.rollback-impossible"),
                                              "Applied operation has no inverse");
         Result<void> result = target_->applyDomainOperation(inverseOf(operation));
-        if (!result.isAccepted()) return result;
+        if (!result.ok()) return result;
     }
-    return Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 Result<AuthorityPlan> ReadOnlyAuthority::preflight(const TransactionSpec&           transaction,

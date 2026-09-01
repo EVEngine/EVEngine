@@ -26,8 +26,10 @@ set(EVE_ALL_MODULES "" CACHE INTERNAL "Every declared module, in declaration ord
 #   LIB        <target>         OBJECT library name (default: EV<Name>)
 #   LAYER      <n>              informational; matches scripts/module_depgraph.py
 #   DEPS       <mod> ...        modules that must also be enabled
-#   OPTIONAL_DEPS <mod> ...     modules this integrates with when present; the
-#                               code is guarded by EVENGINE_HAS_<MOD>
+#   OPTIONAL_DEPS <mod> ...     modules this integrates with when present.
+#                               Bridge TUs that include the other module are
+#                               omitted via EVENGINE_EXCLUDED_MODULE_FILES;
+#                               runtime presence uses ModuleManager / cap::query.
 #   THIRDPARTY <group> ...      third-party groups to link (see EVE_TP_ORDER)
 #   SCRIPT     <Class> ...      Squirrel classes exposed on the eve table
 #   SLOT       <name> ...       root-table slots, paired with SCRIPT by position
@@ -258,13 +260,6 @@ function(eve_resolve_modules)
         if(NOT "${g}" IN_LIST EVE_TP_ORDER)
             message(FATAL_ERROR "Third-party group '${g}' is not listed in EVE_TP_ORDER")
         endif()
-    endforeach()
-
-    # EVENGINE_HAS_<MODULE> lets a module light up an integration only when the
-    # other side is in the build, without making it a hard dependency.
-    foreach(m IN LISTS _enabled)
-        string(TOUPPER "${m}" _upper)
-        add_compile_definitions(EVENGINE_HAS_${_upper}=1)
     endforeach()
 
     set(EVE_ENABLED_MODULES "${_enabled}" CACHE INTERNAL "Modules in this build")

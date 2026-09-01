@@ -27,7 +27,7 @@ PropertyType propertyType(const schema::FieldDefinition& field) {
 EditorValue defaultValue(const schema::FieldDefinition& field) {
     if (!field.defaultJson.empty()) {
         auto parsed = editorValueFromJson(field.defaultJson);
-        if (parsed.value) return *parsed.value;
+        if (parsed.ok()) return parsed.value();
     }
     switch (field.type) {
         case schema::ValueType::Boolean: return false;
@@ -43,7 +43,7 @@ EditorValue defaultValue(const schema::FieldDefinition& field) {
 }
 
 EditorResult<DomainOperation> formError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<DomainOperation>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<DomainOperation>(status, RuleId(rule), std::move(message));
 }
 
 }  // namespace
@@ -96,8 +96,8 @@ PropertyReadResult DefinitionSchemaFormTarget::read(const SelectionSnapshot& sel
     const auto descriptor = schema(selection).find(path);
     if (!matches(selection) || !descriptor) return {};
     auto parsed = editorValueFromJson(document_->json());
-    const auto* object = parsed.value ? parsed.value->getIf<EditorValue::Object>() : nullptr;
-    if (!object) return {PropertyReadState::Error, {}, parsed.diagnostics};
+    const auto* object = parsed.ok() ? parsed.value().getIf<EditorValue::Object>() : nullptr;
+    if (!object) return {PropertyReadState::Error, {}, parsed.diagnostics()};
     const auto found = object->find(path.value());
     if (found == object->end()) return {PropertyReadState::Missing, {}, {}};
     if (descriptor->type == PropertyType::Float) {
@@ -122,10 +122,7 @@ EditorResult<DomainOperation> DefinitionSchemaFormTarget::makeSet(
         return formError(EditorStatus::Rejected, "editor.definition.form-read-only",
                          "Definition field is not directly editable");
     auto valid = validatePropertyValue(*descriptor, value);
-    if (!valid.isAccepted()) {
-        EditorResult<DomainOperation> result;
-        result.status = valid.status; result.diagnostics = std::move(valid.diagnostics); return result;
-    }
+    if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
     return document_->makeSetField(path.value(), value);
 }
 
@@ -141,15 +138,19 @@ EditorResult<DomainOperation> DefinitionSchemaFormTarget::makeReset(
 std::vector<EditorDiagnostic> DefinitionSchemaFormTarget::validate() const {
     std::vector<EditorDiagnostic> diagnostics;
     if (!document_ || !schema_ || document_->type() != schema_->id || document_->version() != schema_->version) {
-        diagnostics.push_back({RuleId("editor.definition.form-schema-mismatch"), DiagnosticSeverity::Error,
-                               "Definition document and exact schema identity do not match"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation,
+            RuleId("editor.definition.form-schema-mismatch"), DiagnosticSeverity::Error,
+            "Definition document and exact schema identity do not match"));
         return diagnostics;
     }
     auto parsed = editorValueFromJson(document_->json());
-    const auto* object = parsed.value ? parsed.value->getIf<EditorValue::Object>() : nullptr;
+    const auto* object = parsed.ok() ? parsed.value().getIf<EditorValue::Object>() : nullptr;
     if (!object) {
-        diagnostics.push_back({RuleId("editor.definition.form-object-required"), DiagnosticSeverity::Error,
-                               "Schema-driven definition forms require an object payload"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation,
+            RuleId("editor.definition.form-object-required"), DiagnosticSeverity::Error,
+            "Schema-driven definition forms require an object payload"));
         return diagnostics;
     }
     const PropertySchema formSchema = schema({});
@@ -157,14 +158,15 @@ std::vector<EditorDiagnostic> DefinitionSchemaFormTarget::validate() const {
         const auto found = object->find(field.name);
         if (found == object->end()) {
             if (field.required)
-                diagnostics.push_back({RuleId("editor.definition.required-field-missing"),
-                                       DiagnosticSeverity::Error,
-                                       "Required definition field is missing: " + field.name});
+                diagnostics.push_back(eve::editing::ruleDiagnostic(
+                    eve::DiagnosticCode::PreconditionViolation,
+                    RuleId("editor.definition.required-field-missing"), DiagnosticSeverity::Error,
+                    "Required definition field is missing: " + field.name));
             continue;
         }
         auto descriptor = formSchema.find(PropertyPath(field.name));
         auto valid = validatePropertyValue(*descriptor, found->second);
-        diagnostics.insert(diagnostics.end(), valid.diagnostics.begin(), valid.diagnostics.end());
+        diagnostics.insert(diagnostics.end(), valid.diagnostics().begin(), valid.diagnostics().end());
     }
     return diagnostics;
 }

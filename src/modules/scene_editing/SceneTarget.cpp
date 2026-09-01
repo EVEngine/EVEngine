@@ -9,7 +9,7 @@ namespace {
 
 template <class T>
 EditorResult<T> sceneError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* name) {
@@ -53,13 +53,8 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
                                 "Scene operation targets another backend");
     if (operation.type == "scene.object.create.v1") {
         EditorResult<SceneObjectSnapshot> parsed = parseObject(operation.payload);
-        if (!parsed.isAccepted() || !parsed.value) {
-            EditorResult<void> result;
-            result.status      = parsed.status;
-            result.diagnostics = std::move(parsed.diagnostics);
-            return result;
-        }
-        const SceneObjectSnapshot& object = *parsed.value;
+        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        const SceneObjectSnapshot& object = parsed.value();
         if (object.id.empty() || objects_.contains(object.id))
             return sceneError<void>(EditorStatus::Conflict, "editor.scene.object-exists",
                                     "Scene object id is empty or already exists");
@@ -69,13 +64,8 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
         objects_.emplace(object.id, object);
     } else if (operation.type == "scene.object.delete.v1") {
         EditorResult<SceneObjectSnapshot> parsed = parseObject(operation.payload);
-        if (!parsed.isAccepted() || !parsed.value) {
-            EditorResult<void> result;
-            result.status      = parsed.status;
-            result.diagnostics = std::move(parsed.diagnostics);
-            return result;
-        }
-        const ObjectId& id = parsed.value->id;
+        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        const ObjectId& id = parsed.value().id;
         if (!objects_.contains(id))
             return sceneError<void>(EditorStatus::NotFound, "editor.scene.object-not-found",
                                     "Scene object does not exist");
@@ -98,13 +88,8 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
             return sceneError<void>(EditorStatus::NotFound, "editor.scene.object-not-found",
                                     "Scene object does not exist");
         EditorResult<SceneTransformValue> parsed = parseTransform(*transform);
-        if (!parsed.isAccepted() || !parsed.value) {
-            EditorResult<void> result;
-            result.status      = parsed.status;
-            result.diagnostics = std::move(parsed.diagnostics);
-            return result;
-        }
-        object->second.transform = *parsed.value;
+        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        object->second.transform = parsed.value();
     } else if (operation.type == "scene.transform.multi.set.v1") {
         const auto* entries = operation.payload.getIf<EditorValue::Array>();
         if (!entries)
@@ -120,10 +105,10 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
                 return sceneError<void>(EditorStatus::NotFound, "editor.scene.multi-transform-object",
                                         "Multi-transform entry references an invalid scene object");
             auto parsed = parseTransform(*transform);
-            if (!parsed.isAccepted() || !parsed.value)
+            if (!parsed.ok())
                 return sceneError<void>(EditorStatus::Rejected, "editor.scene.multi-transform-value",
                                         "Multi-transform entry contains an invalid transform");
-            updates.emplace_back(ObjectId(*id), *parsed.value);
+            updates.emplace_back(ObjectId(*id), parsed.value());
         }
         for (const auto& [id, transform] : updates) objects_.at(id).transform = transform;
     } else if (operation.type == "scene.object.rename.v1") {
@@ -170,7 +155,7 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
     }
     ++revision_;
     dirty_.include(0, 0);
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::unique_ptr<IDomainOperationTarget> SceneTargetBase::cloneDomainState() const {
@@ -185,7 +170,7 @@ EditorResult<void> SceneTargetBase::commitDomainState(std::unique_ptr<IDomainOpe
     objects_.swap(staged->objects_);
     revision_ = staged->revision_;
     dirty_    = staged->dirty_;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorResult<SceneObjectSnapshot> SceneTargetBase::sceneObject(const ObjectId& id) const {
@@ -193,7 +178,7 @@ EditorResult<SceneObjectSnapshot> SceneTargetBase::sceneObject(const ObjectId& i
     if (object == objects_.end())
         return sceneError<SceneObjectSnapshot>(EditorStatus::NotFound, "editor.scene.object-not-found",
                                                "Scene object does not exist: " + id.value());
-    return EditorResult<SceneObjectSnapshot>::applied(object->second);
+    return eve::editing::applied<SceneObjectSnapshot>(object->second);
 }
 
 std::vector<ObjectId> SceneTargetBase::sceneChildren(const ObjectId& parent) const {
@@ -222,7 +207,7 @@ EditorResult<DomainOperation> SceneTargetBase::makeCreate(const CreateSceneObjec
     operation.inverse     = objectValue(object);
     operation.hasInverse  = true;
     operation.affectedObjects.push_back({TargetId(id_), request.id.value(), 0});
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> SceneTargetBase::makeDelete(const ObjectId& id) const {
@@ -241,7 +226,7 @@ EditorResult<DomainOperation> SceneTargetBase::makeDelete(const ObjectId& id) co
     operation.inverse     = operation.payload;
     operation.hasInverse  = true;
     operation.affectedObjects.push_back({TargetId(id_), id.value(), 0});
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> SceneTargetBase::makeRename(const ObjectId& id, const std::string& name) const {
@@ -267,7 +252,7 @@ EditorResult<DomainOperation> SceneTargetBase::makeRename(const ObjectId& id, co
     operation.affectedObjects.push_back({TargetId(id_), id.value(), 0});
     operation.affectedProperties.push_back("name");
     operation.mergeKey = "scene.name:" + id.value();
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> SceneTargetBase::makeReparent(const ObjectId& id, const ObjectId& parent) const {
@@ -301,18 +286,13 @@ EditorResult<DomainOperation> SceneTargetBase::makeReparent(const ObjectId& id, 
     operation.hasInverse = true;
     operation.affectedObjects.push_back({TargetId(id_), id.value(), 0});
     operation.affectedProperties.push_back("parent");
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<SceneTransformValue> SceneTargetBase::readTransform(const ObjectId& id) const {
     auto object = sceneObject(id);
-    if (!object.isAccepted() || !object.value) {
-        EditorResult<SceneTransformValue> result;
-        result.status      = object.status;
-        result.diagnostics = std::move(object.diagnostics);
-        return result;
-    }
-    return EditorResult<SceneTransformValue>::applied(object.value->transform);
+    if (!object.ok()) return EditorResult<SceneTransformValue>::failure(object.status());
+    return eve::editing::applied<SceneTransformValue>(object.value().transform);
 }
 
 EditorResult<DomainOperation> SceneTargetBase::makeSetTransform(const ObjectId&            id,
@@ -336,7 +316,7 @@ EditorResult<DomainOperation> SceneTargetBase::makeSetTransform(const ObjectId& 
     operation.affectedObjects.push_back({TargetId(id_), id.value(), 0});
     operation.affectedProperties.push_back("transform");
     operation.mergeKey = "scene.transform:" + id.value();
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorValue SceneTargetBase::snapshotValue() const {
@@ -392,7 +372,7 @@ EditorResult<SceneTransformValue> SceneTargetBase::parseTransform(const EditorVa
     result.scaleX    = optionalNumber("scaleX", 1.0);
     result.scaleY    = optionalNumber("scaleY", 1.0);
     result.scaleZ    = optionalNumber("scaleZ", 1.0);
-    return EditorResult<SceneTransformValue>::applied(result);
+    return eve::editing::applied<SceneTransformValue>(result);
 }
 
 EditorResult<SceneObjectSnapshot> SceneTargetBase::parseObject(const EditorValue& value) {
@@ -407,14 +387,9 @@ EditorResult<SceneObjectSnapshot> SceneTargetBase::parseObject(const EditorValue
         return sceneError<SceneObjectSnapshot>(EditorStatus::Rejected, "editor.scene.object-value",
                                                "Scene object payload is incomplete");
     EditorResult<SceneTransformValue> parsedTransform = parseTransform(*transform);
-    if (!parsedTransform.isAccepted() || !parsedTransform.value) {
-        EditorResult<SceneObjectSnapshot> result;
-        result.status      = parsedTransform.status;
-        result.diagnostics = std::move(parsedTransform.diagnostics);
-        return result;
-    }
-    return EditorResult<SceneObjectSnapshot>::applied(
-        {ObjectId(*id), ObjectId(*parent), *name, *parsedTransform.value});
+    if (!parsedTransform.ok()) return EditorResult<SceneObjectSnapshot>::failure(parsedTransform.status());
+    return eve::editing::applied<SceneObjectSnapshot>(
+        {ObjectId(*id), ObjectId(*parent), *name, parsedTransform.value()});
 }
 
 EditorValue SceneTargetBase::objectValue(const SceneObjectSnapshot& object) {
@@ -521,8 +496,8 @@ PropertyReadResult ScenePropertyProvider::read(const SelectionSnapshot& selectio
     for (const SelectionItem& item : selection.items) {
         if (item.target != TargetId(target_->targetId())) return {};
         auto transform = target_->readTransform(ObjectId(item.item.value()));
-        if (!transform.isAccepted() || !transform.value) return {PropertyReadState::Error, {}, transform.diagnostics};
-        EditorValue value = component(*transform.value);
+        if (!transform.ok()) return {PropertyReadState::Error, {}, transform.diagnostics()};
+        EditorValue value = component(transform.value());
         if (value.type() == EditorValue::Type::Null) return {};
         if (!common) common = value;
         else if (*common != value) return {PropertyReadState::Mixed, {}, {}};
@@ -555,10 +530,10 @@ EditorResult<DomainOperation> ScenePropertyProvider::makeSet(const SelectionSnap
             return sceneError<DomainOperation>(EditorStatus::Rejected, "editor.scene.property-target",
                                                "Selection contains objects from another target");
         auto current = target_->readTransform(ObjectId(item.item.value()));
-        if (!current.isAccepted() || !current.value)
+        if (!current.ok())
             return sceneError<DomainOperation>(EditorStatus::NotFound, "editor.scene.property-object",
                                                "Selected scene object does not exist");
-        SceneTransformValue changed = *current.value;
+        SceneTransformValue changed = current.value();
         if (path == PropertyPath("transform.position")) {
             changed.x = *a; changed.y = *b; changed.z = *c;
         } else if (path == PropertyPath("transform.rotation")) {
@@ -575,7 +550,7 @@ EditorResult<DomainOperation> ScenePropertyProvider::makeSet(const SelectionSnap
         payload.emplace_back(std::move(nextEntry));
         EditorValue::Object previousEntry;
         previousEntry["id"] = item.item.value();
-        previousEntry["transform"] = SceneTargetBase::transformValue(*current.value);
+        previousEntry["transform"] = SceneTargetBase::transformValue(current.value());
         inverse.emplace_back(std::move(previousEntry));
         operation.affectedObjects.push_back({TargetId(target_->targetId()), item.item.value(), 0});
     }
@@ -586,7 +561,7 @@ EditorResult<DomainOperation> ScenePropertyProvider::makeSet(const SelectionSnap
     operation.hasInverse = true;
     operation.affectedProperties.push_back(path.value());
     operation.mergeKey = "scene.selection:" + path.value();
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> ScenePropertyProvider::makeReset(const SelectionSnapshot& selection,

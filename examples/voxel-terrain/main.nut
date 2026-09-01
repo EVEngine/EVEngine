@@ -207,7 +207,8 @@ function configureVoxelTool() {
     if (editor == null) editor = eve.Editor();
     if (editSession != null) return;
     editSession = editor.newSession();
-    voxelTarget = editor.newVoxelWorldTarget("runtime.voxel-world", world);
+    local voxelTargets = eve.VoxelWorldTargetModule();
+    voxelTarget = voxelTargets.create("runtime.voxel-world", world);
     volumeFalloff = editor.newConstantBrushFalloff();
     volumeKernel = editor.newSphereVolumeBrushKernel();
     volumeKernel.setConstantFalloff(volumeFalloff);
@@ -217,7 +218,7 @@ function configureVoxelTool() {
     volumeTool.setPaintIntOperation(volumeOperation);
     volumeTool.setRadius(0.5);
     editSession.addVolumeTool(volumeTool);
-    editSession.bindVoxelWorldTarget(voxelTarget);
+    voxelTargets.bind(editSession, voxelTarget);
     editSession.activateTool("voxel.paint");
 }
 

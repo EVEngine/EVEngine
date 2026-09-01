@@ -10,7 +10,7 @@ namespace {
 
 template <class T>
 EditorResult<T> failure(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* name) {
@@ -38,7 +38,7 @@ EditorResult<CrowdWaypointRecord> parsePoint(const EditorValue& value) {
         !std::isfinite(*radius) || !std::isfinite(*wait) || *radius <= 0.0 || *wait < 0.0)
         return failure<CrowdWaypointRecord>(EditorStatus::Rejected, "editor.crowd.invalid-waypoint",
                                             "Waypoint requires finite coordinates, positive radius and nonnegative wait");
-    return EditorResult<CrowdWaypointRecord>::applied({StableId(*id), *x, *y, *radius, *wait});
+    return eve::editing::applied<CrowdWaypointRecord>({StableId(*id), *x, *y, *radius, *wait});
 }
 
 EditorValue pathValue(const CrowdPathRecord& path) {
@@ -62,15 +62,15 @@ EditorResult<CrowdPathRecord> parsePath(const EditorValue& value) {
     std::set<StableId> ids;
     for (const auto& entry : *points) {
         auto point = parsePoint(entry);
-        if (!point.value || !ids.insert(point.value->id).second)
+        if (!point.ok() || !ids.insert(point.value().id).second)
             return failure<CrowdPathRecord>(EditorStatus::Rejected, "editor.crowd.duplicate-waypoint",
                                             "Path waypoint ids must be unique and valid");
-        result.points.push_back(std::move(*point.value));
+        result.points.push_back(std::move(point).value());
     }
     if (result.loop && result.points.size() < 2)
         return failure<CrowdPathRecord>(EditorStatus::Rejected, "editor.crowd.loop-point-count",
                                         "Looping paths require at least two waypoints");
-    return EditorResult<CrowdPathRecord>::applied(std::move(result));
+    return eve::editing::applied<CrowdPathRecord>(std::move(result));
 }
 
 EditorValue agentValue(const CrowdAgentRecord& agent) {
@@ -95,7 +95,7 @@ EditorResult<CrowdAgentRecord> parseAgent(const EditorValue& value) {
             "editor.crowd.nonfinite-agent", "Agent numeric properties must be finite");
     if (*behavior == "path" && path->empty()) return failure<CrowdAgentRecord>(EditorStatus::Rejected,
         "editor.crowd.missing-agent-path", "Path behavior requires a path reference");
-    return EditorResult<CrowdAgentRecord>::applied({StableId(*id), *archetype, *x, *y, *heading,
+    return eve::editing::applied<CrowdAgentRecord>({StableId(*id), *archetype, *x, *y, *heading,
                                                      *radius, *speed, *behavior, StableId(*path)});
 }
 
@@ -131,7 +131,7 @@ EditorResult<CrowdZoneRecord> parseZone(const EditorValue& value) {
                                             "Zone vertices must contain two finite coordinates");
         result.points.push_back({*x, *y});
     }
-    return EditorResult<CrowdZoneRecord>::applied(std::move(result));
+    return eve::editing::applied<CrowdZoneRecord>(std::move(result));
 }
 
 DomainOperation operation(const char* type, const char* inverseType, const std::string& target,
@@ -165,15 +165,15 @@ void* CrowdDocumentTarget::queryCapability(const CapabilityId& capability) {
 EditorResult<void> CrowdDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_)) return failure<void>(EditorStatus::Rejected, "editor.crowd.wrong-target", "Operation targets another crowd document");
     auto apply = [&](const std::string& type, const EditorValue& payload) -> EditorResult<void> {
-        if (type == "crowd.agent.set.v1") { auto value = parseAgent(payload); if (!value.value) { EditorResult<void> r; r.status=value.status; r.diagnostics=value.diagnostics; return r; } agents_.insert_or_assign(value.value->id, *value.value); }
-        else if (type == "crowd.zone.set.v1") { auto value = parseZone(payload); if (!value.value) { EditorResult<void> r; r.status=value.status; r.diagnostics=value.diagnostics; return r; } zones_.insert_or_assign(value.value->id, *value.value); }
-        else if (type == "crowd.path.set.v1") { auto value = parsePath(payload); if (!value.value) { EditorResult<void> r; r.status=value.status; r.diagnostics=value.diagnostics; return r; } paths_.insert_or_assign(value.value->id, *value.value); }
+        if (type == "crowd.agent.set.v1") { auto value = parseAgent(payload); if (!value.ok()) return EditorResult<void>::failure(value.status()); agents_.insert_or_assign(value.value().id, value.value()); }
+        else if (type == "crowd.zone.set.v1") { auto value = parseZone(payload); if (!value.ok()) return EditorResult<void>::failure(value.status()); zones_.insert_or_assign(value.value().id, value.value()); }
+        else if (type == "crowd.path.set.v1") { auto value = parsePath(payload); if (!value.ok()) return EditorResult<void>::failure(value.status()); paths_.insert_or_assign(value.value().id, value.value()); }
         else if (type == "crowd.agent.delete.v1" || type == "crowd.zone.delete.v1" || type == "crowd.path.delete.v1") {
             const auto* id = payload.getIf<std::string>(); if (!id || id->empty()) return failure<void>(EditorStatus::Rejected, "editor.crowd.invalid-delete", "Delete payload requires a stable id");
             const StableId stable(*id); std::size_t erased = type[6] == 'a' ? agents_.erase(stable) : (type[6] == 'z' ? zones_.erase(stable) : paths_.erase(stable));
             if (!erased) return failure<void>(EditorStatus::NotFound, "editor.crowd.object-not-found", "Crowd object was not found");
         } else return failure<void>(EditorStatus::Rejected, "editor.crowd.unsupported-operation", "Unsupported crowd document operation");
-        ++revision_; dirty_.include(0, 0); return EditorResult<void>::applied();
+        ++revision_; dirty_.include(0, 0); return eve::editing::applied<void>();
     };
     return apply(op.type, op.payload);
 }
@@ -182,7 +182,7 @@ std::unique_ptr<IDomainOperationTarget> CrowdDocumentTarget::cloneDomainState() 
 EditorResult<void> CrowdDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<CrowdDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_) return failure<void>(EditorStatus::Rejected, "editor.crowd.invalid-staging-state", "Staged state belongs to another target type or id");
-    *this = *typed; return EditorResult<void>::applied();
+    *this = *typed; return eve::editing::applied<void>();
 }
 
 std::vector<CrowdAgentRecord> CrowdDocumentTarget::agents() const { return values(agents_); }
@@ -190,32 +190,32 @@ std::vector<CrowdZoneRecord> CrowdDocumentTarget::zones() const { return values(
 std::vector<CrowdPathRecord> CrowdDocumentTarget::paths() const { return values(paths_); }
 
 EditorResult<DomainOperation> CrowdDocumentTarget::makeSetAgent(const CrowdAgentRecord& record) const {
-    auto parsed = parseAgent(agentValue(record)); if (!parsed.value) return failure<DomainOperation>(parsed.status, "editor.crowd.invalid-agent", "Cannot plan invalid agent");
-    const auto found = agents_.find(record.id); return EditorResult<DomainOperation>::applied(operation("crowd.agent.set.v1", found == agents_.end() ? "crowd.agent.delete.v1" : "crowd.agent.set.v1", id_, agentValue(record), found == agents_.end() ? EditorValue(record.id.value()) : agentValue(found->second), record.id));
+    auto parsed = parseAgent(agentValue(record)); if (!parsed.ok()) return failure<DomainOperation>(parsed.code(), "editor.crowd.invalid-agent", "Cannot plan invalid agent");
+    const auto found = agents_.find(record.id); return eve::editing::applied<DomainOperation>(operation("crowd.agent.set.v1", found == agents_.end() ? "crowd.agent.delete.v1" : "crowd.agent.set.v1", id_, agentValue(record), found == agents_.end() ? EditorValue(record.id.value()) : agentValue(found->second), record.id));
 }
-EditorResult<DomainOperation> CrowdDocumentTarget::makeDeleteAgent(const StableId& id) const { const auto found=agents_.find(id); if(found==agents_.end()) return failure<DomainOperation>(EditorStatus::NotFound,"editor.crowd.agent-not-found","Agent was not found"); return EditorResult<DomainOperation>::applied(operation("crowd.agent.delete.v1","crowd.agent.set.v1",id_,id.value(),agentValue(found->second),id)); }
-EditorResult<DomainOperation> CrowdDocumentTarget::makeSetZone(const CrowdZoneRecord& record) const { auto parsed=parseZone(zoneValue(record)); if(!parsed.value) return failure<DomainOperation>(parsed.status,"editor.crowd.invalid-zone","Cannot plan invalid zone"); const auto found=zones_.find(record.id); return EditorResult<DomainOperation>::applied(operation("crowd.zone.set.v1",found==zones_.end()?"crowd.zone.delete.v1":"crowd.zone.set.v1",id_,zoneValue(record),found==zones_.end()?EditorValue(record.id.value()):zoneValue(found->second),record.id)); }
-EditorResult<DomainOperation> CrowdDocumentTarget::makeDeleteZone(const StableId& id) const { const auto found=zones_.find(id); if(found==zones_.end()) return failure<DomainOperation>(EditorStatus::NotFound,"editor.crowd.zone-not-found","Zone was not found"); return EditorResult<DomainOperation>::applied(operation("crowd.zone.delete.v1","crowd.zone.set.v1",id_,id.value(),zoneValue(found->second),id)); }
-EditorResult<DomainOperation> CrowdDocumentTarget::makeSetPath(const CrowdPathRecord& record) const { auto parsed=parsePath(pathValue(record)); if(!parsed.value) return failure<DomainOperation>(parsed.status,"editor.crowd.invalid-path","Cannot plan invalid path"); const auto found=paths_.find(record.id); return EditorResult<DomainOperation>::applied(operation("crowd.path.set.v1",found==paths_.end()?"crowd.path.delete.v1":"crowd.path.set.v1",id_,pathValue(record),found==paths_.end()?EditorValue(record.id.value()):pathValue(found->second),record.id)); }
-EditorResult<DomainOperation> CrowdDocumentTarget::makeDeletePath(const StableId& id) const { const auto found=paths_.find(id); if(found==paths_.end()) return failure<DomainOperation>(EditorStatus::NotFound,"editor.crowd.path-not-found","Path was not found"); for(const auto& [agentId,agent]:agents_) { (void)agentId; if(agent.path==id) return failure<DomainOperation>(EditorStatus::Conflict,"editor.crowd.path-in-use","Path is referenced by an agent"); } return EditorResult<DomainOperation>::applied(operation("crowd.path.delete.v1","crowd.path.set.v1",id_,id.value(),pathValue(found->second),id)); }
+EditorResult<DomainOperation> CrowdDocumentTarget::makeDeleteAgent(const StableId& id) const { const auto found=agents_.find(id); if(found==agents_.end()) return failure<DomainOperation>(EditorStatus::NotFound,"editor.crowd.agent-not-found","Agent was not found"); return eve::editing::applied<DomainOperation>(operation("crowd.agent.delete.v1","crowd.agent.set.v1",id_,id.value(),agentValue(found->second),id)); }
+EditorResult<DomainOperation> CrowdDocumentTarget::makeSetZone(const CrowdZoneRecord& record) const { auto parsed=parseZone(zoneValue(record)); if(!parsed.ok()) return failure<DomainOperation>(parsed.code(),"editor.crowd.invalid-zone","Cannot plan invalid zone"); const auto found=zones_.find(record.id); return eve::editing::applied<DomainOperation>(operation("crowd.zone.set.v1",found==zones_.end()?"crowd.zone.delete.v1":"crowd.zone.set.v1",id_,zoneValue(record),found==zones_.end()?EditorValue(record.id.value()):zoneValue(found->second),record.id)); }
+EditorResult<DomainOperation> CrowdDocumentTarget::makeDeleteZone(const StableId& id) const { const auto found=zones_.find(id); if(found==zones_.end()) return failure<DomainOperation>(EditorStatus::NotFound,"editor.crowd.zone-not-found","Zone was not found"); return eve::editing::applied<DomainOperation>(operation("crowd.zone.delete.v1","crowd.zone.set.v1",id_,id.value(),zoneValue(found->second),id)); }
+EditorResult<DomainOperation> CrowdDocumentTarget::makeSetPath(const CrowdPathRecord& record) const { auto parsed=parsePath(pathValue(record)); if(!parsed.ok()) return failure<DomainOperation>(parsed.code(),"editor.crowd.invalid-path","Cannot plan invalid path"); const auto found=paths_.find(record.id); return eve::editing::applied<DomainOperation>(operation("crowd.path.set.v1",found==paths_.end()?"crowd.path.delete.v1":"crowd.path.set.v1",id_,pathValue(record),found==paths_.end()?EditorValue(record.id.value()):pathValue(found->second),record.id)); }
+EditorResult<DomainOperation> CrowdDocumentTarget::makeDeletePath(const StableId& id) const { const auto found=paths_.find(id); if(found==paths_.end()) return failure<DomainOperation>(EditorStatus::NotFound,"editor.crowd.path-not-found","Path was not found"); for(const auto& [agentId,agent]:agents_) { (void)agentId; if(agent.path==id) return failure<DomainOperation>(EditorStatus::Conflict,"editor.crowd.path-in-use","Path is referenced by an agent"); } return eve::editing::applied<DomainOperation>(operation("crowd.path.delete.v1","crowd.path.set.v1",id_,id.value(),pathValue(found->second),id)); }
 
 std::vector<EditorDiagnostic> CrowdDocumentTarget::validate() const {
     std::vector<EditorDiagnostic> result;
-    for (const auto& [id, agent] : agents_) if (!agent.path.empty() && !paths_.contains(agent.path)) result.push_back({RuleId("editor.crowd.dangling-path"), DiagnosticSeverity::Error, "Agent " + id.value() + " references a missing path"});
-    for (const auto& [id, path] : paths_) for (std::size_t i=1;i<path.points.size();++i) if(path.points[i-1].x==path.points[i].x && path.points[i-1].y==path.points[i].y) result.push_back({RuleId("editor.crowd.zero-path-segment"),DiagnosticSeverity::Warning,"Path " + id.value() + " contains a zero-length segment"});
+    for (const auto& [id, agent] : agents_) if (!agent.path.empty() && !paths_.contains(agent.path)) result.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::NotFound, RuleId("editor.crowd.dangling-path"), DiagnosticSeverity::Error, "Agent " + id.value() + " references a missing path"));
+    for (const auto& [id, path] : paths_) for (std::size_t i=1;i<path.points.size();++i) if(path.points[i-1].x==path.points[i].x && path.points[i-1].y==path.points[i].y) result.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::PreconditionViolation, RuleId("editor.crowd.zero-path-segment"),DiagnosticSeverity::Warning,"Path " + id.value() + " contains a zero-length segment"));
     return result;
 }
 
 CrowdOverlayResult CrowdDocumentTarget::overlay(int budget) const {
     CrowdOverlayResult result; result.revision=revision_; result.diagnostics=validate();
-    if (budget <= 0) { result.status=EditorStatus::Rejected; result.diagnostics.push_back({RuleId("editor.crowd.invalid-overlay-budget"),DiagnosticSeverity::Error,"Overlay primitive budget must be positive"}); return result; }
+    if (budget <= 0) { result.status=EditorStatus::Rejected; result.diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId("editor.crowd.invalid-overlay-budget"),DiagnosticSeverity::Error,"Overlay primitive budget must be positive")); return result; }
     auto add=[&](CrowdOverlayPrimitive primitive){ if(static_cast<int>(result.primitives.size())>=budget) return false; result.primitives.push_back(std::move(primitive)); return true; };
     for(const auto& [id,path]:paths_) for(std::size_t i=1;i<path.points.size();++i) if(!add({"line",id,{path.points[i-1].x,path.points[i-1].y,path.points[i].x,path.points[i].y},path.name})) goto exhausted;
     for(const auto& [id,zone]:zones_) { for(std::size_t i=0;i<zone.points.size();++i) { const auto& a=zone.points[i]; const auto& b=zone.points[(i+1)%zone.points.size()]; if(!add({"line",id,{a[0],a[1],b[0],b[1]},zone.kind})) goto exhausted; } }
     for(const auto& [id,agent]:agents_) if(!add({"circle",id,{agent.x,agent.y,agent.radius,agent.heading},agent.behavior})) goto exhausted;
     result.status=EditorStatus::Applied; return result;
 exhausted:
-    result.status=EditorStatus::Rejected; result.diagnostics.push_back({RuleId("editor.crowd.overlay-budget"),DiagnosticSeverity::Error,"Crowd overlay exceeds the primitive budget"}); return result;
+    result.status=EditorStatus::Rejected; result.diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::PreconditionViolation, RuleId("editor.crowd.overlay-budget"),DiagnosticSeverity::Error,"Crowd overlay exceeds the primitive budget")); return result;
 }
 
 EditorValue CrowdDocumentTarget::snapshotValue() const {
@@ -228,11 +228,11 @@ EditorResult<void> CrowdDocumentTarget::loadSnapshot(const EditorValue& snapshot
     const auto* version=versionEntry?versionEntry->getIf<int64_t>():nullptr; const auto* agents=agentsEntry?agentsEntry->getIf<EditorValue::Array>():nullptr; const auto* zones=zonesEntry?zonesEntry->getIf<EditorValue::Array>():nullptr; const auto* paths=pathsEntry?pathsEntry->getIf<EditorValue::Array>():nullptr;
     if(!version||*version!=1||!agents||!zones||!paths) return failure<void>(EditorStatus::Rejected,"editor.crowd.invalid-snapshot","Crowd snapshot requires schema version one and all collections");
     CrowdDocumentTarget candidate(id_);
-    for(const auto& entry:*paths){auto value=parsePath(entry);if(!value.value)return failure<void>(value.status,"editor.crowd.invalid-snapshot-path","Snapshot contains an invalid path");if(!candidate.paths_.emplace(value.value->id,*value.value).second)return failure<void>(EditorStatus::Rejected,"editor.crowd.duplicate-path","Snapshot path ids must be unique");}
-    for(const auto& entry:*zones){auto value=parseZone(entry);if(!value.value)return failure<void>(value.status,"editor.crowd.invalid-snapshot-zone","Snapshot contains an invalid zone");if(!candidate.zones_.emplace(value.value->id,*value.value).second)return failure<void>(EditorStatus::Rejected,"editor.crowd.duplicate-zone","Snapshot zone ids must be unique");}
-    for(const auto& entry:*agents){auto value=parseAgent(entry);if(!value.value)return failure<void>(value.status,"editor.crowd.invalid-snapshot-agent","Snapshot contains an invalid agent");if(!candidate.agents_.emplace(value.value->id,*value.value).second)return failure<void>(EditorStatus::Rejected,"editor.crowd.duplicate-agent","Snapshot agent ids must be unique");}
-    for(const auto& diagnostic:candidate.validate()) if(diagnostic.severity==DiagnosticSeverity::Error) return failure<void>(EditorStatus::Rejected,"editor.crowd.invalid-snapshot-reference","Snapshot contains dangling references");
-    agents_=std::move(candidate.agents_);zones_=std::move(candidate.zones_);paths_=std::move(candidate.paths_);++revision_;dirty_.include(0,0);return EditorResult<void>::applied();
+    for(const auto& entry:*paths){auto value=parsePath(entry);if(!value.ok())return failure<void>(value.code(),"editor.crowd.invalid-snapshot-path","Snapshot contains an invalid path");if(!candidate.paths_.emplace(value.value().id,value.value()).second)return failure<void>(EditorStatus::Rejected,"editor.crowd.duplicate-path","Snapshot path ids must be unique");}
+    for(const auto& entry:*zones){auto value=parseZone(entry);if(!value.ok())return failure<void>(value.code(),"editor.crowd.invalid-snapshot-zone","Snapshot contains an invalid zone");if(!candidate.zones_.emplace(value.value().id,value.value()).second)return failure<void>(EditorStatus::Rejected,"editor.crowd.duplicate-zone","Snapshot zone ids must be unique");}
+    for(const auto& entry:*agents){auto value=parseAgent(entry);if(!value.ok())return failure<void>(value.code(),"editor.crowd.invalid-snapshot-agent","Snapshot contains an invalid agent");if(!candidate.agents_.emplace(value.value().id,value.value()).second)return failure<void>(EditorStatus::Rejected,"editor.crowd.duplicate-agent","Snapshot agent ids must be unique");}
+    for(const auto& diagnostic:candidate.validate()) if(diagnostic.severity()==DiagnosticSeverity::Error) return failure<void>(EditorStatus::Rejected,"editor.crowd.invalid-snapshot-reference","Snapshot contains dangling references");
+    agents_=std::move(candidate.agents_);zones_=std::move(candidate.zones_);paths_=std::move(candidate.paths_);++revision_;dirty_.include(0,0);return eve::editing::applied<void>();
 }
 
 }  // namespace eve::crowd_editing

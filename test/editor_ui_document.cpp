@@ -13,26 +13,26 @@ TEST_CASE("editor.ui.style_inspector_preview_pick_and_anchor_gizmo_are_revision_
     UiDocumentTarget document("hud");
     UiLayoutValue rootLayout; rootLayout.width = 800.0; rootLayout.height = 600.0;
     auto root = document.makeCreate({ObjectId("root"), ObjectId(), "window", "Root", rootLayout});
-    REQUIRE(root.value); CHECK(document.applyDomainOperation(*root.value).isAccepted());
+    REQUIRE(root.ok()); CHECK(document.applyDomainOperation(root.value()).ok());
     UiLayoutValue childLayout; childLayout.x = 20.0; childLayout.y = 30.0;
     childLayout.width = 100.0; childLayout.height = 40.0;
     auto child = document.makeCreate({ObjectId("play"), ObjectId("root"), "button", "Play", childLayout});
-    REQUIRE(child.value); CHECK(document.applyDomainOperation(*child.value).isAccepted());
+    REQUIRE(child.ok()); CHECK(document.applyDomainOperation(child.value()).ok());
     UiStyleValue style; style.paddingLeft = 10.0; style.paddingTop = 5.0;
     style.tintR = 0.25; style.cornerRadius = 6.0; style.direction = "column";
     auto styled = document.makeSetStyle(ObjectId("play"), style);
-    REQUIRE(styled.value); CHECK(document.applyDomainOperation(*styled.value).isAccepted());
+    REQUIRE(styled.ok()); CHECK(document.applyDomainOperation(styled.value()).ok());
 
     UiDocumentPreviewService previewService;
     const auto preview = previewService.build(document, 800.0, 600.0);
     CHECK_EQ(static_cast<int>(preview.status), static_cast<int>(EditorStatus::Applied));
     auto picked = previewService.pick(preview, 25.0, 35.0);
-    REQUIRE(picked.value); CHECK_EQ(picked.value->value(), "play");
+    REQUIRE(picked.ok()); CHECK_EQ(picked.value().value(), "play");
     auto gizmo = previewService.anchorGizmo(document, preview, ObjectId("play"));
-    CHECK(gizmo.isAccepted());
-    auto rename = document.makeRename(ObjectId("play"), "Play now"); REQUIRE(rename.value);
-    CHECK(document.applyDomainOperation(*rename.value).isAccepted());
-    CHECK_EQ(static_cast<int>(previewService.anchorGizmo(document, preview, ObjectId("play")).status),
+    CHECK(gizmo.ok());
+    auto rename = document.makeRename(ObjectId("play"), "Play now"); REQUIRE(rename.ok());
+    CHECK(document.applyDomainOperation(rename.value()).ok());
+    CHECK_EQ(static_cast<int>(previewService.anchorGizmo(document, preview, ObjectId("play")).code()),
              static_cast<int>(EditorStatus::Conflict));
 }
 
@@ -48,13 +48,13 @@ EditorResult<TransactionReceipt> commitUi(UiDocumentTarget& target,
     specification.target = TargetId(target.targetId());
     specification.baseRevision = target.revision();
     auto begun = transactions.begin(std::move(specification));
-    if (!begun.isAccepted())
-        return EditorResult<TransactionReceipt>::error(begun.status, RuleId("test.ui.begin"),
+    if (!begun.ok())
+        return eve::editing::failed<TransactionReceipt>(begun.code(), RuleId("test.ui.begin"),
                                                        "Could not begin UI transaction");
     auto appended = transactions.append(operation);
-    if (!appended.isAccepted()) {
+    if (!appended.ok()) {
         [[maybe_unused]] const auto rolledBack = transactions.rollback();
-        return EditorResult<TransactionReceipt>::error(appended.status, RuleId("test.ui.append"),
+        return eve::editing::failed<TransactionReceipt>(appended.code(), RuleId("test.ui.append"),
                                                        "Could not append UI operation");
     }
     return transactions.commit();
@@ -87,34 +87,34 @@ TEST_CASE("editor.ui.document_hierarchy_operations_are_reversible_and_cycle_safe
              CreateUiWidgetRequest{ObjectId("panel"), ObjectId("root"), "panel", "Panel", {10, 20, 300, 200}},
              CreateUiWidgetRequest{ObjectId("label"), ObjectId("panel"), "text", "Label", {4, 4, 100, 24}}}) {
         auto operation = target.makeCreate(request);
-        REQUIRE(operation.isAccepted());
-        REQUIRE(commitUi(target, transactions, *operation.value, "ui.create." + request.id.value()).isAccepted());
+        REQUIRE(operation.ok());
+        REQUIRE(commitUi(target, transactions, operation.value(), "ui.create." + request.id.value()).ok());
     }
     CHECK_EQ(target.children(ObjectId("panel")).size(), static_cast<std::size_t>(1));
-    CHECK_EQ(static_cast<int>(target.makeDelete(ObjectId("panel")).status),
+    CHECK_EQ(static_cast<int>(target.makeDelete(ObjectId("panel")).code()),
              static_cast<int>(EditorStatus::Rejected));
-    CHECK_EQ(static_cast<int>(target.makeReparent(ObjectId("root"), ObjectId("label")).status),
+    CHECK_EQ(static_cast<int>(target.makeReparent(ObjectId("root"), ObjectId("label")).code()),
              static_cast<int>(EditorStatus::Rejected));
 
     auto rename = target.makeRename(ObjectId("label"), "Title");
-    REQUIRE(rename.isAccepted());
-    REQUIRE(commitUi(target, transactions, *rename.value, "ui.rename").isAccepted());
-    CHECK_EQ(target.widget(ObjectId("label")).value->name, std::string("Title"));
-    REQUIRE(transactions.undo().isAccepted());
-    CHECK_EQ(target.widget(ObjectId("label")).value->name, std::string("Label"));
-    REQUIRE(transactions.redo().isAccepted());
+    REQUIRE(rename.ok());
+    REQUIRE(commitUi(target, transactions, rename.value(), "ui.rename").ok());
+    CHECK_EQ(target.widget(ObjectId("label")).value().name, std::string("Title"));
+    REQUIRE(transactions.undo().ok());
+    CHECK_EQ(target.widget(ObjectId("label")).value().name, std::string("Label"));
+    REQUIRE(transactions.redo().ok());
 
     auto reparent = target.makeReparent(ObjectId("label"), ObjectId("root"));
-    REQUIRE(reparent.isAccepted());
-    REQUIRE(commitUi(target, transactions, *reparent.value, "ui.reparent").isAccepted());
-    CHECK(target.widget(ObjectId("label")).value->parent == ObjectId("root"));
+    REQUIRE(reparent.ok());
+    REQUIRE(commitUi(target, transactions, reparent.value(), "ui.reparent").ok());
+    CHECK(target.widget(ObjectId("label")).value().parent == ObjectId("root"));
     auto remove = target.makeDelete(ObjectId("label"));
-    REQUIRE(remove.isAccepted());
-    REQUIRE(commitUi(target, transactions, *remove.value, "ui.delete").isAccepted());
-    CHECK_EQ(static_cast<int>(target.widget(ObjectId("label")).status),
+    REQUIRE(remove.ok());
+    REQUIRE(commitUi(target, transactions, remove.value(), "ui.delete").ok());
+    CHECK_EQ(static_cast<int>(target.widget(ObjectId("label")).code()),
              static_cast<int>(EditorStatus::NotFound));
-    REQUIRE(transactions.undo().isAccepted());
-    CHECK_EQ(target.widget(ObjectId("label")).value->name, std::string("Title"));
+    REQUIRE(transactions.undo().ok());
+    CHECK_EQ(target.widget(ObjectId("label")).value().name, std::string("Title"));
 }
 
 TEST_CASE("editor.ui.multi_selection_layout_inspector_is_atomic_and_reports_mixed_values") {
@@ -124,44 +124,44 @@ TEST_CASE("editor.ui.multi_selection_layout_inspector_is_atomic_and_reports_mixe
     for (const char* id : {"left", "right"}) {
         CreateUiWidgetRequest request{ObjectId(id), {}, "button", id, {}};
         auto operation = target.makeCreate(request);
-        REQUIRE(operation.isAccepted());
-        REQUIRE(commitUi(target, transactions, *operation.value, std::string("ui.create.") + id).isAccepted());
+        REQUIRE(operation.ok());
+        REQUIRE(commitUi(target, transactions, operation.value(), std::string("ui.create.") + id).ok());
     }
     const SelectionSnapshot selection = uiSelection(target, {"left", "right"});
     CHECK_EQ(target.schema(selection).properties.size(), static_cast<std::size_t>(25));
     auto size = target.makeSet(selection, PropertyPath("layout.size"),
                                EditorValue::Array{180.0, 42.0}, PropertySetMode::Absolute);
-    REQUIRE(size.isAccepted());
-    REQUIRE(commitUi(target, transactions, *size.value, "ui.multi-size").isAccepted());
-    CHECK_EQ(target.widget(ObjectId("left")).value->layout.width, 180.0);
-    CHECK_EQ(target.widget(ObjectId("right")).value->layout.height, 42.0);
-    REQUIRE(transactions.undo().isAccepted());
-    CHECK_EQ(target.widget(ObjectId("left")).value->layout.width, 0.0);
+    REQUIRE(size.ok());
+    REQUIRE(commitUi(target, transactions, size.value(), "ui.multi-size").ok());
+    CHECK_EQ(target.widget(ObjectId("left")).value().layout.width, 180.0);
+    CHECK_EQ(target.widget(ObjectId("right")).value().layout.height, 42.0);
+    REQUIRE(transactions.undo().ok());
+    CHECK_EQ(target.widget(ObjectId("left")).value().layout.width, 0.0);
 
     UiLayoutValue moved;
     moved.x = 15.0;
     auto move = target.makeSetLayout(ObjectId("left"), moved);
-    REQUIRE(move.isAccepted());
-    REQUIRE(commitUi(target, transactions, *move.value, "ui.move-one").isAccepted());
+    REQUIRE(move.ok());
+    REQUIRE(commitUi(target, transactions, move.value(), "ui.move-one").ok());
     CHECK_EQ(static_cast<int>(target.read(selection, PropertyPath("layout.position")).state),
              static_cast<int>(PropertyReadState::Mixed));
     CHECK_EQ(static_cast<int>(target.makeSet(selection, PropertyPath("layout.anchor"),
                                              EditorValue::Array{1.5, 0.0},
-                                             PropertySetMode::Absolute).status),
+                                             PropertySetMode::Absolute).code()),
              static_cast<int>(EditorStatus::Rejected));
 }
 
 TEST_CASE("editor.ui.snapshot_load_is_atomic_and_rejects_invalid_hierarchies") {
     UiDocumentTarget source("source");
     auto root = source.makeCreate({ObjectId("root"), {}, "column", "Root", {0, 0, 640, 480}});
-    REQUIRE(root.value);
-    REQUIRE(source.applyDomainOperation(*root.value).isAccepted());
+    REQUIRE(root.ok());
+    REQUIRE(source.applyDomainOperation(root.value()).ok());
     auto child = source.makeCreate({ObjectId("child"), ObjectId("root"), "text", "Child", {8, 8, 100, 20}});
-    REQUIRE(child.value);
-    REQUIRE(source.applyDomainOperation(*child.value).isAccepted());
+    REQUIRE(child.ok());
+    REQUIRE(source.applyDomainOperation(child.value()).ok());
 
     UiDocumentTarget restored("restored");
-    REQUIRE(restored.loadSnapshot(source.snapshotValue()).isAccepted());
+    REQUIRE(restored.loadSnapshot(source.snapshotValue()).ok());
     CHECK_EQ(restored.children(ObjectId("root")).size(), static_cast<std::size_t>(1));
 
     EditorValue::Object invalidWidget;
@@ -179,7 +179,7 @@ TEST_CASE("editor.ui.snapshot_load_is_atomic_and_rejects_invalid_hierarchies") {
     EditorValue::Object invalidRoot;
     invalidRoot["schemaVersion"] = 1;
     invalidRoot["widgets"] = EditorValue::Array{EditorValue(std::move(invalidWidget))};
-    CHECK_EQ(static_cast<int>(restored.loadSnapshot(EditorValue(std::move(invalidRoot))).status),
+    CHECK_EQ(static_cast<int>(restored.loadSnapshot(EditorValue(std::move(invalidRoot))).code()),
              static_cast<int>(EditorStatus::Rejected));
-    CHECK(restored.widget(ObjectId("child")).isAccepted());
+    CHECK(restored.widget(ObjectId("child")).ok());
 }

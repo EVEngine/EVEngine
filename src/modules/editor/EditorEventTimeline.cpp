@@ -40,41 +40,41 @@ int severityRank(DiagnosticSeverity severity) {
 
 EditorResult<void> EditorEventTimeline::setCapacity(std::size_t capacity) {
     if (capacity == 0 || capacity > 1000000)
-        return EditorResult<void>::error(EditorStatus::Rejected, RuleId("editor.timeline.capacity"),
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.timeline.capacity"),
                                           "Timeline capacity must be between 1 and 1,000,000");
     capacity_ = capacity;
     while (events_.size() > capacity_) { events_.pop_front(); ++dropped_; }
     ++generation_;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorResult<std::uint64_t> EditorEventTimeline::append(EditorTimelineEvent event,
                                                         std::size_t maximumPayloadNodes) {
     if (event.domain.empty() || event.type.empty() || maximumPayloadNodes == 0 ||
         nodeCount(event.payload, maximumPayloadNodes) > maximumPayloadNodes)
-        return EditorResult<std::uint64_t>::error(EditorStatus::Rejected,
+        return eve::editing::failed<std::uint64_t>(EditorStatus::Rejected,
             RuleId("editor.timeline.invalid-event"), "Timeline event identity or payload budget is invalid");
     if (event.sequence == 0) event.sequence = nextSequence_++;
     else {
         if (event.sequence < nextSequence_)
-            return EditorResult<std::uint64_t>::error(EditorStatus::Conflict,
+            return eve::editing::failed<std::uint64_t>(EditorStatus::Conflict,
                 RuleId("editor.timeline.sequence"), "Timeline event sequence is stale or duplicated");
         nextSequence_ = event.sequence + 1;
     }
     const std::uint64_t sequence = event.sequence;
     if (events_.size() == capacity_) { events_.pop_front(); ++dropped_; }
     events_.push_back(std::move(event)); ++generation_;
-    return EditorResult<std::uint64_t>::applied(sequence);
+    return eve::editing::applied<std::uint64_t>(sequence);
 }
 
 EditorResult<EditorTimelinePage> EditorEventTimeline::query(
     const EditorTimelineQuery& filter, std::size_t offset, std::size_t limit,
     std::optional<std::uint64_t> generation) const {
     if (limit == 0 || limit > 10000)
-        return EditorResult<EditorTimelinePage>::error(EditorStatus::Rejected,
+        return eve::editing::failed<EditorTimelinePage>(EditorStatus::Rejected,
             RuleId("editor.timeline.page-size"), "Timeline page size must be between 1 and 10,000");
     if (generation && *generation != generation_)
-        return EditorResult<EditorTimelinePage>::error(EditorStatus::Conflict,
+        return eve::editing::failed<EditorTimelinePage>(EditorStatus::Conflict,
             RuleId("editor.timeline.stale-generation"), "Timeline changed while paging");
     std::vector<EditorTimelineEvent> matched;
     for (const auto& event : events_) {
@@ -91,7 +91,7 @@ EditorResult<EditorTimelinePage> EditorEventTimeline::query(
     result.values.assign(matched.begin() + static_cast<std::ptrdiff_t>(begin),
                          matched.begin() + static_cast<std::ptrdiff_t>(end));
     result.nextOffset = end; result.hasMore = end < matched.size();
-    return EditorResult<EditorTimelinePage>::applied(std::move(result));
+    return eve::editing::applied<EditorTimelinePage>(std::move(result));
 }
 
 void EditorEventTimeline::clear() {

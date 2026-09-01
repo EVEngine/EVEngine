@@ -1,4 +1,4 @@
-#include "editor/EditorAudioWaveform.h"
+#include "audio_editor/EditorAudioWaveform.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

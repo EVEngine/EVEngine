@@ -35,7 +35,7 @@ Poco::JSON::Object::Ptr resultObject(const AgentDevelopmentResult& result) {
 }
 
 Poco::JSON::Object::Ptr snapshot(const AgentDevelopmentResult& result) {
-    auto output  = resultObject(result);
+    auto  output  = resultObject(result);
     auto& session = AgentDevelopmentSession::instance();
     output->set("schema", "eve.agent-development-session");
     output->set("schemaVersion", 1);
@@ -72,9 +72,7 @@ Poco::JSON::Object::Ptr snapshot(const AgentDevelopmentResult& result) {
     return output;
 }
 
-AgentDevelopmentResult invalid(std::string code, std::string message) {
-    return {std::move(code), std::move(message)};
-}
+AgentDevelopmentResult invalid(std::string code, std::string message) { return {std::move(code), std::move(message)}; }
 
 }  // namespace
 
@@ -85,7 +83,7 @@ bool isAgentDevelopmentTool(std::string_view name) {
 }
 
 std::string callAgentDevelopmentTool(std::string_view name, Poco::JSON::Object::Ptr args) {
-    auto& session = AgentDevelopmentSession::instance();
+    auto&                  session = AgentDevelopmentSession::instance();
     AgentDevelopmentResult result{"applied", {}};
     if (name == "eve_agent_session_start") {
         std::vector<AgentAcceptanceCriterion> criteria;
@@ -108,7 +106,7 @@ std::string callAgentDevelopmentTool(std::string_view name, Poco::JSON::Object::
         if (result.isAccepted()) result = session.start(stringField(args, "objective"), std::move(criteria));
     } else if (name == "eve_agent_session_advance") {
         AgentDevelopmentPhase phase = AgentDevelopmentPhase::Aborted;
-        result = parseAgentDevelopmentPhase(stringField(args, "phase"), &phase);
+        result                      = parseAgentDevelopmentPhase(stringField(args, "phase"), &phase);
         if (result.isAccepted()) result = session.advance(stringField(args, "sessionId"), phase);
     } else if (name == "eve_agent_session_evidence") {
         AgentDevelopmentEvidence evidence;
@@ -117,7 +115,7 @@ std::string callAgentDevelopmentTool(std::string_view name, Poco::JSON::Object::
         evidence.status      = stringField(args, "status");
         evidence.summary     = stringField(args, "summary");
         evidence.artifact    = stringField(args, "artifact");
-        result = session.record(stringField(args, "sessionId"), std::move(evidence));
+        result               = session.record(stringField(args, "sessionId"), std::move(evidence));
     } else if (name == "eve_agent_session_complete") {
         result = session.complete(stringField(args, "sessionId"), stringField(args, "summary"));
     } else if (name == "eve_agent_session_abort") {
