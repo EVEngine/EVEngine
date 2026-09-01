@@ -86,7 +86,7 @@ void VulkanComputeShader::flushDescriptors(vkb::Device &device) {
     }
 
     if (descriptorSet_) {
-        if (deferSetFree_) {
+        if (activeSequenceCount_ > 0) {
             // A previously recorded command buffer in the open Sequence may
             // still reference this set. Defer the free until that Sequence
             // submits and waits; the pool is sized for the deferred backlog.
@@ -136,11 +136,14 @@ void VulkanComputeShader::flushDescriptors(vkb::Device &device) {
     descriptorsDirty_ = false;
 }
 
-void VulkanComputeShader::beginSequence() { deferSetFree_ = true; }
+void VulkanComputeShader::beginSequence() { ++activeSequenceCount_; }
 
-void VulkanComputeShader::endSequence() { deferSetFree_ = false; }
+void VulkanComputeShader::endSequence() {
+    if (activeSequenceCount_ > 0) --activeSequenceCount_;
+}
 
 void VulkanComputeShader::releasePendingDescriptors(vkb::Device &device) {
+    if (activeSequenceCount_ > 0) return;
     if (pendingSets_.empty()) return;
     for (vk::DescriptorSet set : pendingSets_)
         device->freeDescriptorSets(descriptorPool_, set);

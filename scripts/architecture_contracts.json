@@ -49,6 +49,31 @@
       "stale": "Generation and owner identity are checked by resolve; encoded validity alone is insufficient."
     },
     {
+      "id": "pixelworld-fragment-link-contract",
+      "rule": "link",
+      "scope": "src/modules/pixelworld/PixelWorld.h",
+      "owner": "pixelworld::PixelWorld",
+      "issue": "EVENGINE-PIXELWORLD-FRAGMENTS",
+      "reason": "Detached fragment bitmaps need process-local source identity without becoming a second mutable terrain authority.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/pixelworld/PixelWorld.h",
+        "docs/dev/PixelWorld-Noita技术路线.md"
+      ],
+      "tests": [
+        "test/pixelworld.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "PixelWorldLink"
+      ],
+      "create": "PixelWorld stamps a world id and epoch into every atomically detached PixelFragment.",
+      "ownership": "PixelWorld solely owns live terrain; a fragment owns only its detached bitmap and a non-owning source link.",
+      "destroy_order": "Fragment destruction is independent; world destruction makes rasterization impossible without dereferencing retained world pointers.",
+      "restore": "Transactional restore and clear increment the world epoch; callers must discard or explicitly recreate stale physics projections.",
+      "stale": "Rasterization compares both runtime world identity and epoch and returns StaleHandle before any terrain write."
+    },
+    {
       "id": "rts-link-contract",
       "rule": "link",
       "scope": "src/modules/rts/RTSTypes.h",
@@ -184,6 +209,36 @@
       "phase": "input buffering in Input; candidate preparation and atomic selection in PrePhysics"
     },
     {
+      "id": "inventory-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/inventory/InventorySystem.h",
+      "owner": "inventory::InventorySystem",
+      "issue": "EVENGINE-ARCH-INVENTORY-TRANSACTIONS",
+      "reason": "Inventory mutations and prepared batches publish their access, commit and observer contracts even though Bags are domain containers rather than ECS entities.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/inventory/InventorySystem.h",
+        "src/modules/inventory/InventorySystem.cpp",
+        "docs/usr/modules/inventory.md"
+      ],
+      "tests": [
+        "test/inventory.cpp",
+        "test/rpg_quest_reward.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "InventorySystem"
+      ],
+      "entity_scope": "caller-owned Bag and EquipmentSet domain containers; no ECS entity traversal",
+      "view": "one owning-thread Bag snapshot captured during preparation and compared in full before commit",
+      "read_set": "item definitions, Bag configuration, filters, capacity and stack policies, slots and custom properties",
+      "write_set": "the target Bag slot vector plus the inventory event queue after successful commit",
+      "structural_changes": "prepared additions mutate only a private candidate; commit swaps the target slot vector once and never changes ECS structure",
+      "events": "inventory change hooks and poll events publish only after the authoritative slot swap; failed and stale batches publish nothing",
+      "services": "process-local item registry and named inventory policies on the Bag owning simulation thread",
+      "phase": "gameplay transaction commit after validation and before downstream inventory presentation polling"
+    },
+    {
       "id": "npc-ai-ecs-system-contracts",
       "rule": "ecs-system",
       "scope": "src/modules/npc_ai/NpcAiECS.h",
@@ -211,6 +266,35 @@
       "events": "signals and transition trace remain in NpcAiWorld and are not dispatched while an ECS view is open",
       "services": "borrowed owner-thread NpcAiWorld plus injected SimulationStep tick and dt",
       "phase": "deterministic AI simulation phase after perception ingestion and before animation/presentation consumption"
+    },
+    {
+      "id": "pixelworld-thread-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/pixelworld_thread/PixelWorldThread.h",
+      "owner": "pixelworld::PixelWorld",
+      "issue": "EVENGINE-PIXELWORLD-PARALLEL",
+      "reason": "PixelWorld worker scheduling must declare immutable phase reads, isolated candidate writes and canonical commit ordering.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/pixelworld_thread/PixelWorldThread.h",
+        "docs/dev/PixelWorld-Noita技术路线.md"
+      ],
+      "tests": [
+        "test/pixelworld_parallel.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "JobSystem",
+        "JobSystemPixelScheduler"
+      ],
+      "entity_scope": "canonical active PixelWorld Chunk indices for one injected SimulationTick",
+      "view": "immutable post-movement PixelCell phase state plus one owning candidate slot per Chunk index",
+      "read_set": "PixelCell material and temperature, immutable MaterialCatalog definitions and canonical Chunk order",
+      "write_set": "index-owned ThermalContribution buffers and transfer counters only; workers never write PixelWorld",
+      "structural_changes": "none on workers; owner thread performs sorted temperature commits and later Chunk tombstone publication",
+      "events": "StepStats parallelTasks and deterministic phase counters after synchronous join",
+      "services": "borrowed running thread::JobSystem through JobSystemPixelScheduler",
+      "phase": "thermal candidate generation after canonical movement and before owner-thread thermal commit"
     },
     {
       "id": "rpg-ecs-system-contracts",

@@ -25,7 +25,11 @@
 #include <vector>
 #include <cstdint>
 
-#include <glm/glm.hpp>
+#include <glm/ext/vector_uint4_sized.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace eve::graphics::webgpu {
 
@@ -187,6 +191,7 @@ public:
     uint32_t gpuDrivenMaterialRecord(Material *material) override;
     bool gpuDrivenMaterialUsable(Material *material) override;
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    GpuResidentSubmitStatus gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) override;
     bool gpuDrivenCullEnabled() const override { return gpuDrivenEnabled_; }
     bool gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount) override;
     void gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
@@ -265,6 +270,11 @@ public:
     bool releaseTexture(Texture *texture) override;
     bool updateTexture(Texture *texture, int width, int height,
                        const uint8_t *rgba) override;
+    eve::Result<void> updateTextureRegion(Texture *texture, int x, int y, int width,
+                                          int height, std::span<const std::uint8_t> rgba,
+                                          std::size_t bytesPerRow = 0) override;
+    eve::Result<void> updateTextureRegions(
+        Texture *texture, std::span<const TextureRegionUpload> regions) override;
 
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                           const Color &color) override;
@@ -301,6 +311,15 @@ public:
     Shader *newShaderFromSpvFile(const std::string &vertPath, const std::string &fragPath) override;
     Shader *newShaderFromWgsl(const std::string &vertWgsl,
                               const std::string &fragWgsl) override;
+    [[nodiscard]] Result<void> replaceShaderFromSpv(
+        Shader &shader, const std::vector<uint32_t> &vertSpv,
+        const std::vector<uint32_t> &fragSpv) override;
+    [[nodiscard]] Result<void> replaceShaderFromWgsl(
+        Shader &shader, const std::string &vertWgsl,
+        const std::string &fragWgsl) override;
+    [[nodiscard]] Result<void> replaceShaderFromGlsl(
+        Shader &shader, const std::string &vertGlsl,
+        const std::string &fragGlsl) override;
     Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
@@ -1012,6 +1031,8 @@ private:
     uint64_t gpuDrivenHzbCapacity_ = 0;
     wgpu::RenderPipeline gpuDrivenRenderPipeline_;
     wgpu::RenderPipeline gpuDrivenCanvasPipeline_;
+    wgpu::RenderPipeline         gpuDrivenResidentRenderPipeline_;
+    wgpu::RenderPipeline         gpuDrivenResidentCanvasPipeline_;
     wgpu::Buffer gpuDrivenParamsBuffer_;
     wgpu::Buffer gpuDrivenInputBuffer_;
     wgpu::Buffer gpuDrivenVisibleBuffer_;
@@ -1028,6 +1049,10 @@ private:
     uint32_t gpuDrivenLastBucketCount_ = 0;
     bool gpuDrivenComputePending_ = false;
     bool gpuDrivenDrawPending_ = false;
+    bool                         gpuDrivenResidentDrawPending_   = false;
+    WGPUBuffer                   gpuDrivenResidentBuffer_        = nullptr;
+    uint64_t                     gpuDrivenResidentOffset_        = 0;
+    uint64_t                     gpuDrivenResidentSize_          = 0;
     bool gpuDrivenVisPending_ = false;
     bool gpuDrivenResolvePending_ = false;
     wgpu::BindGroupLayout gpuDrivenVisSetLayout_;

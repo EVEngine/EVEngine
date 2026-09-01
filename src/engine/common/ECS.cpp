@@ -46,6 +46,16 @@ std::vector<std::function<void(ssq::Table&)>>& postEcsHooks() {
     return hooks;
 }
 
+bool& ecsScriptInjected() {
+    static bool injected = false;
+    return injected;
+}
+
+size_t& postEcsHooksFlushed() {
+    static size_t n = 0;
+    return n;
+}
+
 // ---------------------------------------------------------------------------
 // Class helpers
 // ---------------------------------------------------------------------------
@@ -161,6 +171,7 @@ eve._ecsTypes <- {}   // EntityClass -> { cls, instances }
 eve._ecsViewCache <- {}       // EntityClass -> array
 eve._ecsSlotsCache <- {}      // EntityClass -> { fieldName = ComponentClass }
 eve._ecsCompDefaults <- {}    // ComponentClass -> { fieldName = resolvedDefault }
+eve._ecsRevision <- 0         // increments on script entity structural changes
 
 function eve::_ecsResolveMarker(v) {
     if (v == eve.Number || v == "number") return 0.0
@@ -247,6 +258,7 @@ function eve::_ecsEnsureType(cls) {
 
 function eve::_ecsRegisterInstance(entity, cls) {
     eve._ecsEnsureType(cls).instances.push(entity)
+    eve._ecsRevision += 1
     eve._ecsInvalidateViews(cls)
 }
 
@@ -259,6 +271,7 @@ function eve::_ecsUnregisterInstance(entity, cls) {
             local last = arr.len() - 1
             if (i != last) arr[i] = arr[last]
             arr.pop()
+            eve._ecsRevision += 1
             break
         }
     }
@@ -419,8 +432,169 @@ eve.ShaderSystem <- class extends eve.System {
     }
 
     // binding: SSBO index; slot: entity component field name; fields: ["x","y",...]
-    function bindFields(binding, slot, fields) {
-        _bindings.push({ binding = binding, slot = slot, fields = fields })
+    // uploadEachUpdate=false keeps the buffer GPU-resident after its initial upload.
+    // readback=false leaves results resident until requestReadback() is called.
+    function bindFields(binding, slot, fields, uploadEachUpdate = true, readback = null) {
+        _bindings.push({ binding = binding, slot = slot, fields = fields,
+                         uploadEachUpdate = uploadEachUpdate,
+                         readback = readback, uploadedRevision = -1,
+                         uploadRequested = false, readbackRequested = false,
+                         uploadFirst = 0, uploadCount = 0,
+                         readbackFirst = 0, readbackCount = 0,
+                         source = null, sourceBinding = -1,
+                         initializeFromCpu = true, schema = null })
+        return this
+    }
+
+    // Typed binding schema: { slot, fields, scalar="f32", access="read_write" }.
+    // write-only bindings allocate storage without an unnecessary CPU upload.
+    function bindSchema(binding, schema, uploadEachUpdate = false, readback = false) {
+        if (typeof schema != "table" || !("slot" in schema) || !("fields" in schema))
+            throw "eve.ShaderSystem.bindSchema: schema requires slot and fields"
+        if (typeof schema.slot != "string" || typeof schema.fields != "array" ||
+            schema.fields.len() <= 0)
+            throw "eve.ShaderSystem.bindSchema: invalid slot or fields"
+        foreach (field in schema.fields)
+            if (typeof field != "string")
+                throw "eve.ShaderSystem.bindSchema: every field must be a string"
+        local scalar = "scalar" in schema ? schema.scalar : "f32"
+        if (scalar != "f32")
+            throw "eve.ShaderSystem.bindSchema: only f32 is currently supported"
+        local access = "access" in schema ? schema.access : "read_write"
+        if (access != "read" && access != "write" && access != "read_write")
+            throw "eve.ShaderSystem.bindSchema: access must be read, write, or read_write"
+        local normalized = { slot = schema.slot, fields = schema.fields,
+                             scalar = scalar, access = access,
+                             strideFloats = schema.fields.len() }
+        _bindings.push({ binding = binding, slot = schema.slot, fields = schema.fields,
+                         uploadEachUpdate = access == "write" ? false : uploadEachUpdate,
+                         readback = readback, uploadedRevision = -1,
+                         uploadRequested = false, readbackRequested = false,
+                         uploadFirst = 0, uploadCount = 0,
+                         readbackFirst = 0, readbackCount = 0,
+                         source = null, sourceBinding = -1,
+                         initializeFromCpu = access != "write", schema = normalized })
+        return this
+    }
+
+    function getBindingSchema(binding) {
+        foreach (b in _bindings) if (b.binding == binding) return b.schema
+        return null
+    }
+
+    // Generate backend declaration boilerplate; the kernel body remains explicit.
+    function shaderDeclarations(language = "glsl") {
+        local out = ""
+        foreach (b in _bindings) {
+            if (b.schema == null) continue
+            if (language == "glsl") {
+                local qualifier = b.schema.access == "read" ? "readonly " :
+                                  b.schema.access == "write" ? "writeonly " : ""
+                out += "layout(set = 0, binding = " + b.binding + ") " + qualifier +
+                       "buffer EcsBinding" + b.binding + " { float data[]; } ecs" +
+                       b.binding + ";\n"
+            } else if (language == "wgsl") {
+                local access = b.schema.access == "read" ? "read" : "read_write"
+                out += "@group(0) @binding(" + b.binding + ") var<storage, " + access +
+                       "> ecs" + b.binding + " : array<f32>;\n"
+            } else {
+                throw "eve.ShaderSystem.shaderDeclarations: language must be glsl or wgsl"
+            }
+        }
+        return out
+    }
+
+    // Reuse another ShaderSystem's resident buffer without a CPU round trip.
+    // The source system is retained and must be prepared before this consumer.
+    function bindSharedFields(binding, sourceSystem, sourceBinding, slot, fields,
+                              readback = false) {
+        if (sourceSystem == null)
+            throw "eve.ShaderSystem.bindSharedFields: source system is null"
+        _bindings.push({ binding = binding, slot = slot, fields = fields,
+                         uploadEachUpdate = false, readback = readback,
+                         uploadedRevision = -1, uploadRequested = false,
+                         readbackRequested = false, uploadFirst = 0, uploadCount = 0,
+                         readbackFirst = 0, readbackCount = 0,
+                         source = sourceSystem, sourceBinding = sourceBinding,
+                         initializeFromCpu = false, schema = null })
+        return this
+    }
+
+    function setBindingUpload(binding, enabled) {
+        foreach (b in _bindings) if (b.binding == binding) b.uploadEachUpdate = enabled
+        return this
+    }
+
+    function setBindingReadback(binding, enabled) {
+        foreach (b in _bindings) if (b.binding == binding) b.readback = enabled
+        return this
+    }
+
+    // Re-upload CPU component values on the next update. binding < 0 selects all.
+    function requestUpload(binding = -1) {
+        foreach (b in _bindings) {
+            if ((binding < 0 || b.binding == binding) && b.source == null) {
+                b.uploadRequested = true
+                b.uploadFirst = 0
+                b.uploadCount = -1
+            }
+        }
+        return this
+    }
+
+    // Re-upload a stable contiguous entity range. Repeated requests are coalesced.
+    function requestUploadRange(binding, firstEntity, entityCount) {
+        if (firstEntity < 0 || entityCount <= 0)
+            throw "eve.ShaderSystem.requestUploadRange: invalid entity range"
+        foreach (b in _bindings) {
+            if (b.binding != binding) continue
+            if (b.source != null)
+                throw "eve.ShaderSystem.requestUploadRange: shared binding is GPU-owned"
+            if (!b.uploadRequested || b.uploadCount == 0) {
+                b.uploadFirst = firstEntity
+                b.uploadCount = entityCount
+            } else if (b.uploadCount >= 0) {
+                local oldEnd = b.uploadFirst + b.uploadCount
+                local newEnd = firstEntity + entityCount
+                local end = oldEnd > newEnd ? oldEnd : newEnd
+                b.uploadFirst = b.uploadFirst < firstEntity ? b.uploadFirst : firstEntity
+                b.uploadCount = end - b.uploadFirst
+            }
+            b.uploadRequested = true
+        }
+        return this
+    }
+
+    // Read GPU values back after the next update. binding < 0 selects all.
+    function requestReadback(binding = -1) {
+        foreach (b in _bindings) {
+            if (binding < 0 || b.binding == binding) {
+                b.readbackRequested = true
+                b.readbackFirst = 0
+                b.readbackCount = -1
+            }
+        }
+        return this
+    }
+
+    // Read back a stable contiguous entity range. Repeated requests are coalesced.
+    function requestReadbackRange(binding, firstEntity, entityCount) {
+        if (firstEntity < 0 || entityCount <= 0)
+            throw "eve.ShaderSystem.requestReadbackRange: invalid entity range"
+        foreach (b in _bindings) {
+            if (b.binding != binding) continue
+            if (!b.readbackRequested || b.readbackCount == 0) {
+                b.readbackFirst = firstEntity
+                b.readbackCount = entityCount
+            } else if (b.readbackCount >= 0) {
+                local oldEnd = b.readbackFirst + b.readbackCount
+                local newEnd = firstEntity + entityCount
+                local end = oldEnd > newEnd ? oldEnd : newEnd
+                b.readbackFirst = b.readbackFirst < firstEntity ? b.readbackFirst : firstEntity
+                b.readbackCount = end - b.readbackFirst
+            }
+            b.readbackRequested = true
+        }
         return this
     }
 
@@ -431,31 +605,127 @@ eve.ShaderSystem <- class extends eve.System {
 
     function getBackend() { return _backend }
 
-    function update(dt) {
+    // Register renderer resources and submit a standard 80-byte GpuInstance binding
+    // without copying the instance stream back through the CPU.
+    function setGpuDrivenEnabled(enabled) {
+        if (_gpu == null) throw "eve.ShaderSystem.setGpuDrivenEnabled: call setGpgpu first"
+        _gpu.setGpuDrivenEnabled(enabled)
+        return this
+    }
+
+    function gpuDrivenMeshRecord(mesh) {
+        if (_gpu == null) throw "eve.ShaderSystem.gpuDrivenMeshRecord: call setGpgpu first"
+        return _gpu.gpuDrivenMeshRecord(mesh)
+    }
+
+    function gpuDrivenMaterialRecord(material) {
+        if (_gpu == null)
+            throw "eve.ShaderSystem.gpuDrivenMaterialRecord: call setGpgpu first"
+        return _gpu.gpuDrivenMaterialRecord(material)
+    }
+
+    function submitResidentInstances(binding, buckets, instanceCount = -1,
+                                     offsetBytes = 0) {
+        if (_gpu == null || _backend == null)
+            throw "eve.ShaderSystem.submitResidentInstances: call setGpgpu first"
+        local buffer = _backend.getBuffer(binding)
+        if (buffer == null)
+            throw "eve.ShaderSystem.submitResidentInstances: binding has no buffer"
+        if (instanceCount < 0) instanceCount = entities().len()
+        return _gpu.submitResidentInstances(buffer, buckets, instanceCount, offsetBytes)
+    }
+
+    function _prepareGpuBatch() {
         if (_backend == null || _gpu == null) return
         if (!("packEcsFloats" in eve) || !("unpackEcsFloats" in eve)) return
 
         local ents = entities()
         local n = ents.len()
-        if (n <= 0) return
+        if (n <= 0) return null
 
         foreach (b in _bindings) {
             local floatsPer = b.fields.len()
             if (floatsPer <= 0) continue
+            if (b.source != null) {
+                local sourceBackend = b.source.getBackend()
+                local sourceBuffer = sourceBackend == null ? null :
+                                     sourceBackend.getBuffer(b.sourceBinding)
+                if (sourceBuffer == null)
+                    throw "eve.ShaderSystem shared source must be prepared before consumer"
+                if (sourceBuffer.getSize() < n * floatsPer * 4)
+                    throw "eve.ShaderSystem shared buffer is smaller than consumer view"
+                _backend.attachBuffer(b.binding, sourceBuffer)
+                continue
+            }
             local buf = _backend.ensureBuffer(b.binding, n * floatsPer)
-            eve.packEcsFloats(ents, b.slot, b.fields, buf)
+            local structureChanged = b.uploadedRevision != eve._ecsRevision
+            local fullUpload = (structureChanged && (b.initializeFromCpu || b.uploadRequested)) ||
+                               b.uploadEachUpdate ||
+                               (b.uploadRequested && b.uploadCount < 0)
+            if (fullUpload) {
+                eve.packEcsFloats(ents, b.slot, b.fields, buf)
+                b.uploadedRevision = eve._ecsRevision
+                b.uploadRequested = false
+                b.uploadCount = 0
+            } else if (structureChanged) {
+                // Output-only schema: capacity/order changed, but the shader is
+                // authoritative and promises to initialize every accessed record.
+                b.uploadedRevision = eve._ecsRevision
+            } else if (b.uploadRequested) {
+                if (!("packEcsFloatsRange" in eve))
+                    throw "eve.ShaderSystem.requestUploadRange requires gpgpu range packing"
+                eve.packEcsFloatsRange(ents, b.slot, b.fields, buf,
+                                       b.uploadFirst, b.uploadCount)
+                b.uploadRequested = false
+                b.uploadCount = 0
+            }
         }
+        return { entities = ents, count = n }
+    }
 
-        _backend.dispatch(n, dt)
-
-        if (_readback) {
-            foreach (b in _bindings) {
+    function _completeGpuBatch(batch) {
+        if (batch == null) return
+        local ents = batch.entities
+        local n = batch.count
+        foreach (b in _bindings) {
+            local shouldReadback = b.readback == null ? _readback : b.readback
+            if (shouldReadback || (b.readbackRequested && b.readbackCount < 0)) {
                 local floatsPer = b.fields.len()
                 if (floatsPer <= 0) continue
                 local buf = _backend.getBuffer(b.binding)
                 eve.unpackEcsFloats(ents, b.slot, b.fields, buf, n)
+                b.readbackRequested = false
+                b.readbackCount = 0
+            } else if (b.readbackRequested) {
+                if (!("unpackEcsFloatsRange" in eve))
+                    throw "eve.ShaderSystem.requestReadbackRange requires gpgpu range unpacking"
+                local buf = _backend.getBuffer(b.binding)
+                eve.unpackEcsFloatsRange(ents, b.slot, b.fields, buf,
+                                         b.readbackFirst, b.readbackCount)
+                b.readbackRequested = false
+                b.readbackCount = 0
             }
         }
+    }
+
+    // Record into a shared GpuSequence. Call completeRecorded(batch) after submit().
+    function record(sequence, dt) {
+        if (sequence == null) throw "eve.ShaderSystem.record: sequence is null"
+        local batch = _prepareGpuBatch()
+        if (batch != null) _backend.recordDispatch(sequence, batch.count, dt)
+        return batch
+    }
+
+    function completeRecorded(batch) {
+        _completeGpuBatch(batch)
+        return this
+    }
+
+    function update(dt) {
+        local batch = _prepareGpuBatch()
+        if (batch == null) return
+        _backend.dispatch(batch.count, dt)
+        _completeGpuBatch(batch)
     }
 }
 
@@ -577,14 +847,10 @@ void exposeECS(ssq::Table& table) {
 
     injectEcsScript(table);
 
-    // After script ECS classes exist: run module hooks (e.g. eve.SceneEntity).
-    for (auto &hook : postEcsHooks()) {
-        try {
-            hook(table);
-        } catch (...) {
-            // A failing module hook must not break VM exposure.
-        }
-    }
+    ecsScriptInjected() = true;
+    // A new VM re-runs every hook (SceneEntity class, …) against this table.
+    postEcsHooksFlushed() = 0;
+    flushPostEcsHooks(table);
 }
 
 void registerCppEntityView(size_t typeHash, CppEntityViewFn fn) {
@@ -593,6 +859,20 @@ void registerCppEntityView(size_t typeHash, CppEntityViewFn fn) {
 
 void registerPostEcsHook(PostEcsHook fn) {
     postEcsHooks().push_back(std::move(fn));
+}
+
+void flushPostEcsHooks(ssq::Table& table) {
+    if (!ecsScriptInjected()) return;
+    auto& hooks = postEcsHooks();
+    auto& n     = postEcsHooksFlushed();
+    while (n < hooks.size()) {
+        try {
+            hooks[n](table);
+        } catch (...) {
+            // A failing module hook must not break VM exposure.
+        }
+        ++n;
+    }
 }
 
 void exposeECSToVM(ssq::VM& vm) {

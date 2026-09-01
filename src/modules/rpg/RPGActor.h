@@ -19,10 +19,14 @@
 #include "rpg/SkillTypes.h"
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
 namespace eve::rpg {
+
+class RPGSaveSession;
+class Party;
 
 /** @brief 属性 / 状态 / 技能三表合一的 ECS 实体。 */
 class RPGActor : public ecs::Entity {
@@ -196,6 +200,18 @@ public:
     double getXp();
     double getXpToNext();
     void setXpToNext(double value);
+    /**
+     * @brief Validate and atomically restore this actor's progression checkpoint.
+     * @param level Positive level.
+     * @param xp Finite, non-negative progress below xpToNext.
+     * @param xpToNext Finite positive threshold for the current level.
+     * @return Applied state, or a structured failure without mutation.
+     * @remarks The actor retains ownership of its progression component and no
+     * level-up event or callback is emitted by restoration.
+     * @thread Call on the actor's owning ECS simulation thread.
+     * @reentrancy No callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> restoreProgression(int level, double xp, double xpToNext);
     /** @brief 增加经验并可能升级（compatibility facade (脚本兼容门面)；返回是否升级）。 */
     bool gainXp(double amount);
 
@@ -240,6 +256,29 @@ public:
     int getClassLearnLevelAt(int index);
 
     /**
+     * @brief Capture this actor at a persistent safe checkpoint.
+     * @return Deterministic schema `eve.rpg.actor-checkpoint` version 1 JSON, or a structured failure.
+     * @remarks The checkpoint stores base attributes, progression, vitals, learned skill ids,
+     * class identity and trait identity. Active effects, casts, cooldowns, runtime events and
+     * raw targets are transient and excluded. Capture is rejected while an effect or cast is active.
+     * @thread Call on the actor's owning ECS simulation thread.
+     * @reentrancy No callbacks or registry mutations are performed.
+     */
+    [[nodiscard]] eve::Result<std::string> checkpointJson() const;
+
+    /**
+     * @brief Validate and atomically restore a safe checkpoint into this preconfigured actor.
+     * @param json UTF-8 JSON produced by checkpointJson().
+     * @return Applied state, or a structured failure without mutation.
+     * @remarks The destination must have no active effect/cast and must use the same class,
+     * trait identities and attribute layout. Skill ids must exist in the current registry.
+     * Cooldowns and casting restore to defaults. Unknown version-1 fields are ignored.
+     * @thread Call on the actor's owning ECS simulation thread.
+     * @reentrancy No callbacks or gameplay events are emitted.
+     */
+    [[nodiscard]] eve::Result<void> restoreCheckpointJson(std::string_view json);
+
+    /**
      * @brief 返回所有通过 createActor() 创建、且当前仍存活的 actor。
      * StatusSystem::update / SkillSystem::update 用它遍历所有 actor 逐帧推进。
      * 直接调用继承自 ENTITY 宏的 RPGActor::create() 不会被跟踪——推荐总是用 createActor()。
@@ -250,6 +289,20 @@ public:
      * 误判为旧的已销毁实体（裸指针 + is_entity_visible 无法区分这种复用）。
      */
     static const std::vector<RPGActor *> &liveActors();
+
+private:
+    struct CheckpointCandidate {
+        Attributes attributes;
+        Skills skills;
+        Progression progression;
+        Vitals vitals;
+        ClassInfo classInfo;
+    };
+
+    [[nodiscard]] eve::Result<CheckpointCandidate> prepareCheckpointJson(std::string_view json) const;
+    void commitCheckpoint(CheckpointCandidate candidate) noexcept;
+    friend class RPGSaveSession;
+    friend class Party;
 };
 
 }  // namespace eve::rpg

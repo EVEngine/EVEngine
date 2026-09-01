@@ -2,9 +2,13 @@
 
 #include <assimp/matrix4x4.h>
 #include <cstdint>
-#include <glm/glm.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <vector>
 #include "common/Module.h"
@@ -12,12 +16,12 @@
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
 #include "graphics/Canvas.h"
-#include "graphics/ICanvasFactory.h"
-#include "graphics/ICanvasTarget.h"
 #include "graphics/Color.h"
 #include "graphics/Font.h"
 #include "graphics/GpuDrivenTypes.h"
 #include "graphics/GpuParticles.h"
+#include "graphics/ICanvasFactory.h"
+#include "graphics/ICanvasTarget.h"
 #include "graphics/IGraphics2D.h"
 #include "graphics/IGraphics3D.h"
 #include "graphics/IPostFX.h"
@@ -41,6 +45,20 @@ class GlobalIllumination;
 class GrassField;
 class Material;
 class Mesh;
+
+/**
+ * @brief One borrowed RGBA8 source rectangle for a batched texture update.
+ * @ownership `rgba` remains owned by the caller and is never retained.
+ * @lifetime The byte span must remain valid through updateTextureRegions().
+ */
+struct TextureRegionUpload {
+    int x = 0;
+    int y = 0;
+    int width = 0;
+    int height = 0;
+    std::span<const std::uint8_t> rgba;
+    std::size_t bytesPerRow = 0;
+};
 
 /**
  * @brief Backend-owned layout facts for a mesh uploaded through Graphics.
@@ -259,6 +277,18 @@ public:
         (void)instances;
         (void)instanceCount;
         return false;
+    }
+
+    /**
+     * @brief Submit a GPU-authored, bucket-sorted GpuInstance buffer without CPU readback.
+     * @param batch Borrowed buffer view and O(bucket) draw metadata. The producer retains
+     * the native buffer until the current frame fence completes.
+     * @return Structured status; unsupported backends never perform a hidden CPU fallback.
+     * @thread Render/submission thread, while the 3D frame accepts opaque draws.
+     */
+    virtual GpuResidentSubmitStatus gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) {
+        (void)batch;
+        return GpuResidentSubmitStatus::Unsupported;
     }
 
     // ---- GPU-driven rendering (stage 2): GPU cull seam ----
@@ -485,6 +515,36 @@ public:
      */
     virtual bool updateTexture(Texture *texture, int width, int height,
                                const uint8_t *rgba) = 0;
+
+    /**
+     * @brief Upload one tightly packed or row-strided RGBA8 rectangle into mip level zero.
+     * @param texture Borrowed texture owned by this Graphics backend.
+     * @param x Destination pixel offset from the left edge.
+     * @param y Destination pixel offset from the top edge.
+     * @param width Rectangle width in pixels.
+     * @param height Rectangle height in pixels.
+     * @param rgba Owning-external bytes borrowed only for this synchronous call.
+     * @param bytesPerRow Source row stride; zero means `width * 4`.
+     * @return Success after the upload is visible to subsequent draws, or a diagnostic.
+     * @ownership Graphics retains neither `texture` nor `rgba`; it already owns texture storage.
+     * @lifetime `texture` and `rgba` must remain valid only for this render-thread call.
+     * @remarks Textures with mip chains are rejected because partial mip regeneration is undefined.
+     */
+    [[nodiscard]] virtual eve::Result<void> updateTextureRegion(
+        Texture *texture, int x, int y, int width, int height,
+        std::span<const std::uint8_t> rgba, std::size_t bytesPerRow = 0) = 0;
+
+    /**
+     * @brief Validate then upload multiple independent mip-zero RGBA8 regions as one batch.
+     * @param texture Borrowed single-mip texture owned by this Graphics backend.
+     * @param regions Borrowed descriptors and source spans, consumed synchronously.
+     * @return Success after every region is accepted and uploaded, otherwise no upload occurs.
+     * @ownership Graphics retains neither the texture nor region/source spans.
+     * @lifetime All arguments need remain valid only through this render-thread call.
+     * @remarks Vulkan guarantees one staging allocation and queue submission for the batch.
+     */
+    [[nodiscard]] virtual eve::Result<void> updateTextureRegions(
+        Texture *texture, std::span<const TextureRegionUpload> regions) = 0;
 
     /**
      * @brief Recreate the sampler for an existing texture (keeps image / mip chain).
@@ -1279,6 +1339,48 @@ public:
      */
     virtual Shader *newShaderFromWgsl(const std::string &vertWgsl,
                                       const std::string &fragWgsl) = 0;
+
+    /**
+     * @brief Transactionally replace an existing shader with SPIR-V stages.
+     * @param shader Stable graphics-owned shader facade to update.
+     * @param vertSpv Vertex stage words; empty selects the backend default for the shader kind.
+     * @param fragSpv Fragment stage words; must contain valid SPIR-V.
+     * @return Success only after every replacement pipeline has been created and published.
+     * @throws Nothing. Backend and validation failures are returned as structured diagnostics.
+     * @note Main/render-thread only and not reentrant. On failure the shader, its uniforms, and all
+     *       renderable/material references remain bound to the last successfully published pipeline.
+     * @lifetime `shader` remains owned by this Graphics instance and keeps the same address.
+     */
+    [[nodiscard]] virtual Result<void> replaceShaderFromSpv(
+        Shader &shader, const std::vector<uint32_t> &vertSpv,
+        const std::vector<uint32_t> &fragSpv) = 0;
+
+    /**
+     * @brief Transactionally replace an existing shader with WGSL stages.
+     * @param shader Stable graphics-owned shader facade to update.
+     * @param vertWgsl Vertex source; empty selects the backend default for the shader kind.
+     * @param fragWgsl Fragment source; must not be empty.
+     * @return Success only after every replacement pipeline has been created and published.
+     * @throws Nothing. Backend and validation failures are returned as structured diagnostics.
+     * @note Main/render-thread only and not reentrant. Vulkan reports Unsupported without mutation.
+     * @lifetime `shader` remains owned by this Graphics instance and keeps the same address.
+     */
+    [[nodiscard]] virtual Result<void> replaceShaderFromWgsl(
+        Shader &shader, const std::string &vertWgsl, const std::string &fragWgsl) = 0;
+
+    /**
+     * @brief Compile GLSL and transactionally replace an existing shader.
+     * @param shader Stable graphics-owned shader facade to update.
+     * @param vertGlsl Vertex source; empty selects the backend default for the shader kind.
+     * @param fragGlsl Fragment source; must not be empty.
+     * @return Structured compile/pipeline result; failure preserves the last-good pipeline.
+     * @throws Nothing. Compiler output is carried by the returned diagnostic.
+     * @note Main/render-thread only and not reentrant. Runtime GLSL compilation is a Vulkan
+     *       development capability and may report Unsupported on a platform/backend.
+     * @lifetime `shader` remains owned by this Graphics instance and keeps the same address.
+     */
+    [[nodiscard]] virtual Result<void> replaceShaderFromGlsl(
+        Shader &shader, const std::string &vertGlsl, const std::string &fragGlsl) = 0;
 
     /**
      * @brief Create a Mesh3D custom shader (MeshVertex + Frame UBO + albedo).

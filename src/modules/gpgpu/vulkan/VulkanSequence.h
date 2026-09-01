@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gpgpu/Sequence.h"
 #include "vkbuilder.hpp"
 
 #include <cstdint>
@@ -15,10 +16,14 @@ class ComputeShader;
 class GpuBuffer;
 
 /**
+ * @ownership Backend pointers are borrowed from the active Graphics device.
+ * @lifetime The active Graphics device, recorded shaders and buffers outlive pending work.
+ * @thread All methods except backend completion signaling run on the submitting thread.
  * Vulkan implementation of Sequence: one command buffer per begin()/submit()
  * cycle (allocated from the compute/upload pool, matching executeImmediately),
  * with a persistent pool of host-visible staging buffers for recordUpload().
- * submit() ends the command buffer, submits once with a fence and waits.
+ * submit() ends the command buffer, submits once with a fence and waits;
+ * submitAsync() exposes the same fence through poll()/wait().
  */
 struct VulkanSequence {
     graphics::vulkan::Graphics *vkg = nullptr;
@@ -26,7 +31,7 @@ struct VulkanSequence {
     vk::CommandPool pool{};
 
     // Host-visible staging buffers for recordUpload(); reused across cycles
-    // after the previous submit() has completed (submit is fence-synchronous).
+    // after the previous submission has completed.
     // A buffer is only reused when its capacity fits, so recorded copies never
     // reference a buffer that is destroyed mid-record.
     std::vector<vkb::GenericBuffer> stagingPool;
@@ -36,7 +41,9 @@ struct VulkanSequence {
     bool fenceReady = false;
 
     vk::CommandBuffer commandBuffer{};
+    vk::CommandBuffer            submittedCommandBuffer{};
     bool recording = false;
+    SequenceStatus               status    = SequenceStatus::Idle;
     std::vector<ComputeShader *> usedShaders;  // dispatched during this cycle
 
     bool ready() const;
@@ -57,6 +64,10 @@ void vulkanSequenceRecordDownload(VulkanSequence *seq, GpuBuffer *src,
 void vulkanSequenceRecordDispatch(VulkanSequence *seq, ComputeShader *shader,
                                   int groupsX, int groupsY, int groupsZ);
 void vulkanSequenceSubmit(VulkanSequence *seq);
+SequenceStatus  vulkanSequenceSubmitAsync(VulkanSequence *seq);
+SequenceStatus  vulkanSequencePoll(VulkanSequence *seq);
+SequenceStatus  vulkanSequenceWait(VulkanSequence *seq);
+SequenceStatus  vulkanSequenceStatus(const VulkanSequence *seq);
 void vulkanSequenceDestroy(VulkanSequence *seq);
 
 }  // namespace eve::gpgpu

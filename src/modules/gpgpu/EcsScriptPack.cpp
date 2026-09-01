@@ -7,6 +7,7 @@
 #include <squirrel.h>
 
 #include <algorithm>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -120,6 +121,11 @@ int entityArrayLen(HSQUIRRELVM vm, HSQOBJECT arr) {
 
 int packScriptEntityFloats(ssq::Object entitiesObj, const std::string &slot,
                            ssq::Object fieldsObj, GpuBuffer *buf) {
+    return packScriptEntityFloatsRange(entitiesObj, slot, fieldsObj, buf, 0, std::numeric_limits<int>::max());
+}
+
+int packScriptEntityFloatsRange(ssq::Object entitiesObj, const std::string &slot, ssq::Object fieldsObj, GpuBuffer *buf,
+                                int firstEntity, int entityCount) {
     if (!buf) throw Exception("packScriptEntityFloats: buffer is null");
     if (slot.empty()) throw Exception("packScriptEntityFloats: empty slot");
 
@@ -131,7 +137,9 @@ int packScriptEntityFloats(ssq::Object entitiesObj, const std::string &slot,
     const std::vector<std::string> fields = collectFieldNames(fieldsObj);
     if (fields.empty()) return 0;
 
-    const int n = entityArrayLen(vm, ents);
+    const int total = entityArrayLen(vm, ents);
+    const int first = std::clamp(firstEntity, 0, total);
+    const int n     = std::clamp(entityCount, 0, total - first);
     if (n <= 0) return 0;
 
     const int floatsPer = int(fields.size());
@@ -140,14 +148,14 @@ int packScriptEntityFloats(ssq::Object entitiesObj, const std::string &slot,
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, ents);
     for (int i = 0; i < n; ++i) {
-        sq_pushinteger(vm, i);
+        sq_pushinteger(vm, first + i);
         if (SQ_FAILED(sq_get(vm, -2))) {
             sq_settop(vm, top);
-            throw Exception("packScriptEntityFloats: bad entity index %d", i);
+            throw Exception("packScriptEntityFloats: bad entity index %d", first + i);
         }
         if (sq_gettype(vm, -1) != OT_INSTANCE) {
             sq_settop(vm, top);
-            throw Exception("packScriptEntityFloats: entity[%d] is not an instance", i);
+            throw Exception("packScriptEntityFloats: entity[%d] is not an instance", first + i);
         }
         HSQOBJECT entity{};
         sq_getstackobj(vm, -1, &entity);
@@ -175,16 +183,21 @@ int packScriptEntityFloats(ssq::Object entitiesObj, const std::string &slot,
     }
     sq_settop(vm, top);
 
-    const int needBytes = n * floatsPer * int(sizeof(float));
+    const int needBytes = (first + n) * floatsPer * int(sizeof(float));
     if (buf->getSize() < needBytes)
         throw Exception("packScriptEntityFloats: buffer too small (%d < %d)", buf->getSize(),
                         needBytes);
-    buf->writeFloat32s(tmp.data(), n * floatsPer, 0);
+    buf->writeFloat32s(tmp.data(), n * floatsPer, first * floatsPer);
     return n;
 }
 
 int unpackScriptEntityFloats(ssq::Object entitiesObj, const std::string &slot,
                              ssq::Object fieldsObj, GpuBuffer *buf, int entityCount) {
+    return unpackScriptEntityFloatsRange(entitiesObj, slot, fieldsObj, buf, 0, entityCount);
+}
+
+int unpackScriptEntityFloatsRange(ssq::Object entitiesObj, const std::string &slot, ssq::Object fieldsObj,
+                                  GpuBuffer *buf, int firstEntity, int entityCount) {
     if (!buf) throw Exception("unpackScriptEntityFloats: buffer is null");
     if (slot.empty()) throw Exception("unpackScriptEntityFloats: empty slot");
     if (entityCount <= 0) return 0;
@@ -198,20 +211,24 @@ int unpackScriptEntityFloats(ssq::Object entitiesObj, const std::string &slot,
     if (fields.empty()) return 0;
 
     const int nArr = entityArrayLen(vm, ents);
-    const int n = std::min(entityCount, nArr);
+    const int first = std::clamp(firstEntity, 0, nArr);
+    const int n     = std::clamp(entityCount, 0, nArr - first);
     if (n <= 0) return 0;
 
     const int floatsPer = int(fields.size());
     std::vector<float> tmp(size_t(n) * size_t(floatsPer), 0.f);
-    buf->readFloat32s(tmp.data(), n * floatsPer, 0);
+    const int          needBytes = (first + n) * floatsPer * int(sizeof(float));
+    if (buf->getSize() < needBytes)
+        throw Exception("unpackScriptEntityFloats: buffer too small (%d < %d)", buf->getSize(), needBytes);
+    buf->readFloat32s(tmp.data(), n * floatsPer, first * floatsPer);
 
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, ents);
     for (int i = 0; i < n; ++i) {
-        sq_pushinteger(vm, i);
+        sq_pushinteger(vm, first + i);
         if (SQ_FAILED(sq_get(vm, -2))) {
             sq_settop(vm, top);
-            throw Exception("unpackScriptEntityFloats: bad entity index %d", i);
+            throw Exception("unpackScriptEntityFloats: bad entity index %d", first + i);
         }
         HSQOBJECT entity{};
         sq_getstackobj(vm, -1, &entity);

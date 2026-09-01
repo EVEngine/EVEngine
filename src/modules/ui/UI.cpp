@@ -1137,6 +1137,70 @@ void UI::setHostPos(float x, float y, float pivotX, float pivotY) {
     m->pivotY = pivotY;
 }
 
+void UI::setHostWorldAnchor(float x, float y, float z) {
+    if (auto host = resolveSelected()) host->get().setWorldAnchor(x, y, z);
+}
+
+void UI::clearHostWorldAnchor() {
+    if (auto host = resolveSelected()) host->get().clearWorldAnchor();
+}
+
+void UI::setHostWorldEdgePolicy(const std::string &policy, float safeMargin) {
+    if (auto host = resolveSelected()) {
+        auto anchor = host->get().worldAnchor();
+        anchor->edgePolicy = policy == "clamp" ? WorldAnchorEdgePolicy::Clamp
+                                                : WorldAnchorEdgePolicy::Hide;
+        anchor->safeMargin = std::max(0.f, safeMargin);
+    }
+}
+
+void UI::setHostWorldDistanceScale(bool enabled, float referenceDistance, float minScale,
+                                   float maxScale) {
+    if (auto host = resolveSelected()) {
+        auto anchor = host->get().worldAnchor();
+        anchor->distanceScale = enabled;
+        anchor->referenceDistance = std::max(referenceDistance, 0.001f);
+        anchor->minScale = std::max(0.01f, std::min(minScale, maxScale));
+        anchor->maxScale = std::max(anchor->minScale, std::max(minScale, maxScale));
+    }
+}
+
+void UI::setHostWorldOverlap(bool enabled, int priority, float padding,
+                             float maxDisplacement) {
+    if (auto host = resolveSelected()) {
+        auto anchor = host->get().worldAnchor();
+        anchor->overlapPolicy = enabled ? WorldAnchorOverlapPolicy::Avoid
+                                        : WorldAnchorOverlapPolicy::Allow;
+        anchor->overlapPriority = priority;
+        anchor->overlapPadding = std::max(0.f, padding);
+        anchor->maxDisplacement = std::max(0.f, maxDisplacement);
+    }
+}
+
+std::string UI::getHostWorldState() const {
+    const auto host = resolveSelected();
+    if (!host) return "disabled";
+    switch (host->get().worldAnchor()->state) {
+    case WorldAnchorState::Visible: return "visible";
+    case WorldAnchorState::BehindCamera: return "behind-camera";
+    case WorldAnchorState::OutsideViewport: return "outside-viewport";
+    case WorldAnchorState::NoCamera: return "no-camera";
+    case WorldAnchorState::Crowded: return "crowded";
+    case WorldAnchorState::Disabled: return "disabled";
+    }
+    return "disabled";
+}
+
+float UI::getHostWorldScreenX() const {
+    if (const auto host = resolveSelected()) return host->get().worldAnchor()->screenX;
+    return 0.f;
+}
+
+float UI::getHostWorldScreenY() const {
+    if (const auto host = resolveSelected()) return host->get().worldAnchor()->screenY;
+    return 0.f;
+}
+
 void UI::setHostAnchor(float x, float y) {
     auto host = resolveSelected();
     if (!host) return;
@@ -2015,6 +2079,14 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setHostMovable", &UI::setHostMovable);
     cls.addFunc("setHostResizable", &UI::setHostResizable);
     cls.addFunc("setHostPos", &UI::setHostPos);
+    cls.addFunc("setHostWorldAnchor", &UI::setHostWorldAnchor);
+    cls.addFunc("clearHostWorldAnchor", &UI::clearHostWorldAnchor);
+    cls.addFunc("setHostWorldEdgePolicy", &UI::setHostWorldEdgePolicy);
+    cls.addFunc("setHostWorldDistanceScale", &UI::setHostWorldDistanceScale);
+    cls.addFunc("setHostWorldOverlap", &UI::setHostWorldOverlap);
+    cls.addFunc("getHostWorldState", &UI::getHostWorldState);
+    cls.addFunc("getHostWorldScreenX", &UI::getHostWorldScreenX);
+    cls.addFunc("getHostWorldScreenY", &UI::getHostWorldScreenY);
     cls.addFunc("setHostAnchor", &UI::setHostAnchor);
     cls.addFunc("setHostSize", &UI::setHostSize);
     cls.addFunc("setHostPercent", &UI::setHostPercent);

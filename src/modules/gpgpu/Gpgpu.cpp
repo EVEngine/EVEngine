@@ -8,7 +8,10 @@
 #include "common/Exception.h"
 #include "common/Module.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/GpuDrivenTypes.h"
 #include "graphics/Graphics.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
 
 #ifdef EVENGINE_WEBGPU
 #include "gpgpu/webgpu/WebGpuGpgpu.h"
@@ -20,6 +23,8 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <functional>
+#include <limits>
+#include <vector>
 
 namespace eve::gpgpu {
 namespace {
@@ -29,6 +34,160 @@ std::string currentGraphicsBackend() {
     if (!gfx) gfx = eve::graphics::Graphics::create();
     if (!gfx) return {};
     return gfx->getBackendName();
+}
+
+eve::graphics::Graphics *currentGraphics() {
+    auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    if (!gfx) gfx = eve::graphics::Graphics::create();
+    return gfx;
+}
+
+std::string residentSubmitStatusName(eve::graphics::GpuResidentSubmitStatus status) {
+    using Status = eve::graphics::GpuResidentSubmitStatus;
+    switch (status) {
+        case Status::Submitted: return "submitted";
+        case Status::Unsupported: return "unsupported";
+        case Status::InvalidArgument: return "invalid_argument";
+        case Status::BackendMismatch: return "backend_mismatch";
+        case Status::ResourceUnavailable: return "resource_unavailable";
+        case Status::CapacityExceeded: return "capacity_exceeded";
+    }
+    return "unsupported";
+}
+
+int scriptGpuDrivenSlot(uint32_t slot) {
+    if (slot == eve::graphics::kInvalidGpuDrivenSlot || slot > static_cast<uint32_t>(std::numeric_limits<int>::max()))
+        return -1;
+    return static_cast<int>(slot);
+}
+
+std::vector<eve::graphics::GpuResidentInstanceBucket> scriptResidentBuckets(ssq::Array buckets) {
+    std::vector<eve::graphics::GpuResidentInstanceBucket> result;
+    result.reserve(buckets.size());
+    for (std::size_t i = 0; i < buckets.size(); ++i) {
+        ssq::Table bucket   = buckets.get<ssq::Table>(i);
+        const int  first    = bucket.get<int>("firstInstance");
+        const int  count    = bucket.get<int>("instanceCount");
+        const int  mesh     = bucket.get<int>("meshId");
+        const int  material = bucket.get<int>("materialId");
+        if (first < 0 || count <= 0 || mesh < 0 || material < 0)
+            throw Exception("Gpgpu.submitResidentInstances: bucket %d has invalid fields", static_cast<int>(i));
+        result.push_back({static_cast<uint32_t>(first), static_cast<uint32_t>(count), static_cast<uint32_t>(mesh),
+                          static_cast<uint32_t>(material)});
+    }
+    return result;
+}
+
+std::string submitResidentInstances(GpuBuffer *buffer, ssq::Array buckets, int instanceCount, int offsetBytes) {
+    if (!buffer || instanceCount <= 0 || offsetBytes < 0 ||
+        offsetBytes % static_cast<int>(eve::kGpuResidentStorageOffsetAlignment) != 0)
+        return "invalid_argument";
+    auto *gfx = currentGraphics();
+    if (!gfx) return "resource_unavailable";
+    const auto                              nativeBuckets = scriptResidentBuckets(buckets);
+    eve::graphics::GpuResidentInstanceBatch batch;
+    batch.buffer             = buffer->residentView();
+    batch.buffer.offsetBytes = static_cast<uint64_t>(offsetBytes);
+    batch.buffer.strideBytes = sizeof(eve::graphics::GpuInstance);
+    batch.buckets            = nativeBuckets.data();
+    batch.bucketCount        = static_cast<uint32_t>(nativeBuckets.size());
+    batch.instanceCount      = static_cast<uint32_t>(instanceCount);
+    return residentSubmitStatusName(gfx->gpuDrivenSubmitResident(batch));
+}
+
+void writeGpuDrivenInstance(GpuBuffer *buffer, int instanceIndex, ssq::Array model, int meshId, int materialId,
+                            int flags, int lodGroupId) {
+    if (!buffer || instanceIndex < 0 || model.size() != 16 || meshId < 0 || materialId < 0 || flags < 0 ||
+        lodGroupId < -1)
+        throw Exception("Gpgpu.writeGpuDrivenInstance: invalid argument");
+    eve::graphics::GpuInstance instance;
+    float                     *matrix = &instance.model[0][0];
+    for (std::size_t i = 0; i < 16; ++i) matrix[i] = model.get<float>(i);
+    instance.meshId       = static_cast<uint32_t>(meshId);
+    instance.materialId   = static_cast<uint32_t>(materialId);
+    instance.flags        = static_cast<uint32_t>(flags);
+    instance.lodGroupId   = lodGroupId < 0 ? eve::graphics::kInvalidGpuDrivenSlot : static_cast<uint32_t>(lodGroupId);
+    const uint64_t offset = static_cast<uint64_t>(instanceIndex) * sizeof(instance);
+    if (offset + sizeof(instance) > static_cast<uint64_t>(buffer->getSize()))
+        throw Exception("Gpgpu.writeGpuDrivenInstance: instance exceeds buffer capacity");
+    buffer->uploadBytes(&instance, sizeof(instance), offset);
+}
+
+void setGpuDrivenEnabledScript(Gpgpu *gpgpu, bool enabled) {
+    (void)gpgpu;
+    if (auto *gfx = currentGraphics()) gfx->gpuDrivenSetEnabled(enabled);
+}
+
+bool isGpuDrivenEnabledScript(Gpgpu *gpgpu) {
+    (void)gpgpu;
+    auto *gfx = currentGraphics();
+    return gfx && gfx->gpuDrivenEnabled();
+}
+
+int gpuDrivenMeshRecordScript(Gpgpu *gpgpu, eve::graphics::Mesh *mesh) {
+    (void)gpgpu;
+    auto *gfx = currentGraphics();
+    return scriptGpuDrivenSlot(gfx ? gfx->gpuDrivenMeshRecord(mesh) : eve::graphics::kInvalidGpuDrivenSlot);
+}
+
+int gpuDrivenMaterialRecordScript(Gpgpu *gpgpu, eve::graphics::Material *material) {
+    (void)gpgpu;
+    auto *gfx = currentGraphics();
+    return scriptGpuDrivenSlot(gfx ? gfx->gpuDrivenMaterialRecord(material) : eve::graphics::kInvalidGpuDrivenSlot);
+}
+
+bool gpuDrivenMaterialUsableScript(Gpgpu *gpgpu, eve::graphics::Material *material) {
+    (void)gpgpu;
+    auto *gfx = currentGraphics();
+    return gfx && gfx->gpuDrivenMaterialUsable(material);
+}
+
+int getGpuDrivenInstanceStrideScript(Gpgpu *gpgpu) {
+    (void)gpgpu;
+    return sizeof(eve::graphics::GpuInstance);
+}
+
+int getGpuResidentOffsetAlignmentScript(Gpgpu *gpgpu) {
+    (void)gpgpu;
+    return eve::kGpuResidentStorageOffsetAlignment;
+}
+
+std::string submitSequenceAsyncScript(Sequence *sequence) {
+    if (!sequence) return "failed";
+    (void)sequence->submitAsync();
+    return sequence->getStatusName();
+}
+
+std::string pollSequenceScript(Sequence *sequence) {
+    if (!sequence) return "failed";
+    (void)sequence->poll();
+    return sequence->getStatusName();
+}
+
+std::string waitSequenceScript(Sequence *sequence) {
+    if (!sequence) return "failed";
+    (void)sequence->wait();
+    return sequence->getStatusName();
+}
+
+void setShaderScript(ShaderSystem *system, ComputeShader *shader) {
+    if (system) system->setShader(shader, false);
+}
+
+void dispatchShaderSystemScript(ShaderSystem *system, int entityCount, float deltaTime) {
+    if (system) system->dispatch(entityCount, deltaTime);
+}
+
+void writeGpuDrivenInstanceScript(Gpgpu *gpgpu, GpuBuffer *buffer, int instanceIndex, ssq::Array model, int meshId,
+                                  int materialId, int flags, int lodGroupId) {
+    (void)gpgpu;
+    writeGpuDrivenInstance(buffer, instanceIndex, model, meshId, materialId, flags, lodGroupId);
+}
+
+std::string submitResidentInstancesScript(Gpgpu *gpgpu, GpuBuffer *buffer, ssq::Array buckets, int instanceCount,
+                                          int offsetBytes) {
+    (void)gpgpu;
+    return submitResidentInstances(buffer, buckets, instanceCount, offsetBytes);
 }
 
 }  // namespace
@@ -158,6 +317,10 @@ void Gpgpu::expose(ssq::Table &table) {
     seq.addFunc("recordDownload", &Sequence::recordDownload);
     seq.addFunc("recordDispatch", &Sequence::recordDispatch);
     seq.addFunc("submit", &Sequence::submit);
+    seq.addFunc("submitAsync", submitSequenceAsyncScript);
+    seq.addFunc("poll", pollSequenceScript);
+    seq.addFunc("wait", waitSequenceScript);
+    seq.addFunc("getStatus", &Sequence::getStatusName);
 
     // Native ECS↔GPU helper (used by eve.ShaderSystem script class).
     auto ecsSys = table.addClass<ShaderSystem>(
@@ -167,25 +330,27 @@ void Gpgpu::expose(ssq::Table &table) {
     ecsSys.addFunc("setGpgpu", &ShaderSystem::setGpgpu);
     ecsSys.addFunc("getGpgpu", &ShaderSystem::getGpgpu);
     ecsSys.addFunc("setShaderSource", &ShaderSystem::setShaderSource);
-    ecsSys.addFunc("setShader", std::function<void(ShaderSystem *, ComputeShader *)>(
-                                    [](ShaderSystem *self, ComputeShader *s) {
-                                        if (self) self->setShader(s, false);
-                                    }));
+    ecsSys.addFunc("setShader", setShaderScript);
     ecsSys.addFunc("getShader", &ShaderSystem::getShader);
     ecsSys.addFunc("setLocalSize", &ShaderSystem::setLocalSize);
     ecsSys.addFunc("getLocalSize", &ShaderSystem::getLocalSize);
     ecsSys.addFunc("ensureBuffer", &ShaderSystem::ensureBuffer);
     ecsSys.addFunc("getBuffer", &ShaderSystem::getBuffer);
+    ecsSys.addFunc("attachBuffer", &ShaderSystem::attachBuffer);
     ecsSys.addFunc("setFloat", &ShaderSystem::setFloat);
     ecsSys.addFunc("getFloat", &ShaderSystem::getFloat);
-    ecsSys.addFunc("dispatch", std::function<void(ShaderSystem *, int, float)>(
-                                   [](ShaderSystem *self, int n, float dt) {
-                                       if (self) self->dispatch(n, dt);
-                                   }));
+    ecsSys.addFunc("getUploadCount", &ShaderSystem::getUploadCount);
+    ecsSys.addFunc("getDownloadCount", &ShaderSystem::getDownloadCount);
+    ecsSys.addFunc("getDispatchCount", &ShaderSystem::getDispatchCount);
+    ecsSys.addFunc("resetStatistics", &ShaderSystem::resetStatistics);
+    ecsSys.addFunc("dispatch", dispatchShaderSystemScript);
+    ecsSys.addFunc("recordDispatch", &ShaderSystem::recordDispatch);
     ecsSys.addFunc("clearBuffers", &ShaderSystem::clearBuffers);
 
     table.addFunc("packEcsFloats", packScriptEntityFloats);
+    table.addFunc("packEcsFloatsRange", packScriptEntityFloatsRange);
     table.addFunc("unpackEcsFloats", unpackScriptEntityFloats);
+    table.addFunc("unpackEcsFloatsRange", unpackScriptEntityFloatsRange);
 }
 
 void Gpgpu::expose(ssq::Class &cls) {
@@ -197,6 +362,15 @@ void Gpgpu::expose(ssq::Class &cls) {
     cls.addFunc("newBuffer", &Gpgpu::newBuffer);
     cls.addFunc("newSequence", &Gpgpu::newSequence);
     cls.addFunc("dispatch", &Gpgpu::dispatch);
+    cls.addFunc("setGpuDrivenEnabled", setGpuDrivenEnabledScript);
+    cls.addFunc("isGpuDrivenEnabled", isGpuDrivenEnabledScript);
+    cls.addFunc("gpuDrivenMeshRecord", gpuDrivenMeshRecordScript);
+    cls.addFunc("gpuDrivenMaterialRecord", gpuDrivenMaterialRecordScript);
+    cls.addFunc("gpuDrivenMaterialUsable", gpuDrivenMaterialUsableScript);
+    cls.addFunc("getGpuDrivenInstanceStride", getGpuDrivenInstanceStrideScript);
+    cls.addFunc("getGpuResidentOffsetAlignment", getGpuResidentOffsetAlignmentScript);
+    cls.addFunc("writeGpuDrivenInstance", writeGpuDrivenInstanceScript);
+    cls.addFunc("submitResidentInstances", submitResidentInstancesScript);
 }
 
 }  // namespace eve::gpgpu

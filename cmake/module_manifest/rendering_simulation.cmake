@@ -14,6 +14,10 @@ eve_declare_module(NAME asset_graphics LAYER 4
                    DEPS asset graphics
                    GROUP minimal 2d 3d web)
 
+eve_declare_module(NAME pixelworld_graphics LAYER 4 SCRIPT PixelWorldGraphics SLOT pixelworldGraphics
+                   DEPS graphics pixelworld
+                   GROUP 2d 3d web)
+
 eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
                    DEPS platform_event graphics scene
                    GROUP minimal 2d 3d web)
@@ -48,6 +52,9 @@ eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
                    DEPS action attributes effects transaction definitions
                    GROUP 2d 3d)
 # L5 -- vehicle adapter
+eve_declare_module(NAME pixelworld_physics LAYER 5
+                   DEPS pixelworld physics
+                   GROUP 2d)
 # Optional editing satellite. Runtime-only profiles can enable physics without
 # pulling editing/editor contracts or AssetDB adapters.
 eve_declare_module(NAME physics_editing LAYER 5

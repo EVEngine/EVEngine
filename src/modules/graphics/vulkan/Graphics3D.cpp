@@ -60,6 +60,7 @@ void Graphics::begin3DFrame() {
     ASSERT(initialized);
     if (!initialized) throw Exception("begin3DFrame: graphics not initialized");
     if (isCanvasActive()) throw Exception("begin3DFrame: cannot start 3D while a Canvas is active");
+    createMesh3DPipeline();
     if (swapchainPassOpen) {
         // Previous eve_render opened 3D then threw before present().
         try {
@@ -232,6 +233,7 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     ASSERT(initialized);
     if (!initialized) throw Exception("begin3DFrameToCanvas: graphics not initialized");
     if (!canvas) throw Exception("begin3DFrameToCanvas: null canvas");
+    createMesh3DPipeline();
     auto *oc = dynamic_cast<OffscreenCanvas *>(canvas);
     if (!oc) throw Exception("begin3DFrameToCanvas: not an offscreen canvas");
     if (offscreen3DPassOpen) throw Exception("begin3DFrameToCanvas: already open");

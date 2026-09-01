@@ -52,7 +52,7 @@ public:
     // Sets superseded by newer flushes; still referenced by pending command
     // buffers until the owning Sequence submits and waits.
     std::vector<vk::DescriptorSet> pendingSets_;
-    bool deferSetFree_ = false;
+    uint32_t                       activeSequenceCount_ = 0;
 };
 
 }  // namespace eve::gpgpu

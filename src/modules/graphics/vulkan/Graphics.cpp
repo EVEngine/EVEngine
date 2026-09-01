@@ -23,6 +23,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <functional>
+#include <future>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -30,6 +32,7 @@
 #include <unistd.h>
 #endif
 
+#include "common/BootWarmup.h"
 #include "common/CrashLog.h"
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
@@ -53,13 +56,191 @@
 
 namespace eve::graphics::vulkan {
 
+namespace {
+
+bool wantVulkanValidation() {
+#if defined(EVENGINE_IOS)
+    return false;
+#else
+    const char *vkVal = std::getenv("EVENGINE_VULKAN_VALIDATION");
+    return vkVal && vkVal[0] != '\0' && vkVal[0] != '0';
+#endif
+}
+
+void disableImplicitLayersIfSafe() {
+    if (wantVulkanValidation()) return;
+    if (const char *existing = std::getenv("VK_LOADER_LAYERS_DISABLE")) {
+        if (existing[0] != '\0') return;
+    }
+    if (const char *layers = std::getenv("VK_INSTANCE_LAYERS")) {
+        if (layers[0] != '\0') return;
+    }
+#if defined(_WIN32)
+    _putenv_s("VK_LOADER_LAYERS_DISABLE", "~implicit~");
+#else
+    setenv("VK_LOADER_LAYERS_DISABLE", "~implicit~", 0);
+#endif
+}
+
+bool extensionAvailable(const std::vector<vk::ExtensionProperties> &props, const char *name) {
+    for (const auto &p : props) {
+        if (std::strcmp(p.extensionName, name) == 0) return true;
+    }
+    return false;
+}
+
+void addIfAvailable(std::vector<const char *> &exts, const std::vector<vk::ExtensionProperties> &props,
+                    const char *name) {
+    if (extensionAvailable(props, name)) exts.push_back(name);
+}
+
+std::vector<const char *> collectFastInstanceExtensions(const std::vector<vk::ExtensionProperties> &props,
+                                                        vk::InstanceCreateFlags *flagsOut) {
+    std::vector<const char *> exts;
+    addIfAvailable(exts, props, "VK_KHR_surface");
+#if defined(_WIN32)
+    addIfAvailable(exts, props, "VK_KHR_win32_surface");
+#elif defined(__ANDROID__)
+    addIfAvailable(exts, props, "VK_KHR_android_surface");
+#elif defined(__APPLE__)
+    addIfAvailable(exts, props, "VK_EXT_metal_surface");
+    if (extensionAvailable(props, "VK_KHR_portability_enumeration")) {
+        exts.push_back("VK_KHR_portability_enumeration");
+        if (flagsOut) *flagsOut |= vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
+    }
+#else
+    addIfAvailable(exts, props, "VK_KHR_xcb_surface");
+    addIfAvailable(exts, props, "VK_KHR_xlib_surface");
+    addIfAvailable(exts, props, "VK_KHR_wayland_surface");
+#endif
+    return exts;
+}
+
+void initVulkanDispatcher() {
+#if defined(EVENGINE_MACOSX)
+    if (PFN_vkGetInstanceProcAddr sdlGpa =
+            reinterpret_cast<PFN_vkGetInstanceProcAddr>(SDL_Vulkan_GetVkGetInstanceProcAddr())) {
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(sdlGpa);
+        vkb::InstanceBuilder::loaded = true;
+        return;
+    }
+#endif
+    if (!vkb::InstanceBuilder::loaded) {
+        vkb::InstanceBuilder::loadDefault();
+        vkb::InstanceBuilder::loaded = true;
+    }
+}
+
+vkb::Instance createInstanceFast() {
+    initVulkanDispatcher();
+    disableImplicitLayersIfSafe();
+    // Enumerate instance extensions only. vk-bootstrap's SystemInfo::query() also
+    // walks every implicit layer (and each layer's extensions), which is the
+    // bulk of "instance + surface" on a Windows SDK install.
+    const auto props = vk::enumerateInstanceExtensionProperties();
+    vk::InstanceCreateFlags flags{};
+    const auto exts = collectFastInstanceExtensions(props, &flags);
+
+    if (wantVulkanValidation()) {
+        vkb::InstanceBuilder builder;
+        builder.require_api_version(1, 0);
+        builder.request_validation_layers();
+        builder.use_default_debug_messenger();
+        for (auto *e : exts) builder.enable_extension(e);
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+        builder.set_headless(true);
+        builder.add_flags(flags);
+#endif
+        std::printf("EVEngine: Vulkan validation layers enabled (EVENGINE_VULKAN_VALIDATION)\n");
+        return builder.build();
+    }
+
+    vk::ApplicationInfo app{};
+    app.pApplicationName = "EVEngine";
+    app.pEngineName = "EVEngine";
+    app.apiVersion = VK_MAKE_VERSION(1, 0, 0);
+
+    vk::InstanceCreateInfo ci{};
+    ci.flags = flags;
+    ci.pApplicationInfo = &app;
+    ci.enabledExtensionCount = static_cast<uint32_t>(exts.size());
+    ci.ppEnabledExtensionNames = exts.data();
+
+    vkb::Instance inst;
+    inst.instance = vk::createInstance(ci);
+    VULKAN_HPP_DEFAULT_DISPATCHER.init(inst.instance);
+    return inst;
+}
+
+struct InstanceWarmup {
+    std::mutex mu;
+    std::future<vkb::Instance> future;
+    bool started = false;
+    bool consumed = false;
+};
+
+InstanceWarmup &instanceWarmup() {
+    static InstanceWarmup state;
+    return state;
+}
+
+void startVulkanInstanceWarmupImpl() {
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+    // MoltenVK / SDL loader affinity is main-thread on Apple.
+    return;
+#else
+    auto &w = instanceWarmup();
+    std::lock_guard<std::mutex> lock(w.mu);
+    if (w.started) return;
+    w.started = true;
+    w.future = std::async(std::launch::async, [] {
+        StartupStage stage("  vulkan: instance (warmup thread)");
+        return createInstanceFast();
+    });
+#endif
+}
+
+vkb::Instance consumeWarmedInstance() {
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+    StartupStage stage("  vulkan: instance");
+    return createInstanceFast();
+#else
+    startVulkanInstanceWarmupImpl();
+    std::future<vkb::Instance> fut;
+    {
+        auto &w = instanceWarmup();
+        std::lock_guard<std::mutex> lock(w.mu);
+        if (w.consumed) {
+            throw Exception("Vulkan instance warmup already consumed");
+        }
+        w.consumed = true;
+        fut = std::move(w.future);
+    }
+    StartupStage waitStage("  vulkan: wait instance warmup");
+    return fut.get();
+#endif
+}
+
+struct RegisterVulkanWarmup {
+    RegisterVulkanWarmup() {
+        eve::boot::registerVulkanInstanceWarmup(&startVulkanInstanceWarmupImpl);
+    }
+} gRegisterVulkanWarmup;
+
+}  // namespace
+
 // --- Backend lifecycle and frame orchestration --------------------------------
 
 std::string Graphics::getBackendName() const { return "vulkan"; }
 
+Graphics::Graphics() { eve::boot::startVulkanInstanceWarmup(); }
+
 Graphics::~Graphics() {
     detachGraphicsArtifactProvider(this);
-    if (!initialized) return;
+    if (!initialized) {
+        if (static_cast<VkInstance>(inst.instance) != VK_NULL_HANDLE) inst.destroy();
+        return;
+    }
     device->waitIdle();
     if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
     gpuQueryPool_ = nullptr;
@@ -174,60 +355,18 @@ Graphics::~Graphics() {
 
 void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames, void *nativeWindow,
                                        vk::SurfaceKHR *surfaceOut) {
-#if defined(EVENGINE_MACOSX)
-    // Build the instance through the SAME Vulkan loader SDL loaded (the one
-    // bundled by the SDK). vk-bootstrap would otherwise dlopen its own copy
-    // (vulkan.hpp DynamicLoader or dlsym in load order) and
-    // SDL_Vulkan_CreateSurface then cannot resolve the surface functions on
-    // the vkb-created instance (its cached vkGetInstanceProcAddr belongs to a
-    // different loader -> "extensions are not enabled").
-    if (PFN_vkGetInstanceProcAddr sdlGpa =
-            reinterpret_cast<PFN_vkGetInstanceProcAddr>(SDL_Vulkan_GetVkGetInstanceProcAddr())) {
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(sdlGpa);
-        vkb::InstanceBuilder::loaded = true;
-    }
-#endif
-    vkb::InstanceBuilder builder;
-    builder.require_api_version(1, 0);
-#if !defined(EVENGINE_IOS)
-    // Khronos validation on every draw / descriptor update is typically 5–20×
-    // slower. Opt in with EVENGINE_VULKAN_VALIDATION=1 (any value except "0").
-    const char *vkVal = std::getenv("EVENGINE_VULKAN_VALIDATION");
-    const bool wantValidation = vkVal && vkVal[0] != '\0' && vkVal[0] != '0';
-    if (wantValidation) {
-        builder.request_validation_layers();
-        builder.use_default_debug_messenger();
-        std::printf("EVEngine: Vulkan validation layers enabled (EVENGINE_VULKAN_VALIDATION)\n");
-    }
-#endif
-    for (auto *extName : extNames) builder.enable_extension(extName);
-    // No window / no surface: create a truly headless instance so the device
-    // selector does not demand a presentable queue family or a VkSurfaceKHR.
-    if (nativeWindow == nullptr) builder.set_headless(true);
-#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
-    // SDL already supplies surface extensions; avoid duplicating them via
-    // InstanceBuilder's non-headless window path, and enable MoltenVK portability.
-    builder.set_headless(true);
-    // Portability enumeration comes from the Khronos loader. iOS links MoltenVK
-    // directly, so the extension is absent there and asking for it aborts
-    // instance creation.
-    if (vkb::SystemInfo::query().is_extension_available(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)) {
-        builder.enable_extension(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-        builder.add_flags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR);
-    }
-#endif
-    {
-        StartupStage stage("  vulkan: instance + surface");
-        inst = builder.build();
+    (void)extNames;
+    if (static_cast<VkInstance>(inst.instance) == VK_NULL_HANDLE)
+        inst = consumeWarmedInstance();
 
-        if (nativeWindow != nullptr && surfaceOut != nullptr) {
-            auto *window = static_cast<SDL_Window *>(nativeWindow);
-            VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
-            if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
-                throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
-            surface = rawSurface;
-            *surfaceOut = rawSurface;
-        }
+    if (nativeWindow != nullptr && surfaceOut != nullptr) {
+        StartupStage stage("  vulkan: surface");
+        auto *window = static_cast<SDL_Window *>(nativeWindow);
+        VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
+        if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
+            throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
+        surface = rawSurface;
+        *surfaceOut = rawSurface;
     }
 
     {
@@ -376,9 +515,6 @@ void Graphics::initHeadless(int width, int height) {
         createVoxelRectPipeline();
     }
 
-    // Must be set before createShadowResources(): it clears the shadow cascade
-    // layers by calling beginShadowPass()/endShadowPass(), and beginShadowPass()
-    // asserts `initialized` is already true.
     initialized = true;
     {
         StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
@@ -461,9 +597,6 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: voxel pipeline");
         createVoxelRectPipeline();
     }
-    // Must be set before createShadowResources(): it clears the shadow cascade
-    // layers by calling beginShadowPass()/endShadowPass(), and beginShadowPass()
-    // asserts `initialized` is already true.
     initialized = true;
     {
         StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");

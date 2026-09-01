@@ -129,3 +129,22 @@ TEST_CASE("rpg.vitals.eventsViaFacade") {
     CHECK(sawDeath);
     actor->release();
 }
+
+TEST_CASE("rpg.progression.checkpointRestoreIsValidatedAndAtomic") {
+    auto *actor = RPGActor::createActor();
+    REQUIRE(actor != nullptr);
+    actor->setXpToNext(50.0);
+
+    auto restored = actor->restoreProgression(4, 12.0, 86.4);
+    REQUIRE(restored.ok());
+    CHECK_EQ(actor->getLevel(), 4);
+    CHECK_EQ(actor->getXp(), 12.0);
+    CHECK_EQ(actor->getXpToNext(), 86.4);
+
+    auto invalid = actor->restoreProgression(0, 100.0, 10.0);
+    CHECK(!invalid.ok());
+    CHECK_EQ(actor->getLevel(), 4);
+    CHECK_EQ(actor->getXp(), 12.0);
+    CHECK_EQ(actor->getXpToNext(), 86.4);
+    actor->release();
+}

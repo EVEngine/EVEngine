@@ -74,12 +74,93 @@ int Battle::getWinnerSide() const { return winner_; }
 int Battle::getTurn() const { return turn_; }
 
 void Battle::setAction(RPGActor *actor, const std::string &skillId, RPGActor *target) {
-    if (!actor || finished_) return;
-    for (auto &p : participants_) {
-        if (p.actor != actor) continue;
-        roundActions_.push_back(PendingAction{actor, skillId, target, 0.0});
-        return;
+    setActionChecked(actor, skillId, target).ignore();
+}
+
+RPGActor *Battle::lowestHealthTarget(int side, bool sameSide) const {
+    RPGActor *selected = nullptr;
+    double selectedRatio = 0.0;
+    for (const auto &participant : participants_) {
+        if (isDead(participant) || ((participant.side == side) != sameSide)) continue;
+        const double maximum = VitalsSystem::getMax(participant.actor, "hp");
+        if (maximum <= 0.0) continue;
+        const double ratio = VitalsSystem::getCurrent(participant.actor, "hp") / maximum;
+        if (!selected || ratio < selectedRatio) {
+            selected = participant.actor;
+            selectedRatio = ratio;
+        }
     }
+    return selected;
+}
+
+eve::Result<void> Battle::setActionChecked(RPGActor *actor, const std::string &skillId,
+                                           RPGActor *target) {
+    const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "rpg.battle.action"));
+    };
+    if (!actor) return reject(eve::DiagnosticCode::InvalidArgument, "actor must not be null", "actor");
+    if (finished_ || started_)
+        return reject(eve::DiagnosticCode::Conflict,
+                      "actions can only be queued before a non-finished round", "battle");
+    const auto participant = std::find_if(participants_.begin(), participants_.end(),
+                                          [actor](const Participant &value) {
+                                              return value.actor == actor;
+                                          });
+    if (participant == participants_.end())
+        return reject(eve::DiagnosticCode::NotFound, "actor is not a battle participant", "actor");
+    if (isDead(*participant))
+        return reject(eve::DiagnosticCode::Conflict, "dead actors cannot queue actions", "actor");
+    if (std::any_of(roundActions_.begin(), roundActions_.end(), [actor](const PendingAction &value) {
+            return value.actor == actor;
+        }))
+        return reject(eve::DiagnosticCode::Conflict,
+                      "actor already has an action queued for this round", "actor");
+    if (!skillId.empty() && !actor->knowsSkill(skillId))
+        return reject(eve::DiagnosticCode::NotFound, "actor does not know the requested skill", "skillId");
+    if (target) {
+        const auto targetParticipant = std::find_if(
+            participants_.begin(), participants_.end(), [target](const Participant &value) {
+                return value.actor == target;
+            });
+        if (targetParticipant == participants_.end())
+            return reject(eve::DiagnosticCode::NotFound,
+                          "target is not a battle participant", "target");
+        if (isDead(*targetParticipant))
+            return reject(eve::DiagnosticCode::Conflict, "target is not alive", "target");
+        const std::string targetType = skillId.empty() ? "enemySingle"
+                                                       : SkillSystem::getTargetType(actor, skillId);
+        if (targetType == "self" && target != actor)
+            return reject(eve::DiagnosticCode::InvalidArgument,
+                          "self-target skill must target its caster", "target");
+        if (targetType == "allySingle" && targetParticipant->side != participant->side)
+            return reject(eve::DiagnosticCode::InvalidArgument,
+                          "ally-target action must target the caster side", "target");
+        if (targetType != "self" && targetType != "allySingle" &&
+            targetParticipant->side == participant->side)
+            return reject(eve::DiagnosticCode::InvalidArgument,
+                          "enemy-target action must target another side", "target");
+    }
+    roundActions_.push_back(PendingAction{actor, skillId, target, 0.0});
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> Battle::setActionByPolicyChecked(RPGActor *actor,
+                                                    const std::string &skillId,
+                                                    BattleTargetPolicy policy) {
+    if (policy == BattleTargetPolicy::Auto) return setActionChecked(actor, skillId, nullptr);
+    const int side = sideOf(actor);
+    RPGActor *target = nullptr;
+    if (policy == BattleTargetPolicy::Self) target = actor;
+    else if (policy == BattleTargetPolicy::LowestHealthAlly)
+        target = lowestHealthTarget(side, true);
+    else if (policy == BattleTargetPolicy::LowestHealthEnemy)
+        target = lowestHealthTarget(side, false);
+    if (!target)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "target policy found no living participant", "policy", {},
+            "rpg.battle.action-policy"));
+    return setActionChecked(actor, skillId, target);
 }
 
 void Battle::autoEnemyActions() {
@@ -149,6 +230,8 @@ bool Battle::executeNextAction() {
             target = randomOpponent(sideOf(pa.actor));
         } else if (SkillSystem::getTargetType(pa.actor, pa.skillId) == "self") {
             target = pa.actor;
+        } else if (SkillSystem::getTargetType(pa.actor, pa.skillId) == "allySingle") {
+            target = lowestHealthTarget(sideOf(pa.actor), true);
         } else {
             target = randomOpponent(sideOf(pa.actor));
         }
@@ -188,6 +271,8 @@ void Battle::execute(PendingAction &pa, unsigned &seedCounter) {
     if (!target) {
         if (targetType == "self") {
             target = pa.actor;
+        } else if (targetType == "allySingle") {
+            target = lowestHealthTarget(sideOf(pa.actor), true);
         } else {
             target = randomOpponent(sideOf(pa.actor));
         }
@@ -198,7 +283,8 @@ void Battle::execute(PendingAction &pa, unsigned &seedCounter) {
 
     // 目标已死：换一个存活对手
     if (targetType != "self" && VitalsSystem::isDead(target, "hp")) {
-        target = randomOpponent(sideOf(pa.actor));
+        target = targetType == "allySingle" ? lowestHealthTarget(sideOf(pa.actor), true)
+                                             : randomOpponent(sideOf(pa.actor));
         if (!target) return;
     }
 

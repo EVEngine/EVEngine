@@ -57,6 +57,24 @@ gfx.renderSprites();
 `setClipPlanes(near, far)` 配置两种投影共用的近、远裁剪面，并要求
 `0 < near < far`。
 
+### 实时编辑与替换 Shader
+
+开发工具可保留已有 `Shader` 对象及其材质引用，仅替换内部后端资源：
+
+```squirrel
+local result = gfx.replaceShaderFromGlsl(shader, vertexSource, fragmentSource);
+// WebGPU 后端使用：gfx.replaceShaderFromWgsl(shader, vertexSource, fragmentSource)
+if (!result.ok) {
+    print(result.diagnostics);
+}
+```
+
+两个接口都返回统一的结构化 `Result`，调用方必须检查 `ok` 或显式忽略结果。编译或
+管线创建失败时，原 `Shader` facade、已声明 uniform 以及上一份可用管线保持不变，
+因此编辑器可继续显示最后一次成功的效果。空的 vertex source 表示沿用引擎默认顶点
+阶段；调用必须发生在 Graphics 所属的渲染线程。GLSL 是 Vulkan 开发路径，WGSL 是
+WebGPU 开发路径；当前后端不支持对应源码格式时会返回 `Unsupported` 和诊断信息。
+
 ### 纹理过滤（mipmap / 各向异性 / LOD）
 
 默认 `newTexture` 仍为线性过滤、单级 mip（兼容旧行为）。需要三线性与各向异性时：
@@ -166,6 +184,12 @@ Agent 可直接决定是否继续纠正；无效期望会在写入前拒绝。�
 重新上传到由当前 Graphics 后端创建的已有纹理；纹理对象保持不变，可继续被材质引用。
 该方法必须在渲染线程调用，后端所有权、格式或尺寸不匹配时抛出异常。
 
+C++ 渲染适配器可调用 `updateTextureRegion(texture,x,y,width,height,rgba,bytesPerRow)`
+更新单 mip RGBA8 纹理的子矩形。Vulkan 使用 staging buffer 和原图 `copyBufferToImage`，
+WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样器或描述符。
+多个离散矩形应使用 `updateTextureRegions(texture, regions)`：它在任何写入前验证整个
+批次；Vulkan 将所有 region 紧密打包进一个 staging buffer 并只提交一次。
+
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `bakeMeshMorph()`、`newMeshFromArrays()`、`updateMeshVertices()`、`clear()`、`clearMorphWeights()`、`declareFloat()`、`declareMatrix()`、`declareVec2()`、`declareVec3()`、`declareVec4()`
@@ -174,7 +198,7 @@ Agent 可直接决定是否继续纠正；无效期望会在写入前拒绝。�
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
 - `getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newHairShader()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
-- `newShaderFromSpvFile()`、`newTexture()`、`newTextureWithSampler()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`replaceShaderFromGlsl()`、`replaceShaderFromWgsl()`、`newTexture()`、`newTextureWithSampler()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setCloudShadows()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`getMesh()`、`setMeshLod()`、`clearMeshLod()`、`getMeshLodCount()`、`getMeshLodLevelAtDistance()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setHeightTexture()`、`setPosition()`、`setRadius()`

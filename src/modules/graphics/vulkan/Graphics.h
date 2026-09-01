@@ -2,11 +2,17 @@
 #include <array>
 #include <atomic>
 #include <cstdint>
-#include <glm/glm.hpp>
+#include <glm/ext/vector_uint4_sized.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <memory>
 #include <optional>
 #include <unordered_map>
 #include <vector>
+#include "common/Capability.h"
+#include "common/GpuTimer.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/Graphics.h"
@@ -15,13 +21,11 @@
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
+#include "graphics/vulkan/ComputePass.h"
+#include "graphics/vulkan/FrameArena.h"
+#include "graphics/vulkan/GpuDriven.h"
 #include "vkbuilder.hpp"
 #include "vkbuilder/framegraph.hpp"
-#include "graphics/vulkan/GpuDriven.h"
-#include "graphics/vulkan/FrameArena.h"
-#include "graphics/vulkan/ComputePass.h"
-#include "common/Capability.h"
-#include "common/GpuTimer.h"
 
 namespace eve::graphics::vulkan {
 
@@ -247,6 +251,8 @@ public:
     // canvas composite overloads below.
     using eve::graphics::Graphics::draw;
 
+    /** @brief Starts asynchronous VkInstance creation (overlaps later window init). */
+    Graphics();
     ~Graphics() override;
 
     // ---- GPU frame timing (eve::service::IGpuTimer) ----------------------
@@ -322,6 +328,7 @@ public:
     uint32_t gpuDrivenReflectionProbeSlot(Texture *cubemap) override;
     /** @compatibility Implements the established GPU-driven boolean submission facade. */
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    GpuResidentSubmitStatus gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) override;
     /** @lifetime Returned texture is borrowed from the active scene targets. */
     Texture *getSceneLinearDepthTexture() override;
 
@@ -404,6 +411,11 @@ public:
     bool releaseTexture(Texture *texture) override;
     bool updateTexture(Texture *texture, int width, int height,
                        const uint8_t *rgba) override;
+    eve::Result<void> updateTextureRegion(Texture *texture, int x, int y, int width,
+                                          int height, std::span<const std::uint8_t> rgba,
+                                          std::size_t bytesPerRow = 0) override;
+    eve::Result<void> updateTextureRegions(
+        Texture *texture, std::span<const TextureRegionUpload> regions) override;
     bool replaceTexturePixels(Texture *tex, image::ImageData *data);
     bool replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_t *rgba);
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) override;
@@ -448,6 +460,15 @@ public:
                                   const std::string &fragWgsl) override;
     Shader *newShaderFromWgsl(const std::string &vertWgsl,
                               const std::string &fragWgsl) override;
+    [[nodiscard]] Result<void> replaceShaderFromSpv(
+        Shader &shader, const std::vector<uint32_t> &vertSpv,
+        const std::vector<uint32_t> &fragSpv) override;
+    [[nodiscard]] Result<void> replaceShaderFromWgsl(
+        Shader &shader, const std::string &vertWgsl,
+        const std::string &fragWgsl) override;
+    [[nodiscard]] Result<void> replaceShaderFromGlsl(
+        Shader &shader, const std::string &vertGlsl,
+        const std::string &fragGlsl) override;
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;

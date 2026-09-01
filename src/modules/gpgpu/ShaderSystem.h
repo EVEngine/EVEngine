@@ -10,6 +10,7 @@ namespace eve::gpgpu {
 
 class Gpgpu;
 class GpuBuffer;
+class Sequence;
 
 /**
  * ECS ↔ GPGPU bridge: run a compute shader as an ECS System over N entities.
@@ -60,8 +61,30 @@ public:
 
     GpuBuffer *getBuffer(int binding) const;
 
+    /**
+     * @brief Attach a non-owning resident buffer produced by another GPU system.
+     * @param binding Destination shader binding.
+     * @param buffer Buffer whose owner must outlive this attachment and any recorded work.
+     * Reattach after the owner reallocates the buffer.
+     */
+    void attachBuffer(int binding, GpuBuffer *buffer);
+
     void upload(int binding, const float *data, int floatCount);
     void download(int binding, float *out, int floatCount) const;
+
+    /** @brief Upload floats into an existing resident buffer range. */
+    void uploadRange(int binding, const float *data, int floatCount, int startFloat);
+    /** @brief Download floats from an existing resident buffer range. */
+    void downloadRange(int binding, float *out, int floatCount, int startFloat) const;
+
+    /** @brief Number of host-to-device uploads issued through this system. */
+    uint64_t getUploadCount() const { return uploadCount_; }
+    /** @brief Number of device-to-host downloads issued through this system. */
+    uint64_t getDownloadCount() const { return downloadCount_; }
+    /** @brief Number of compute dispatches issued through this system. */
+    uint64_t getDispatchCount() const { return dispatchCount_; }
+    /** @brief Reset transfer and dispatch counters used for profiling. */
+    void resetStatistics();
 
     /** Convenience: upload from / download to a vector. */
     void upload(int binding, const std::vector<float> &data);
@@ -76,6 +99,12 @@ public:
      */
     void dispatch(int entityCount, float dt = 0.f);
 
+    /**
+     * @brief Record this system into a caller-owned sequence without submitting or waiting.
+     * The sequence and all attached buffers must remain alive through Sequence::submit().
+     */
+    void recordDispatch(Sequence *sequence, int entityCount, float dt = 0.f);
+
     void clearBuffers();
 
 private:
@@ -85,6 +114,9 @@ private:
     int localSize_ = kDefaultLocalSize;
     GpuBuffer *buffers_[kMaxBindings]{};
     bool ownsBuffer_[kMaxBindings]{};
+    uint64_t         uploadCount_   = 0;
+    mutable uint64_t downloadCount_ = 0;
+    uint64_t         dispatchCount_ = 0;
 };
 
 }  // namespace eve::gpgpu

@@ -38,9 +38,17 @@ config <- {
 ```
 
 - `modules` 中的模块必须存在，否则引擎会在执行 `main.nut` 前停止并报告缺失项；
-- `optionalModules` 用于工具提示和项目检查，使用前仍要调用 `has_module()`；
+- 写出 `modules` 或 `optionalModules` 后，引擎只构造名单里的槽位，再加上启动循环需要的
+  `win` / `gfx` / `timer` / `platform_event` / `fs` / `hot`。未列出的模块不会实例化，
+  `has_module()` 为 false；需要时可用 `ensure_module("audio")` 再加载；
+- 原生类的方法绑定也是按需的：第一次读取 `eve.Graphics` / `eve.Window` 等名字时才
+  注册该类的全部方法（以及它在同一次 `expose` 里挂上的嵌套类型，如 `WindowSettings`）。
+  Squirrel 的 `in` 不会触发这次绑定，因此不要用 `"Graphics" in eve` 判断模块是否在构建里，
+  请用 `eve.moduleList` / `ensure_module()`；
+- `optionalModules` 在 SDK 里有则加载，没有则跳过，使用前仍要调用 `has_module()`；
 - 名称是脚本中的 root slot，例如图形模块写 `gfx`，不是 CMake 名称 `graphics`；
 - 这两个字段必须是字符串数组字面量，语言服务器和打包器不会执行任意配置代码来推断模块。
+- 不写这两个字段的旧项目保持原来的行为：构造当前构建里的全部模块。
 
 `scripts/movement.nut`：
 
@@ -721,7 +729,7 @@ generator、table、array、attribute 和 `dofile` 都仍然可用。
 ### 第二步：声明项目模块
 
 把所有脚本无条件使用的模块写入 `config.modules`；有降级路径的模块写入
-`config.optionalModules` 并保留 `has_module()`。
+`config.optionalModules` 并保留 `has_module()`。写出任一场后，未点名的模块不再在启动时构造。
 
 ### 第三步：用 import/export 替换文件级共享副作用
 

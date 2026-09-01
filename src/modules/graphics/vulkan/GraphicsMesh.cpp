@@ -579,6 +579,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMesh: null mesh");
     if (!swapchainPassOpen && !offscreen3DPassOpen)
         throw Exception("drawMesh: call begin3DFrame first");
+    createMesh3DPipeline();
     if (!mesh3dPipeline) throw Exception("drawMesh: mesh3d pipeline missing");
 
     if (shader) {

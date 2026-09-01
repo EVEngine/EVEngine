@@ -26,6 +26,7 @@ public:
     void readFloat32s(float *out, int count, int startIndex = 0) const override;
     void uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset = 0) override;
     void downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset = 0) const override;
+    GpuResidentBufferView residentView() const override;
 
     vkb::Device *device_ = nullptr;
     vk::Buffer buffer_{};

@@ -61,3 +61,31 @@ TEST_CASE("scriptConfig.validatesOptionalModuleDeclarationShape") {
     }
     CHECK(rejected);
 }
+
+TEST_CASE("scriptConfig.instantiatesOnlyConfiguredModules") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    configureRuntime(runtime);
+    runtime.runSource(
+        "eve.Foo <- function() { return { n = 1 } }\n"
+        "eve.Bar <- function() { return { n = 2 } }\n"
+        "eve.moduleList = [{ slot = \"foo\", cls = \"Foo\" }, { slot = \"bar\", cls = \"Bar\" }]\n"
+        "config.modules <- [\"foo\"]\n"
+        "instantiate_configured_modules()\n"
+        "_filtered_ok <- has_module(\"foo\") && !has_module(\"bar\")\n",
+        "config-filter-test.nut");
+    CHECK(runtime.vm().get<bool>("_filtered_ok"));
+}
+
+TEST_CASE("scriptConfig.ensureModuleLoadsOmittedSlot") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    configureRuntime(runtime);
+    runtime.runSource(
+        "eve.Foo <- function() { return { n = 1 } }\n"
+        "eve.Bar <- function() { return { n = 2 } }\n"
+        "eve.moduleList = [{ slot = \"foo\", cls = \"Foo\" }, { slot = \"bar\", cls = \"Bar\" }]\n"
+        "config.modules <- [\"foo\"]\n"
+        "instantiate_configured_modules()\n"
+        "_ensured <- ensure_module(\"bar\") && has_module(\"bar\")\n",
+        "config-ensure-test.nut");
+    CHECK(runtime.vm().get<bool>("_ensured"));
+}

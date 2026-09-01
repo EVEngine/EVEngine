@@ -2,7 +2,6 @@
 #include "common/Export.h"
 #include "common/Result.h"
 
-#include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -86,7 +85,13 @@ public:
      */
     [[nodiscard("plugin registration outcome must be checked")]] static eve::Result<void> finishPluginRegistration(
         bool commit);
-    /** @brief Exposes every registered module into the given runtime's root table. */
+    /**
+     * @brief Installs the `eve` table and defers native class method bindings.
+     *
+     * Result helpers and script ECS are bound immediately. Each module's
+     * `expose(ssq::Table&)` (class + methods + nested types) runs on the first
+     * script get of that class name, or of a nested class it owns.
+     */
     static void expose(Runtime& runtime);
     // Compatibility for embedders that still own their ssq::VM directly.
     static void expose(ssq::VM& vm);
@@ -123,7 +128,7 @@ public:
      */
     template <typename T>
     [[nodiscard("module lookup result must be checked before use")]] static T* getInstance(const char* name) {
-        return static_cast<T*>(inst().registered_modules[name].instance);
+        return static_cast<T*>(getInstanceRaw(name));
     }
 
     /**
@@ -137,9 +142,7 @@ public:
     template <typename T>
     [[nodiscard("module instance ownership must be retained or explicitly handled")]] static T* requireInstance(
         const char* name) {
-        auto& D = inst().registered_modules[name];
-        if (D.instance) return static_cast<T*>(D.instance);
-        return static_cast<T*>(D.creator());
+        return static_cast<T*>(requireInstanceRaw(name));
     }
 
     /** @brief Instantiates every registered module through its factory.
@@ -153,6 +156,24 @@ public:
 protected:
     static void exposeVM(ssq::VM& vm);
 
+private:
+    // Keep unordered_map lookup and lazy-creation code out of the two public
+    // templates. Every module instantiates only the pointer cast; the container
+    // implementation is emitted once in Module.cpp.
+    /** @brief Returns the manager-owned module stored under `name`.
+     * @ownership Borrowed; ModuleManager retains ownership.
+     * @nullable Yes when the module has no live instance.
+     * @lifetime Valid until module shutdown or registry teardown.
+     */
+    static Module* getInstanceRaw(const char* name);
+    /** @brief Returns or lazily creates the manager-owned module under `name`.
+     * @ownership Borrowed; ModuleManager retains ownership.
+     * @nullable No when the registered factory satisfies its invariant.
+     * @lifetime Valid until module shutdown or registry teardown.
+     */
+    static Module* requireInstanceRaw(const char* name);
+
+protected:
     struct ModuleInfo {
         creator_t creator = nullptr;
         exposer_t exposer = nullptr;
@@ -165,6 +186,8 @@ protected:
     std::vector<std::string> plugin_registration_added_;
     std::string plugin_registration_error_;
     Runtime* active_runtime_ = nullptr;
+
+    friend struct ModuleBindAccess;
 };
 
 struct EVENGINE_API ModuleRegister {

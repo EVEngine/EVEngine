@@ -429,7 +429,7 @@ void BuildingFx::rebuildGridLines(WorldState &st, building::PlacementWorld *worl
         world->cellToWorldPlane(x, 0, px, py);
         tr->x = px;
         tr->y = height;
-        tr->z = xz ? zExtent * 0.5f : 0.f;
+        tr->z = xz ? 0.0f : 0.f;
         tr->sx = 0.03f;
         tr->sy = 0.02f;
         tr->sz = zExtent;
@@ -446,7 +446,7 @@ void BuildingFx::rebuildGridLines(WorldState &st, building::PlacementWorld *worl
         auto tr = r->transform();
         float px = 0.f, py = 0.f;
         world->cellToWorldPlane(0, y, px, py);
-        tr->x = xz ? xExtent * 0.5f : 0.f;
+        tr->x = xz ? 0.0f : 0.f;
         tr->y = height;
         tr->z = py;
         tr->sx = xExtent;
