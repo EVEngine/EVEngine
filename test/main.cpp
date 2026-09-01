@@ -1,6 +1,8 @@
 #include "zeroerr/unittest.h"
 #include "common/CrashHandler.h"
 
+#include <cstdlib>
+
 #if defined(EVENGINE_ANDROID)
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_main.h>
@@ -207,7 +209,16 @@ int main(int argc, char **argv) {
 #endif  // EVENGINE_ANDROID / EVENGINE_IOS_TEST_APP
 
     const int result = zeroerr::UnitTest().parseArgs(argc, const_cast<const char **>(argv)).run();
-#if defined(EVENGINE_IOS_TEST_APP)
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+    // Process-isolated CTest cases have already reported and released their
+    // test-local state here. Some Release-only process-lifetime services block
+    // in static destruction after a passing summary, so terminate with the
+    // authoritative zeroerr result instead of letting CTest misclassify the
+    // case as a 25-minute timeout.
+    std::cout.flush();
+    std::cerr.flush();
+    std::_Exit(result);
+#elif defined(EVENGINE_IOS_TEST_APP)
     // SDL's UIKit main keeps the app resident after SDL_main returns; a test
     // runner should terminate once the suite is done so per-file launches
     // (--console) return and a driver can move on to the next file.
