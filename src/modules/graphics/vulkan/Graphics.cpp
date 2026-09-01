@@ -254,13 +254,13 @@ struct RegisterVulkanWarmup {
 
 std::string Graphics::getBackendName() const { return "vulkan"; }
 
-Graphics::Graphics() { eve::boot::startVulkanInstanceWarmup(); }
+Graphics::Graphics() = default;
 
 Graphics::~Graphics() {
     detachGraphicsArtifactProvider(this);
     if (!initialized) {
-        // Construction starts instance warmup before callers decide whether to
-        // initialize graphics. Join it before the Vulkan loader can be unloaded.
+        // A process-level boot warmup may exist even when callers decide not
+        // to initialize graphics. Join it before the Vulkan loader unloads.
         discardWarmedInstance();
         if (static_cast<VkInstance>(inst.instance) != VK_NULL_HANDLE) inst.destroy();
         return;
