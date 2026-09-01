@@ -48,7 +48,17 @@ TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
     ModuleManager::expose(runtime);
 
     runtime.runSource(
+        "originalComponent <- eve.Component\n"
+        "originalEntity <- eve.Entity\n"
+        "originalSystem <- eve.System\n"
+        "class BeforeCompatSystem extends eve.System {\n"
+        "  function update(dt) { return dt + 2 }\n"
+        "}\n"
         "if (eve._bindAllNativeClasses() < 0) throw \"native binding failed\"\n"
+        "if (eve.Component != originalComponent) throw \"script ECS Component identity changed\"\n"
+        "if (eve.Entity != originalEntity) throw \"script ECS Entity identity changed\"\n"
+        "if (eve.System != originalSystem) throw \"script ECS System identity changed\"\n"
+        "if (BeforeCompatSystem().update(2) != 4) throw \"pre-binding ECS subclass was stranded\"\n"
         "sprite <- eve.Sprite2D()\n"
         "sprite.setBlend(\"alpha\")\n"
         "sprite.setAnchor(0.5, 0.5)\n"

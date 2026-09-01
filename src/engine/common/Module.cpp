@@ -124,15 +124,6 @@ void installLazyClassGet(ssq::Table& eveTable) {
     sq_pop(vm, 1);
 }
 
-void eraseEveRawSlot(ssq::Table& eveTable, const char* key) {
-    HSQUIRRELVM vm        = eveTable.getHandle();
-    const SQInteger top   = sq_gettop(vm);
-    sq_pushobject(vm, eveTable.getRaw());
-    sq_pushstring(vm, key, -1);
-    sq_deleteslot(vm, -2, SQFalse);
-    sq_settop(vm, top);
-}
-
 }  // namespace
 
 
@@ -297,20 +288,17 @@ int ModuleManager::exposeAllForCompatibility() {
     Runtime* active = inst().active_runtime_;
     if (!active)
         return -1;
+    std::vector<std::pair<std::string, ssq::Object>> scriptEcsSlots;
     try {
         auto scope = active->enter();
         auto stack = active->guard();
         ssq::Table table = active->table("eve");
-        // Native exposers historically ran before any script ECS classes
-        // existed. Remove the first-pass script types so native classes and
-        // script fragments cannot bind against stale Component/Entity/System
-        // identities during compatibility exposure.
-        for (const char* key : {"_ecsTypes", "_ecsViewCache", "_ecsSlotsCache", "_ecsCompDefaults",
-                 "_ecsRevision", "_ecsResolveMarker", "_ecsIsComponentClass", "_ecsInstantiateComponent",
-                 "_ecsCollectSlots", "_ecsInvalidateViews", "_ecsEnsureType", "_ecsRegisterInstance",
-                 "_ecsUnregisterInstance", "_ecsCollectInstances", "Component", "Entity", "EntityContainer",
-                 "System", "ShaderSystem", "SceneEntity", "view", "ecsReady"})
-            eraseEveRawSlot(table, key);
+        // Lazy native exposers are allowed to extend the first-pass script ECS
+        // classes. Preserve those exact class identities across eager exposure;
+        // reinjecting ECS here would strand native extensions on stale bases.
+        for (const char* key : {"Component", "Entity", "EntityContainer", "System", "ShaderSystem", "view",
+                 "ecsReady"})
+            scriptEcsSlots.emplace_back(key, table.find(key));
     } catch (...) {
         return -1;
     }
@@ -323,11 +311,11 @@ int ModuleManager::exposeAllForCompatibility() {
         auto scope = active->enter();
         auto stack = active->guard();
         ssq::Table table = active->table("eve");
-        // Before lazy bindings, native classes were exposed first and script
-        // ECS last. Reapply ECS so compatibility startup preserves that public
-        // namespace ordering (notably the script eve.System class), then replay
-        // post-ECS hooks such as SceneEntity against the complete native table.
-        exposeECS(table);
+        // Native modules such as the host System class may reuse a historical
+        // ECS slot name. Restore only the original core slots; post-ECS hooks
+        // registered during expose_pending() (for example SceneEntity) remain.
+        for (auto& [key, value] : scriptEcsSlots)
+            table.set(key.c_str(), value);
     } catch (...) {
         return -1;
     }
