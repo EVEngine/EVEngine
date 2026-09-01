@@ -111,7 +111,7 @@ eve_declare_module(NAME voxelworld_target LAYER 7 SCRIPT VoxelWorldTargetModule 
 # eve::editor type spellings without forcing the editor core to link every
 # domain editing implementation.
 eve_declare_module(NAME action_editor LAYER 7 SCRIPT ActionEditorModule SLOT actionEditor
-                   DEPS action animation editor GROUP 3d web)
+                   DEPS action animation editor GROUP 3d)
 eve_declare_module(NAME animation_editor LAYER 7 DEPS animation_editing editor GROUP 3d web)
 eve_declare_module(NAME audio_editor LAYER 7 DEPS audio_editing editor GROUP 3d web)
 eve_declare_module(NAME avatar_editor LAYER 7 DEPS avatar_editing editor GROUP 3d)

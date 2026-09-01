@@ -17,21 +17,6 @@ eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::strin
     return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
-eve::StatusCode commonStatus(EditorStatus status) noexcept {
-    switch (status) {
-        case EditorStatus::Rejected: return eve::StatusCode::Rejected;
-        case EditorStatus::Conflict: return eve::StatusCode::Conflict;
-        case EditorStatus::NotFound: return eve::StatusCode::NotFound;
-        case EditorStatus::Unsupported: return eve::StatusCode::Unsupported;
-        case EditorStatus::Cancelled: return eve::StatusCode::Cancelled;
-        case EditorStatus::Applied:
-        case EditorStatus::Pending:
-        case EditorStatus::NoOp:
-        case EditorStatus::Failed: return eve::StatusCode::Failed;
-    }
-    return eve::StatusCode::Failed;
-}
-
 eve::DiagnosticCode commonDiagnostic(EditorStatus status) noexcept {
     switch (status) {
         case EditorStatus::Rejected: return eve::DiagnosticCode::InvalidArgument;
@@ -39,9 +24,10 @@ eve::DiagnosticCode commonDiagnostic(EditorStatus status) noexcept {
         case EditorStatus::NotFound: return eve::DiagnosticCode::NotFound;
         case EditorStatus::Unsupported: return eve::DiagnosticCode::Unsupported;
         case EditorStatus::Cancelled: return eve::DiagnosticCode::Cancelled;
+        case EditorStatus::Ok:
         case EditorStatus::Applied:
         case EditorStatus::Pending:
-        case EditorStatus::NoOp:
+        case EditorStatus::NoOp: return eve::DiagnosticCode::None;
         case EditorStatus::Failed: return eve::DiagnosticCode::Failed;
     }
     return eve::DiagnosticCode::Failed;
