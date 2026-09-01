@@ -183,7 +183,7 @@ EditorResult<StoredDocument> AutosaveService::writeDraft(const DocumentSnapshot&
         revision = existing.value().revision;
         hash     = existing.value().contentHash;
     } else if (existing.code() != EditorStatus::NotFound) {
-        return std::move(existing);
+        return existing;
     }
     EditorValue::Object draft;
     draft["document"]      = EditorValue(snapshot.id.value());
