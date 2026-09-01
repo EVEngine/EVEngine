@@ -235,7 +235,7 @@ void ModuleManager::exposeVM(ssq::VM& vm) {
     // every checked binding observes the same `eve.result` helper.
     script::exposeResultBindings(table);
     installLazyClassGet(table);
-    table.addFunc("_bindAllNativeClasses", []() { return ModuleManager::expose_pending(); });
+    table.addFunc("_bindAllNativeClasses", []() { return ModuleManager::exposeAllForCompatibility(); });
     // Script ECS first so lazy module exposers can extend eve.Entity.
     exposeECS(table);
 }
@@ -278,6 +278,29 @@ int ModuleManager::expose_pending() {
             flushPostEcsHooks(table);
             ++count;
         }
+    } catch (...) {
+        return -1;
+    }
+    return count;
+}
+
+int ModuleManager::exposeAllForCompatibility() {
+    const int count = expose_pending();
+    if (count < 0)
+        return count;
+
+    Runtime* active = inst().active_runtime_;
+    if (!active)
+        return -1;
+    try {
+        auto scope = active->enter();
+        auto stack = active->guard();
+        ssq::Table table = active->table("eve");
+        // Before lazy bindings, native classes were exposed first and script
+        // ECS last. Reapply ECS so compatibility startup preserves that public
+        // namespace ordering (notably the script eve.System class), then replay
+        // post-ECS hooks such as SceneEntity against the complete native table.
+        exposeECS(table);
     } catch (...) {
         return -1;
     }

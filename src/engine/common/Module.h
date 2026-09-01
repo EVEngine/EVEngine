@@ -159,6 +159,8 @@ protected:
     static void exposeVM(ssq::VM& vm);
 
 private:
+    static int exposeAllForCompatibility();
+
     // Keep unordered_map lookup and lazy-creation code out of the two public
     // templates. Every module instantiates only the pointer cast; the container
     // implementation is emitted once in Module.cpp.

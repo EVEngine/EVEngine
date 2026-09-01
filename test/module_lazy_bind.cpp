@@ -51,6 +51,11 @@ TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
         "if (eve._bindAllNativeClasses() < 0) throw \"native binding failed\"\n"
         "sprite <- eve.Sprite2D()\n"
         "sprite.setBlend(\"alpha\")\n"
-        "sprite.setAnchor(0.5, 0.5)\n",
+        "sprite.setAnchor(0.5, 0.5)\n"
+        "class CompatSystem extends eve.System {\n"
+        "  function update(dt) { return dt + 1 }\n"
+        "}\n"
+        "compatSystem <- CompatSystem()\n"
+        "if (compatSystem.update(2) != 3) throw \"script ECS System was replaced\"\n",
         "eager-native-binding.nut");
 }
