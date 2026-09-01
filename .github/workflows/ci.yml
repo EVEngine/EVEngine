@@ -467,7 +467,10 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    timeout-minutes: 90
+    # A cold Release build took 55 minutes and the process-isolated 3510-case
+    # suite reached 3060/3510 at the former 30-minute test guard. Preserve
+    # bounded hang detection while budgeting setup, build, and the full suite.
+    timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
@@ -526,7 +529,7 @@ jobs:
         run: sccache --show-stats
 
       - name: Run win32 release unit tests
-        timeout-minutes: 30
+        timeout-minutes: 45
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/win32
