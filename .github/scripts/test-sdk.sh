@@ -114,6 +114,7 @@ echo "== [test-sdk] platform=$PLAT sdk=$SDK runtime=$RUNTIME =="
 [ -x "$SDK/bin/$RUNTIME" ] || fail "missing runtime bin/$RUNTIME"
 [ -d "$SDK/include/eve" ] || fail "missing include/eve"
 [ "$(find "$SDK/include/eve" -name '*.h' | wc -l)" -gt 0 ] || fail "no headers under include/eve"
+[ -f "$SDK/include/zeroerr/assert.h" ] || fail "missing public dependency include/zeroerr/assert.h"
 case "$PLAT" in
   win32|android)
     # Windows ships eve.lib for plugins; Android ships libmain.so + packaging .so.
