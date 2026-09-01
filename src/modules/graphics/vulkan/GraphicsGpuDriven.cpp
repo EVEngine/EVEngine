@@ -774,6 +774,11 @@ void Graphics::bindVgFrameBindless(vk::DescriptorSet bindless, size_t slot) {
 }
 
 uint32_t Graphics::gpuDrivenVgUpload(const GpuVgAssetUpload &asset) {
+    // The compacted cluster command stream needs an indirect-count draw. Keep
+    // ordinary GPU-driven meshes available on devices without that optional
+    // Vulkan 1.2 feature, but reject VG explicitly instead of accepting an
+    // asset that can never be rasterized.
+    if (!gpuDrivenCaps_.drawIndirectCount) return kInvalidBindlessSlot;
     if (!asset.positions || asset.vertexCount <= 0 || !asset.triangles ||
         asset.triangleCount <= 0 || !asset.clusters || asset.clusterCount <= 0)
         return kInvalidBindlessSlot;
@@ -1949,8 +1954,6 @@ void Graphics::drawVgClusters(vk::CommandBuffer cb) {
     if (!gbufferVgVisPipeline || vgAssetCount_ == 0 || vgClusterCount_ == 0) return;
     const vk::DescriptorSet bindless = bindlessSetForFrame();
     if (!bindless || !mesh3dGpuDrivenPipelineLayout) return;
-    if (!gpuDrivenCaps_.drawIndirectCount) return;
-
     const size_t slot = currentFrameSlot() % kAsyncResourceCopies;
     const vk::DeviceSize slotInd = vk::DeviceSize(kMaxVgClusters) * sizeof(glm::uvec4);
     const vk::DeviceSize slotVis = (vk::DeviceSize(kMaxVgClusters) + 1) * sizeof(uint32_t);

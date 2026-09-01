@@ -221,6 +221,27 @@ vkb::Instance consumeWarmedInstance() {
 #endif
 }
 
+void discardWarmedInstance() noexcept {
+#if !defined(EVENGINE_MACOSX) && !defined(EVENGINE_IOS)
+    std::future<vkb::Instance> fut;
+    {
+        auto &w = instanceWarmup();
+        std::lock_guard<std::mutex> lock(w.mu);
+        if (!w.started || w.consumed) return;
+        w.consumed = true;
+        fut = std::move(w.future);
+    }
+    try {
+        vkb::Instance warmed = fut.get();
+        if (static_cast<VkInstance>(warmed.instance) != VK_NULL_HANDLE) warmed.destroy();
+    } catch (const std::exception &e) {
+        std::fprintf(stderr, "[vulkan] instance warmup cleanup failed: %s\n", e.what());
+    } catch (...) {
+        std::fprintf(stderr, "[vulkan] instance warmup cleanup failed with an unknown error\n");
+    }
+#endif
+}
+
 struct RegisterVulkanWarmup {
     RegisterVulkanWarmup() {
         eve::boot::registerVulkanInstanceWarmup(&startVulkanInstanceWarmupImpl);
@@ -238,6 +259,9 @@ Graphics::Graphics() { eve::boot::startVulkanInstanceWarmup(); }
 Graphics::~Graphics() {
     detachGraphicsArtifactProvider(this);
     if (!initialized) {
+        // Construction starts instance warmup before callers decide whether to
+        // initialize graphics. Join it before the Vulkan loader can be unloaded.
+        discardWarmedInstance();
         if (static_cast<VkInstance>(inst.instance) != VK_NULL_HANDLE) inst.destroy();
         return;
     }

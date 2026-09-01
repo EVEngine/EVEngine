@@ -216,11 +216,21 @@ function(check_third_party_project name repo)
         # Native dependency builds must use the compiler selected by the parent.
         # Otherwise ExternalProject starts a fresh configure and can silently pick
         # a different system default (for example Clang while Linux CI uses GCC).
-        if(CMAKE_C_COMPILER)
-            list(APPEND _eve_tp_cmake_args -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
-        endif()
-        if(CMAKE_CXX_COMPILER)
-            list(APPEND _eve_tp_cmake_args -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER})
+        if(WIN32)
+            # The dependency project applies /utf-8 to its MSVC targets, so it
+            # does not need the parent's .cmd charset wrapper. Hosted runners
+            # inject ccache into this isolated configure, and ccache cannot
+            # CreateProcess() a batch file; keep its compiler executable-native.
+            list(APPEND _eve_tp_cmake_args
+                -DCMAKE_C_COMPILER=cl.exe
+                -DCMAKE_CXX_COMPILER=cl.exe)
+        else()
+            if(CMAKE_C_COMPILER)
+                list(APPEND _eve_tp_cmake_args -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
+            endif()
+            if(CMAKE_CXX_COMPILER)
+                list(APPEND _eve_tp_cmake_args -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER})
+            endif()
         endif()
     endif()
 
