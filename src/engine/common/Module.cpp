@@ -124,6 +124,15 @@ void installLazyClassGet(ssq::Table& eveTable) {
     sq_pop(vm, 1);
 }
 
+void eraseEveRawSlot(ssq::Table& eveTable, const char* key) {
+    HSQUIRRELVM vm        = eveTable.getHandle();
+    const SQInteger top   = sq_gettop(vm);
+    sq_pushobject(vm, eveTable.getRaw());
+    sq_pushstring(vm, key, -1);
+    sq_deleteslot(vm, -2, SQFalse);
+    sq_settop(vm, top);
+}
+
 }  // namespace
 
 
@@ -285,13 +294,31 @@ int ModuleManager::expose_pending() {
 }
 
 int ModuleManager::exposeAllForCompatibility() {
+    Runtime* active = inst().active_runtime_;
+    if (!active)
+        return -1;
+    try {
+        auto scope = active->enter();
+        auto stack = active->guard();
+        ssq::Table table = active->table("eve");
+        // Native exposers historically ran before any script ECS classes
+        // existed. Remove the first-pass script types so native classes and
+        // script fragments cannot bind against stale Component/Entity/System
+        // identities during compatibility exposure.
+        for (const char* key : {"_ecsTypes", "_ecsViewCache", "_ecsSlotsCache", "_ecsCompDefaults",
+                 "_ecsRevision", "_ecsResolveMarker", "_ecsIsComponentClass", "_ecsInstantiateComponent",
+                 "_ecsCollectSlots", "_ecsInvalidateViews", "_ecsEnsureType", "_ecsRegisterInstance",
+                 "_ecsUnregisterInstance", "_ecsCollectInstances", "Component", "Entity", "EntityContainer",
+                 "System", "ShaderSystem", "SceneEntity", "view", "ecsReady"})
+            eraseEveRawSlot(table, key);
+    } catch (...) {
+        return -1;
+    }
+
     const int count = expose_pending();
     if (count < 0)
         return count;
 
-    Runtime* active = inst().active_runtime_;
-    if (!active)
-        return -1;
     try {
         auto scope = active->enter();
         auto stack = active->guard();

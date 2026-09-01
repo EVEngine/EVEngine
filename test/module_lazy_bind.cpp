@@ -56,6 +56,7 @@ TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
         "  function update(dt) { return dt + 1 }\n"
         "}\n"
         "compatSystem <- CompatSystem()\n"
-        "if (compatSystem.update(2) != 3) throw \"script ECS System was replaced\"\n",
+        "if (compatSystem.update(2) != 3) throw \"script ECS System was replaced\"\n"
+        "if (\"getPlatform\" in compatSystem) throw \"native System leaked into script ECS\"\n",
         "eager-native-binding.nut");
 }
