@@ -19,6 +19,7 @@
 
 #include <cctype>
 #include <memory>
+#include <mutex>
 #include <string>
 
 namespace eve::image {
@@ -60,7 +61,12 @@ public:
 
         auto *fs = filesystem::Filesystem::create();
         if (!fs) return nullptr;
-        std::unique_ptr<filesystem::FileData> fd(fs->read(path));
+        std::unique_ptr<filesystem::FileData> fd;
+        {
+            static std::mutex vfsReadMu;
+            std::lock_guard<std::mutex> vfsLock(vfsReadMu);
+            fd.reset(fs->read(path));
+        }
         if (!fd || fd->getData() == nullptr || fd->getSize() == 0)
             throw eve::Exception("Could not read image file: %s", path.c_str());
 

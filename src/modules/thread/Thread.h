@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/AsyncWork.h"
 #include "thread/Channel.h"
 #include "thread/JobSystem.h"
 #include "thread/Task.h"
@@ -60,6 +61,7 @@ private:
     std::mutex mu_;
     std::unique_ptr<ThreadPool> defaultPool_;
     std::unique_ptr<JobSystem> defaultJobSystem_;
+    std::unique_ptr<eve::caps::IAsyncWorkExecutor> executor_;
     std::map<std::string, std::unique_ptr<Channel>> namedChannels_;
 };
 

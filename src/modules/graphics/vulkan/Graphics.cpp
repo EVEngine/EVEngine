@@ -266,6 +266,7 @@ Graphics::~Graphics() {
         return;
     }
     device->waitIdle();
+    deferredFileTextures_.clear();
     if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
     gpuQueryPool_ = nullptr;
     // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them

@@ -57,6 +57,7 @@
 namespace eve::graphics::vulkan {
 
 void Graphics::begin3DFrame() {
+    ensureFileTexturesReady();
     ASSERT(initialized);
     if (!initialized) throw Exception("begin3DFrame: graphics not initialized");
     if (isCanvasActive()) throw Exception("begin3DFrame: cannot start 3D while a Canvas is active");
@@ -230,6 +231,7 @@ void Graphics::destroyOffscreen3DResources() {
 }
 
 void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
+    ensureFileTexturesReady();
     ASSERT(initialized);
     if (!initialized) throw Exception("begin3DFrameToCanvas: graphics not initialized");
     if (!canvas) throw Exception("begin3DFrameToCanvas: null canvas");
