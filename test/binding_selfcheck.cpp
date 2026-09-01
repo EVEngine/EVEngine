@@ -26,9 +26,10 @@ TEST_CASE("binding.selfcheck.scriptSurface") {
             Climbing = ["newRuntime", "newAnchorGraphJson"],
         };
         foreach (cls, methods in hot) {
-            if (!(cls in eve)) { missing.push(cls + ":ctor-missing"); continue; }
             local inst = null;
             try {
+                // Indexed access triggers lazy native binding;
+                // root-table membership testing intentionally does not.
                 inst = eve[cls]();
             } catch (e) {
                 missing.push(cls + ":ctor:" + e);

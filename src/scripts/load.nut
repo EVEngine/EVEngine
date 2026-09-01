@@ -94,6 +94,11 @@ function instantiate_configured_modules() {
                 throw "config.optionalModules must be an array of module slot strings";
             _mark_slots(wanted, config.optionalModules);
         }
+    } else {
+        // Compatibility mode historically exposed every native class before
+        // constructing modules. Preserve that shared-type registration order.
+        if (eve._bindAllNativeClasses() < 0)
+            throw "failed to bind native module classes";
     }
     local n = 0;
     foreach (m in eve.moduleList) {

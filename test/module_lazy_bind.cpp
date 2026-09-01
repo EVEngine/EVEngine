@@ -42,3 +42,15 @@ TEST_CASE("moduleExpose.defersNativeClassUntilFirstGet") {
     CHECK(eveRawHas(vm, "Window"));
     CHECK(eveRawHas(vm, "WindowSettings"));
 }
+
+TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    ModuleManager::expose(runtime);
+
+    runtime.runSource(
+        "if (eve._bindAllNativeClasses() < 0) throw \"native binding failed\"\n"
+        "sprite <- eve.Sprite2D()\n"
+        "sprite.setBlend(\"alpha\")\n"
+        "sprite.setAnchor(0.5, 0.5)\n",
+        "eager-native-binding.nut");
+}

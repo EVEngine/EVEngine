@@ -90,7 +90,9 @@ public:
      *
      * Result helpers and script ECS are bound immediately. Each module's
      * `expose(ssq::Table&)` (class + methods + nested types) runs on the first
-     * script get of that class name, or of a nested class it owns.
+     * script get of that class name, or of a nested class it owns. The default
+     * unfiltered startup path eagerly completes all bindings to preserve the
+     * historical shared-type registration order.
      */
     static void expose(Runtime& runtime);
     // Compatibility for embedders that still own their ssq::VM directly.

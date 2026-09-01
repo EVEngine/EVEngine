@@ -235,6 +235,7 @@ void ModuleManager::exposeVM(ssq::VM& vm) {
     // every checked binding observes the same `eve.result` helper.
     script::exposeResultBindings(table);
     installLazyClassGet(table);
+    table.addFunc("_bindAllNativeClasses", []() { return ModuleManager::expose_pending(); });
     // Script ECS first so lazy module exposers can extend eve.Entity.
     exposeECS(table);
 }
