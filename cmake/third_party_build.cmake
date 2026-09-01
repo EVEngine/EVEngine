@@ -162,6 +162,25 @@ function(check_third_party_project name repo)
     list(APPEND _eve_tp_cmake_args
         -DEVENGINE_THIRD_PARTY_GROUPS=${_eve_tp_groups_arg}
         -DEVENGINE_BUILD_HOST=${EVENGINE_BUILD_HOST})
+    # ExternalProject configures the dependency aggregate in a separate CMake
+    # process, so it does not inherit the parent's compiler launcher cache
+    # variables. Pass them explicitly; otherwise a fresh Windows runner can
+    # auto-detect Strawberry Perl's unrelated ccache.exe and then fail to
+    # execute our .cmd compiler wrapper. ExternalProject's LIST_SEPARATOR
+    # preserves compound launchers such as `cmake -E env ... sccache` as one
+    # cache value across the child configure command.
+    if(CMAKE_C_COMPILER_LAUNCHER)
+        string(REPLACE ";" "|" _eve_tp_c_launcher
+            "${CMAKE_C_COMPILER_LAUNCHER}")
+        list(APPEND _eve_tp_cmake_args
+            "-DCMAKE_C_COMPILER_LAUNCHER:STRING=${_eve_tp_c_launcher}")
+    endif()
+    if(CMAKE_CXX_COMPILER_LAUNCHER)
+        string(REPLACE ";" "|" _eve_tp_cxx_launcher
+            "${CMAKE_CXX_COMPILER_LAUNCHER}")
+        list(APPEND _eve_tp_cmake_args
+            "-DCMAKE_CXX_COMPILER_LAUNCHER:STRING=${_eve_tp_cxx_launcher}")
+    endif()
     # Windows only: force md/mdd before any add_subdirectory so squirrel/OpenAL
     # match the names the engine already links. Do not set these on Apple/Linux.
     if(WIN32)
@@ -323,6 +342,7 @@ function(check_third_party_project name repo)
             SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
             BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
             CMAKE_GENERATOR "Ninja"
+            LIST_SEPARATOR "|"
             CMAKE_ARGS ${_eve_tp_cmake_args}
             PATCH_COMMAND ${_eve_tp_patch_cmd}
             BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
@@ -335,6 +355,7 @@ function(check_third_party_project name repo)
             GIT_TAG ${EVENGINE_THIRD_PARTY_PIN}
             SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
             BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
+            LIST_SEPARATOR "|"
             CMAKE_ARGS ${_eve_tp_cmake_args}
             PATCH_COMMAND ${_eve_tp_patch_cmd}
             BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
