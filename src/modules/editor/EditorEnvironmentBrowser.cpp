@@ -52,7 +52,10 @@ EditorResult<EnvironmentAssetCard> EnvironmentAssetBrowser::card(const AssetReco
             eve::DiagnosticCode::PreconditionViolation, RuleId("editor.environment.asset-not-ready"),
             DiagnosticSeverity::Error, "Environment asset is not ready for preview or assignment"));
     const bool error = std::any_of(result.diagnostics.begin(), result.diagnostics.end(),
-        [](const EditorDiagnostic& diagnostic) { return diagnostic.severity() == DiagnosticSeverity::Error; });
+        [](const EditorDiagnostic& diagnostic) {
+            return diagnostic.severity() == DiagnosticSeverity::Error ||
+                   diagnostic.severity() == DiagnosticSeverity::Fatal;
+        });
     if (error)
         return EditorResult<EnvironmentAssetCard>::failure(
             eve::Status(EditorStatus::Rejected, result.diagnostics));

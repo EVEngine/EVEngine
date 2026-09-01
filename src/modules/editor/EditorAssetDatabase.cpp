@@ -207,7 +207,8 @@ EditorResult<AssetRecord> ImportCoordinator::publish(const ImportTicket& ticket,
                                        "Importer product must contain at least one published artifact");
     if (std::any_of(record.diagnostics.begin(), record.diagnostics.end(),
                     [](const EditorDiagnostic& diagnostic) {
-                        return diagnostic.severity() == DiagnosticSeverity::Error;
+                        return diagnostic.severity() == DiagnosticSeverity::Error ||
+                               diagnostic.severity() == DiagnosticSeverity::Fatal;
                     }))
         return assetError<AssetRecord>(EditorStatus::Rejected, "editor.import.product-errors",
                                        "Importer product contains error diagnostics");

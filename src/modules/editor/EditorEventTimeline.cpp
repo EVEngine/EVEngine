@@ -32,6 +32,7 @@ int severityRank(DiagnosticSeverity severity) {
         case DiagnosticSeverity::Info: return 0;
         case DiagnosticSeverity::Warning: return 1;
         case DiagnosticSeverity::Error: return 2;
+        case DiagnosticSeverity::Fatal: return 3;
     }
     return 0;
 }
