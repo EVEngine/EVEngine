@@ -1,5 +1,7 @@
 #pragma once
 
+#include "physics/SimulationBackend.h"
+
 #include <cstdint>
 #include <unordered_map>
 #include <unordered_set>
@@ -23,7 +25,7 @@ class World3D;
  * particle-vs-rigid-body collision when attached to a World3D.
  * Script-owned, independent of the Box3D world.
  */
-class Cloth3D {
+class Cloth3D : public ISimulationBackend {
 public:
     /**
      * @param cols grid columns (>= 2), along +X
@@ -40,6 +42,21 @@ public:
     Cloth3D &operator=(const Cloth3D &) = delete;
 
     void update(float dt);
+
+    /** @brief Advances cloth with the shared ticked backend contract. */
+    [[nodiscard("check the cloth step outcome")]]
+    eve::Result<void> step(const eve::SimulationStep &step, const SimulationSettings &settings) override;
+    /** @brief Returns completed tick/time observables. */
+    [[nodiscard]] SimulationObservation observation() const noexcept override { return observation_; }
+    /** @brief Identifies this production CPU cloth backend. */
+    [[nodiscard]] SimulationBackendKind kind() const noexcept override { return SimulationBackendKind::Cpu; }
+    /** @brief CPU cloth uses bounded floating-point determinism. */
+    [[nodiscard]] SimulationDeterminism determinism() const noexcept override {
+        return SimulationDeterminism::ToleranceBounded;
+    }
+    /** @brief Restores tick/progress metadata after an owner-level restore. */
+    [[nodiscard("check cloth observation restore")]]
+    eve::Result<void> restoreObservation(const SimulationObservation &observation) override;
 
     void  setGravity(float gx, float gy, float gz);
     float getGravityX() const { return gravityX_; }
@@ -87,7 +104,8 @@ public:
 
     /**
      * @brief Maximum fold angle between adjacent triangles in degrees
-     * (0..180, default 120). 0 = fully flat, 180 = folded onto itself;
+     * Range is 0..180 degrees; default is 120. Zero is fully flat and 180 is
+     * folded onto itself;
      * larger values allow stronger draping without creasing.
      */
     void  setMaxFoldAngle(float degrees);
@@ -116,16 +134,32 @@ public:
     void applyForce(float fx, float fy, float fz);
 
     /**
-     * @brief Pointer-field interaction like Fluid::interactAt (3D): positive
+     * @brief Pointer-field interaction like Fluid2D::interactAt (3D): positive
      * strength attracts, negative repels within radius (meters).
      */
     void interactAt(float x, float y, float z, float radius, float strength);
 
     /**
      * @brief Attach a World3D so free particles collide with its non-sensor
-     * shapes (meter space). Null detaches. Dynamic bodies receive a small push.
+     * shapes in meter space. Passing null detaches it. Dynamic bodies receive a
+     * small push.
+     */
+    /**
+     * @brief Attach a borrowed 3D world for collision queries; null detaches it.
+     * @ownership Cloth3D never owns the World3D pointer; the physics registry owns it.
+     * @lifetime The association is valid only while the world remains alive; clear it before world destruction.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Does not invoke callbacks; do not destroy the world re-entrantly.
      */
     void    setCollideWorld(World3D *world);
+    /**
+     * @brief Returns the attached collision world, or null when detached.
+     * @return Borrowed nullable World3D pointer owned by the physics registry.
+     * @ownership Cloth3D does not own the world and callers must not delete it.
+     * @lifetime Valid until the world is destroyed or detached.
+     * @thread Call on the owning physics thread.
+     * @reentrancy The accessor invokes no callbacks and is invalid across world mutation.
+     */
     World3D *getCollideWorld() const { return world_; }
 
     /** @brief Restore the flat grid pose (top row pinned) and clear transient state. */
@@ -174,6 +208,7 @@ private:
     };
 
     void rebuildLinks();
+    void    updateSubsteps(float dt, int substeps);
     void rebuildTriangles();
     void buildLinkKeys();
     bool areLinked(int a, int b) const;
@@ -221,6 +256,7 @@ private:
     float colorR_ = 0.75f, colorG_ = 0.82f, colorB_ = 0.95f, colorA_ = 1.f;
 
     bool destroyed_ = false;
+    SimulationObservation observation_;
 
     std::vector<Particle> particles_;
     std::vector<Link>     links_;

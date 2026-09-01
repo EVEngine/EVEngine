@@ -45,7 +45,7 @@ Built-in systems:
 6. Extensible combat model components
 7. Dialogs and scripting
 8. Layered avatar rendering
-9. 2D fluid engine (`Physics.newFluid`; also interactive cloth via `newCloth`)
+9. 2D fluid engine (`Physics.newFluid2D`; also interactive cloth via `newCloth`)
 10. Particle system
 11. Sprite-stacking pseudo-3D
 12. Real 3D model rendering
@@ -103,7 +103,7 @@ bin\eve.exe run mygame
 
 ### What you can do with the engine
 
-- **Make 2D / third-person 3D / mixed 2D+3D games**: 40+ modules — tilemap, cameras, Box2D/Box3D physics, particles, animation, RPG, inventory, UI, procedural generation, and more — all driven from Squirrel scripts. See the [module handbook](docs/usr/MODULES.md).
+- **Make 2D / third-person 3D / mixed 2D+3D games**: 40+ modules — tilemap, cameras, Box2D/Box3D physics, particles, animation, RPG, inventory, UI, procedural generation, and more — all driven by EveScript (Squirrel-compatible). Start with the [EveScript tutorial](docs/usr/EVESCRIPT.md), then use the [module handbook](docs/usr/MODULES.md).
 - **Hot reload for scripts and assets**: on desktop, edits take effect immediately; on mobile, push changes to the device with the `eve dev` dev server — no reinstall.
 - **Debug**: pause the game loop, breakpoints, watches, snapshots; VS Code debug adapter and AI (MCP) assisted development.
 - **Package and publish**: `eve zip` compresses a game into a `.eve` archive; `eve package --sdk <sdk>` produces a distributable folder containing the runtime and your game; Android/iOS use the SDK's bundled templates to assemble APK / .app.
@@ -200,7 +200,7 @@ ls "$VULKAN_SDK/lib/libvulkan.dylib" "$VULKAN_SDK/lib/libMoltenVK.dylib"
 | Host | macOS / Linux (Makefile paths default to macOS Homebrew) |
 | JDK | **OpenJDK 17** (`brew install openjdk@17`) |
 | Android SDK | command-line tools + `platform-tools` + `platforms;android-34` + `build-tools;34.0.0` |
-| NDK | **26.1.10909125** (`sdkmanager "ndk;26.1.10909125"`) |
+| NDK | **27.3.13750724** (`sdkmanager "ndk;27.3.13750724"`) |
 | CMake (SDK) | `cmake;3.22.1` (for Gradle; the engine itself cross-compiles with host CMake/Ninja) |
 | ABI / minSdk | **arm64-v8a** / **24** |
 | Device | Physical device with **Vulkan** (emulator is not a v1 acceptance target) |
@@ -210,7 +210,7 @@ Environment variables (add to `~/.zshrc` or export before building):
 ```sh
 export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
 export ANDROID_HOME="$HOME/Library/Android/sdk"
-export ANDROID_NDK="$ANDROID_HOME/ndk/26.1.10909125"
+export ANDROID_NDK="$ANDROID_HOME/ndk/27.3.13750724"
 export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 ```
 
@@ -342,6 +342,48 @@ make run/android-debug
 make log/android
 ```
 
+#### Faster local rebuilds
+
+If `sccache` is installed and available on `PATH`, CMake detects it by default
+and caches each C/C++ translation unit. Nothing changes when it is unavailable.
+Use `sccache --show-stats` to inspect local hits, or configure explicitly with:
+
+```sh
+# Require sccache (configuration fails instead of silently falling back)
+make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_COMPILER_CACHE=SCCACHE
+
+# Disable compiler-cache auto-detection
+make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_COMPILER_CACHE=OFF
+```
+
+Compiler caching still performs normal dependency evaluation and linking; it
+does not restore a CMake/Ninja/Make build tree. For a game that needs fewer
+systems, combine it with the existing module profiles so unused modules are not
+compiled at all:
+
+```sh
+make build/win32-debug \
+  CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_PROFILE=2d"
+```
+
+See [module trimming](docs/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
+`full`, and per-module options.
+
+Inspect object-file growth and expensive public-header fanout after a local
+build with:
+
+```sh
+make stats/build                              # build/<host>-debug
+make stats/build BUILD_STATS_DIR=build/linux # another build tree
+```
+
+The report lists the largest `.o`/`.obj` files, high-impact directly included
+project headers, and template-bearing headers. It is an explicit target rather
+than part of every incremental build, so collecting diagnostics does not slow
+normal development builds. The current top-20 review and the rationale for
+dependencies that remain are recorded in
+[`docs/dev/高引用头文件编译成本审计.md`](docs/dev/高引用头文件编译成本审计.md).
+
 Output layout:
 
 | Target | Build dir | Notes |
@@ -395,6 +437,8 @@ Optional CMake variables:
 | `CMAKE_BUILD_TYPE` | `Debug` (if unset) | `Debug` or `Release`; affects third-party install path suffixes (e.g. `win32-debug`) |
 | `BUILD_PLATFORM` | Auto from host | `win32` / `linux` / `macosx`, etc. |
 | `BUILD_TESTING` | `ON` | Build unit tests |
+| `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` uses `sccache` when found; `SCCACHE` requires it; `OFF` disables auto-detection |
+| `EVENGINE_SCCACHE_EXECUTABLE` | Auto from `PATH` | Optional explicit path to `sccache` |
 
 #### 2. Build third-party (deps)
 

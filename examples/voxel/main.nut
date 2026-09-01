@@ -9,16 +9,16 @@
 // 运行：make run/<platform>-debug GAME=examples/voxel
 // ============================================================================
 
-if (!("math" in getroottable())) math <- eve.Math();
-if (!("voxel" in getroottable())) voxel <- null;
-if (!("world" in getroottable())) world <- null;
-if (!("types" in getroottable())) types <- null;
-if (!("atlas" in getroottable())) atlas <- null;
-if (!("cam" in getroottable())) cam <- null;
-if (!("elapsed" in getroottable())) elapsed <- 0.0;
-if (!("prevMouse" in getroottable())) prevMouse <- { left = false, right = false };
-if (!("shownHelp" in getroottable())) shownHelp <- false;
-if (!("statsPrinted" in getroottable())) statsPrinted <- false;
+persist math = eve.Math()
+persist voxel = null
+persist world = null
+persist types = null
+persist atlas = null
+persist cam = null
+persist elapsed = 0.0
+persist prevMouse = { left = false, right = false }
+persist shownHelp = false
+persist statsPrinted = false
 
 const TILE = 32;        // atlas tile size in pixels
 const TILES_PER_ROW = 4;

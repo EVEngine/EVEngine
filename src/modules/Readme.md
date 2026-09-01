@@ -115,11 +115,11 @@
 
 11. 物理 - box2d / box3d（脚本模块名 `Physics`）
     负责管理 Box2D（2D）与 Box3D（3D）刚体，以及可交互 2D/3D 布料（自碰撞、二面角折角限制、按质量动量交换的刚体碰撞）与 2D 流体
-    Module：`Physics`（`setMeter` / `newWorld` / `newWorld3D` / `newCloth` / `newCloth3D` / `newFluid`）
+    Module：`Physics`（`setMeter` / `newWorld` / `newWorld3D` / `newCloth` / `newCloth3D` / `newFluid2D`）
     类型：`World` / `Body` / `Fixture`；2D 坐标为像素，内部按 meter 换算
     类型：`World3D` / `Body3D` / `Shape3D`；3D 坐标为米（Box3D）；形状 box/sphere/capsule
     类型：`Cloth` / `Cloth3D`（Verlet 布料，`grabAt` / `interactAt` / `setCollideWorld` / `update` / `draw`）、`ClothGPU`（compute shader 加速，含空间哈希自碰撞与 Sequence 合并提交）
-    类型：`Fluid`（双密度松弛流体，`emit` / `interactAt` / `update` / `draw`）
+    类型：`Fluid2D`（双密度松弛流体，`emit` / `interactAt` / `update` / `draw`）
     帧循环：`world.update(dt)` / `world3.update(dt)` / `cloth.update(dt)` / `fluid.update(dt)`
     碰撞事件：2D `begincontact` / `endcontact`；3D `begincontact3d` / `endcontact3d` → `event`
     可选：`world.drawDebug(gfx)`；布料/流体用自带 `draw(gfx)`

@@ -45,7 +45,7 @@ Evolutionary Vision Engine
 6. 可扩展的战斗模型组件；
 7. 对话框及脚本；
 8. Avatar 分层渲染；
-9. 2D 流体引擎（`Physics.newFluid`；另含可交互布料 `newCloth`）；
+9. 2D 流体引擎（`Physics.newFluid2D`；另含可交互布料 `newCloth`）；
 10. 粒子系统；
 11. Sprite-stacking 伪 3D 技术；
 12. 真实 3D 模型渲染。
@@ -103,7 +103,7 @@ bin\eve.exe run mygame
 
 ### 拿到引擎后，你可以做这些事
 
-- **制作 2D / 第三人称 3D / 2D+3D 混合游戏**：Tilemap、摄像机、Box2D/Box3D 物理、粒子、动画、RPG、背包、UI、程序化生成等 40+ 模块，全部通过 Squirrel 脚本调用，逐个模块的手册见[模块使用手册](docs/usr/MODULES.md)。
+- **制作 2D / 第三人称 3D / 2D+3D 混合游戏**：Tilemap、摄像机、Box2D/Box3D 物理、粒子、动画、RPG、背包、UI、程序化生成等 40+ 模块，全部通过 EveScript（兼容 Squirrel）调用；先阅读[EveScript 完整教程](docs/usr/EVESCRIPT.md)，逐个模块的接口见[模块使用手册](docs/usr/MODULES.md)。
 - **脚本与资源热重载**：桌面端改完脚本/贴图立即生效；移动端用 `eve dev` 开发服务器把改动推送到真机，无需重装应用。
 - **调试**：暂停游戏循环、断点、监视、快照，支持 VS Code 调试适配器与 AI（MCP）辅助开发。
 - **打包发布**：`eve zip` 把游戏压缩为 `.eve` 归档；`eve package --sdk <SDK目录>` 生成包含运行时与游戏的可分发目录；Android / iOS 用 SDK 自带模板组装 APK / .app。
@@ -200,7 +200,7 @@ ls "$VULKAN_SDK/lib/libvulkan.dylib" "$VULKAN_SDK/lib/libMoltenVK.dylib"
 | 宿主 | macOS / Linux（本仓库 Makefile 默认路径面向 macOS Homebrew） |
 | JDK | **OpenJDK 17**（`brew install openjdk@17`） |
 | Android SDK | command-line tools + `platform-tools` + `platforms;android-34` + `build-tools;34.0.0` |
-| NDK | **26.1.10909125**（`sdkmanager "ndk;26.1.10909125"`） |
+| NDK | **27.3.13750724**（`sdkmanager "ndk;27.3.13750724"`） |
 | CMake（SDK） | `cmake;3.22.1`（Gradle 可用；引擎本体用宿主机 CMake/Ninja 交叉编译） |
 | ABI / minSdk | **arm64-v8a** / **24** |
 | 设备 | 支持 **Vulkan** 的真机（模拟器未作为首版验收目标） |
@@ -210,7 +210,7 @@ ls "$VULKAN_SDK/lib/libvulkan.dylib" "$VULKAN_SDK/lib/libMoltenVK.dylib"
 ```sh
 export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
 export ANDROID_HOME="$HOME/Library/Android/sdk"
-export ANDROID_NDK="$ANDROID_HOME/ndk/26.1.10909125"
+export ANDROID_NDK="$ANDROID_HOME/ndk/27.3.13750724"
 export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 ```
 
@@ -342,6 +342,29 @@ make run/android-debug
 make log/android
 ```
 
+#### 加速本地重复构建
+
+如果 `PATH` 中已经安装 `sccache`，CMake 默认会自动发现并按 C/C++ 翻译单元缓存；
+未安装时构建行为不变。可用 `sccache --show-stats` 查看本地命中情况，也可以显式配置：
+
+```sh
+# 强制要求 sccache；找不到时配置直接失败，不静默回退
+make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_COMPILER_CACHE=SCCACHE
+
+# 禁用编译缓存自动检测
+make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_COMPILER_CACHE=OFF
+```
+
+编译缓存仍会正常判断依赖并重新链接，不会恢复 CMake/Ninja/Make 构建目录。如果游戏只需要
+部分系统，可同时使用已有模块档位，让未使用模块根本不参与编译：
+
+```sh
+make build/win32-debug \
+  CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_PROFILE=2d"
+```
+
+`minimal`、`2d`、`3d`、`full` 以及逐模块开关见[按需裁剪模块](docs/usr/TRIMMING.md)。
+
 产物目录约定：
 
 | 目标 | 构建目录 | 说明 |
@@ -395,6 +418,8 @@ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx -B bu
 | `CMAKE_BUILD_TYPE` | `Debug`（未指定时） | `Debug` 或 `Release`；影响第三方库安装路径后缀（如 `win32-debug`） |
 | `BUILD_PLATFORM` | 按宿主自动选择 | `win32` / `linux` / `macosx` 等 |
 | `BUILD_TESTING` | `ON` | 是否编译单元测试 |
+| `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` 自动使用找到的 `sccache`；`SCCACHE` 强制要求；`OFF` 禁用自动检测 |
+| `EVENGINE_SCCACHE_EXECUTABLE` | 从 `PATH` 自动查找 | 可显式指定 `sccache` 可执行文件路径 |
 
 #### 2. 编译第三方依赖（deps）
 

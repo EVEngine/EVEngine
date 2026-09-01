@@ -1,5 +1,7 @@
 #pragma once
 
+#include "physics/SimulationBackend.h"
+
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -22,7 +24,7 @@ class World;
  * limit that prevents sharp creases, and particle-vs-rigid-body collision
  * when attached to a 2D World via setCollideWorld.
  */
-class Cloth {
+class Cloth : public ISimulationBackend {
 public:
     /**
      * @param cols grid columns (>= 2)
@@ -38,6 +40,21 @@ public:
     Cloth &operator=(const Cloth &) = delete;
 
     void update(float dt);
+
+    /** @brief Advances cloth with the shared ticked backend contract. */
+    [[nodiscard("check the cloth step outcome")]]
+    eve::Result<void> step(const eve::SimulationStep &step, const SimulationSettings &settings) override;
+    /** @brief Returns completed tick/time observables. */
+    [[nodiscard]] SimulationObservation observation() const noexcept override { return observation_; }
+    /** @brief Identifies this production CPU cloth backend. */
+    [[nodiscard]] SimulationBackendKind kind() const noexcept override { return SimulationBackendKind::Cpu; }
+    /** @brief CPU cloth uses bounded floating-point determinism. */
+    [[nodiscard]] SimulationDeterminism determinism() const noexcept override {
+        return SimulationDeterminism::ToleranceBounded;
+    }
+    /** @brief Restores tick/progress metadata after an owner-level restore. */
+    [[nodiscard("check cloth observation restore")]]
+    eve::Result<void> restoreObservation(const SimulationObservation &observation) override;
 
     void  setGravity(float gx, float gy);
     float getGravityX() const { return gravityX_; }
@@ -57,7 +74,8 @@ public:
 
     /**
      * @brief Particle radius used for self-collision, draw size and body collision
-     * (default 3). Two particles keep at least 2*size apart when self-collision is on.
+     * Default is 3. Two particles keep at least twice this size apart when
+     * self-collision is on.
      */
     void  setParticleSize(float size);
     float getParticleSize() const { return particleSize_; }
@@ -71,7 +89,7 @@ public:
 
     /**
      * @brief Enable proximity-based self-collision between non-adjacent particles
-     * (default true).
+     * Default is true.
      */
     void  setSelfCollision(bool on);
     bool  getSelfCollision() const { return selfCollision_; }
@@ -82,7 +100,8 @@ public:
 
     /**
      * @brief Maximum bend deviation from a straight row/column segment in degrees
-     * (0..180, default 90). Prevents sharp creases and excessive folding.
+     * Range is 0..180 degrees; default is 90. Prevents sharp creases and
+     * excessive folding.
      */
     void  setMaxFoldAngle(float degrees);
     float getMaxFoldAngle() const { return maxFoldAngle_ * 180.f / 3.14159265f; }
@@ -110,7 +129,7 @@ public:
     void applyForce(float fx, float fy);
 
     /**
-     * @brief Pointer-field interaction like Fluid::interactAt: positive strength
+     * @brief Pointer-field interaction like Fluid2D::interactAt: positive strength
      * attracts, negative repels. Applied as acceleration within radius (pixels)
      * during the next update.
      */
@@ -118,9 +137,25 @@ public:
 
     /**
      * @brief Attach a 2D World so free particles collide with its non-sensor
-     * fixtures (pixel space). Null detaches. Dynamic bodies receive a small push.
+     * fixtures in pixel space. Passing null detaches it. Dynamic bodies receive
+     * a small push.
+     */
+    /**
+     * @brief Attach a borrowed 2D world for collision queries; null detaches it.
+     * @ownership Cloth never owns the World pointer; the physics registry owns it.
+     * @lifetime The association is valid only while the world remains alive; clear it before world destruction.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Does not invoke callbacks; do not destroy the world re-entrantly.
      */
     void  setCollideWorld(World *world);
+    /**
+     * @brief Returns the attached collision world, or null when detached.
+     * @return Borrowed nullable World pointer owned by the physics registry.
+     * @ownership Cloth does not own the world and callers must not delete it.
+     * @lifetime Valid until the world is destroyed or detached.
+     * @thread Call on the owning physics thread.
+     * @reentrancy The accessor invokes no callbacks and is invalid across world mutation.
+     */
     World *getCollideWorld() const { return world_; }
 
     /** @brief Restore the flat grid pose (top row pinned) and clear transient state. */
@@ -159,6 +194,7 @@ private:
     };
 
     void rebuildLinks();
+    void    updateSubsteps(float dt, int substeps);
     void integrate(float dt);
     void solveConstraints();
     void solveFoldConstraint();
@@ -203,6 +239,7 @@ private:
     float colorR_ = 0.75f, colorG_ = 0.82f, colorB_ = 0.95f, colorA_ = 1.f;
 
     bool destroyed_ = false;
+    SimulationObservation observation_;
 
     std::vector<Particle> particles_;
     std::vector<Link>     links_;

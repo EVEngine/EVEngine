@@ -1,6 +1,11 @@
 @echo off
 chcp 65001 >nul
 setlocal
+rem Prefer English cl.exe messages when the 1033 language pack is installed.
+set "VSLANG=1033"
+rem Let CMake resolve the UTF-8 compiler wrapper by command name. CMake rejects
+rem compiler paths containing a relative directory component.
+set "PATH=%~dp0;%PATH%"
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%VSWHERE%" (
   echo error: vswhere.exe not found at "%VSWHERE%" >&2

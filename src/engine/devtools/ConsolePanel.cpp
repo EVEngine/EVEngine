@@ -2,6 +2,7 @@
 #include "devtools/Immortal.hpp"
 
 #include "common/ScriptError.h"
+#include "common/ScriptCompiler.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
@@ -223,8 +224,8 @@ std::string ConsolePanel::eval(const std::string& expression) {
     const SQInteger top = sq_gettop(vm);
     // Compile `return (expr);` so the evaluation result lands on the stack.
     const std::string source = "return (" + expression + ");";
-    if (SQ_FAILED(sq_compilebuffer(vm, source.c_str(), static_cast<SQInteger>(source.size()),
-                                   _SC("console_repl.nut"), SQTrue))) {
+    if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(
+            vm, source.c_str(), static_cast<SQInteger>(source.size()), _SC("console_repl.nut"), SQTrue))) {
         sq_settop(vm, top);
         const eve::script::ScriptErrorContext ctx = eve::script::captureCompileError(vm);
         const std::string err = "error: " +

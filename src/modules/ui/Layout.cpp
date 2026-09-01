@@ -385,6 +385,7 @@ void measureNode(UIHost::Tree &tree, int index) {
     }
     case NodeType::Group:
     case NodeType::Card:
+    case NodeType::NinePatchPanel:
     case NodeType::MenuBar: {
         float w = 0.f, h = 0.f;
         measureFlowChildren(tree, n.firstChild, &w, &h);

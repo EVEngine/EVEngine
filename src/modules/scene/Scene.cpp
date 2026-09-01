@@ -1,5 +1,7 @@
+#include "common/ECS.h"
 #include "scene/Scene.h"
 
+#include "scene/ArtifactProvider.h"
 #include "scene/SceneBounds.h"
 #include "scene/SceneCapabilities.h"
 #include "scene/SceneInternal.h"
@@ -28,11 +30,25 @@
 
 namespace eve::scene {
 
-Scene::Scene() { registerSceneCapabilities(); }
+Scene::Scene() {
+    registerSceneCapabilities();
+    registerSceneArtifactProvider();
+}
 
 Module_IMPL(Scene, new Scene());
 
 namespace {
+
+template <class T>
+eve::Result<T> sceneFailure(eve::DiagnosticCode code, std::string message) {
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), "scene"));
+}
+
+template <class T>
+T *borrowSceneResult(eve::Result<T *> result) {
+    if (!result.ok()) return nullptr;
+    return std::move(result).takeValue();
+}
 
 SceneHost *findHostByName(const std::string &name) {
     if (name.empty()) return nullptr;
@@ -85,6 +101,7 @@ bool sameScriptObject(const HSQOBJECT &a, const HSQOBJECT &b) {
 Poco::JSON::Object::Ptr nodeToJson(const SceneHost::Tree &tree, const SceneNode *n) {
     Poco::JSON::Object::Ptr o = new Poco::JSON::Object;
     o->set("id", n->id);
+    if (!n->persistentId.isNil()) o->set("persistentId", n->persistentId.format());
     o->set("key", n->key);
     o->set("name", n->name);
     o->set("space", n->space);
@@ -126,6 +143,10 @@ Poco::JSON::Object::Ptr nodeToJson(const SceneHost::Tree &tree, const SceneNode 
 NodeDesc nodeFromJson(const Poco::JSON::Object::Ptr &o) {
     NodeDesc d;
     d.id = o->optValue<std::string>("id", "");
+    const std::string persistentId = o->optValue<std::string>("persistentId", "");
+    if (!persistentId.empty()) {
+        if (const auto parsed = eve::SceneObjectId::parse(persistentId)) d.persistentId = *parsed;
+    }
     d.key = o->optValue<std::string>("key", d.id);
     d.name = o->optValue<std::string>("name", d.id);
     d.space = o->optValue<std::string>("space", "3d");
@@ -251,12 +272,10 @@ void injectSceneComponentClass(ssq::Table &eveTable) {
 }
 
 /**
- * Per-node script entities (eve.SceneEntity) + the eve.Scene / eve.SceneNodeRef
- * wrappers over native primitives. Injected by a post-ECS hook so eve.Entity
- * (and its create()/view machinery) already exists.
+ * Per-node script entities (eve.SceneEntity). Injected by a post-ECS hook so
+ * eve.Entity already exists, without waiting for the Scene class methods.
  */
-const char *kSceneEntityScript = R"SQ(
-// Per-node script entity base: nodes get gameplay logic through the script ECS.
+const char *kSceneEntityBaseScript = R"SQ(
 eve.SceneEntity <- class extends eve.Entity {
     _scene = null
     hostName = ""
@@ -271,7 +290,13 @@ eve.SceneEntity <- class extends eve.Entity {
     function onDetach() {}
     function update(dt) {}
 }
+)SQ";
 
+/**
+ * eve.Scene / eve.SceneNodeRef wrappers over native primitives. Applied after
+ * those classes have been addClass'd (on first use of eve.Scene).
+ */
+const char *kSceneEntityScript = R"SQ(
 // ---- eve.Scene: per-node entity API (script wrappers over native primitives) ----
 
 eve.Scene["getNodeRef"] <- function(nodeId, hostName = null) {
@@ -571,6 +596,20 @@ eve.SceneNodeRef["getBounds"] <- function() {
 }
 )SQ";
 
+void injectSceneEntityBase(ssq::Table &eveTable) {
+    HSQUIRRELVM vm = eveTable.getHandle();
+    const SQInteger top = sq_gettop(vm);
+    if (SQ_FAILED(sq_compilebuffer(vm, kSceneEntityBaseScript,
+                                   static_cast<SQInteger>(std::strlen(kSceneEntityBaseScript)),
+                                   "SceneEntity.nut", SQTrue))) {
+        sq_settop(vm, top);
+        return;
+    }
+    sq_pushroottable(vm);
+    sq_call(vm, 1, SQFalse, SQTrue);
+    sq_settop(vm, top);
+}
+
 void injectSceneEntityScript(ssq::Table &eveTable) {
     HSQUIRRELVM vm = eveTable.getHandle();
     const SQInteger top = sq_gettop(vm);
@@ -585,7 +624,10 @@ void injectSceneEntityScript(ssq::Table &eveTable) {
     sq_settop(vm, top);
 }
 
-bool g_sceneEntityHookRegistered = false;
+[[maybe_unused]] const bool g_sceneEntityHookRegistered = []() {
+    eve::registerPostEcsHook([](ssq::Table &t) { injectSceneEntityBase(t); });
+    return true;
+}();
 
 }  // namespace
 
@@ -594,42 +636,78 @@ SceneHost *Scene::ensureSelected(const std::string &preferredName) {
     if (!preferredName.empty()) {
         selected_ = findHostByName(preferredName);
         if (selected_) return selected_;
-        selected_ = SceneHost::createHost(preferredName);
+        auto created = SceneHost::createHost(preferredName);
+        if (!created.ok()) return nullptr;
+        selected_ = std::move(created).takeValue();
         return selected_;
     }
-    selected_ = SceneHost::createHost("default");
+    auto created = SceneHost::createHost("default");
+    if (!created.ok()) return nullptr;
+    selected_ = std::move(created).takeValue();
     return selected_;
 }
 
-SceneHost *Scene::mountAs(const std::string &name, NodeDesc root) {
+eve::Result<SceneHost *> Scene::mountAs(const std::string &name, NodeDesc root) {
     SceneHost *h = findHostByName(name);
-    if (!h) h = SceneHost::createHost(name);
-    h->setTree(std::move(root));
-    TransformSystem::updateHost(h);
-    pruneOrphanObjects();
+    if (!h) {
+        auto created = SceneHost::createHost(name);
+        if (!created.ok()) return eve::Result<SceneHost *>::failure(created.status());
+        h = std::move(created).takeValue();
+    }
+    try {
+        h->setTree(std::move(root));
+        TransformSystem::updateHost(h);
+        pruneOrphanObjects();
+    } catch (const std::exception &error) {
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
+                                         std::string("scene mount rejected: ") + error.what());
+    }
     selected_ = h;
-    return h;
+    return eve::Result<SceneHost *>::success(h, eve::Status::success(eve::StatusCode::Applied));
 }
 
-SceneHost *Scene::mount(NodeDesc root) { return mountAs("default", std::move(root)); }
+eve::Result<SceneHost *> Scene::mount(NodeDesc root) { return mountAs("default", std::move(root)); }
 
-SceneHost *Scene::remount(NodeDesc root) {
-    SceneHost *h = ensureSelected("default");
-    h->setTree(std::move(root));
-    TransformSystem::updateHost(h);
-    pruneOrphanObjects();
-    return h;
+eve::Result<SceneHost *> Scene::remount(NodeDesc root) {
+    SceneHost *h = selected_ ? selected_ : findHostByName("default");
+    if (!h) {
+        auto created = SceneHost::createHost("default");
+        if (!created.ok()) return eve::Result<SceneHost *>::failure(created.status());
+        h = std::move(created).takeValue();
+    }
+    try {
+        h->setTree(std::move(root));
+        TransformSystem::updateHost(h);
+        pruneOrphanObjects();
+    } catch (const std::exception &error) {
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
+                                         std::string("scene remount rejected: ") + error.what());
+    }
+    selected_ = h;
+    return eve::Result<SceneHost *>::success(h, eve::Status::success(eve::StatusCode::Applied));
 }
 
-SceneHost *Scene::remountReconcile(NodeDesc root) {
-    SceneHost *h = ensureSelected("default");
-    h->setTreeReconcile(std::move(root));
-    TransformSystem::updateHost(h);
-    pruneOrphanObjects();
-    return h;
+eve::Result<SceneHost *> Scene::remountReconcile(NodeDesc root) {
+    SceneHost *h = selected_ ? selected_ : findHostByName("default");
+    if (!h) {
+        auto created = SceneHost::createHost("default");
+        if (!created.ok()) return eve::Result<SceneHost *>::failure(created.status());
+        h = std::move(created).takeValue();
+    }
+    try {
+        const bool rebuilt = h->setTreeReconcile(std::move(root));
+        TransformSystem::updateHost(h);
+        pruneOrphanObjects();
+        selected_ = h;
+        return eve::Result<SceneHost *>::success(
+            h, eve::Status::success(rebuilt ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
+    } catch (const std::exception &error) {
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
+                                         std::string("scene reconcile rejected: ") + error.what());
+    }
 }
 
-SceneHost *Scene::remountAs(const std::string &name, NodeDesc root) {
+eve::Result<SceneHost *> Scene::remountAs(const std::string &name, NodeDesc root) {
     return mountAs(name, std::move(root));
 }
 
@@ -640,9 +718,21 @@ bool Scene::select(const std::string &name) {
     return true;
 }
 
-SceneHost *Scene::findHost(const std::string &name) const { return findHostByName(name); }
+eve::Result<SceneHost *> Scene::findHost(const std::string &name) const {
+    if (name.empty())
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::InvalidArgument, "scene host name must not be empty");
+    if (SceneHost *host = findHostByName(name)) return eve::Result<SceneHost *>::success(host, eve::Status::success());
+    return sceneFailure<SceneHost *>(eve::DiagnosticCode::NotFound, "scene host was not found: " + name);
+}
 
-SceneHost *Scene::findHostByOwner(uint32_t ownerId) const { return findHostByOwnerId(ownerId); }
+eve::Result<SceneHost *> Scene::findHostByOwner(uint32_t ownerId) const {
+    if (ownerId == 0)
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::InvalidArgument, "scene host owner id must not be zero");
+    if (SceneHost *host = findHostByOwnerId(ownerId))
+        return eve::Result<SceneHost *>::success(host, eve::Status::success());
+    return sceneFailure<SceneHost *>(eve::DiagnosticCode::NotFound,
+                                     "scene host owner id was not found: " + std::to_string(ownerId));
+}
 
 void Scene::bindOwner(uint32_t ownerId) {
     SceneHost *h = ensureSelected();
@@ -686,8 +776,8 @@ bool Scene::deserializeHostAt(const std::string &hostName, const std::string &js
         Poco::JSON::Object::Ptr tree = root->getObject("root");
         if (!tree) return false;
         NodeDesc desc = nodeFromJson(tree);
-        mountAs(hostName.empty() ? "default" : hostName, std::move(desc));
-        return true;
+        auto     mounted = mountAs(hostName.empty() ? "default" : hostName, std::move(desc));
+        return mounted.ok();
     } catch (...) {
         return false;
     }
@@ -773,7 +863,8 @@ bool Scene::buildComplete() const { return openStack_.empty() && hasBuiltRoot_; 
 
 bool Scene::mountBuild() {
     if (!buildComplete()) return false;
-    remount(std::move(builtRoot_));
+    auto mounted = remount(std::move(builtRoot_));
+    if (!mounted.ok()) return false;
     hasBuiltRoot_ = false;
     builtRoot_ = NodeDesc{};
     return true;
@@ -781,7 +872,8 @@ bool Scene::mountBuild() {
 
 bool Scene::mountBuildAs(const std::string &name) {
     if (!buildComplete()) return false;
-    mountAs(name, std::move(builtRoot_));
+    auto mounted = mountAs(name, std::move(builtRoot_));
+    if (!mounted.ok()) return false;
     hasBuiltRoot_ = false;
     builtRoot_ = NodeDesc{};
     return true;
@@ -789,8 +881,12 @@ bool Scene::mountBuildAs(const std::string &name) {
 
 bool Scene::remountBuildAs(const std::string &name) {
     if (!buildComplete()) return false;
-    SceneHost *h = findHost(name);
-    if (!h) h = SceneHost::createHost(name);
+    SceneHost *h = findHostByName(name);
+    if (!h) {
+        auto created = SceneHost::createHost(name);
+        if (!created.ok()) return false;
+        h = std::move(created).takeValue();
+    }
     h->setTreeReconcile(std::move(builtRoot_));
     TransformSystem::updateHost(h);
     pruneOrphanObjects();
@@ -820,13 +916,36 @@ SceneObject *Scene::findSceneObjectById(uint32_t id) const {
     return nullptr;
 }
 
+SceneObject *Scene::findSceneObjectByPersistentId(eve::SceneObjectId id) const {
+    if (id.isNil() || ecs::current()->getManager<SceneObject>() == nullptr) return nullptr;
+    auto view = ecs::View<SceneObject, SceneObject::Meta>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [meta] = *it;
+        if (meta->entity && meta->persistentId == id) return meta->entity;
+    }
+    return nullptr;
+}
+
 SceneObject *Scene::ensureSceneObject(SceneHost *host, SceneNode *node,
                                       const std::string &hostName) {
     if (node->objectId != 0) {
-        if (SceneObject *o = findSceneObjectById(node->objectId)) return o;
+        if (SceneObject *o = findSceneObjectById(node->objectId)) {
+            if (!node->persistentId.isNil()) o->meta()->persistentId = node->persistentId;
+            return o;
+        }
         node->objectId = 0;  // stale id (entity was released)
     }
-    SceneObject *o = SceneObject::createObject(hostName, node->id);
+    if (!node->persistentId.isNil()) {
+        if (SceneObject *o = findSceneObjectByPersistentId(node->persistentId)) {
+            node->objectId      = uint32_t(o->id);
+            o->meta()->hostName = hostName;
+            o->meta()->nodeId   = node->id;
+            return o;
+        }
+    }
+    auto created = SceneObject::createObject(hostName, node->id, node->persistentId);
+    if (!created.ok()) return nullptr;
+    SceneObject *o = std::move(created).takeValue();
     node->objectId = uint32_t(o->id);
     return o;
 }
@@ -836,7 +955,7 @@ bool Scene::rootEntity(const std::string &hostName, const std::string &nodeId,
     if (!vm_) return false;
     SceneHost *h = resolveHost(hostName);
     if (!h) return false;
-    SceneNode *n = h->findById(nodeId);
+    SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return false;
     HSQOBJECT raw = instance.getRaw();
     if (raw._type != OT_INSTANCE) return false;
@@ -856,7 +975,7 @@ bool Scene::unrootEntityAt(const std::string &hostName, const std::string &nodeI
     if (!vm_) return false;
     SceneHost *h = resolveHost(hostName);
     if (!h) return false;
-    SceneNode *n = h->findById(nodeId);
+    SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return false;
     SceneObject *obj = n->objectId ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return false;
@@ -877,7 +996,7 @@ int Scene::forEachEntity(const std::string &hostName, const std::string &nodeId,
     if (!vm_) return 0;
     SceneHost *h = resolveHost(hostName);
     if (!h) return 0;
-    SceneNode *n = h->findById(nodeId);
+    SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return 0;
     SceneObject *obj = n->objectId ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return 0;
@@ -933,7 +1052,7 @@ SceneNodeRef *Scene::getNodeRefByPathAt(const std::string &hostName,
                         : hostName;
     SceneHost *host = resolveHost(hostName);
     if (!host) return new SceneNodeRef(std::move(h), "");
-    SceneNode *n = host->findByPath(path);
+    SceneNode *n = borrowSceneResult(host->findByPath(path));
     return new SceneNodeRef(std::move(h), n ? n->id : std::string{});
 }
 
@@ -950,11 +1069,12 @@ void Scene::pruneOrphanObjects() {
                 orphans.push_back(meta->entity);
                 continue;
             }
-            SceneNode *n = h->findById(meta->nodeId);
+            SceneNode *n = borrowSceneResult(h->findById(meta->nodeId));
             if (!n || n->objectId != uint32_t(meta->entity->id)) {
                 orphans.push_back(meta->entity);
                 continue;
             }
+            if (!n->persistentId.isNil()) meta->persistentId = n->persistentId;
             (void)sb;
             // Self-heal: node id / host renamed (reconcile patch), keep binding.
             if (meta->hostName != h->getName() || meta->nodeId != n->id) {
@@ -1061,6 +1181,8 @@ void Scene::expose(ssq::Table &table) {
         std::function<SceneNodeRef *()>([]() -> SceneNodeRef * { return nullptr; }), true);
     refCls.addFunc("getNodeId", &SceneNodeRef::getNodeId);
     refCls.addFunc("getHostName", &SceneNodeRef::getHostName);
+    refCls.addFunc("getPersistentId",
+                   [](SceneNodeRef *ref) { return ref ? ref->persistentId().format() : std::string{}; });
     refCls.addFunc("isValid", &SceneNodeRef::isValid);
     refCls.addFunc("getScene", &SceneNodeRef::getScene);
     refCls.addFunc("setPosition", &SceneNodeRef::setPosition);
@@ -1094,13 +1216,7 @@ void Scene::expose(ssq::Table &table) {
     refCls.addFunc("getPath", &SceneNodeRef::getPath);
 
     injectSceneComponentClass(table);
-
-    // Register a hook so eve.SceneEntity (extends eve.Entity) is injected only
-    // after exposeECS() has defined the script ECS base classes.
-    if (!g_sceneEntityHookRegistered) {
-        g_sceneEntityHookRegistered = true;
-        eve::registerPostEcsHook([](ssq::Table &t) { injectSceneEntityScript(t); });
-    }
+    injectSceneEntityScript(table);
 }
 
 void Scene::expose(ssq::Class &cls) {

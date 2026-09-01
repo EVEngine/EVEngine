@@ -20,14 +20,16 @@ const char* unitSchema = R"({
   ]
 })";
 
+bool registrationSucceeded(eve::Result<SchemaRegistrationStatus> result) {
+    return result.ok() && result.value() == SchemaRegistrationStatus::Registered;
+}
+
 }  // namespace
 
 TEST_CASE("schema.registry.metadataAndStableEnumeration") {
     SchemaRegistry::clear();
-    std::string error;
-    CHECK(SchemaRegistry::registerFromJson(unitSchema, &error));
-    CHECK(error.empty());
-    CHECK(SchemaRegistry::registerFromJson(R"({"id":"ability","version":1})"));
+    CHECK(SchemaRegistry::registerFromJson(unitSchema).ok());
+    CHECK(SchemaRegistry::registerFromJson(R"({"id":"ability","version":1})").ok());
     CHECK_EQ(SchemaRegistry::count(), 2);
     CHECK_EQ(SchemaRegistry::ids()[0], "ability");
     const auto* schema = SchemaRegistry::find("unit");
@@ -38,19 +40,113 @@ TEST_CASE("schema.registry.metadataAndStableEnumeration") {
     CHECK_EQ(schema->fields[3].reference, "weapon");
 }
 
+TEST_CASE("schema.registry.supportsMultipleVersionsAndExactResolution") {
+    SchemaRegistry::clear();
+    SchemaDefinition v1;
+    v1.id      = "unit";
+    v1.version = 1;
+    v1.title   = "Unit v1";
+    FieldDefinition legacyField;
+    legacyField.name     = "legacy";
+    legacyField.type     = ValueType::String;
+    legacyField.required = true;
+    v1.fields.push_back(legacyField);
+    SchemaDefinition v2 = v1;
+    v2.version          = 2;
+    v2.title            = "Unit v2";
+
+    CHECK(registrationSucceeded(SchemaRegistry::registerVersioned(v1)));
+    CHECK(registrationSucceeded(SchemaRegistry::registerVersioned(v2)));
+    CHECK_EQ(SchemaRegistry::count(), 1);
+    CHECK_EQ(SchemaRegistry::versionCount(), 2);
+    CHECK_EQ(SchemaRegistry::versions("unit"), std::vector<int>({1, 2}));
+    REQUIRE(SchemaRegistry::resolve("unit", 1) != nullptr);
+    CHECK_EQ(SchemaRegistry::resolve("unit", 1)->title, "Unit v1");
+    REQUIRE(SchemaRegistry::resolve("unit", 2) != nullptr);
+    CHECK_EQ(SchemaRegistry::resolve("unit", 2)->title, "Unit v2");
+    CHECK_EQ(SchemaRegistry::find("unit")->version, 2);
+    CHECK_EQ(SchemaRegistry::validate("unit", 1, R"({})")[0].code, "required");
+    CHECK(SchemaRegistry::validate("unit", R"({})").empty());
+}
+
+TEST_CASE("schema.registry.rejectsExactVersionConflictWithoutOverwriting") {
+    SchemaRegistry::clear();
+    SchemaDefinition definition;
+    definition.id      = "unit";
+    definition.version = 3;
+    definition.title   = "original";
+    CHECK(registrationSucceeded(SchemaRegistry::registerVersioned(definition)));
+
+    definition.title = "replacement";
+    auto conflict    = SchemaRegistry::registerVersioned(definition);
+    CHECK(!conflict.ok());
+    CHECK_EQ(conflict.code(), eve::StatusCode::Conflict);
+    REQUIRE(SchemaRegistry::resolve("unit", 3) != nullptr);
+    CHECK_EQ(SchemaRegistry::resolve("unit", 3)->title, "original");
+
+    auto replacement = SchemaRegistry::registerSchema(definition);
+    REQUIRE(replacement.ok());
+    CHECK_EQ(replacement.value(), SchemaRegistrationStatus::Replaced);
+    CHECK_EQ(SchemaRegistry::resolve("unit", 3)->title, "replacement");
+}
+
+TEST_CASE("schema.registry.distinguishesMissingVersion") {
+    SchemaRegistry::clear();
+    SchemaDefinition definition;
+    definition.id      = "unit";
+    definition.version = 1;
+    REQUIRE(registrationSucceeded(SchemaRegistry::registerVersioned(definition)));
+
+    CHECK(SchemaRegistry::resolve("unit", 2) == nullptr);
+    const auto errors = SchemaRegistry::validate("unit", 2, R"({})");
+    REQUIRE_EQ(errors.size(), size_t(1));
+    CHECK_EQ(errors[0].code, "schema_version_not_found");
+    CHECK(SchemaRegistry::resolve("missing", 1) == nullptr);
+}
+
+TEST_CASE("schema.registry.acceptsCanonicalSchemaVersionAndRejectsConflictingAliases") {
+    SchemaRegistry::clear();
+    CHECK(registrationSucceeded(SchemaRegistry::registerFromJsonVersioned(R"({"id":"unit","schemaVersion":4})")));
+    REQUIRE(SchemaRegistry::resolve("unit", 4) != nullptr);
+    CHECK_EQ(SchemaRegistry::resolve("unit", 4)->version, 4);
+
+    auto conflict = SchemaRegistry::registerFromJsonVersioned(R"({"id":"conflicting","version":1,"schemaVersion":2})");
+    CHECK(!conflict.ok());
+    CHECK_EQ(conflict.code(), eve::StatusCode::Failed);
+}
+
+TEST_CASE("schema.registry.legacyFacadeKeepsVersionsAndRemovesExactly") {
+    SchemaRegistry::clear();
+    SchemaDefinition v1;
+    v1.id               = "unit";
+    v1.version          = 1;
+    SchemaDefinition v2 = v1;
+    v2.version          = 2;
+    REQUIRE(SchemaRegistry::registerSchema(v1).ok());
+    REQUIRE(SchemaRegistry::registerSchema(v2).ok());
+    CHECK(SchemaRegistry::remove("unit", 1).ok());
+    CHECK(SchemaRegistry::resolve("unit", 1) == nullptr);
+    CHECK(SchemaRegistry::resolve("unit", 2) != nullptr);
+    CHECK_EQ(SchemaRegistry::count(), 1);
+    CHECK_EQ(SchemaRegistry::versionCount(), 1);
+    CHECK(SchemaRegistry::remove("unit").ok());
+    CHECK_EQ(SchemaRegistry::count(), 0);
+}
+
 TEST_CASE("schema.registry.rejectsMalformedDefinitions") {
     SchemaRegistry::clear();
-    std::string error;
-    CHECK(!SchemaRegistry::registerFromJson(R"({"id":"","version":1})", &error));
-    CHECK(!error.empty());
-    CHECK(!SchemaRegistry::registerFromJson(R"({"id":"bad","fields":[{"name":"x","type":"mystery"}]})", &error));
-    CHECK(!SchemaRegistry::registerFromJson(R"({"id":"duplicate","fields":[{"name":"x"},{"name":"x"}]})", &error));
+    auto emptyId = SchemaRegistry::registerFromJson(R"({"id":"","version":1})");
+    CHECK(!emptyId.ok());
+    auto badType = SchemaRegistry::registerFromJson(R"({"id":"bad","fields":[{"name":"x","type":"mystery"}]})");
+    CHECK(!badType.ok());
+    auto duplicate = SchemaRegistry::registerFromJson(R"({"id":"duplicate","fields":[{"name":"x"},{"name":"x"}]})");
+    CHECK(!duplicate.ok());
     CHECK_EQ(SchemaRegistry::count(), 0);
 }
 
 TEST_CASE("schema.validation.returnsStructuredErrors") {
     SchemaRegistry::clear();
-    REQUIRE(SchemaRegistry::registerFromJson(unitSchema));
+    REQUIRE(SchemaRegistry::registerFromJson(unitSchema).ok());
     const auto valid =
         SchemaRegistry::validate("unit", R"({"id":"heavy_tank","speed":42,"role":"tank","weapons":["cannon"]})");
     CHECK(valid.empty());
@@ -74,14 +170,69 @@ TEST_CASE("schema.module.scriptBinding") {
         function schemaBindingTest() {
             local s = eve.Schema();
             s.clear();
-            if (!s.registerJson(@"{""id"":""rank"",""version"":3,""fields"":[{""name"":""level"",""type"":""integer"",""required"":true}]}")) return false;
+            local registered = s.registerJson(@"{""id"":""rank"",""version"":3,""fields"":[{""name"":""level"",""type"":""integer"",""required"":true}]}");
+            if (!registered.ok || !eve.result.isChecked(registered)) return false;
             if (s.getSchemaId(0) != "rank" || s.getSchemaVersion("rank") != 3) return false;
+            if (!s.hasVersion("rank", 3) || s.getSchemaVersionCount("rank") != 1 ||
+                s.getSchemaVersionAt("rank", 0) != 3) return false;
             if (s.getFieldName("rank", 0) != "level" || !s.getFieldRequired("rank", 0)) return false;
-            if (!s.validateJson("rank", @"{""level"":2}")) return false;
-            if (s.validateJson("rank", @"{""level"":2.5}")) return false;
-            return s.getValidationErrorCode(0) == "type";
+            local valid = s.validateJson("rank", @"{""level"":2}");
+            if (!valid.ok || !eve.result.isChecked(valid)) return false;
+            local invalid = s.validateJson("rank", @"{""level"":2.5}");
+            if (invalid.ok || !eve.result.isChecked(invalid)) return false;
+            if (s.getValidationErrorCode(0) != "type") return false;
+            local accepted = s.validateJsonVersioned("rank", 3, @"{""level"":2}");
+            if (!accepted.ok || accepted.code != "applied" || !eve.result.isChecked(accepted)) return false;
+            local rejected = s.validateJsonVersioned("rank", 3, @"{""level"":2.5}");
+            return !rejected.ok && rejected.diagnostics.len() == 1 &&
+                   rejected.diagnostics[0].code == "invalid_argument" &&
+                   rejected.diagnostics[0].path == "/level" && eve.result.isChecked(rejected);
         }
     )");
     vm.run(script);
     CHECK(vm.callFunc(vm.findFunc("schemaBindingTest"), vm).toBool());
+}
+
+TEST_CASE("schema.module.reflectFromClass") {
+    SchemaRegistry::clear();
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    auto script = vm.compileSource(R"(
+        class CardDefinition </ id="card.definition", version=1, title="Card Definition", additionalProperties=false /> {
+            </ required=true />
+            id = ""
+            </ required=true />
+            name = ""
+            </ values=["creature","spell"] />
+            kind = "creature"
+            </ min=0, max=20 />
+            cost = 0
+            </ min=0, max=99 />
+            attack = 0
+            </ min=0, max=99 />
+            health = 0
+        }
+
+        function schemaReflectTest() {
+            local s = eve.Schema();
+            s.clear();
+            if (!s.registerFromClass(CardDefinition)) return s.getLastError();
+            if (s.getSchemaVersion("card.definition") != 1) return "version";
+            if (s.getSchemaTitle("card.definition") != "Card Definition") return "title";
+            if (s.getSchemaAdditionalProperties("card.definition")) return "additionalProperties";
+            if (s.getFieldCount("card.definition") != 6) return "count";
+            if (s.getFieldType("card.definition", 3) != "integer") return "type";
+            if (!s.getFieldRequired("card.definition", 0)) return "required";
+            if (s.getFieldEnumCount("card.definition", 2) != 2) return "enum";
+            if (!s.getFieldHasMinimum("card.definition", 3)) return "min";
+            if (s.getFieldMaximum("card.definition", 3) != 20) return "max";
+            local ok = @"{""id"":""card.scout"",""name"":""Scout"",""kind"":""creature"",""cost"":2,""attack"":3,""health"":2}";
+            if (!s.validateJson("card.definition", ok)) return "valid";
+            local bad = @"{""id"":""x"",""name"":""y"",""kind"":""air"",""cost"":25}";
+            if (s.validateJson("card.definition", bad)) return "invalid";
+            return s.getValidationErrorCode(0) == "enum";
+        }
+    )");
+    vm.run(script);
+    CHECK(vm.callFunc(vm.findFunc("schemaReflectTest"), vm).toBool());
 }

@@ -39,8 +39,8 @@ public:
     void close();
     /** @brief True while the database host is mounted and visible. */
     bool isOpen() const;
-    /** @brief The mounted host (nullptr until open()); for embedding/tests. */
-    UIHost* host() const { return host_; }
+    /** @brief Returns the mounted database host handle, or an empty handle until open(). */
+    [[nodiscard]] UIHostHandle host() const noexcept { return host_; }
 
     /** @brief Re-scans reflected classes and refreshes the grid. */
     void refresh();
@@ -48,12 +48,22 @@ public:
     bool selectClass(const std::string& name);
     /** @brief Name of the currently selected class ("" when none). */
     const std::string& selectedClass() const { return selectedClass_; }
-    /** @brief Creates + registers an instance of the selected class. */
-    uint64_t createInstance();
-    /** @brief Registers a live script object (auto-derives class when empty). */
-    uint64_t registerObject(const ssq::Object& object, const std::string& label = {});
-    /** @brief Removes an entry from the registry and refreshes the grid. */
-    bool unregister(uint64_t id);
+    /**
+     * @brief Creates and registers an instance of the selected class.
+     * @return A generation-qualified UI object handle, or a structured failure.
+     */
+    [[nodiscard]] eve::Result<ObjectHandle> createInstance();
+    /**
+     * @brief Registers a live script object (auto-derives class when empty).
+     * @return A generation-qualified UI object handle, or a structured failure.
+     */
+    [[nodiscard]] eve::Result<ObjectHandle> registerObject(const ssq::Object& object, const std::string& label = {});
+    /**
+     * @brief Removes an entry from the registry and refreshes the grid.
+     * @param handle The generation-qualified handle to remove.
+     * @return Applied on success, or a structured stale/invalid failure.
+     */
+    [[nodiscard]] eve::Result<void> unregister(ObjectHandle handle);
 
     /** @brief Pulls model → view for visible cells (per-frame). */
     void sync();
@@ -66,7 +76,7 @@ private:
     WidgetDesc cellWidget(const ObjectEntry& entry, const ReflectedMember& member,
                           const ReflectedValue& value);
 
-    UIHost* host_ = nullptr;
+    UIHostHandle                 host_{};
     std::vector<std::string> classNames_;
     std::string selectedClass_;
     std::vector<ObjectEntry> entries_;

@@ -5,6 +5,8 @@
 #include "common/Resource.h"
 
 #include <map>
+#include <set>
+#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -17,10 +19,12 @@ public:
 
     void adopt(eve::Resource &replacement) override {
         auto &other = static_cast<TestResource &>(replacement);
+        if (other.failOnAdopt) throw std::runtime_error("injected adopt failure");
         std::swap(value, other.value);
     }
 
-    int value = 0;
+    int  value = 0;
+    bool failOnAdopt = false;
 };
 
 /** Fake asset provider: claims "*.dat" and serves a fresh generation each load. */
@@ -33,17 +37,29 @@ public:
         return path.size() >= 4 && path.compare(path.size() - 4, 4, ".dat") == 0;
     }
 
+    eve::Result<bool> reload(const std::string &) override {
+        // ResourceManager owns the test cache refresh; this provider only
+        // supplies detached candidates through load().
+        return eve::Result<bool>::success(false);
+    }
+
     eve::Resource *load(const std::string &key) override {
         if (!handlesPath(key)) return nullptr;
+        if (failures.count(key)) return nullptr;
         auto *r = new TestResource();
         r->value = ++generation[key];
+        r->failOnAdopt = adoptFailures.count(key) != 0;
         return r;
     }
 
     static std::map<std::string, int> generation;
+    static std::set<std::string>      failures;
+    static std::set<std::string>      adoptFailures;
 };
 
 std::map<std::string, int> TestProvider::generation;
+std::set<std::string> TestProvider::failures;
+std::set<std::string> TestProvider::adoptFailures;
 
 /** Every case starts from an empty cache + empty capability registry. */
 struct Reset {
@@ -63,6 +79,8 @@ TestProvider &provider() {
     static TestProvider p;
     eve::cap::addListener<eve::caps::IAssetReloader>(&p, eve::caps::IAssetReloader::kCache);
     TestProvider::generation.clear();
+    TestProvider::failures.clear();
+    TestProvider::adoptFailures.clear();
     return p;
 }
 
@@ -156,7 +174,9 @@ TEST_CASE("resource.reloadRefreshesInPlace") {
     TestResource *ptr = static_cast<TestResource *>(a);
     CHECK_EQ(ptr->value, 1);
 
-    CHECK(eve::ResourceManager::getInstance().reload("a.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(result.value());
     CHECK(a == ptr);  // identity stays stable
     CHECK_EQ(ptr->value, 2);                             // fresh payload adopted
     CHECK_EQ(eve::ResourceManager::getInstance().count(), 1u);
@@ -167,7 +187,9 @@ TEST_CASE("resource.reloadWithoutCachedEntryIsNoop") {
     provider();
 
     CHECK(!eve::ResourceManager::getInstance().handlesPath("a.dat"));
-    CHECK(!eve::ResourceManager::getInstance().reload("a.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(!result.value());
 }
 
 TEST_CASE("resource.reloadTriggersDependents") {
@@ -182,7 +204,9 @@ TEST_CASE("resource.reloadTriggersDependents") {
     CHECK_EQ(static_cast<TestResource *>(a)->value, 1);
     CHECK_EQ(static_cast<TestResource *>(b)->value, 1);
 
-    CHECK(eve::ResourceManager::getInstance().reload("a.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(result.value());
     CHECK_EQ(static_cast<TestResource *>(a)->value, 2);
     // The dependent entry refreshed transitively, in place.
     CHECK_EQ(static_cast<TestResource *>(b)->value, 2);
@@ -200,7 +224,61 @@ TEST_CASE("resource.reloadDependencyCycleIsSafe") {
     a->addDependency(eve::ref<eve::Resource>(b));
     b->addDependency(eve::ref<eve::Resource>(a));
 
-    CHECK(eve::ResourceManager::getInstance().reload("a.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(result.value());
     CHECK_EQ(static_cast<TestResource *>(a)->value, 2);
     CHECK_EQ(static_cast<TestResource *>(b)->value, 2);
+}
+
+TEST_CASE("resource.reloadAllVariantsIsTransactional") {
+    Reset reset;
+    provider();
+
+    auto *small = static_cast<TestResource *>(get("a.dat?size=16"));
+    auto *large = static_cast<TestResource *>(get("a.dat?size=32"));
+    REQUIRE(small != nullptr);
+    REQUIRE(large != nullptr);
+    TestProvider::failures.insert("a.dat?size=32");
+
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(!result.value());
+    CHECK_EQ(small->value, 1);
+    CHECK_EQ(large->value, 1);
+}
+
+TEST_CASE("resource.reloadDependentFailureRollsBackWholeGraph") {
+    Reset reset;
+    provider();
+
+    auto *source = static_cast<TestResource *>(get("source.dat"));
+    auto *derived = static_cast<TestResource *>(get("derived.dat"));
+    REQUIRE(source != nullptr);
+    REQUIRE(derived != nullptr);
+    derived->addDependency(eve::ref<eve::Resource>(source));
+    TestProvider::failures.insert("derived.dat");
+
+    auto result = eve::ResourceManager::getInstance().reload("source.dat");
+    CHECK(result.ok());
+    CHECK(!result.value());
+    CHECK_EQ(source->value, 1);
+    CHECK_EQ(derived->value, 1);
+}
+
+TEST_CASE("resource.reloadCommitFailureRollsBackEarlierEntries") {
+    Reset reset;
+    provider();
+
+    auto *first = static_cast<TestResource *>(get("a.dat?variant=1"));
+    auto *second = static_cast<TestResource *>(get("a.dat?variant=2"));
+    REQUIRE(first != nullptr);
+    REQUIRE(second != nullptr);
+    TestProvider::adoptFailures.insert("a.dat?variant=2");
+
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(!result.value());
+    CHECK_EQ(first->value, 1);
+    CHECK_EQ(second->value, 1);
 }

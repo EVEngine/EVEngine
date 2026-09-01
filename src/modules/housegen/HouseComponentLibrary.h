@@ -1,8 +1,12 @@
 #pragma once
 
+#include "common/BorrowedRef.h"
+#include "common/Result.h"
 #include "housegen/HouseGenTypes.h"
 
+#include <functional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -12,19 +16,19 @@ namespace eve::housegen {
 class HouseComponentLibrary {
 public:
     /** @brief 从 JSON / 文件加载组件。 */
-    bool loadFromJson(const std::string &json, std::string *error = nullptr);
-    bool loadFromFile(const std::string &filename, std::string *error = nullptr);
+    [[nodiscard]] eve::Result<void> loadFromJson(std::string_view json);
+    [[nodiscard]] eve::Result<void> loadFromFile(std::string_view filename);
     /** @brief 注册单个组件（id 重复会报错）。 */
-    bool registerComponent(const HouseComponent &component, std::string *error = nullptr);
+    [[nodiscard]] eve::Result<void> registerComponent(const HouseComponent &component);
     /** @brief 清空注册表。 */
     void clear();
-    /** @brief 按 id 查询组件。 */
-    const HouseComponent *find(const std::string &id) const;
+    /** @brief 按 id 查询组件；缺失是正常查询结果。 */
+    [[nodiscard]] eve::OptionalRef<const HouseComponent> find(std::string_view id) const;
     /** @brief 全部组件 id。 */
     std::vector<std::string> ids() const;
     /** @brief 按分类（可选风格）查询组件。 */
-    std::vector<const HouseComponent *> byCategory(const std::string &category,
-                                                    const std::string &style = {}) const;
+    [[nodiscard]] std::vector<std::reference_wrapper<const HouseComponent>> byCategory(
+        std::string_view category, std::string_view style = {}) const;
     /** @brief 组件总数。 */
     int count() const;
 

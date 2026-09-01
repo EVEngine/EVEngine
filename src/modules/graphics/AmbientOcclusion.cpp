@@ -12,6 +12,7 @@
 #include "graphics/shaders/ao_blur_frag_spv.inc"
 #include "graphics/shaders/ao_overlay_frag_spv.inc"
 #include "graphics/shaders/ao_from_depth_frag_spv.inc"
+#include "graphics/shaders/AmbientOcclusionWgsl.h"
 
 #include <algorithm>
 #include <cmath>
@@ -22,6 +23,12 @@
 
 namespace eve::graphics {
 namespace {
+
+Shader *newAoShader(Graphics *gfx, const std::vector<uint32_t> &frag, const char *wgsl) {
+    if (gfx->getBackendName() == "webgpu")
+        return gfx->newShaderFromWgsl({}, std::string(shaders::kAoCommon) + wgsl);
+    return gfx->newShaderFromSpv({}, frag);
+}
 
 void declareComputeCommon(Shader *sh, bool horizonStyle) {
     sh->declareMatrix("invViewProj");
@@ -44,8 +51,7 @@ void declareComputeCommon(Shader *sh, bool horizonStyle) {
 Shader *createSsaoShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AmbientOcclusion: null graphics");
     std::vector<uint32_t> frag(ao_ssao_frag_spv, ao_ssao_frag_spv + ao_ssao_frag_spv_count);
-    std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newAoShader(gfx, frag, shaders::kSsao);
     declareComputeCommon(sh, false);
     sh->sendMatrix("invViewProj", glm::mat4(1.f));
     sh->sendFloat("nearZ", 0.1f);
@@ -63,8 +69,7 @@ Shader *createSsaoShader(Graphics *gfx) {
 Shader *createHbaoShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AmbientOcclusion: null graphics");
     std::vector<uint32_t> frag(ao_hbao_frag_spv, ao_hbao_frag_spv + ao_hbao_frag_spv_count);
-    std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newAoShader(gfx, frag, shaders::kHbao);
     declareComputeCommon(sh, true);
     sh->sendMatrix("invViewProj", glm::mat4(1.f));
     sh->sendFloat("nearZ", 0.1f);
@@ -83,8 +88,7 @@ Shader *createHbaoShader(Graphics *gfx) {
 Shader *createGtaoShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AmbientOcclusion: null graphics");
     std::vector<uint32_t> frag(ao_gtao_frag_spv, ao_gtao_frag_spv + ao_gtao_frag_spv_count);
-    std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newAoShader(gfx, frag, shaders::kGtao);
     declareComputeCommon(sh, true);
     sh->declareFloat("thickness");
     sh->sendMatrix("invViewProj", glm::mat4(1.f));
@@ -105,8 +109,7 @@ Shader *createGtaoShader(Graphics *gfx) {
 Shader *createBlurShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AmbientOcclusion: null graphics");
     std::vector<uint32_t> frag(ao_blur_frag_spv, ao_blur_frag_spv + ao_blur_frag_spv_count);
-    std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newAoShader(gfx, frag, shaders::kBlur);
     sh->declareFloat("texelW");
     sh->declareFloat("texelH");
     sh->declareFloat("depthSigma");
@@ -121,8 +124,7 @@ Shader *createBlurShader(Graphics *gfx) {
 Shader *createOverlayShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AmbientOcclusion: null graphics");
     std::vector<uint32_t> frag(ao_overlay_frag_spv, ao_overlay_frag_spv + ao_overlay_frag_spv_count);
-    std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newAoShader(gfx, frag, shaders::kOverlay);
     sh->declareFloat("intensity");
     sh->declareFloat("power");
     sh->sendFloat("intensity", 1.f);
@@ -134,7 +136,7 @@ Shader *createFromDepthShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AmbientOcclusion: null graphics");
     std::vector<uint32_t> frag(ao_from_depth_frag_spv,
                                ao_from_depth_frag_spv + ao_from_depth_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = newAoShader(gfx, frag, shaders::kFromDepth);
     if (!sh || !sh->gpuHandle)
         throw eve::Exception("AmbientOcclusion: failed to create from-depth shader");
     declareComputeCommon(sh, false);
@@ -386,7 +388,7 @@ void AmbientOcclusion::computeTo(Graphics *gfx, Texture *linearDepth, Canvas *de
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     compute(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void AmbientOcclusion::blur(Graphics *gfx, Texture *aoMap) {
@@ -402,7 +404,7 @@ void AmbientOcclusion::blurTo(Graphics *gfx, Texture *aoMap, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     blur(gfx, aoMap);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void AmbientOcclusion::applyOverlay(Graphics *gfx, Texture *aoMap) {
@@ -422,7 +424,7 @@ void AmbientOcclusion::applyOverlayTo(Graphics *gfx, Texture *aoMap, Canvas *des
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyOverlay(gfx, aoMap);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void AmbientOcclusion::applyFromDepth(Graphics *gfx, Texture *hwDepth) {
@@ -453,7 +455,7 @@ void AmbientOcclusion::applyFromDepthTo(Graphics *gfx, Texture *linearDepth, Can
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyFromDepth(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 Texture *AmbientOcclusion::newLinearDepthTexture(Graphics *gfx, int width, int height,

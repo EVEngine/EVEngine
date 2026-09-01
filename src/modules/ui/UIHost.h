@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/BorrowedRef.h"
 #include "common/ECS.h"
 
 #include <cstdint>
@@ -8,6 +9,8 @@
 #include <vector>
 
 namespace eve::ui {
+
+using UIHostHandle = ecs::EntityHandle;
 
 /** @brief Widget node kinds understood by the UI renderer. */
 enum class NodeType : uint8_t {
@@ -42,7 +45,8 @@ enum class NodeType : uint8_t {
     Toolbox = 28,       // wrapping grid of editor tools
     Sidebar = 29,       // vertical editor side panel
     StatusBar = 30,     // compact horizontal status strip
-    SplitPane = 31,     // two resizable panes
+    SplitPane = 31,      // two resizable panes
+    NinePatchPanel = 32, // .9.png-backed stretchable content container
 };
 
 /** @brief Main-axis direction for Flex containers. */
@@ -60,6 +64,52 @@ enum class FlexJustify : uint8_t {
     SpaceAround = 4,
 };
 
+/** @brief Keyboard/gamepad focus policy for an interactive control. */
+enum class FocusMode : uint8_t { None = 0, Click = 1, All = 2 };
+
+/** @brief Logical focus movement understood by keyboard, gamepad and automation. */
+enum class FocusDirection : uint8_t { Next = 0, Previous, Left, Right, Up, Down };
+
+/** @brief Pointer event participation and propagation policy. */
+enum class MouseFilter : uint8_t { Stop = 0, Pass = 1, Ignore = 2 };
+
+/** @brief Built-in theme override inherited by a retained UI subtree. */
+enum class ThemePreset : uint8_t { Inherit = 0, Dark = 1, Light = 2 };
+
+/** @brief Visibility result of projecting a world-space UI anchor. */
+enum class WorldAnchorState : uint8_t {
+    Disabled = 0,
+    Visible,
+    BehindCamera,
+    OutsideViewport,
+    NoCamera,
+    Crowded
+};
+
+/** @brief Policy used when a projected world-space anchor leaves the viewport. */
+enum class WorldAnchorEdgePolicy : uint8_t { Hide = 0, Clamp };
+
+/** @brief Deterministic screen-space overlap policy for projected world anchors. */
+enum class WorldAnchorOverlapPolicy : uint8_t { Allow = 0, Avoid };
+
+/** @brief Platform-neutral accessibility role exposed by controls. */
+enum class AccessibilityRole : uint8_t {
+    Auto = 0,
+    Button,
+    Checkbox,
+    Slider,
+    Text,
+    TextInput,
+    List,
+    ListItem,
+    Menu,
+    MenuItem,
+    Progress,
+    Region,
+    Tab,
+    Window
+};
+
 /**
  * @brief Retained UI widget node (arena tree). Conceptual counterpart of
  * eve::scene::SceneNode; built declaratively from WidgetDesc.
@@ -72,8 +122,29 @@ struct UINode {
     std::string valueText;  // InputText content
     std::string tooltip;    // hover help; empty disables the tooltip
     bool visible = true;
+    bool enabled = true;
     bool checked = false;
     bool open = true;  // CollapsingHeader default-open hint
+    FocusMode focusMode = FocusMode::All;
+    MouseFilter mouseFilter = MouseFilter::Stop;
+    ThemePreset themePreset = ThemePreset::Inherit;
+    int tabIndex = 0;
+    std::string focusNext;
+    std::string focusPrevious;
+    std::string focusLeft;
+    std::string focusRight;
+    std::string focusUp;
+    std::string focusDown;
+    bool focusRequested = false;
+    bool focused = false;
+    AccessibilityRole accessibilityRole = AccessibilityRole::Auto;
+    std::string accessibilityName;
+    std::string accessibilityDescription;
+    bool dragSource = false;
+    bool dropTarget = false;
+    std::string dragPayloadType;
+    std::string dragPayloadText;
+    std::string acceptedDropType;
     float value = 0.f;
     float minValue = 0.f;
     float maxValue = 1.f;
@@ -126,6 +197,7 @@ struct UINode {
     float gap = -1.f;  // <0 → theme ItemSpacing on that axis
     // Flex item props (any child inside Flex)
     float flexGrow = 0.f;
+    int parent = -1;
     int firstChild = -1;
     int nextSibling = -1;
     uint32_t handlerClick = 0;   // 1-based → Tree::clickHandlers
@@ -170,7 +242,7 @@ public:
         float overlayBgAlpha = 0.4f;
         bool overlayFlush = false;  // remove outer WindowPadding for desktop chrome
         uint32_t ownerId = 0;
-        UIHost *entity = nullptr;
+        UIHostHandle entity{};
     };
 
     struct Tree {
@@ -183,10 +255,73 @@ public:
         std::vector<std::function<void(const std::string &)>> textHandlers;
     };
 
+    /**
+     * @brief Optional 3D-world projection for this UI host.
+     *
+     * The world position and policy are authoritative input owned by UIHost. The resolved
+     * screen position/state are transient derived data refreshed by UISystem on the render
+     * thread. The link is value-based: destroying a scene object does not leave a pointer;
+     * its owner must stop updating or disable this anchor. Camera removal is detected every
+     * frame and reported as NoCamera. Restore/hot reload rebuilds the link from worldPosition.
+     */
+    struct WorldAnchor {
+        bool enabled = false;
+        float worldX = 0.f;
+        float worldY = 0.f;
+        float worldZ = 0.f;
+        float offsetX = 0.f;
+        float offsetY = 0.f;
+        float safeMargin = 8.f;
+        WorldAnchorEdgePolicy edgePolicy = WorldAnchorEdgePolicy::Hide;
+        bool hideBehindCamera = true;
+        bool distanceScale = false;
+        float referenceDistance = 10.f;
+        float minScale = 0.65f;
+        float maxScale = 1.25f;
+        WorldAnchorOverlapPolicy overlapPolicy = WorldAnchorOverlapPolicy::Allow;
+        int overlapPriority = 0;
+        float overlapPadding = 4.f;
+        float maxDisplacement = 96.f;
+
+        WorldAnchorState state = WorldAnchorState::Disabled;
+        float screenX = 0.f;
+        float screenY = 0.f;
+        float depth = 0.f;
+        float scale = 1.f;
+        float displacementX = 0.f;
+        float displacementY = 0.f;
+    };
+
     COMPONENT(Meta, meta)
     COMPONENT(Tree, tree)
+    COMPONENT(WorldAnchor, worldAnchor)
 
-    static UIHost *createHost(const std::string &name = "");
+    /**
+     * @brief Creates an ECS-owned UI host.
+     * @return A generation-checked handle; an empty handle means creation failed.
+     * @ownership The UI ECS world owns the host; callers must not delete it.
+     * @lifetime The handle is valid until ECS destruction or UI module teardown; resolve it at each use.
+     * @thread Call on the UI ECS thread.
+     * @reentrancy The factory invokes no external callbacks.
+     */
+    [[nodiscard]] static UIHostHandle createHost(const std::string &name = "");
+
+    /**
+     * @brief Resolves a UI host handle with ECS generation checking.
+     * @param handle Candidate host handle.
+     * @return A temporary borrowed host for the current UI operation, or null when stale.
+     * @ownership The UI ECS world owns the returned host; callers must not delete it.
+     * @lifetime Valid only until the next UI ECS structural mutation or world teardown.
+     * @thread Call on the UI ECS thread.
+     * @reentrancy Does not invoke callbacks; do not retain the returned pointer across frames.
+     */
+    [[nodiscard]] static eve::OptionalRef<UIHost> resolve(UIHostHandle handle) noexcept;
+
+    /**
+     * @brief Returns this host's generation-qualified ECS handle.
+     * @return A handle that becomes stale when this host is destroyed or replaced.
+     */
+    [[nodiscard]] UIHostHandle handle() const noexcept { return ecs::handle_of(this); }
 
     /** @brief Names the host. */
     void setName(const std::string &name);
@@ -208,6 +343,7 @@ public:
     /** @brief Widget state updates by node id. */
     void setTextById(const std::string &id, const std::string &text);
     void setVisibleById(const std::string &id, bool visible);
+    void setEnabledById(const std::string &id, bool enabled);
     void setCheckedById(const std::string &id, bool checked);
     void setValueById(const std::string &id, float value);
     void setValueTextById(const std::string &id, const std::string &value);
@@ -216,9 +352,34 @@ public:
     bool setToggleHandler(const std::string &id, std::function<void(bool)> fn);
     bool setValueHandler(const std::string &id, std::function<void(float)> fn);
     bool setTextHandler(const std::string &id, std::function<void(const std::string &)> fn);
-    /** @brief Looks up a node by id or reconciliation key. */
-    UINode *findById(const std::string &id);
-    UINode *findByKey(const std::string &key);
+    /**
+     * @brief Looks up a node by stable id without transferring ownership.
+     * @return Borrowed nullable node owned by this host's tree.
+     * @ownership UIHost owns the node tree; callers must not delete the result.
+     * @lifetime Valid until the next tree replacement/reconcile or host destruction.
+     * @thread Call on the UI thread owning this host.
+     * @reentrancy Do not retain across callbacks or tree mutation.
+     */
+    [[nodiscard]] eve::OptionalRef<UINode> findById(const std::string &id);
+    /**
+     * @brief Looks up a node by reconciliation key without transferring ownership.
+     * @return Borrowed nullable node owned by this host's tree.
+     * @ownership UIHost owns the node tree; callers must not delete the result.
+     * @lifetime Valid until the next tree replacement/reconcile or host destruction.
+     * @thread Call on the UI thread owning this host.
+     * @reentrancy Do not retain across callbacks or tree mutation.
+     */
+    [[nodiscard]] eve::OptionalRef<UINode> findByKey(const std::string &key);
+    /** @brief Request keyboard/gamepad focus for a control on the next frame. */
+    bool requestFocusById(const std::string &id);
+    /**
+     * @brief Move through explicit neighbors or deterministic tab order.
+     * @param direction Logical sequential or directional movement.
+     * @param wrap Whether sequential fallback wraps at the first/last control.
+     */
+    bool moveFocus(FocusDirection direction, bool wrap = true);
+    /** @brief Return the currently focused control id, or an empty string. */
+    std::string focusedId();
     /** @brief Marks the tree for a full rebuild on the next frame. */
     void markDirty() { tree()->dirty = true; }
 
@@ -226,6 +387,16 @@ public:
     void setVisible(bool v) { meta()->visible = v; }
     void setLayer(int layer) { meta()->layer = layer; }
     void setModal(bool modal) { meta()->modal = modal; }
+
+    /**
+     * @brief Enables projection of this host from a 3D world point.
+     * @param x World X coordinate.
+     * @param y World Y coordinate.
+     * @param z World Z coordinate.
+     */
+    void setWorldAnchor(float x, float y, float z);
+    /** @brief Disables 3D projection and returns the host to normal screen layout. */
+    void clearWorldAnchor();
 };
 
 }  // namespace eve::ui

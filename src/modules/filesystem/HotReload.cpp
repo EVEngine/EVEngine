@@ -147,7 +147,9 @@ bool HotReload::tryReload(std::string path) {
         // kind targets exactly one reloader and ignores the extension, so a
         // config file with an unexpected suffix can still be bound by hand.
         const bool wanted = (kind == "auto") ? r->handlesPath(norm) : (kind == r->reloadKind());
-        if (wanted && r->reload(norm)) any = true;
+        if (!wanted) return;
+        auto result = r->reload(norm);
+        if (result.ok() && result.value()) any = true;
     });
     return any;
 }
@@ -187,6 +189,18 @@ int HotReload::watchTree(std::string root) {
         }
     }
     return added;
+}
+
+bool HotReload::watchNewDirectory(std::string path) {
+    auto *fs = Filesystem::create();
+    if (!fs) return false;
+    path = normalizePath(std::move(path));
+    if (path.empty()) return false;
+
+    Filesystem::Info info{};
+    if (!fs->getInfo(path, info) || info.type != "directory") return false;
+    watchTree(path);
+    return true;
 }
 
 // --- Remote hot reload (dev-server sync) ---
@@ -457,6 +471,7 @@ void HotReload::expose(ssq::Class &cls) {
     cls.addFunc("unbind", &HotReload::unbind);
     cls.addFunc("tryReload", &HotReload::tryReload);
     cls.addFunc("watchTree", &HotReload::watchTree);
+    cls.addFunc("watchNewDirectory", &HotReload::watchNewDirectory);
     cls.addFunc("startRemoteSync", &HotReload::startRemoteSync);
     cls.addFunc("stopRemoteSync", &HotReload::stopRemoteSync);
     cls.addFunc("isRemoteSyncing", &HotReload::isRemoteSyncing);

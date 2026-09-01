@@ -8,6 +8,7 @@
 namespace eve::graphics {
 class Graphics;
 class Light3D;
+class ReflectionProbeCapture;
 class Volumetric;
 }  // namespace eve::graphics
 
@@ -107,6 +108,11 @@ public:
      * @param fog Target volumetric fog or cloud renderer; null is ignored.
      */
     void applyAtmosphere(graphics::Volumetric *fog) const;
+    /**
+     * @brief Synchronize linear directional sky radiance and sky IBL to a reflection probe.
+     * @param probe Target runtime probe; null is ignored.
+     */
+    void applyReflectionProbeSky(graphics::ReflectionProbeCapture *probe) const;
 
     // ---- weather coupling ----
     /**

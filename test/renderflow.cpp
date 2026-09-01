@@ -366,7 +366,7 @@ TEST_CASE("devtools.renderflow.rtHelpersForward") {
     eve::debug::rtTarget("screen");
     eve::debug::rtBind("font", "main");
     eve::debug::rtDraw("print", "text");
-    eve::debug::rtError("Graphics::print: no font set");
+    eve::debug::rtError("Graphics::drawText: font must not be null");
     eve::debug::rtFrameEnd();
     CHECK(flow.eventCount() >= 6u);
     RenderSliceResult slice = flow.sliceBackward({});

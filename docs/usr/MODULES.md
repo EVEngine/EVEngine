@@ -40,7 +40,12 @@
 - [物理（Box2D / Box3D）](modules/physics.md)：2D World/Body/Fixture（像素坐标 + meter）与 3D World3D/Body3D/Shape3D（米）；接触事件与 `rayCast` / `queryAABB` / `testPoint` 拾取查询。
 - [Tilemap](modules/map.md)：创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染。
 - [粒子](modules/particles.md)：用代码或 JSON 创建发射器，配置运动、颜色、寿命并进行更新和渲染。
+- [像素物质世界](modules/pixelworld.md)：64×64 分块的确定性沙、水、火焰与可破坏二维材料仿真。
+- [PixelWorld 确定性重放](modules/pixelworld_replay.md)：命令日志、周期 checkpoint 与首个 Tick/Chunk 分歧定位。
+- [PixelWorld 兴趣区 Streaming](modules/pixelworld_streaming.md)：Chunk 兴趣区、增量更新、驱逐 tombstone 与权威校正。
+- [PixelWorld Catalog 编辑器](modules/pixelworld_editor.md)：可挂载的材质浏览、属性、反应与相变规则事务式编辑面板。
 - [动画](modules/animation.md)：Tween 补间、3D 骨骼播放（状态机 / Motion Matching）、控制论程序动画（`ControlAnim` / `ControlPose`）、以及拖尾轨迹（`AnimTrail`）。
+- [攀爬与跑酷](modules/climbing.md)：前方障碍/顶部落点探测、确定性动作选择，以及受 Physics 胶囊体约束的 vault / mantle 执行。
 - [RPG 系统](modules/rpg.md)：组合属性、效果、状态、技能、施法与伤害结算。
 - [背包 / 物品栏](modules/inventory.md)：物品定义、背包容器、转移、装备栏与可插拔接纳/容量/堆叠规则。
 - [卡牌游戏工具](modules/cardgame.md)：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、敌方手牌与费用置灰（参考 UiCard）。
@@ -48,6 +53,14 @@
 - [建筑可视化](modules/buildingfx.md)：把放置世界和鬼影同步为 2D/3D 视觉并绘制放置网格。
 - [程序化房屋](modules/housegen.md)：数据驱动的房屋生成（组件库 + 请求 → 布局 JSON）。
 - [程序化生成](modules/procgen.md)：按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。
+- [武器系统](modules/weapon.md)：数据驱动的武器、弹药池、挂点、瞄准、开火、装填与事件查询。
+- [载具系统](modules/vehicle.md)：载具定义、移动命令、座位和炮塔、伤害以及 2D/3D 物理接入。
+- [通用效果](modules/effects.md)：按主体管理可堆叠、可过期的效果及其结构化载荷与事件。
+- [原子状态补丁](modules/statepatch.md)：用带冲突检查的批次原子修改 JSON 状态，并支持脏键、事件和快照。
+- [通用命令队列](modules/orders.md)：确定性优先级命令、抢占、超时、载荷、生命周期事件和快照。
+- [社会关系图](modules/social.md)：所有权、控制权、角色指派和带权有向关系。
+- [生产队列](modules/production.md)：按 owner 分配并行槽位，确定性推进可暂停、恢复的生产任务。
+- [权限规则](modules/authority.md)：按 actor、scope 和 capability 仲裁有优先级、可过期的允许/拒绝规则。
 
 ## 表现与场景
 

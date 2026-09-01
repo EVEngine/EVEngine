@@ -5,6 +5,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "ui/UI.h"
+#include "ui/UIHost.h"
 #include "ui/Widget.h"
 #include "window/Window.h"
 
@@ -16,9 +17,11 @@ using eve::graphics::Canvas;
 using eve::graphics::Color;
 using eve::graphics::Graphics;
 using eve::graphics::RenderSystem;
-using eve::ui::UI;
 using eve::ui::image;
 using eve::ui::imageButton;
+using eve::ui::UI;
+using eve::ui::UIHost;
+using eve::ui::UIHostHandle;
 using eve::ui::viewport;
 using eve::ui::window;
 
@@ -39,12 +42,12 @@ TEST_CASE("UI.textureBridge.viewportPixelsReachSwapchain") {
 
     gfx->setBackgroundColor(Color(0.02f, 0.03f, 0.04f, 1.f));
     gfx->setScreenReadbackEnabled(true);
-    ui->mountAs("texture-pixels",
-                window("Texture bridge",
-                       {viewport("engine-texture", 320.f, 200.f),
-                        image("engine-image", 80.f, 48.f),
-                        imageButton("engine-image-button", 80.f, 48.f)},
-                       "root"));
+    const UIHostHandle textureHost = ui->mountAs(
+        "texture-pixels", window("Texture bridge",
+                                 {viewport("engine-texture", 320.f, 200.f), image("engine-image", 80.f, 48.f),
+                                  imageButton("engine-image-button", 80.f, 48.f)},
+                                 "root"));
+    REQUIRE(UIHost::resolve(textureHost).has_value());
 
     Canvas *canvas = nullptr;
     uint64_t textureId = 0;

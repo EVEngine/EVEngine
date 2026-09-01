@@ -11,6 +11,7 @@ bool GBuffer::hasBuffer(const std::string &name) const {
     if (name == "hwDepth") return hwDepth_ != nullptr;
     if (name == "normal") return normal_ != nullptr;
     if (name == "albedo") return albedo_ != nullptr;
+    if (name == "velocity") return depth_ != nullptr;
     return false;
 }
 
@@ -19,6 +20,7 @@ Texture *GBuffer::getBuffer(const std::string &name) const {
     if (name == "hwDepth") return hwDepth_;
     if (name == "normal") return normal_;
     if (name == "albedo") return albedo_;
+    if (name == "velocity") return depth_;
     return nullptr;
 }
 

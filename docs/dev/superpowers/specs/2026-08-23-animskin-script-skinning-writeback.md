@@ -83,7 +83,7 @@ skin.applyToMesh(gfx, mesh, pose);   // 位置 + 法线一次完成，返回 boo
 
 等价于：`updateSkinnedPositions(pose)` → （内部）bind 法线蒙皮 →
 `gfx.updateMeshVertices(mesh, pos, nrm, [], vertexCount, [], 0)`。
-返回 `false` 表示参数非法或后端不支持（WebGPU `updateMeshVertices` 返回 false）。
+返回 `false` 表示参数非法或资源不属于当前后端；Vulkan 与 WebGPU 均支持原地更新。
 
 ### 2. 底层原语（与 `AnimLattice` 对齐，供自定义流水线）
 
@@ -188,7 +188,7 @@ eve_update = function(dt) {
   - `animation.skinned.render.applyToMesh`：网格只创建一次，每帧
     `applyToMesh` 原地写回（不再每帧 `newMeshFromArrays` 重建），断言
     多帧 luma 有变化、末帧前景像素数达标。
-- WebGPU 目标：断言 `applyToMesh` 返回 false（后端暂不支持原地更新）。
+- WebGPU 目标：与 Vulkan 使用相同姿态数据更新现有 mesh，并验证顶点结果与对象身份稳定。
 - 脚本冒烟：新增 `examples/skinned-anim/`（可选）或按 `lattice-deform` 的
   结构补一个最小示例。
 

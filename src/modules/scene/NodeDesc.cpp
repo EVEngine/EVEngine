@@ -10,10 +10,11 @@
 namespace eve::scene {
 namespace {
 
-int appendNode(SceneHost::Tree &tree, NodeDesc &&desc, int parentIndex) {
+int appendDetachedNode(SceneHost::Tree& tree, NodeDesc&& desc, int parentIndex) {
     const int index = int(tree.nodes.size());
     SceneNode node;
     node.id = std::move(desc.id);
+    node.persistentId = desc.persistentId;
     node.key = desc.key.empty() ? node.id : std::move(desc.key);
     node.name = desc.name.empty() ? node.id : std::move(desc.name);
     node.space = std::move(desc.space);
@@ -48,7 +49,7 @@ int appendNode(SceneHost::Tree &tree, NodeDesc &&desc, int parentIndex) {
     int prevChild = -1;
     int firstChild = -1;
     for (auto &child : desc.children) {
-        int childIndex = appendNode(tree, std::move(child), index);
+        int childIndex = appendDetachedNode(tree, std::move(child), index);
         if (firstChild < 0) firstChild = childIndex;
         if (prevChild >= 0) tree.nodes[size_t(prevChild)].nextSibling = childIndex;
         prevChild = childIndex;
@@ -184,6 +185,7 @@ void patchProps(SceneHost *host, int nodeIndex, NodeDesc &&desc) {
     n.sx = desc.sx;
     n.sy = desc.sy;
     n.sz = desc.sz;
+    if (!desc.persistentId.isNil()) n.persistentId = desc.persistentId;
     if (!desc.space.empty()) n.space = desc.space;
     if (!desc.id.empty()) n.id = desc.id;
     if (!desc.name.empty()) n.name = desc.name;
@@ -262,7 +264,7 @@ void applyTree(SceneHost *host, NodeDesc root) {
 
     t->nodes.clear();
     t->root = -1;
-    t->root = appendNode(*t, std::move(root), -1);
+    t->root = appendDetachedNode(*t, std::move(root), -1);
     for (auto &n : t->nodes) {
         auto it = saved.find(n.id);
         if (it != saved.end()) {
@@ -288,6 +290,33 @@ void applyTree(SceneHost *host, NodeDesc root) {
             host->fireEvent("node_added", n.id,
                             n.parent >= 0 ? t->nodes[size_t(n.parent)].id : "");
         }
+    }
+}
+
+eve::Result<SceneHost::Tree> SceneHost::buildDetachedTree(const Tree* previous, NodeDesc root) {
+    try {
+        validateUniqueIds(root);
+        Tree target;
+        target.root = appendDetachedNode(target, std::move(root), -1);
+        if (previous) {
+            std::unordered_map<std::string, const SceneNode*> preserved;
+            preserved.reserve(previous->nodes.size());
+            for (const auto& node : previous->nodes)
+                if (!node.id.empty()) preserved.emplace(node.id, &node);
+            for (auto& node : target.nodes) {
+                const auto found = preserved.find(node.id);
+                if (found == preserved.end()) continue;
+                node.links    = found->second->links;
+                node.objectId = found->second->objectId;
+            }
+        }
+        target.dirty          = true;
+        target.transformDirty = true;
+        target.indexValid     = false;
+        return eve::Result<Tree>::success(std::move(target));
+    } catch (const std::exception& exception) {
+        return eve::Result<Tree>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, exception.what(), "root"));
     }
 }
 

@@ -40,6 +40,12 @@ struct AssetDependency {
     PropertyPath   sourceProperty;
 };
 
+/** @brief One owning record/dependency unit staged for an atomic index generation. */
+struct AssetPublication {
+    AssetRecord                  record;
+    std::vector<AssetDependency> dependencies;
+};
+
 /** @brief Deterministic filter used by headless and UI asset queries. */
 struct AssetQuery {
     std::vector<std::string>   typeIds;
@@ -63,6 +69,11 @@ class MemoryAssetDatabase {
 public:
     /** @brief Atomically publish one validated record and its dependencies. */
     EditorResult<AssetRecord> publish(AssetRecord record, std::vector<AssetDependency> dependencies = {});
+    /**
+     * @brief Validate and atomically publish an entire package projection as one index generation.
+     * @return Owning published records; rejection leaves records, URIs, dependencies and generation unchanged.
+     */
+    [[nodiscard]] EditorResult<std::vector<AssetRecord>> publishBatch(std::vector<AssetPublication> publications);
     /** @brief Find one asset by stable GUID. */
     EditorResult<AssetRecord> find(const AssetGuid& guid) const;
     /** @brief Find one asset by logical content URI. */
@@ -88,15 +99,30 @@ struct ImportProduct {
     std::vector<AssetDependency> dependencies;
 };
 
+/** @brief Generation-qualified import request used to reject stale worker products. */
+struct ImportTicket {
+    AssetGuid asset;
+    std::uint64_t generation = 0;
+    std::string sourceHash;
+    std::string importerId;
+    std::uint32_t importerVersion = 1;
+};
+
 /** @brief Small coordinator that validates importer output before atomic index publication. */
 class ImportCoordinator {
 public:
     explicit ImportCoordinator(MemoryAssetDatabase* database) : database_(database) {}
     /** @brief Validate and publish a completed import product. */
     EditorResult<AssetRecord> publish(ImportProduct product);
+    /** @brief Start or supersede one asset import and return its immutable generation ticket. */
+    EditorResult<ImportTicket> begin(const AssetGuid& asset, std::string sourceHash,
+                                     std::string importerId, std::uint32_t importerVersion);
+    /** @brief Atomically publish only when the worker ticket is still current and product-complete. */
+    EditorResult<AssetRecord> publish(const ImportTicket& ticket, ImportProduct product);
 
 private:
     MemoryAssetDatabase* database_ = nullptr;
+    std::unordered_map<AssetGuid, std::uint64_t, StrongEditorIdHash<AssetGuid>> generations_;
 };
 
 }  // namespace eve::editor

@@ -4,8 +4,8 @@
 // binds to the live `hero` instance two-way: widget edits write back to the
 // model, and sync() pulls external model changes into the view each frame.
 
-if (!("hero" in getroottable())) hero <- null;
-if (!("tick" in getroottable())) tick <- 0.0;
+persist hero = null
+persist tick = 0.0
 
 class WeaponData {
     name = "Sword"

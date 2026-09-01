@@ -3,11 +3,11 @@
 // foam at the top lip + bottom splash pool. Press F to dump the current
 // frame to /tmp/waterfall_demo.png.
 
-if (!("fall" in getroottable())) fall <- null;
-if (!("fallEnt" in getroottable())) fallEnt <- null;
-if (!("fallCam" in getroottable())) fallCam <- null;
-if (!("fallTime" in getroottable())) fallTime <- 0.0;
-if (!("fallSaved" in getroottable())) fallSaved <- false;
+persist fall = null
+persist fallEnt = null
+persist fallCam = null
+persist fallTime = 0.0
+persist fallSaved = false
 
 eve_init = function() {
     gfx.setBackgroundColor(0.03, 0.05, 0.08, 1.0);

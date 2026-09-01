@@ -1,11 +1,13 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "common/Capability.h"
 #include "common/Exception.h"
 #include "common/Module.h"
+#include "common/Result.h"
 #include "common/ServiceInterfaces.h"
 #include "common/config.h"
 #include "filesystem/File.h"
@@ -246,6 +248,35 @@ public:
      * @param size The size in bytes of the data to append.
      **/
     virtual void append(std::string filename, const void *data, int64_t size) const = 0;
+
+    /**
+     * @brief Write a UTF-8 string to a file in the configured save directory.
+     * @param filename Relative save path.
+     * @param text UTF-8 text to write.
+     * @return True when the write succeeds.
+     */
+    bool writeText(const std::string &filename, const std::string &text) const;
+
+    /**
+     * @brief Durably replace a UTF-8 text file in the configured save directory.
+     * @param filename Non-empty relative save path without parent traversal.
+     * @param text UTF-8 bytes to write; the method does not retain this view.
+     * @return Applied after the temporary file and replacement are flushed, or a structured failure.
+     * @remarks The previous target remains intact when writing or flushing the temporary file fails.
+     *          Native desktop/mobile implementations write a sibling temporary file and atomically
+     *          replace the target. WebGPU returns Unsupported because that guarantee is unavailable.
+     * @thread Call on the filesystem owning thread; concurrent writes to the same target are unsupported.
+     * @reentrancy Does not invoke callbacks or script code.
+     */
+    [[nodiscard]] eve::Result<void> writeTextAtomic(std::string_view filename,
+                                                    std::string_view text);
+
+    /**
+     * @brief Read a UTF-8 string from the virtual filesystem.
+     * @param filename Relative virtual path.
+     * @return File contents, or an empty string when the file cannot be read.
+     */
+    std::string readText(const std::string &filename) const;
 
     /**
      * @brief This "native" method returns a table of all

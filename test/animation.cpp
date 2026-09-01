@@ -896,18 +896,20 @@ TEST_CASE("animation.motionMatching.databaseMetadata") {
     for (float v : feat) CHECK(std::isfinite(v));
 }
 
-TEST_CASE("animation.eva.roundTrip") {
+TEST_CASE("animation.anim.txt.roundTrip") {
     std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
     sk->setBindRotation(1, 0.f, 0.f, 0.f, 1.f);
     std::unique_ptr<AnimClip> clip(makeLocomotionClip("walk", 1.5f, 0.8f));
     clip->setSampleRate(12.f);
+    clip->addSyncMarker(0.2f, "left_plant");
+    clip->addSyncMarker(0.6f, "right_plant");
 
-    const std::string text = AnimImporter::exportEva(sk.get(), clip.get());
+    const std::string text = AnimImporter::exportAnimationFixtureText(sk.get(), clip.get());
     CHECK(text.find("EVA 1") != std::string::npos);
 
     AnimSkeleton *sk2 = nullptr;
     AnimClip *clip2   = nullptr;
-    AnimImporter::importEva(text, &sk2, &clip2);
+    AnimImporter::importAnimationFixtureText(text, &sk2, &clip2);
     std::unique_ptr<AnimSkeleton> skOwned(sk2);
     std::unique_ptr<AnimClip> clipOwned(clip2);
 
@@ -916,6 +918,8 @@ TEST_CASE("animation.eva.roundTrip") {
     CHECK(std::fabs(clipOwned->getDuration() - 0.8f) < 1e-4f);
     CHECK(std::fabs(clipOwned->getSampleRate() - 12.f) < 1e-4f);
     CHECK(clipOwned->getPositionKeyCount(0) >= 2);
+    CHECK_EQ(clipOwned->getSyncMarkerCount(), 2);
+    CHECK(clipOwned->getSyncMarkerName(1) == "right_plant");
 
     std::unique_ptr<AnimPose> pose(new AnimPose());
     clipOwned->sample(0.4f, pose.get(), skOwned.get());
@@ -925,7 +929,7 @@ TEST_CASE("animation.eva.roundTrip") {
 TEST_CASE("animation.importer.invalidThrows") {
     bool threw = false;
     try {
-        AnimImporter::importEva("not an eva file\n", nullptr, nullptr);
+        AnimImporter::importAnimationFixtureText("not an eva file\n", nullptr, nullptr);
     } catch (const eve::Exception &) {
         threw = true;
     }
@@ -935,7 +939,7 @@ TEST_CASE("animation.importer.invalidThrows") {
     AnimSkeleton *sk = nullptr;
     AnimClip *clip   = nullptr;
     try {
-        AnimImporter::importEva("EVA 99\n", &sk, &clip);
+        AnimImporter::importAnimationFixtureText("EVA 99\n", &sk, &clip);
     } catch (const eve::Exception &) {
         threw = true;
     }

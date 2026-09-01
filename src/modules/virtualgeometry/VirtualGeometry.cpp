@@ -25,21 +25,15 @@ std::string currentGraphicsBackend() {
 Module_IMPL(VirtualGeometry, new VirtualGeometry());
 
 bool VirtualGeometry::isAvailable() const {
-#ifdef EVENGINE_WEBGPU
-    return false;  // virtual geometry currently requires the Vulkan backend.
-#else
-    return currentGraphicsBackend() == "vulkan";
-#endif
+    const std::string backend = currentGraphicsBackend();
+    return backend == "vulkan" || backend == "webgpu";
 }
 
 VirtualGeometryRenderer *VirtualGeometry::newRenderer() {
-#ifdef EVENGINE_WEBGPU
-    throw Exception("VirtualGeometry.newRenderer: requires vulkan Graphics backend");
-#else
-    if (currentGraphicsBackend() != "vulkan")
-        throw Exception("VirtualGeometry.newRenderer: requires vulkan Graphics backend");
+    const std::string backend = currentGraphicsBackend();
+    if (backend != "vulkan" && backend != "webgpu")
+        throw Exception("VirtualGeometry.newRenderer: requires vulkan or webgpu Graphics backend");
     return new VirtualGeometryRenderer();
-#endif
 }
 
 void VirtualGeometry::expose(ssq::Table &table) {

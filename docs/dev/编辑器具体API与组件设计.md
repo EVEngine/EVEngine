@@ -76,7 +76,7 @@ src/modules/editor/
     EditorTool.h
     TransformGizmo.*
     FieldBrushTool.*
-  presentation/
+  property_access/
     EditorPresentation.h
     EditorDescriptors.h
 
@@ -519,7 +519,7 @@ Tool 只保存临时输入状态和 preview handle，不保存跨文档业务权
 
 ## 9. Target 与 Capability
 
-### 9.1 IEditableTargetV2
+### 9.1 IEditableTarget
 
 ```cpp
 struct TargetDescriptor {
@@ -530,9 +530,13 @@ struct TargetDescriptor {
     std::vector<CapabilityId> capabilities;
 };
 
-class IEditableTargetV2 : public virtual IEditableTarget {
+class IEditableTarget {
 public:
-    virtual ~IEditableTargetV2() = default;
+    virtual ~IEditableTarget() = default;
+    virtual const std::string& targetId() const = 0;
+    virtual unsigned long long revision() const = 0;
+    virtual EditRegion dirtyRegion() const = 0;
+    virtual void clearDirtyRegion() = 0;
     virtual TargetDescriptor describe() const = 0;
     virtual void* queryCapability(const CapabilityId&) = 0;
     virtual EditorResult<PreviewHandle> preview(const DomainOperation&) = 0;
@@ -549,7 +553,9 @@ public:
 };
 ```
 
-现有 `IEditableTarget` 的 `targetId/revision/dirtyRegion/query<T>()` 不修改。Session 先查询 `IEditableTargetV2`；旧 target 由 `LegacyEditableTargetAdapter` 补充 describe/preview/snapshot。迁移期 capability 查询先尝试稳定 ID，再 fallback 到现有 `dynamic_cast`。跨 DLL/插件边界最终只用显式 capability ID，避免依赖 RTTI ABI。
+`IEditableTarget` 是唯一 target contract，直接包含 identity、revision、dirty region、description
+和 capability discovery。仓库不维护 V1/V2 两套 target；可选 snapshot、preview 等能力通过稳定
+capability ID 暴露。跨 DLL/插件边界只使用显式 capability ID，避免依赖 RTTI ABI。
 
 ### 9.2 标准 capability
 
@@ -1326,7 +1332,7 @@ struct SceneDocumentData {
 ### 20.2 SceneEditingTarget
 
 ```cpp
-class SceneEditingTarget final : public IEditableTargetV2,
+class SceneEditingTarget final : public IEditableTarget,
                                  public ISceneHierarchyEditTarget,
                                  public ITransformEditTarget,
                                  public IComponentEditTarget,

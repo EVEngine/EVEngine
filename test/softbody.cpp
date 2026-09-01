@@ -26,7 +26,7 @@
 #include "physics/Body3D.h"
 #include "physics/Cloth.h"
 #include "physics/Cloth3D.h"
-#include "physics/Fluid.h"
+#include "physics/Fluid2D.h"
 #include "physics/Physics.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
@@ -493,7 +493,7 @@ TEST_CASE("softbody.cloth3d.triangleSelfCollision") {
 
 TEST_CASE("softbody.fluid.emitAndSettle") {
     auto *mod = Physics::create();
-    std::unique_ptr<Fluid> fluid(mod->newFluid(256));
+    std::unique_ptr<Fluid2D> fluid(mod->newFluid2D(256));
     REQUIRE(fluid.get() != nullptr);
     fluid->setBounds(0.f, 0.f, 400.f, 400.f);
     fluid->setGravity(0.f, 900.f);
@@ -526,7 +526,7 @@ TEST_CASE("softbody.fluid.emitAndSettle") {
 
 TEST_CASE("softbody.fluid.interactRepels") {
     auto *mod = Physics::create();
-    std::unique_ptr<Fluid> fluid(mod->newFluid(128));
+    std::unique_ptr<Fluid2D> fluid(mod->newFluid2D(128));
     fluid->setBounds(0.f, 0.f, 300.f, 300.f);
     fluid->setGravity(0.f, 0.f);
     fluid->emit(150.f, 150.f, 25, 0.f, 0.f);
@@ -554,7 +554,7 @@ TEST_CASE("softbody.fluid.interactRepels") {
     CHECK_GT(avgDist1, avgDist0 + 2.f);
 }
 
-TEST_CASE("softbody.render.clothAndFluidPreview") {
+TEST_CASE("softbody.render.clothAndFluid2DPreview") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
@@ -570,7 +570,7 @@ TEST_CASE("softbody.render.clothAndFluidPreview") {
     cloth->setBounds(0.f, 0.f, 720.f, 420.f);
     cloth->setColor(0.78f, 0.84f, 0.98f, 1.f);
 
-    std::unique_ptr<Fluid> fluid(mod->newFluid(400));
+    std::unique_ptr<Fluid2D> fluid(mod->newFluid2D(400));
     fluid->setBounds(360.f, 40.f, 320.f, 340.f);
     fluid->setGravity(0.f, 980.f);
     fluid->setColor(0.2f, 0.55f, 0.95f, 0.9f);
@@ -592,7 +592,7 @@ TEST_CASE("softbody.render.clothAndFluidPreview") {
         fluid->update(1.f / 60.f);
 
         gfx->clearScreen();
-        // Fluid tank outline.
+        // Fluid2D tank outline.
         gfx->drawSolidRectRGBA(360.f, 40.f, 320.f, 340.f, 0.12f, 0.14f, 0.18f, 1.f);
         cloth->draw(gfx);
         fluid->draw(gfx);

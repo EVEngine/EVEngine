@@ -55,6 +55,7 @@ const char* nodeTypeName(NodeType type) {
         case NodeType::Switch: return "switch";
         case NodeType::Badge: return "badge";
         case NodeType::Card: return "card";
+        case NodeType::NinePatchPanel: return "ninePatchPanel";
         case NodeType::SectionHeader: return "sectionHeader";
         case NodeType::MenuBar: return "menuBar";
         case NodeType::Menu: return "menu";
@@ -69,9 +70,57 @@ const char* nodeTypeName(NodeType type) {
 }
 
 bool isClickable(const UINode& node) {
+    if (!node.enabled || node.mouseFilter == MouseFilter::Ignore) return false;
     return node.type == NodeType::Button || node.type == NodeType::ImageButton ||
            node.type == NodeType::Switch || node.type == NodeType::MenuItem ||
            node.handlerClick != 0;
+}
+
+const char* focusModeName(FocusMode mode) {
+    switch (mode) {
+        case FocusMode::None: return "none";
+        case FocusMode::Click: return "click";
+        case FocusMode::All: return "all";
+    }
+    return "none";
+}
+
+const char* mouseFilterName(MouseFilter filter) {
+    switch (filter) {
+        case MouseFilter::Stop: return "stop";
+        case MouseFilter::Pass: return "pass";
+        case MouseFilter::Ignore: return "ignore";
+    }
+    return "ignore";
+}
+
+const char* themePresetName(ThemePreset preset) {
+    switch (preset) {
+        case ThemePreset::Inherit: return "inherit";
+        case ThemePreset::Dark: return "dark";
+        case ThemePreset::Light: return "light";
+    }
+    return "inherit";
+}
+
+const char* accessibilityRoleName(AccessibilityRole role) {
+    switch (role) {
+        case AccessibilityRole::Auto: return "auto";
+        case AccessibilityRole::Button: return "button";
+        case AccessibilityRole::Checkbox: return "checkbox";
+        case AccessibilityRole::Slider: return "slider";
+        case AccessibilityRole::Text: return "text";
+        case AccessibilityRole::TextInput: return "textInput";
+        case AccessibilityRole::List: return "list";
+        case AccessibilityRole::ListItem: return "listItem";
+        case AccessibilityRole::Menu: return "menu";
+        case AccessibilityRole::MenuItem: return "menuItem";
+        case AccessibilityRole::Progress: return "progress";
+        case AccessibilityRole::Region: return "region";
+        case AccessibilityRole::Tab: return "tab";
+        case AccessibilityRole::Window: return "window";
+    }
+    return "auto";
 }
 
 std::string stringify(const Poco::Dynamic::Var& value) {
@@ -90,7 +139,26 @@ Poco::JSON::Object::Ptr nodeJson(const UIHost::Tree& tree, int index) {
     if (!node.key.empty()) out->set("key", node.key);
     out->set("text", node.text);
     out->set("visible", node.visible);
+    out->set("enabled", node.enabled);
     out->set("clickable", isClickable(node));
+    out->set("focusMode", focusModeName(node.focusMode));
+    out->set("focused", node.focused);
+    out->set("tabIndex", node.tabIndex);
+    out->set("mouseFilter", mouseFilterName(node.mouseFilter));
+    out->set("theme", themePresetName(node.themePreset));
+    if (!node.focusPrevious.empty()) out->set("focusPrevious", node.focusPrevious);
+    if (!node.focusNext.empty()) out->set("focusNext", node.focusNext);
+    if (!node.focusLeft.empty()) out->set("focusLeft", node.focusLeft);
+    if (!node.focusRight.empty()) out->set("focusRight", node.focusRight);
+    if (!node.focusUp.empty()) out->set("focusUp", node.focusUp);
+    if (!node.focusDown.empty()) out->set("focusDown", node.focusDown);
+    Poco::JSON::Object::Ptr accessibility(new Poco::JSON::Object());
+    accessibility->set("role", accessibilityRoleName(node.accessibilityRole));
+    accessibility->set("name", node.accessibilityName.empty() ? node.text
+                                                              : node.accessibilityName);
+    if (!node.accessibilityDescription.empty())
+        accessibility->set("description", node.accessibilityDescription);
+    out->set("accessibility", accessibility);
     if (node.type == NodeType::Checkbox || node.type == NodeType::Switch ||
         node.type == NodeType::MenuItem)
         out->set("checked", node.checked);
@@ -114,10 +182,10 @@ Poco::JSON::Object::Ptr nodeJson(const UIHost::Tree& tree, int index) {
     return out;
 }
 
-Poco::JSON::Object::Ptr hostJson(UIHost* host) {
+Poco::JSON::Object::Ptr hostJson(UIHost& host) {
     Poco::JSON::Object::Ptr out(new Poco::JSON::Object());
-    const auto              meta = host->meta();
-    const auto              tree = host->tree();
+    const auto              meta = host.meta();
+    const auto              tree = host.tree();
     out->set("name", meta->name);
     out->set("visible", meta->visible);
     out->set("layer", meta->layer);
@@ -128,28 +196,32 @@ Poco::JSON::Object::Ptr hostJson(UIHost* host) {
     return out;
 }
 
-std::vector<UIHost*> hosts() {
-    std::vector<UIHost*> result;
+std::vector<UIHostHandle> hosts() {
+    std::vector<UIHostHandle> result;
     if (ecs::current()->getManager<UIHost>() == nullptr) return result;
     auto view = ecs::View<UIHost, UIHost::Meta, UIHost::Tree>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [meta, tree] = *it;
         (void)tree;
-        if (meta->entity) result.push_back(meta->entity);
+        if (UIHost::resolve(meta->entity)) result.push_back(meta->entity);
     }
     return result;
 }
 
 struct WidgetMatch {
-    UIHost* host = nullptr;
-    UINode* node = nullptr;
+    UIHostHandle host{};
+    int          nodeIndex = -1;
 };
 
 std::vector<WidgetMatch> findWidgets(const std::string& hostName, const std::string& widgetId) {
     std::vector<WidgetMatch> result;
-    for (UIHost* host : hosts()) {
-        if (!hostName.empty() && host->getName() != hostName) continue;
-        if (UINode* node = host->findById(widgetId)) result.push_back({host, node});
+    for (UIHostHandle handle : hosts()) {
+        auto host = UIHost::resolve(handle);
+        if (!host || (!hostName.empty() && host->get().getName() != hostName)) continue;
+        auto node = host->get().findById(widgetId);
+        if (!node) continue;
+        const auto tree = host->get().tree();
+        result.push_back({handle, static_cast<int>(&node->get() - tree->nodes.data())});
     }
     return result;
 }
@@ -167,9 +239,10 @@ class UIAutomationImpl final : public eve::IUIAutomation {
 public:
     std::string tree(const std::string& hostName) const override {
         Poco::JSON::Array::Ptr items(new Poco::JSON::Array());
-        for (UIHost* host : hosts()) {
-            if (!hostName.empty() && host->getName() != hostName) continue;
-            items->add(hostJson(host));
+        for (UIHostHandle handle : hosts()) {
+            auto host = UIHost::resolve(handle);
+            if (!host || (!hostName.empty() && host->get().getName() != hostName)) continue;
+            items->add(hostJson(host->get()));
         }
         if (!hostName.empty() && items->size() == 0) return "error: UI host not found: " + hostName;
 
@@ -182,34 +255,40 @@ public:
     std::string get(const std::string& hostName, const std::string& widgetId) const override {
         const std::vector<WidgetMatch> matches = findWidgets(hostName, widgetId);
         if (matches.size() != 1) return matchError(hostName, widgetId, matches.size());
-
-        Poco::JSON::Object::Ptr out =
-            nodeJson(*matches[0].host->tree(), nodeIndex(*matches[0].host->tree(), matches[0].node));
-        out->set("host", matches[0].host->getName());
-        out->set("hostVisible", matches[0].host->meta()->visible);
+        auto host = UIHost::resolve(matches[0].host);
+        if (!host) return "error: UI host became stale";
+        Poco::JSON::Object::Ptr out = nodeJson(*host->get().tree(), matches[0].nodeIndex);
+        out->set("host", host->get().getName());
+        out->set("hostVisible", host->get().meta()->visible);
         return stringify(Poco::Dynamic::Var(out));
     }
 
     std::string click(const std::string& hostName, const std::string& widgetId) override {
         const std::vector<WidgetMatch> matches = findWidgets(hostName, widgetId);
         if (matches.size() != 1) return matchError(hostName, widgetId, matches.size());
-        UIHost* host = matches[0].host;
-        UINode* node = matches[0].node;
-        if (!host->meta()->visible || !node->visible)
-            return "error: widget is not visible: " + host->getName() + "/" + widgetId;
-        if (!isClickable(*node)) return "error: widget is not clickable: " + host->getName() + "/" + widgetId;
+        auto host = UIHost::resolve(matches[0].host);
+        if (!host) return "error: UI host became stale";
+        UIHost&    resolvedHost = host->get();
+        const auto tree         = resolvedHost.tree();
+        if (matches[0].nodeIndex < 0 || matches[0].nodeIndex >= static_cast<int>(tree->nodes.size()))
+            return "error: UI widget became stale";
+        UINode& node = tree->nodes[static_cast<std::size_t>(matches[0].nodeIndex)];
+        if (!resolvedHost.meta()->visible || !node.visible)
+            return "error: widget is not visible: " + resolvedHost.getName() + "/" + widgetId;
+        if (!isClickable(node)) return "error: widget is not clickable: " + resolvedHost.getName() + "/" + widgetId;
 
         UIEvent event;
-        event.host         = host;
-        event.hostName     = host->getName();
-        event.nodeId       = node->id;
+        event.host         = matches[0].host;
+        event.hostName     = resolvedHost.getName();
+        event.nodeId       = node.id;
+        event.nodeIndex    = matches[0].nodeIndex;
         event.kind         = "click";
-        event.handlerIndex = node->handlerClick;
+        event.handlerIndex = node.handlerClick;
         UISystem::pendingEvents().push_back(std::move(event));
 
         Poco::JSON::Object::Ptr out(new Poco::JSON::Object());
         out->set("queued", true);
-        out->set("host", host->getName());
+        out->set("host", resolvedHost.getName());
         out->set("widget", widgetId);
         out->set("event", "click");
         return stringify(Poco::Dynamic::Var(out));

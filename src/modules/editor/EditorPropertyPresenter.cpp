@@ -13,7 +13,7 @@ EditorValue selectionValue(const SelectionSnapshot& selection) {
 EditorResult<PropertyEditIntent> makeIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
                                             const PropertyPath& path, const EditorValue& value, PropertySetMode mode,
                                             bool runtime) {
-    const PropertyDescriptor* descriptor = schema.find(path);
+    auto descriptor = schema.find(path);
     if (!descriptor)
         return EditorResult<PropertyEditIntent>::error(EditorStatus::NotFound, RuleId("editor.property.not-found"),
                                                        "Property is not present in the schema: " + path.value());
@@ -22,7 +22,7 @@ EditorResult<PropertyEditIntent> makeIntent(const PropertySchema& schema, const 
         return EditorResult<PropertyEditIntent>::error(EditorStatus::Rejected, RuleId("editor.property.runtime-hidden"),
                                                        "Property is unavailable in runtime editing");
     EditorResult<void> validation = validatePropertyValue(*descriptor, value);
-    if (!validation.accepted()) {
+    if (!validation.isAccepted()) {
         EditorResult<PropertyEditIntent> result;
         result.status      = validation.status;
         result.diagnostics = std::move(validation.diagnostics);

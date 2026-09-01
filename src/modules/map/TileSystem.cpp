@@ -7,6 +7,7 @@
 #include "graphics/Canvas.h"
 #include "filesystem/Filesystem.h"
 #include "common/Module.h"
+#include "common/Profile.h"
 
 #include <unordered_set>
 #include <vector>
@@ -50,23 +51,30 @@ Color solidForGid(uint32_t gid, const Color &tint) {
     return Color{r * tint.r, g * tint.g, b * tint.b, tint.a};
 }
 
-bool atlasUV(const TileLayer::Tileset &ts, uint32_t gid, float &u0, float &v0, float &u1,
-             float &v1) {
-    if (!ts.texture || ts.columns <= 0 || ts.tileW <= 0 || ts.tileH <= 0) return false;
-    if (gid < uint32_t(ts.firstGid)) return false;
-    const int local = int(gid) - ts.firstGid;
-    const int col = local % ts.columns;
-    const int row = local / ts.columns;
-    const float iw = float(ts.texture->getWidth());
-    const float ih = float(ts.texture->getHeight());
+const TileLayer::Tileset::Atlas *atlasForGid(const TileLayer::Tileset &ts, uint32_t gid) {
+    const TileLayer::Tileset::Atlas *best = nullptr;
+    for (const auto &atlas : ts.atlases) {
+        if (gid >= uint32_t(atlas.firstGid) && (!best || atlas.firstGid > best->firstGid)) best = &atlas;
+    }
+    return best;
+}
+
+bool atlasUV(const TileLayer::Tileset::Atlas &atlas, uint32_t gid, float &u0, float &v0, float &u1, float &v1) {
+    if (!atlas.texture || atlas.columns <= 0 || atlas.tileW <= 0 || atlas.tileH <= 0) return false;
+    if (gid < uint32_t(atlas.firstGid)) return false;
+    const int   local = int(gid) - atlas.firstGid;
+    const int   col   = local % atlas.columns;
+    const int   row   = local / atlas.columns;
+    const float iw    = float(atlas.texture->getWidth());
+    const float ih    = float(atlas.texture->getHeight());
     if (iw <= 0.f || ih <= 0.f) return false;
 
-    const float px = float(ts.margin + col * (ts.tileW + ts.spacing));
-    const float py = float(ts.margin + row * (ts.tileH + ts.spacing));
+    const float px = float(atlas.margin + col * (atlas.tileW + atlas.spacing));
+    const float py = float(atlas.margin + row * (atlas.tileH + atlas.spacing));
     u0 = px / iw;
     v0 = py / ih;
-    u1 = (px + float(ts.tileW)) / iw;
-    v1 = (py + float(ts.tileH)) / ih;
+    u1             = (px + float(atlas.tileW)) / iw;
+    v1             = (py + float(atlas.tileH)) / ih;
     return true;
 }
 
@@ -76,17 +84,42 @@ const TileLayer::Tileset::Visual *visualForGid(const TileLayer::Tileset &ts, uin
     return nullptr;
 }
 
-bool visualUV(const TileLayer::Tileset &ts, const TileLayer::Tileset::Visual &visual,
-              float &u0, float &v0, float &u1, float &v1) {
-    if (!ts.texture || visual.width <= 0 || visual.height <= 0) return false;
-    const float iw = float(ts.texture->getWidth());
-    const float ih = float(ts.texture->getHeight());
+bool visualUV(const TileLayer::Tileset::Atlas &atlas, const TileLayer::Tileset::Visual &visual, float &u0, float &v0,
+              float &u1, float &v1) {
+    if (!atlas.texture || visual.width <= 0 || visual.height <= 0) return false;
+    const float iw = float(atlas.texture->getWidth());
+    const float ih = float(atlas.texture->getHeight());
     if (iw <= 0.f || ih <= 0.f) return false;
     u0 = float(visual.x) / iw;
     v0 = float(visual.y) / ih;
     u1 = float(visual.x + visual.width) / iw;
     v1 = float(visual.y + visual.height) / ih;
     return true;
+}
+
+bool subtileUV(const TileLayer::Tileset::Atlas &atlas, const TileLayer::Tileset::Visual::Subtile &part, float &u0,
+               float &v0, float &u1, float &v1) {
+    if (!atlas.texture || part.width <= 0 || part.height <= 0) return false;
+    const float iw = float(atlas.texture->getWidth());
+    const float ih = float(atlas.texture->getHeight());
+    if (iw <= 0.f || ih <= 0.f) return false;
+    u0 = float(part.x) / iw;
+    v0 = float(part.y) / ih;
+    u1 = float(part.x + part.width) / iw;
+    v1 = float(part.y + part.height) / ih;
+    return true;
+}
+
+const TileLayer::Tileset::Visual::SubtileFrame *subtileFrame(const TileLayer::Tileset::Visual &visual) {
+    if (visual.subtileFrames.empty()) return nullptr;
+    int total = 0;
+    for (const auto &frame : visual.subtileFrames) total += std::max(1, frame.durationMs);
+    int cursor = total > 0 ? int(std::fmod(gAnimationTimeMs, double(total))) : 0;
+    for (const auto &frame : visual.subtileFrames) {
+        cursor -= std::max(1, frame.durationMs);
+        if (cursor < 0) return &frame;
+    }
+    return &visual.subtileFrames.back();
 }
 
 int64_t fileModtime(const std::string &path) {
@@ -110,6 +143,20 @@ uint32_t animatedGid(const TileLayer::Tileset &ts, uint32_t gid) {
         }
     }
     return gid;
+}
+
+void applyTiledTransform(graphics::DrawItem2D &item, uint32_t raw) {
+    const bool horizontal = (raw & 0x80000000u) != 0;
+    const bool vertical   = (raw & 0x40000000u) != 0;
+    const bool diagonal   = (raw & 0x20000000u) != 0;
+    if (!diagonal) {
+        item.flipX = horizontal;
+        item.flipY = vertical;
+        return;
+    }
+    item.rotation = horizontal ? 90.f : 270.f;
+    item.flipX    = horizontal == vertical;
+    item.flipY    = false;
 }
 
 bool chunkVisible(const TileLayer::Config &cfg, const TileLayer::Tileset &ts, const ViewCam &cam,
@@ -208,25 +255,55 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
                         item.camZoom      = cam.zoom;
                         item.receiveLight = false;
                         item.litPath      = false;
+                        applyTiledTransform(item, raw);
 
                         float       u0, v0, u1, v1;
                         const auto* visual = visualForGid(*ts, gid);
-                        if (visual && visualUV(*ts, *visual, u0, v0, u1, v1)) {
+                        const auto *atlas    = atlasForGid(*ts, gid);
+                        const auto *subtiles = visual ? subtileFrame(*visual) : nullptr;
+                        if (subtiles && atlas) {
+                            for (const auto &part : subtiles->parts) {
+                                graphics::DrawItem2D quarter = item;
+                                if (!subtileUV(*atlas, part, u0, v0, u1, v1)) continue;
+                                float centerX = part.offsetX + float(part.width) * 0.5f - cfg->tileW * 0.5f;
+                                float centerY = part.offsetY + float(part.height) * 0.5f - cfg->tileH * 0.5f;
+                                if (raw & 0x20000000u) std::swap(centerX, centerY);
+                                if (raw & 0x80000000u) centerX = -centerX;
+                                if (raw & 0x40000000u) centerY = -centerY;
+                                quarter.x += cfg->tileW * 0.5f + centerX - float(part.width) * 0.5f;
+                                quarter.y += cfg->tileH * 0.5f + centerY - float(part.height) * 0.5f;
+                                quarter.w       = float(part.width);
+                                quarter.h       = float(part.height);
+                                quarter.texture = atlas->texture;
+                                quarter.hasUV   = true;
+                                quarter.u0      = u0;
+                                quarter.v0      = v0;
+                                quarter.u1      = u1;
+                                quarter.v1      = v1;
+                                quarter.color   = tint;
+                                out.push_back(quarter);
+                                ++gLastCustomVisualCount;
+                            }
+                            ++gLastVisibleTileCount;
+                            if (atlas->texture) atlases.insert(atlas->texture);
+                            continue;
+                        }
+                        if (visual && atlas && visualUV(*atlas, *visual, u0, v0, u1, v1)) {
                             ++gLastCustomVisualCount;
                             item.x -= visual->pivotX;
                             item.y -= visual->pivotY;
                             item.w = float(visual->width);
                             item.h = float(visual->height);
                             item.depthY += visual->sortBias;
-                            item.texture = ts->texture;
+                            item.texture = atlas->texture;
                             item.hasUV   = true;
                             item.u0      = u0;
                             item.v0      = v0;
                             item.u1      = u1;
                             item.v1      = v1;
                             item.color   = tint;
-                        } else if (atlasUV(*ts, gid, u0, v0, u1, v1)) {
-                            item.texture = ts->texture;
+                        } else if (atlas && atlasUV(*atlas, gid, u0, v0, u1, v1)) {
+                            item.texture = atlas->texture;
                             item.hasUV   = true;
                             item.u0      = u0;
                             item.v0      = v0;
@@ -262,6 +339,7 @@ int TileRenderSystem::lastVisitedChunkCount() { return gLastVisitedChunkCount; }
 int TileRenderSystem::lastVisitedCellCount() { return gLastVisitedCellCount; }
 
 void TileRenderSystem::update(float dt) {
+    EV_PROFILE_MODULE("map", "TileRenderSystem::update");
     if (dt > 0.f && std::isfinite(dt)) gAnimationTimeMs += double(dt) * 1000.0;
 }
 
@@ -275,7 +353,13 @@ int TileConfigSystem::poll() {
         if (!res->autoReload || res->path.empty() || !cfg->entity) continue;
 
         const int64_t mt = fileModtime(res->path);
-        if (mt < 0 || mt == res->modtime) continue;
+        bool          changed = mt >= 0 && mt != res->modtime;
+        for (size_t index = 0; !changed && index < res->dependencyPaths.size(); ++index) {
+            const int64_t dependencyModtime = fileModtime(res->dependencyPaths[index]);
+            const int64_t known = index < res->dependencyModtimes.size() ? res->dependencyModtimes[index] : -1;
+            changed             = dependencyModtime >= 0 && dependencyModtime != known;
+        }
+        if (!changed) continue;
         if (reloadConfigFile(cfg->entity, nullptr)) ++reloaded;
     }
     return reloaded;

@@ -3,7 +3,7 @@
 #extension GL_GOOGLE_include_directive : enable
 #include "tex_cell_bomb.glsl"
 #include "parallax_map.glsl"
-#include "tonemap.glsl"
+#include "virtual_texture.glsl"
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -32,12 +32,23 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 clipInfo;          // x = near, y = far
     vec4 cloud;             // x = strength (0=off), y = world cell size, z = time, w unused
     vec4 cloudWind;         // xy = wind velocity (world/s), z = coverage, w = detail
+    vec4 virtualTexture;    // enabled, page counts xy, border / stored extent
+    vec4 virtualAtlas;      // physical slot counts xy
+    vec4 bindlessEnv;       // reserved by the shared Mesh3D UBO layout
+    vec4 envProbeCenter;
+    vec4 envProbeExtent;
+    vec4 skinInfo;
+    mat4 skinBones[128];
+    vec4 reflectionProbeCenter[2];
+    vec4 reflectionProbeExtent[2];
 } ubo;
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
 layout(set = 0, binding = 2) uniform sampler2D normalSampler;
 layout(set = 0, binding = 3) uniform samplerCube envSampler;
 layout(set = 0, binding = 6) uniform sampler2D heightSampler;
+layout(set = 0, binding = 16) uniform samplerCube reflectionProbe0;
+layout(set = 0, binding = 17) uniform samplerCube reflectionProbe1;
 
 layout(set = 0, binding = 4, std140) uniform ShadowFrame {
     mat4 lightVP[3];
@@ -48,6 +59,7 @@ layout(set = 0, binding = 4, std140) uniform ShadowFrame {
 } shadow;
 
 layout(set = 0, binding = 5) uniform sampler2DArrayShadow shadowMap;
+layout(set = 0, binding = 20) uniform sampler2DArray shadowMapRaw;
 layout(set = 0, binding = 8) uniform sampler2D decalAlbedoSampler;
 layout(set = 0, binding = 9) uniform sampler2D decalNormalSampler;
 layout(set = 0, binding = 10) uniform sampler2D decalParamsSampler;
@@ -77,6 +89,47 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+vec3 boxProjectedEnv(vec3 direction, vec3 worldPos) {
+    vec3 extent = ubo.envProbeExtent.xyz;
+    vec3 local = worldPos - ubo.envProbeCenter.xyz;
+    if (min(extent.x, min(extent.y, extent.z)) <= 1e-4 ||
+        any(greaterThan(abs(local), extent)))
+        return direction;
+    vec3 safeDir = mix(vec3(1e-5), direction, greaterThan(abs(direction), vec3(1e-5)));
+    vec3 t0 = (ubo.envProbeCenter.xyz - extent - worldPos) / safeDir;
+    vec3 t1 = (ubo.envProbeCenter.xyz + extent - worldPos) / safeDir;
+    vec3 exitT = max(t0, t1);
+    float distanceToBox = min(exitT.x, min(exitT.y, exitT.z));
+    if (distanceToBox <= 0.0) return direction;
+    vec3 projected = worldPos + direction * distanceToBox - ubo.envProbeCenter.xyz;
+    float minExtent = min(extent.x, min(extent.y, extent.z));
+    vec3 edgeDistance = extent - abs(local);
+    float influence = smoothstep(0.0, max(minExtent * 0.1, 0.01),
+                                 min(edgeDistance.x, min(edgeDistance.y, edgeDistance.z)));
+    return normalize(mix(normalize(direction), normalize(projected), influence));
+}
+
+float reflectionProbeWeight(int index, vec3 worldPos) {
+    vec3 extent = ubo.reflectionProbeExtent[index].xyz;
+    vec3 edge = extent - abs(worldPos - ubo.reflectionProbeCenter[index].xyz);
+    float inside = min(edge.x, min(edge.y, edge.z));
+    if (inside <= 0.0 || ubo.reflectionProbeCenter[index].w <= 0.0) return 0.0;
+    float blend = max(ubo.reflectionProbeExtent[index].w, 1e-4);
+    return clamp(inside / blend, 0.0, 1.0);
+}
+
+vec3 reflectionProbeDirection(int index, vec3 direction, vec3 worldPos) {
+    vec3 center = ubo.reflectionProbeCenter[index].xyz;
+    vec3 extent = ubo.reflectionProbeExtent[index].xyz;
+    vec3 safeDir = mix(vec3(1e-5), direction, greaterThan(abs(direction), vec3(1e-5)));
+    vec3 exitT = max((center - extent - worldPos) / safeDir,
+                     (center + extent - worldPos) / safeDir);
+    float distanceToBox = min(exitT.x, min(exitT.y, exitT.z));
+    return distanceToBox > 0.0
+        ? normalize(worldPos + direction * distanceToBox - center)
+        : normalize(direction);
 }
 
 vec3 applyNormalMap(vec3 N, vec3 mapSample, vec3 worldPos, vec2 uv) {
@@ -164,7 +217,37 @@ float cloudShadowFactor(vec3 worldPos) {
     return 1.0 - clamp(covered, 0.0, 1.0) * clamp(ubo.cloud.x, 0.0, 1.0);
 }
 
-float sampleShadowCascade(vec3 worldPos, int cascade, float bias) {
+float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
+    vec4 lightClip = shadow.lightVP[cascade] * vec4(worldPos, 1.0);
+    vec3 ndc = lightClip.xyz / max(lightClip.w, 1e-6);
+    vec2 uv = ndc.xy * 0.5 + 0.5;
+    if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0))))
+        return 0.5;
+    vec2 texel = 1.0 / vec2(textureSize(shadowMapRaw, 0).xy);
+    const vec2 searchOffsets[8] = vec2[8](
+        vec2(-1.0, -1.0), vec2(0.0, -1.5), vec2(1.0, -1.0), vec2(-1.5, 0.0),
+        vec2(1.5, 0.0), vec2(-1.0, 1.0), vec2(0.0, 1.5), vec2(1.0, 1.0));
+    float blockerSum = 0.0;
+    float blockerCount = 0.0;
+    float receiver = ndc.z - bias;
+    for (int i = 0; i < 8; ++i) {
+        float blocker = texture(shadowMapRaw,
+                                vec3(clamp(uv + searchOffsets[i] * texel * 1.5,
+                                           vec2(0.0), vec2(1.0)), float(cascade))).r;
+        if (blocker < receiver) {
+            blockerSum += blocker;
+            blockerCount += 1.0;
+        }
+    }
+    if (blockerCount < 0.5) return 0.5;
+    float averageBlocker = blockerSum / blockerCount;
+    float separation = max(receiver - averageBlocker, 0.0);
+    float mapSize = float(textureSize(shadowMapRaw, 0).x);
+    return clamp(0.5 + separation * mapSize * max(shadow.bias.w, 0.0), 0.5, 4.0);
+}
+
+
+float sampleShadowCascade(vec3 worldPos, int cascade, float bias, float filterRadius) {
     vec4 lightClip = shadow.lightVP[cascade] * vec4(worldPos, 1.0);
     vec3 ndc = lightClip.xyz / max(lightClip.w, 1e-6);
     vec2 uv = ndc.xy * 0.5 + 0.5;
@@ -176,15 +259,20 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float bias) {
     // Tight rotated 3x3. Wider taps (1–1.2 texels) plus hardware 2x2 PCF ate
     // indoor creases: empty / unoccluded taps read as lit and drew a bright
     // rim on the left and top of Cornell umbrae.
-    const vec2 kRotOffsets[9] = vec2[9](
-        vec2(-0.5, -0.5), vec2(0.0, -0.6), vec2(0.5, -0.5),
-        vec2(-0.6, 0.0), vec2(0.0, 0.0),  vec2(0.6, 0.0),
-        vec2(-0.5, 0.5), vec2(0.0, 0.6),  vec2(0.5, 0.5)
+    const vec2 kPoisson[9] = vec2[9](
+        vec2(0.0), vec2(-0.326, -0.406), vec2(-0.840, -0.074),
+        vec2(-0.696, 0.457), vec2(-0.203, 0.621), vec2(0.473, -0.480),
+        vec2(0.519, 0.767), vec2(0.185, -0.893), vec2(0.896, 0.262)
     );
+    float worldTexel = cascade == 0 ? shadow.cascadeTexel.x
+                                     : (cascade == 1 ? shadow.cascadeTexel.y : shadow.cascadeTexel.z);
+    vec2 cell = floor(worldPos.xz / max(worldTexel * 4.0, 1e-4));
+    float angle = fract(sin(dot(cell, vec2(12.9898, 78.233))) * 43758.5453) * 6.2831853;
+    mat2 rotation = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
     float sum = 0.0;
     float zref = depth - bias;
     for (int i = 0; i < 9; ++i) {
-        vec2 s = uv + kRotOffsets[i] * texel;
+        vec2 s = uv + rotation * kPoisson[i] * texel * filterRadius;
         // Clamp-to-edge on a cleared border texel is depth=1 → fully lit.
         // Count out-of-cascade taps as shadowed so frustum-edge walls
         // (Cornell left/ceiling) do not leak.
@@ -224,8 +312,6 @@ float sampleShadowPCF(vec3 worldPos, vec3 N, float viewDepth, float nDotL) {
     // Slope-scaled normal offset: grazing walls (Cornell) need a longer
     // push into the room or the umbra detaches as a fully-lit rim.
     vec3 p = worldPos + N * ((2.0 * max(tw, 1e-6)) / max(nDotL, 0.2));
-    float vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, nDotL));
-
     // Cross-fade only inside a band at each split. Mix toward the *adjacent*
     // cascade when approaching that split (weight 1 at the split, 0 after
     // `band` meters). The previous factors were inverted, so indoor views
@@ -233,15 +319,19 @@ float sampleShadowPCF(vec3 worldPos, vec3 N, float viewDepth, float nDotL) {
     // swimming stairs as the camera moved.
     float hi = cascade == 0 ? shadow.splits.x : (cascade == 1 ? shadow.splits.y : shadow.splits.z);
     float lo = cascade == 0 ? 0.0 : (cascade == 1 ? shadow.splits.x : shadow.splits.y);
+    float cascadeT = clamp((viewDepth - lo) / max(hi - lo, 1e-3), 0.0, 1.0);
+    float filterRadius = max(mix(0.5, 2.0, cascadeT),
+                             blockerPenumbra(p, cascade, slopeScaledBias(cascade, nDotL)));
+    float vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, nDotL), filterRadius);
     float band = max(0.5, (hi - lo) * 0.1); // ~10% of the cascade's own span
     float toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
     float toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
     if (toPrev > 0.0 && cascade > 0) {
-        float visPrev = sampleShadowCascade(p, cascade - 1, slopeScaledBias(cascade - 1, nDotL));
+        float visPrev = sampleShadowCascade(p, cascade - 1, slopeScaledBias(cascade - 1, nDotL), filterRadius);
         vis = mix(vis, visPrev, toPrev);
     }
     if (toNext > 0.0 && cascade < 2) {
-        float visNext = sampleShadowCascade(p, cascade + 1, slopeScaledBias(cascade + 1, nDotL));
+        float visNext = sampleShadowCascade(p, cascade + 1, slopeScaledBias(cascade + 1, nDotL), filterRadius);
         vis = mix(vis, visNext, toNext);
     }
 
@@ -260,10 +350,16 @@ void main() {
     // frontFace/winding and flips floors dark when Assimp winding disagrees.
     if (dot(Ngeom, V) < 0.0)
         Ngeom = -Ngeom;
-    vec2 uv = parallaxMappedUV(heightSampler, vUV, Ngeom, vWorldPos, V, ubo.parallax.x,
-                               ubo.parallax.y, ubo.parallax.z);
+    vec2 uv = ubo.virtualTexture.x > 0.5
+                  ? vUV
+                  : parallaxMappedUV(heightSampler, vUV, Ngeom, vWorldPos, V,
+                                     ubo.parallax.x, ubo.parallax.y, ubo.parallax.z);
 
-    vec4 base = textureCellBomb(albedoSampler, uv, bombScale, bombStrength, bombRot) * vTint;
+    vec4 base = (ubo.virtualTexture.x > 0.5
+                     ? sampleVirtualTexture(albedoSampler, heightSampler, uv,
+                                            ubo.virtualTexture, ubo.virtualAtlas)
+                     : textureCellBomb(albedoSampler, uv, bombScale, bombStrength, bombRot)) *
+                vTint;
     if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w)
         discard;
     // Alpha hash is stable in screen space and avoids object-order artifacts.
@@ -277,7 +373,12 @@ void main() {
     int count = int(ubo.lightDirIntensity.w + 0.5);
 
     vec3 N = Ngeom;
-    vec3 nSample = textureCellBomb(normalSampler, uv, bombScale, bombStrength, bombRot).xyz;
+    vec3 nSample =
+        (ubo.virtualTexture.x > 0.5
+             ? sampleVirtualTexture(normalSampler, heightSampler, uv, ubo.virtualTexture,
+                                    ubo.virtualAtlas)
+             : textureCellBomb(normalSampler, uv, bombScale, bombStrength, bombRot))
+            .xyz;
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, uv);
 
@@ -352,26 +453,58 @@ void main() {
     gi += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic);
     vec3 color = gi + Lo;
 
-    // Specular IBL (envIntensity packed in lightColor.w). No BRDF LUT — Fresnel * env.
+    // Split-sum specular IBL using the UE-style analytic DFG approximation.
     float envIntensity = ubo.lightColor.w;
-    if (envIntensity > 1e-4) {
-        vec3 R = reflect(-V, N);
-        float lod = roughness * 5.0;
-        vec3 envSpec = textureLod(envSampler, R, lod).rgb * envIntensity;
+    float probeWeight0 = reflectionProbeWeight(0, vWorldPos);
+    float probeWeight1 = reflectionProbeWeight(1, vWorldPos);
+    float probeWeightSum = probeWeight0 + probeWeight1;
+    if (probeWeightSum > 1.0) {
+        probeWeight0 /= probeWeightSum;
+        probeWeight1 /= probeWeightSum;
+        probeWeightSum = 1.0;
+    }
+    float globalWeight = 1.0 - probeWeightSum;
+    if (envIntensity * globalWeight + probeWeight0 + probeWeight1 > 1e-4) {
+        vec3 R = boxProjectedEnv(reflect(-V, N), vWorldPos);
+        float maxLod = float(max(textureQueryLevels(envSampler) - 1, 0));
+        float specMaxLod = maxLod >= 2.0 ? maxLod - 1.0 : maxLod;
+        float lod = roughness * specMaxLod;
+        vec3 envSpec = textureLod(envSampler, R, lod).rgb * envIntensity * globalWeight;
+        vec3 envDiffuse = textureLod(envSampler, N, maxLod).rgb * envIntensity * globalWeight;
+        if (probeWeight0 > 0.0) {
+            float probeLod = float(max(textureQueryLevels(reflectionProbe0) - 1, 0));
+            vec3 probeR = reflectionProbeDirection(0, reflect(-V, N), vWorldPos);
+            envSpec += textureLod(reflectionProbe0, probeR, roughness * max(probeLod - 1.0, 0.0)).rgb *
+                       ubo.reflectionProbeCenter[0].w * probeWeight0;
+            envDiffuse += textureLod(reflectionProbe0, N, probeLod).rgb *
+                          ubo.reflectionProbeCenter[0].w * probeWeight0;
+        }
+        if (probeWeight1 > 0.0) {
+            float probeLod = float(max(textureQueryLevels(reflectionProbe1) - 1, 0));
+            vec3 probeR = reflectionProbeDirection(1, reflect(-V, N), vWorldPos);
+            envSpec += textureLod(reflectionProbe1, probeR, roughness * max(probeLod - 1.0, 0.0)).rgb *
+                       ubo.reflectionProbeCenter[1].w * probeWeight1;
+            envDiffuse += textureLod(reflectionProbe1, N, probeLod).rgb *
+                          ubo.reflectionProbeCenter[1].w * probeWeight1;
+        }
         vec3 F0 = mix(vec3(0.04), albedo, metallic);
-        vec3 F = fresnelSchlick(max(dot(N, V), 0.0), F0);
-        color += envSpec * F;
+        float NoV = max(dot(N, V), 0.0);
+        vec4 brdf = roughness * vec4(-1.0, -0.0275, -0.572, 0.022) +
+                    vec4(1.0, 0.0425, 1.04, -0.04);
+        float a004 = min(brdf.x * brdf.x, exp2(-9.28 * NoV)) * brdf.x + brdf.y;
+        vec2 dfg = vec2(-1.04, 1.04) * a004 + brdf.zw;
+        vec3 specWeight = max(F0 * dfg.x + dfg.y, vec3(0.0));
+        float directionalAlbedo = max(dfg.x + dfg.y, 1e-3);
+        vec3 multiScatter = 1.0 + F0 * (min(1.0 / directionalAlbedo, 8.0) - 1.0);
+        float horizon = clamp(1.0 + dot(reflect(-V, N), Ngeom), 0.0, 1.0);
+        color += envSpec * specWeight * multiScatter * (horizon * horizon);
+        vec3 F = fresnelSchlick(NoV, F0);
         // Cheap diffuse IBL for dielectrics (sample along N at a blurry lod).
-        vec3 irr = textureLod(envSampler, N, 5.0).rgb * envIntensity;
-        color += albedo * irr * (1.0 - metallic) * (1.0 - F) * 0.45;
+        color += albedo * envDiffuse * (1.0 - metallic) * (1.0 - F) * 0.45;
     }
 
-    color = tonemapPeak(color);
     color += emissive;
 
-    float nearZ = max(ubo.clipInfo.x, 1e-4);
-    float farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
-    float viewZ = max(-vViewPos.z, 0.0);
-    float linear01 = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
-    outColor = vec4(color, linear01);
+    float outputAlpha = (ubo.texBomb.w > 1.5 && ubo.texBomb.w < 2.5) ? base.a : 1.0;
+    outColor = vec4(color, outputAlpha);
 }

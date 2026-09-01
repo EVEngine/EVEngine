@@ -23,13 +23,23 @@ class WeaponSystem {
 public:
     /** @brief 注册武器逻辑实现；同名替换。 */
     static void registerLogic(IWeaponLogic* logic);
-    /** @brief 按名字取逻辑；未注册返回 nullptr。 */
+    /**
+     * @brief 按名字取逻辑；未注册返回 nullptr。
+     * @return Borrowed nullable implementation owned by the registered provider.
+     * @ownership WeaponSystem retains the registry entry but does not own the implementation.
+     * @lifetime Valid while registered and until replacement/unregister; do not retain across registry mutation.
+     * @thread Call on the weapon registry thread.
+     * @reentrancy The lookup invokes no callbacks and does not mutate the registry.
+     */
     static IWeaponLogic* findLogic(const std::string& name);
     /** @brief 已注册逻辑数量。 */
     static int logicCount();
 
     /** @brief 注册事件汇（替换旧的；传 nullptr 清空）。 */
     static void setEventSink(WeaponEventSink sink);
+
+    /** @brief 向事件汇推一条事件（模块/脚本便捷入口）。 */
+    static void emitEvent(const WeaponEvent& e);
 
     /** @brief 每帧推进：冷却 / 连发 / 装填 / 炮口旋转 / 逻辑自身。 */
     static void update(WeaponEntity& w, float dt);

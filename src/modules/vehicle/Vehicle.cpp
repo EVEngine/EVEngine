@@ -1,7 +1,9 @@
 #include "vehicle/Vehicle.h"
 
 #include "common/Capability.h"
-#include "common/Json.h"
+#include "common/Value.h"
+#include "vehicle/VehicleDefinitionRuntime.h"
+#include "vehicle/VehicleOrderQueueAdapter.h"
 #include "vehicle/VehicleSystem.h"
 #include "weapon/Weapon.h"
 
@@ -25,96 +27,7 @@ Module_IMPL(Vehicle, new Vehicle());
 
 namespace {
 
-using eve::json::Value;
-
 constexpr float kPi = 3.14159265358979323846f;
-
-bool parseDefinition(Value o, std::unordered_map<std::string, VehicleDefinition>& defs) {
-    const std::string id = o.getString("id");
-    if (id.empty()) return false;
-
-    VehicleDefinition def;
-    def.id        = id;
-    def.category  = o.getString("category", "vehicle");
-    def.mobility  = o.getString("mobility", "kinematic");
-    def.maxHealth = o.getFloat("maxHealth", 100.f);
-
-    const Value ph = o.get("physics");
-    def.maxSpeed   = ph ? ph.getFloat("maxSpeed", o.getFloat("maxSpeed", 120.f)) : o.getFloat("maxSpeed", 120.f);
-    def.accel      = ph ? ph.getFloat("accel", o.getFloat("accel", 80.f)) : o.getFloat("accel", 80.f);
-    def.turnRate   = ph ? ph.getFloat("turnRate", o.getFloat("turnRate", 90.f)) : o.getFloat("turnRate", 90.f);
-    def.radius     = ph ? ph.getFloat("radius", o.getFloat("radius", 16.f)) : o.getFloat("radius", 16.f);
-
-    if (Value zones = o.get("armorZones")) {
-        for (size_t i = 0; i < zones.size(); ++i) {
-            Value     z = zones.at(i);
-            ArmorZone zone;
-            zone.name = z.getString("name", "body");
-            zone.mult = z.getFloat("mult", 1.f);
-            zone.node = z.getString("node");
-            def.armorZones.push_back(zone);
-        }
-    }
-
-    if (Value mounts = o.get("mounts")) {
-        for (size_t i = 0; i < mounts.size(); ++i) {
-            Value    m = mounts.at(i);
-            MountDef md;
-            md.name                         = m.getString("name", "mount" + std::to_string(i));
-            md.weapon                       = m.getString("weapon");
-            md.type                         = m.getString("type", "turret");
-            const std::vector<float> limits = m.getFloatArray("limits");
-            if (limits.size() >= 4) {
-                md.yawMin   = limits[0];
-                md.yawMax   = limits[1];
-                md.pitchMin = limits[2];
-                md.pitchMax = limits[3];
-            }
-            md.rotSpeed  = m.getFloat("rotSpeed");
-            md.firingArc = m.getFloat("firingArc");
-            md.aimMode   = m.getString("aimMode", "auto");
-            def.mounts.push_back(md);
-        }
-    }
-
-    if (Value susp = o.get("suspension")) {
-        def.suspension.maxTravel   = susp.getFloat("maxTravel", 0.3f);
-        def.suspension.driveForce  = susp.getFloat("driveForce", 2000.f);
-        def.suspension.lateralGrip = susp.getFloat("lateralGrip", 12.f);
-        if (Value wheels = susp.get("wheels")) {
-            for (size_t i = 0; i < wheels.size(); ++i) {
-                Value           w = wheels.at(i);
-                SuspensionWheel sw;
-                sw.x          = w.getFloat("x");
-                sw.y          = w.getFloat("y");
-                sw.z          = w.getFloat("z");
-                sw.radius     = w.getFloat("radius", 0.3f);
-                sw.restLength = w.getFloat("rest", 0.4f);
-                sw.stiffness  = w.getFloat("stiffness", 60.f);
-                sw.damping    = w.getFloat("damping", 8.f);
-                sw.drive      = w.getBool("drive", true);
-                sw.steer      = w.getBool("steer", true);
-                def.suspension.wheels.push_back(sw);
-            }
-        }
-    }
-
-    if (Value seats = o.get("seats")) {
-        for (size_t i = 0; i < seats.size(); ++i) {
-            Value   s = seats.at(i);
-            SeatDef sd;
-            sd.name       = s.getString("name", "passenger" + std::to_string(i));
-            sd.driver     = s.getString("driver", "player");
-            sd.cameraMode = s.getString("cameraMode", "third");
-            sd.mountIndex = s.getInt("mountIndex", -1);
-            def.seats.push_back(sd);
-        }
-    }
-
-    def.tags = o.getStringArray("tags");
-    defs[id] = def;
-    return true;
-}
 
 template <typename T>
 T* resolve(const ecs::EntityHandle& h) {
@@ -198,6 +111,7 @@ VehicleEntity* VehicleEntity::createVehicle() {
     v->motion();
     v->health();
     v->orders();
+    v->orders()->adapter->syncCompatibility(*v->orders());
     v->mounts();
     v->physicsBody();
     v->suspension();
@@ -224,42 +138,98 @@ Vehicle::~Vehicle() {
 // ---------------------------------------------------------------------------
 
 int Vehicle::registerVehiclesFromJson(const std::string& json) {
-    const eve::json::Document doc = eve::json::Document::parse(json);
-    if (!doc.valid()) return 0;
-    const Value root = doc.root();
-    int         n    = 0;
-    if (root.isArray()) {
-        for (size_t i = 0; i < root.size(); ++i)
-            if (parseDefinition(root.at(i), defs_)) ++n;
-    } else if (root.isObject()) {
-        if (parseDefinition(root, defs_)) ++n;
+    auto canonical = eve::Value::fromJson(json);
+    if (!canonical) {
+        canonical.ignore("vehicle definition input could not be parsed as canonical Value");
+        return 0;
+    }
+
+    int        n       = 0;
+    const auto publish = [this, &n](const eve::Value& value) {
+        const auto* object = value.getIf<eve::Value::Object>();
+        if (object == nullptr) return;
+        const auto  id   = object->find("id");
+        const auto* name = id == object->end() ? nullptr : id->second.getIf<std::string>();
+        if (name == nullptr || name->empty()) return;
+
+        auto encoded = value.toJson();
+        if (!encoded) {
+            encoded.ignore("vehicle definition value could not be serialized canonically");
+            return;
+        }
+        eve::definitions::Definition source;
+        source.type    = "vehicle";
+        source.id      = *name;
+        source.version = eve::SchemaVersion(1);
+        source.json    = encoded.value();
+        auto typed     = parseVehicleDefinition(source);
+        if (!typed) {
+            typed.ignore("vehicle definition failed typed projection validation");
+            return;
+        }
+
+        auto       current = definitionRegistry_.resolve("vehicle", *name);
+        const bool exists  = current.ok();
+        if (!exists && current.status().code() != eve::StatusCode::NotFound) return;
+        auto stored = exists ? definitionRegistry_.replace("vehicle", *name, 1, source.json)
+                             : definitionRegistry_.insert("vehicle", *name, 1, source.json);
+        if (stored) {
+            ++n;
+        } else {
+            stored.ignore("vehicle definition registry rejected canonical registration");
+        }
+    };
+    const eve::Value& owningRoot = canonical.value();
+    if (const auto* array = owningRoot.getIf<eve::Value::Array>()) {
+        for (const auto& value : *array) publish(value);
+    } else {
+        publish(owningRoot);
     }
     return n;
 }
 
-void Vehicle::clearVehicleDefinitions() { defs_.clear(); }
+void Vehicle::clearVehicleDefinitions() {
+    while (definitionRegistry_.countType("vehicle") > 0) {
+        const auto* definition = definitionRegistry_.atType("vehicle", 0);
+        if (definition == nullptr) break;
+        auto result = definitionRegistry_.remove("vehicle", definition->id);
+        if (!result) result.ignore("vehicle definition registry removal failed");
+    }
+}
 
-int Vehicle::getVehicleDefinitionCount() { return static_cast<int>(defs_.size()); }
+int Vehicle::getVehicleDefinitionCount() { return definitionRegistry_.countType("vehicle"); }
 
-bool Vehicle::hasVehicleDefinition(const std::string& id) { return defs_.count(id) != 0; }
+bool Vehicle::hasVehicleDefinition(const std::string& id) {
+    auto result = definitionRegistry_.resolve("vehicle", id);
+    return result.ok();
+}
 
 std::string Vehicle::getVehicleDefinitionMobility(const std::string& id) {
-    const VehicleDefinition* d = findDef(id);
-    return d ? d->mobility : std::string{};
+    auto definition = findDef(id);
+    if (!definition) {
+        definition.ignore("legacy scalar query returns an empty projection for an unknown definition");
+        return {};
+    }
+    return definition.value().mobility;
 }
 
 float Vehicle::getVehicleDefinitionMaxHealth(const std::string& id) {
-    const VehicleDefinition* d = findDef(id);
-    return d ? d->maxHealth : 0.f;
+    auto definition = findDef(id);
+    if (!definition) {
+        definition.ignore("legacy scalar query returns zero for an unknown definition");
+        return 0.f;
+    }
+    return definition.value().maxHealth;
 }
 
 void Vehicle::registerMobility(IVehicleMobility* mobility) { VehicleSystem::registerMobility(mobility); }
 
 int Vehicle::getMobilityCount() { return VehicleSystem::mobilityCount(); }
 
-const VehicleDefinition* Vehicle::findDef(const std::string& id) const {
-    auto it = defs_.find(id);
-    return it == defs_.end() ? nullptr : &it->second;
+eve::Result<VehicleDefinition> Vehicle::findDef(const std::string& id) const {
+    auto resolved = definitionRegistry_.resolve("vehicle", id);
+    if (!resolved) return eve::Result<VehicleDefinition>::failure(resolved.status());
+    return parseVehicleDefinition(resolved.value().get());
 }
 
 // ---------------------------------------------------------------------------
@@ -268,23 +238,28 @@ const VehicleDefinition* Vehicle::findDef(const std::string& id) const {
 
 VehicleEntity* Vehicle::newVehicle(const std::string& defId, float x, float y, float heading,
                                    const std::string& faction) {
-    const VehicleDefinition* def = findDef(defId);
-    if (def == nullptr) return nullptr;
+    auto definition = findDef(defId);
+    if (!definition) {
+        definition.ignore("legacy nullable factory returns null for an unknown definition");
+        return nullptr;
+    }
+    VehicleDefinition def = std::move(definition).takeValue();
 
     VehicleEntity* v       = VehicleEntity::createVehicle();
     v->identity()->id      = defId + "#" + std::to_string(nextInstance_++);
     v->identity()->defId   = defId;
     v->identity()->faction = faction;
-    v->definition()->def   = def;
+    v->definition()->owned = std::make_shared<const VehicleDefinition>(def);
+    v->definition()->def   = v->definition()->owned.get();
     v->motion()->x         = x;
     v->motion()->y         = y;
     v->motion()->heading   = normalizeHeading(heading);
-    v->health()->maxHp     = def->maxHealth;
-    v->health()->hp        = def->maxHealth;
+    v->health()->maxHp     = def.maxHealth;
+    v->health()->hp        = def.maxHealth;
 
-    if (!def->mounts.empty()) {
+    if (!def.mounts.empty()) {
         if (eve::weapon::Weapon* wmod = requireModInst(eve::weapon, Weapon)) {
-            for (const MountDef& md : def->mounts) {
+            for (const MountDef& md : def.mounts) {
                 eve::weapon::WeaponMountEntity* m = wmod->newMount(md.name, md.type);
                 if (m == nullptr) continue;
                 m->identity()->nodePath = md.name;
@@ -302,7 +277,7 @@ VehicleEntity* Vehicle::newVehicle(const std::string& defId, float x, float y, f
         }
     }
 
-    for (const SeatDef& sd : def->seats) {
+    for (const SeatDef& sd : def.seats) {
         VehicleEntity::SeatSlot slot;
         slot.name       = sd.name;
         slot.driver     = sd.driver;
@@ -325,7 +300,8 @@ void Vehicle::moveTo(VehicleEntity* v, float x, float y) {
     o.type = VehicleOrderType::Move;
     o.x    = x;
     o.y    = y;
-    VehicleSystem::pushOrder(*v, o);
+    auto queued = VehicleSystem::pushOrder(*v, o);
+    if (!queued) queued.ignore("Vehicle script facade cannot propagate order Result");
 }
 
 void Vehicle::attackMove(VehicleEntity* v, float x, float y) {
@@ -334,7 +310,8 @@ void Vehicle::attackMove(VehicleEntity* v, float x, float y) {
     o.type = VehicleOrderType::AttackMove;
     o.x    = x;
     o.y    = y;
-    VehicleSystem::pushOrder(*v, o);
+    auto queued = VehicleSystem::pushOrder(*v, o);
+    if (!queued) queued.ignore("Vehicle script facade cannot propagate order Result");
 }
 
 void Vehicle::attack(VehicleEntity* v, float x, float y, int targetId) {
@@ -344,28 +321,33 @@ void Vehicle::attack(VehicleEntity* v, float x, float y, int targetId) {
     o.x        = x;
     o.y        = y;
     o.targetId = targetId;
-    VehicleSystem::pushOrder(*v, o);
+    auto queued = VehicleSystem::pushOrder(*v, o);
+    if (!queued) queued.ignore("Vehicle script facade cannot propagate order Result");
 }
 
 void Vehicle::stop(VehicleEntity* v) {
     if (v == nullptr) return;
     VehicleOrder o;
     o.type = VehicleOrderType::Stop;
-    VehicleSystem::pushOrder(*v, o);
+    auto queued = VehicleSystem::pushOrder(*v, o);
+    if (!queued) queued.ignore("Vehicle script facade cannot propagate order Result");
 }
 
 void Vehicle::hold(VehicleEntity* v) {
     if (v == nullptr) return;
     VehicleOrder o;
     o.type = VehicleOrderType::Hold;
-    VehicleSystem::pushOrder(*v, o);
+    auto queued = VehicleSystem::pushOrder(*v, o);
+    if (!queued) queued.ignore("Vehicle script facade cannot propagate order Result");
 }
 
 void Vehicle::clearOrders(VehicleEntity* v) {
     if (v != nullptr) VehicleSystem::clearOrders(*v);
 }
 
-int Vehicle::orderCount(VehicleEntity* v) { return v == nullptr ? 0 : static_cast<int>(v->orders()->queue.size()); }
+int Vehicle::orderCount(VehicleEntity* v) {
+    return v == nullptr || v->orders()->adapter == nullptr ? 0 : v->orders()->adapter->activeOrQueuedCount();
+}
 
 std::string Vehicle::getCurrentOrderType(VehicleEntity* v) {
     if (v == nullptr) return "none";

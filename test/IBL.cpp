@@ -131,7 +131,7 @@ Texture *makeFaceColoredCubemap(Graphics *gfx, const uint8_t faceRgb[6][3], int 
 
 /** Load 128^2 PNG faces (px,nx,py,ny,pz,nz) under test/Textures/env/<name>/. */
 Texture *loadEnvCubemap(Graphics *gfx, const char *name) {
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     static const char *kFaces[6] = {"px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"};
 
     int faceSize = 0;

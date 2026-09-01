@@ -1,39 +1,36 @@
 #pragma once
 
-#include "editor/EditCommand.h"
+#include "editor/EditorTransactionConsumer.h"
 
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace eve::editor {
 
 /** @brief Executes, groups, rolls back and replays arbitrary edit commands. */
 class EditorTransactions {
 public:
+    /** @brief Compatibility facade over EditorTransactionConsumer::beginLegacy. */
     bool begin(const std::string &name);
+    /** @brief Compatibility preview facade over the structured append API. */
     bool execute(std::unique_ptr<IEditCommand> command);
+    /** @brief Compatibility projection of a checked commit Result. */
     bool commit();
+    /** @brief Compatibility projection of a checked rollback Result. */
     bool rollback();
+    /** @brief Compatibility projection of a checked compensation Result. */
     bool undo();
+    /** @brief Compatibility projection of a checked redo Result. */
     bool redo();
     void clear();
-    bool isActive() const { return active_; }
-    bool canUndo() const { return !undo_.empty(); }
-    bool canRedo() const { return !redo_.empty(); }
-    int undoCount() const { return static_cast<int>(undo_.size()); }
-    int redoCount() const { return static_cast<int>(redo_.size()); }
+    bool isActive() const { return consumer_.active(); }
+    bool canUndo() const { return consumer_.canUndo(); }
+    bool canRedo() const { return consumer_.canRedo(); }
+    int  undoCount() const { return static_cast<int>(consumer_.undoCount()); }
+    int  redoCount() const { return static_cast<int>(consumer_.redoCount()); }
+
 private:
-    struct Transaction {
-        std::string name;
-        std::vector<std::unique_ptr<IEditCommand>> commands;
-    };
-    static void apply(Transaction &transaction);
-    static void revert(Transaction &transaction);
-    bool active_ = false;
-    Transaction pending_;
-    std::vector<Transaction> undo_;
-    std::vector<Transaction> redo_;
+    EditorTransactionConsumer consumer_;
 };
 
 }  // namespace eve::editor

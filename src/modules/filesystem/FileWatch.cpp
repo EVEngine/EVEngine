@@ -1,6 +1,8 @@
 #include "filesystem/FileWatch.h"
 #include "common/config.h"
 
+#include <algorithm>
+
 #ifndef EVENGINE_WEBGPU
 
 #include <Poco/Delegate.h>
@@ -9,10 +11,17 @@
 #include <Poco/Path.h>
 
 #include <cstdlib>
+#include <vector>
 
 #endif
 
 namespace eve::filesystem {
+
+namespace {
+
+constexpr auto kDebounceDelay = std::chrono::milliseconds(75);
+
+}  // namespace
 
 #ifdef EVENGINE_WEBGPU
 // WebGPU (browser) build has no native directory watching; DirWatch stays an
@@ -114,6 +123,7 @@ bool FileWatch::add(const std::string &realDir, const std::string &filterName,
         }
 
         DirWatch *dw = nullptr;
+        bool      created = false;
         auto it = byDir_.find(dir);
         if (it == byDir_.end()) {
             auto owned = std::make_unique<DirWatch>();
@@ -127,17 +137,20 @@ bool FileWatch::add(const std::string &realDir, const std::string &filterName,
             if (owned->watcher) {
                 dw          = owned.get();
                 byDir_[dir] = std::move(owned);
+                created     = true;
             }
         } else {
             dw = it->second.get();
         }
 
-        if (dw) {
+        if (dw && created) {
             dw->watcher->itemAdded += Poco::delegate(this, &FileWatch::onAdded);
             dw->watcher->itemRemoved += Poco::delegate(this, &FileWatch::onRemoved);
             dw->watcher->itemModified += Poco::delegate(this, &FileWatch::onModified);
             dw->watcher->itemMovedFrom += Poco::delegate(this, &FileWatch::onMovedFrom);
             dw->watcher->itemMovedTo += Poco::delegate(this, &FileWatch::onMovedTo);
+        }
+        if (dw) {
             dw->filters[filterName] = reportPath;
             ++dw->refs;
             reportToDir_[reportPath] = dir;
@@ -219,10 +232,26 @@ int FileWatch::count() const {
 
 bool FileWatch::poll(Event &out) {
     std::lock_guard<std::mutex> lock(mu_);
-    if (queue_.empty()) return false;
-    out = std::move(queue_.front());
-    queue_.erase(queue_.begin());
+    const auto now = std::chrono::steady_clock::now();
+    auto       it = std::find_if(queue_.begin(), queue_.end(),
+                                 [now](const PendingEvent &event) { return event.readyAt <= now; });
+    if (it == queue_.end()) return false;
+    out = std::move(it->event);
+    queue_.erase(it);
     return true;
+}
+
+void FileWatch::enqueue(Event event) {
+    const auto readyAt = std::chrono::steady_clock::now() + kDebounceDelay;
+    auto       pending = std::find_if(queue_.begin(), queue_.end(), [&](const PendingEvent &queued) {
+        return queued.event.realPath == event.realPath;
+    });
+    if (pending != queue_.end()) {
+        pending->event   = std::move(event);
+        pending->readyAt = readyAt;
+        return;
+    }
+    queue_.push_back({std::move(event), readyAt});
 }
 
 #ifndef EVENGINE_WEBGPU
@@ -259,7 +288,7 @@ void FileWatch::handlePocoEvent(const std::string &kind, const std::string &item
         ev.kind = kind;
         ev.path = report;
         ev.realPath = itemPath;
-        queue_.push_back(std::move(ev));
+        enqueue(std::move(ev));
     };
 
     auto all = dw->filters.find("");

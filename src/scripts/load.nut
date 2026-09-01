@@ -3,8 +3,11 @@
 // Which modules exist depends on how the engine was built (see
 // cmake/module_manifest.cmake), so nothing here names a module that might have
 // been trimmed. `eve.moduleList` is generated at configure time from the same
-// manifest that drives the link list, and optional modules are used behind
-// `has_module()` guards.
+// manifest that drives the link list. `config.modules` / `optionalModules`
+// select which of those slots are constructed; omitted fields keep the old
+// "instantiate everything in the build" behaviour. Optional modules are used
+// behind `has_module()` / `ensure_module()` guards. Native class methods bind
+// on first `eve.ClassName` access; `m.cls in eve` does not trigger that.
 //
 // The frame body lives in eve_frame() so both drivers can share it: desktop
 // runs the while loop at the bottom, while the browser build returns to C++
@@ -33,9 +36,82 @@ function normalize_path(path) {
     return s;
 }
 
-/** True when the build contains this module, i.e. the slot got bound below. */
+/** True when the build contains this module and it has been instantiated. */
 function has_module(slot) {
     return slot in getroottable() && getroottable()[slot] != null;
+}
+
+function _module_entry(slot) {
+    if (!("moduleList" in eve)) return null;
+    foreach (m in eve.moduleList) {
+        if (m.slot == slot) return m;
+    }
+    return null;
+}
+
+/**
+ * Instantiate a script module by root slot if the build contains it.
+ * Safe to call more than once. Returns true when the slot is live.
+ */
+function ensure_module(slot) {
+    if (has_module(slot)) return true;
+    local m = _module_entry(slot);
+    if (m == null) return false;
+    local _m0 = clock();
+    try {
+        getroottable()[slot] <- eve[m.cls]();
+    } catch (e) {
+        print("module " + m.cls + " failed to initialize: " + e + "\n");
+        return false;
+    }
+    local _mdt = (clock() - _m0) * 1000.0;
+    if (_mdt >= 50.0)
+        print("[startup] module " + m.cls + " took " + _mdt + " ms\n");
+    return has_module(slot);
+}
+
+// Frame loop / window / reload always need these slots when the build has them.
+_boot_module_slots <- ["fs", "hot", "timer", "platform_event", "win", "gfx"];
+
+function _mark_slots(dest, arr) {
+    if (arr == null) return;
+    foreach (slot in arr)
+        dest[slot] <- true;
+}
+
+function instantiate_configured_modules() {
+    local filtering = ("modules" in config) || ("optionalModules" in config);
+    local wanted = {};
+    if (filtering) {
+        // Trimmed builds bind modules against the canonical script ECS classes.
+        // Compatibility mode below preserves the historical native-first order.
+        if (eve._ensureScriptECS() < 0)
+            throw "failed to initialize script ECS";
+        _mark_slots(wanted, _boot_module_slots);
+        if ("modules" in config) {
+            if (typeof config.modules != "array")
+                throw "config.modules must be an array of module slot strings";
+            _mark_slots(wanted, config.modules);
+        }
+        if ("optionalModules" in config) {
+            if (typeof config.optionalModules != "array")
+                throw "config.optionalModules must be an array of module slot strings";
+            _mark_slots(wanted, config.optionalModules);
+        }
+    } else {
+        // Compatibility mode historically exposed every native class before
+        // constructing modules. Preserve that shared-type registration order.
+        if (eve._bindAllNativeClasses() < 0)
+            throw "failed to bind native module classes";
+    }
+    local n = 0;
+    foreach (m in eve.moduleList) {
+        if (filtering && !(m.slot in wanted)) continue;
+        if (ensure_module(m.slot))
+            n += 1;
+    }
+    _startup_ms("all modules instantiated");
+    _log("boot: " + n + " module(s) instantiated" + (filtering ? " (filtered)" : ""));
 }
 
 // ---------------------------------------------------------------------------
@@ -48,6 +124,7 @@ _input_edge_state <- { };
 // 边沿检测：只在“刚按下”的那一帧返回 true。用于按键（可带备用键名）。
 // 状态跨热重载保留，所以改脚本保存后不会丢按键边沿。
 function key_just_pressed(name, alternate = "") {
+    if (!has_module("keyboard")) return false;
     local down = keyboard.isDown(name) ||
                  (alternate != "" && keyboard.isDown(alternate));
     local key = (alternate == "") ? ("k_" + name) : (name + ":" + alternate);
@@ -102,30 +179,52 @@ if ("devServerArg" in eve && eve.devServerArg != null && eve.devServerArg != "")
 // Startup timing (temporary diagnostics; remove once startup is fast).
 // ---------------------------------------------------------------------------
 _startup_t0 <- clock();
-print("[startup] load.nut begins at process clock " + (clock() * 1000.0) + " ms\n");
+print("[startup] load.nut in scripts begins at process clock " + (clock() * 1000.0) + " ms\n");
 
 function _startup_ms(label) {
     local ms = (clock() - _startup_t0) * 1000.0;
     print("[startup] " + label + ": " + ms + " ms\n");
 }
 
+// Append a milestone to the crash/error log (eve.log) so a crash shows how far
+// the boot sequence got. Bound by the host (eve.log); no-op when unavailable.
+function _log(msg) {
+    if ("log" in eve) eve.log("info", msg);
+}
+
 // ---------------------------------------------------------------------------
 // Bind the modules this build actually contains.
+// When config.modules / optionalModules is set, only those slots plus the
+// boot set (fs/hot/timer/platform_event/win/gfx) are constructed.
 // ---------------------------------------------------------------------------
 
-foreach (m in eve.moduleList) {
-    if (!(m.cls in eve)) continue;
-    local _m0 = clock();
-    try {
-        getroottable()[m.slot] <- eve[m.cls]();
-    } catch (e) {
-        print("module " + m.cls + " failed to initialize: " + e + "\n");
+instantiate_configured_modules();
+
+// Project-wide module requirements belong to config.nut.  Validate them only
+// after the build's module list has been instantiated, and before any game
+// entry point can observe a partially configured runtime.
+function validate_project_modules() {
+    if ("modules" in config) {
+        if (typeof config.modules != "array")
+            throw "config.modules must be an array of module slot strings";
+        foreach (slot in config.modules) {
+            if (typeof slot != "string")
+                throw "config.modules entries must be module slot strings";
+            if (!has_module(slot))
+                throw "required module is missing: " + slot;
+        }
     }
-    local _mdt = (clock() - _m0) * 1000.0;
-    if (_mdt >= 50.0)
-        print("[startup] module " + m.cls + " took " + _mdt + " ms\n");
+    if ("optionalModules" in config) {
+        if (typeof config.optionalModules != "array")
+            throw "config.optionalModules must be an array of module slot strings";
+        foreach (slot in config.optionalModules) {
+            if (typeof slot != "string")
+                throw "config.optionalModules entries must be module slot strings";
+        }
+    }
 }
-_startup_ms("all modules instantiated");
+
+validate_project_modules();
 
 if (!has_module("win") || !has_module("gfx")) {
     print("engine build is missing the window or graphics module\n");
@@ -144,6 +243,7 @@ if (!win.setWindowSettings(s)) {
 config.width = win.getWidth();
 config.height = win.getHeight();
 _startup_ms("window created + vulkan initialized");
+_log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
@@ -229,47 +329,128 @@ function remap_instances(container, NewClass) {
     return container;
 }
 
+// Compile every candidate before touching the live root table.  loadfile()
+// returns a closure without executing it, so a syntax error cannot leave a
+// partially redefined game behind.
+function compile_reload_candidates() {
+    local candidates = [];
+    foreach (p in watched_scripts) {
+        if (!file_exists(p)) continue;
+        candidates.append({ path = p, closure = loadfile(p) });
+    }
+    return candidates;
+}
+
+// Keep a shallow snapshot of every root binding, including functions, classes
+// and native objects that StateValue deliberately cannot serialize.  State
+// roots are restored separately by ReloadSession; this snapshot restores the
+// definition/binding surface and removes slots introduced by a failed script.
+function capture_reload_bindings() {
+    local bindings = {};
+    foreach (k, v in getroottable())
+        bindings[k] <- v;
+    return bindings;
+}
+
+function restore_reload_bindings(bindings) {
+    local root = getroottable();
+    local current = [];
+    foreach (k, v in root) current.append(k);
+    foreach (k in current) {
+        if (!(k in bindings)) delete root[k];
+    }
+    foreach (k, v in bindings) {
+        if (k in root)
+            root[k] = v;
+        else
+            root[k] <- v;
+    }
+}
+
+function report_reload_failure(message) {
+    if ("dev" in eve) eve.dev.reportError(message);
+    print(message + "\n");
+}
+
+// Transient roots deliberately start from the new script's defaults. Delete
+// their old bindings only after ReloadSession has captured the rollback point.
+function reset_transient_state() {
+    if (!("dev" in eve) || !("transientStateRoots" in eve.dev)) return;
+    local root = getroottable();
+    foreach (name in eve.dev.transientStateRoots()) {
+        if (name in root) delete root[name];
+    }
+    // Candidate scripts declare the complete next policy set. This makes
+    // deleting an obsolete declaration effective; abort restores the old set.
+    eve.dev.clearStateRoots();
+}
+
 function soft_reload_scripts() {
-    // ① optional script hook: finalize transient state before capture.
+    // Stage ①: compile the complete candidate set before cancelling work or
+    // invoking lifecycle hooks.  A broken edit leaves the running game alone.
+    local candidates = null;
+    try {
+        candidates = compile_reload_candidates();
+    } catch (e) {
+        report_reload_failure("hot-reload compile failed: " + e);
+        return false;
+    }
+
+    local oldBindings = capture_reload_bindings();
+    if ("async_cancel_continuations" in getroottable())
+        async_cancel_continuations("soft reload");
+    // Stage ②: optional script hook, then capture serializable/native state.
     if ("eve_before_reload" in getroottable()) {
         try {
             eve_before_reload();
         } catch (e) {
-            if ("dev" in eve) eve.dev.reportError("" + e);
-            print("eve_before_reload failed: " + e + "\n");
+            restore_reload_bindings(oldBindings);
+            report_reload_failure("eve_before_reload failed: " + e);
+            return false;
         }
     }
-    // ② capture: script state roots + native IStateProvider states.
     local hasSession = ("dev" in eve) && ("beginStateReload" in eve.dev);
     if (hasSession) {
         local e = eve.dev.beginStateReload();
         if (e != "") {
-            if ("dev" in eve) eve.dev.reportError("state reload: capture failed: " + e);
-            print("state reload: capture failed: " + e + "\n");
-            return;
+            restore_reload_bindings(oldBindings);
+            report_reload_failure("state reload: capture failed: " + e);
+            return false;
         }
     }
-    // ③ reload: re-dofile tracked scripts (fresh definitions).
-    foreach (p in watched_scripts) {
-        if (!file_exists(p)) continue;
+    reset_transient_state();
+
+    // Stage ③: execute the already-compiled candidates.  Any runtime failure
+    // restores the complete old binding surface and captured mutable state.
+    foreach (candidate in candidates) {
         try {
-            dofile(p);
-            print("hot-reload script: " + p + "\n");
+            candidate.closure.call(getroottable());
+            print("hot-reload script: " + candidate.path + "\n");
         } catch (e) {
-            if ("dev" in eve) eve.dev.reportError("" + e);
-            print("hot-reload script failed: " + p + ": " + e + "\n");
+            restore_reload_bindings(oldBindings);
+            local rollbackError = "";
+            if (hasSession) rollbackError = eve.dev.abortStateReload();
+            local message = "hot-reload script failed: " + candidate.path + ": " + e;
+            if (rollbackError != "") message += "; rollback failed: " + rollbackError;
+            report_reload_failure(message);
+            return false;
         }
     }
-    // ④ restore: captured values win, newly added fields kept; native
+
+    // Stage ④: captured values win, newly added fields are kept; native
     //    providers are restored / reset by the session.
     if (hasSession) {
         local e = eve.dev.commitStateReload();
         if (e != "") {
-            if ("dev" in eve) eve.dev.reportError("state reload: restore failed: " + e);
-            print("state reload: restore failed: " + e + "\n");
+            restore_reload_bindings(oldBindings);
+            local rollbackError = eve.dev.abortStateReload();
+            local message = "state reload: restore failed: " + e;
+            if (rollbackError != "") message += "; rollback failed: " + rollbackError;
+            report_reload_failure(message);
+            return false;
         }
     }
-    // ⑤ optional script hook: rebuild class instances from restored state.
+    // Stage ⑤: post-commit hooks rebuild instances derived from restored data.
     if ("eve_after_reload" in getroottable()) {
         try {
             eve_after_reload();
@@ -286,6 +467,7 @@ function soft_reload_scripts() {
             print("eve_reload failed: " + e + "\n");
         }
     }
+    return true;
 }
 
 // Apply a single changed path: scripts are re-dofile'd, assets go through the
@@ -293,7 +475,14 @@ function soft_reload_scripts() {
 // eve_asset_reload hook. Shared by local watch and remote sync.
 function handle_change(p) {
     if (path_endswith(p, ".nut")) {
-        track_script(p);
+        local isModule = false;
+        try {
+            if ("reloadScriptModule" in eve) isModule = eve.reloadScriptModule(p);
+        } catch (e) {
+            report_reload_failure("module hot-reload failed: " + p + ": " + e);
+            return;
+        }
+        if (!isModule) track_script(p);
         soft_reload_scripts();
         return;
     }
@@ -318,7 +507,7 @@ function handle_change(p) {
 function poll_hot_reload() {
     if (!config.hotReload) return;
     if (!has_module("fs")) return;
-    local needScripts = false;
+    local scripts = [];
     local assets = [];
     while (true) {
         local kind = fs.pollWatch();
@@ -326,15 +515,33 @@ function poll_hot_reload() {
         if (kind != "modified" && kind != "added" && kind != "movedTo") continue;
         local p = normalize_path(fs.getLastWatchPath());
         if (p == "") continue;
+        if ((kind == "added" || kind == "movedTo") && has_module("hot")) {
+            try {
+                if (hot.watchNewDirectory(p)) continue;
+            } catch (e) {
+                if ("dev" in eve) eve.dev.reportError("" + e);
+                print("hot-reload directory watch failed: " + p + ": " + e + "\n");
+            }
+        }
         if (path_endswith(p, ".nut")) {
-            track_script(p);
-            needScripts = true;
+            scripts.append(p);
         } else {
             assets.append(p);
         }
     }
-    if (needScripts)
+    if (scripts.len() > 0) {
+        foreach (p in scripts) {
+            local isModule = false;
+            try {
+                if ("reloadScriptModule" in eve) isModule = eve.reloadScriptModule(p);
+            } catch (e) {
+                report_reload_failure("module hot-reload failed: " + p + ": " + e);
+                return;
+            }
+            if (!isModule) track_script(p);
+        }
         soft_reload_scripts();
+    }
     foreach (p in assets) {
         handle_change(p);
     }
@@ -380,6 +587,7 @@ if (file_exists("main.nut")) {
     }
 }
 _startup_ms("game script loaded");
+_log("boot: game script loaded");
 
 if (config.hotReload && has_module("fs") && has_module("hot")) {
     try {
@@ -427,6 +635,13 @@ function dev_should_update() {
 function dev_notify_frame_done() {
     if (has_dev())
         eve.dev.notifyFrameDone();
+}
+
+// Scenario recording: mark a new frame bucket before this frame's events are
+// polled, so the recorded input/event stream maps to the frame that consumed it.
+function dev_scenario_frame() {
+    if (has_dev())
+        eve.dev.scenarioFrame();
 }
 
 function handle_dev_key(key, scancode) {
@@ -513,13 +728,21 @@ eve_frame <- function() {
     if (!("_startup_first_frame" in getroottable())) {
         getroottable()._startup_first_frame <- true;
         _startup_ms("first frame begins");
+        _log("frame: first frame begins");
     }
+    // Coarse "how far did the loop get" marker: log every 300 frames so a crash
+    // log reveals the approximate frame the process reached.
+    if (!("_frame_count" in getroottable())) getroottable()._frame_count <- 0;
+    getroottable()._frame_count += 1;
+    if ((getroottable()._frame_count % 300) == 0)
+        _log("frame: reached frame " + getroottable()._frame_count);
     local running = true;
-    event.pump();
+    dev_scenario_frame();
+    platform_event.pump();
     while (true) {
-        local name = event.poll();
+        local name = platform_event.poll();
         if (name == "") break;
-        local data = event.getLastData();
+        local data = platform_event.getLastData();
         if ("async_dispatch_event" in getroottable())
             async_dispatch_event(name, data);
         if (name == "keypressed") {
@@ -578,6 +801,7 @@ eve_frame <- function() {
     if (!("_startup_first_present" in getroottable())) {
         getroottable()._startup_first_present <- true;
         _startup_ms("first present - window shows content");
+        _log("frame: first present");
     }
     if ("bootBench" in eve && eve.bootBench)
         return false;

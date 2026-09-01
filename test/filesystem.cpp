@@ -11,5 +11,7 @@ UnitSciptTest(FilesystemTest, filesystem_content);
 TestScript(basic)
 TestScript(getPaths)
 TestScript(readDir)
+TestScript(textRoundTrip)
+TestScript(atomicTextRoundTrip)
 // TestScript(readFile)
 // TestScript(writeFile)

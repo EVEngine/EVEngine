@@ -8,6 +8,24 @@
 namespace eve::animation {
 
 void exposeAnimClipBindings(ssq::Table& table) {
+    auto retarget = table.addClass<AnimRetargetProfile>(
+        "AnimRetargetProfile", std::function<AnimRetargetProfile*()>([]() { return new AnimRetargetProfile(); }), true);
+    retarget.addFunc("addBoneMapping", &AnimRetargetProfile::addBoneMapping);
+    retarget.addFunc("clearBoneMappings", &AnimRetargetProfile::clearBoneMappings);
+    retarget.addFunc("setNormalizedNameMatching", &AnimRetargetProfile::setNormalizedNameMatching);
+    retarget.addFunc("getNormalizedNameMatching", &AnimRetargetProfile::getNormalizedNameMatching);
+    retarget.addFunc("setRootBones", &AnimRetargetProfile::setRootBones);
+    retarget.addFunc("setAutoRootScale", &AnimRetargetProfile::setAutoRootScale);
+    retarget.addFunc("getAutoRootScale", &AnimRetargetProfile::getAutoRootScale);
+    retarget.addFunc("setRootTranslationScale", &AnimRetargetProfile::setRootTranslationScale);
+    retarget.addFunc("getRootHorizontalScale", &AnimRetargetProfile::getRootHorizontalScale);
+    retarget.addFunc("getRootVerticalScale", &AnimRetargetProfile::getRootVerticalScale);
+    retarget.addFunc("setUseSkeletonSpaceRotation", &AnimRetargetProfile::setUseSkeletonSpaceRotation);
+    retarget.addFunc("getUseSkeletonSpaceRotation", &AnimRetargetProfile::getUseSkeletonSpaceRotation);
+    retarget.addFunc("getMatchedBoneCount", &AnimRetargetProfile::getMatchedBoneCount);
+    retarget.addFunc("getUnmatchedBoneCount", &AnimRetargetProfile::getUnmatchedBoneCount);
+    retarget.addFunc("getUnmatchedTargetBone", &AnimRetargetProfile::getUnmatchedTargetBone);
+
     auto clip = table.addClass<AnimClip>(
         "AnimClip", std::function<AnimClip*()>([]() -> AnimClip* { return nullptr; }), true);
     clip.addFunc("setName", &AnimClip::setName);
@@ -36,6 +54,14 @@ void exposeAnimClipBindings(ssq::Table& table) {
     clip.addFunc("getEventTime", &AnimClip::getEventTime);
     clip.addFunc("getEventName", &AnimClip::getEventName);
     clip.addFunc("getEventPayload", &AnimClip::getEventPayload);
+    clip.addFunc("addSyncMarker", &AnimClip::addSyncMarker);
+    clip.addFunc("setSyncMarker", &AnimClip::setSyncMarker);
+    clip.addFunc("removeSyncMarker", &AnimClip::removeSyncMarker);
+    clip.addFunc("getSyncMarkerCount", &AnimClip::getSyncMarkerCount);
+    clip.addFunc("getSyncMarkerTime", &AnimClip::getSyncMarkerTime);
+    clip.addFunc("getSyncMarkerName", &AnimClip::getSyncMarkerName);
+    clip.addFunc("hasCompatibleSyncMarkers", &AnimClip::hasCompatibleSyncMarkers);
+    clip.addFunc("mapSyncTimeTo", &AnimClip::mapSyncTimeTo);
     clip.addFunc("getPositionKeyCount", &AnimClip::getPositionKeyCount);
     clip.addFunc("getPositionKeyTime", &AnimClip::getPositionKeyTime);
     clip.addFunc("getPositionKeyX", &AnimClip::getPositionKeyX);
@@ -55,6 +81,7 @@ void exposeAnimClipBindings(ssq::Table& table) {
     clip.addFunc("applyPlanarRootMotion", &AnimClip::applyPlanarRootMotion);
     clip.addFunc("compress", &AnimClip::compress);
     clip.addFunc("retarget", &AnimClip::retarget);
+    clip.addFunc("retargetWithProfile", &AnimClip::retargetWithProfile);
     clip.addFunc("sample", &AnimClip::sample);
     clip.addFunc("sampleLod", &AnimClip::sampleLod);
     clip.addFunc("wrapTime", &AnimClip::wrapTime);

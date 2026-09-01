@@ -1,40 +1,54 @@
-// ============================================================================
-// EVEngine 卡牌工具模块示例 —— 功能参考 ycarowr/UiCard
-//
-// 演示 C++ 模块 eve.Card()（src/modules/card/）：
-//   扇形手牌布局       间距 / 弧高 / 悬浮放大 / 悬浮上移 / 运动速度
-//   抽牌 / 洗牌        牌库堆可视化 + 剩余张数
-//   敌方手牌           背面朝上，可“偷看”翻面
-//   拖拽出牌           拖到出牌区打出、弃牌区弃掉、手牌区松手归位
-//   费用系统           法力不足的牌自动置灰（disabledAlpha）且不可拖拽
-//   配置面板           左侧 ImGui 面板实时调节全部布局参数（UiCard Configs）
-//
-// 操作：左键拖拽 / 点按查看；按键 1 抽牌、2 偷看敌方、R 重置。
-// 运行： make run/<platform>-debug GAME=examples/cardgame
-// ============================================================================
+dofile("poker_rules.nut");
 
-if (!("card" in getroottable())) card <- null;
-if (!("playerCfg" in getroottable())) playerCfg <- null;
-if (!("enemyCfg" in getroottable())) enemyCfg <- null;
-if (!("mana" in getroottable())) mana <- 10;
-if (!("played" in getroottable())) played <- 0;
-if (!("discarded" in getroottable())) discarded <- 0;
-if (!("deckRemaining" in getroottable())) deckRemaining <- 0;
-if (!("selected" in getroottable())) selected <- null;
-if (!("logLines" in getroottable())) logLines <- [];
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
+// Playable heads-up Texas Hold'em example.
+// Controls: C check/call, R raise, A all-in, F fold, N next hand.
 
-local defIds = ["flame.element", "frost.guard", "stone.golem", "jungle.drake",
-                "shadow.assassin", "iron.knight", "fireball", "healing.light", "time.warp"];
+local pokerCard = null;
+local playerCfg = null;
+local aiCfg = null;
+local boardCfg = null;
+local artTextures = {};
+local allCardObjects = [];
 
-function pushLog(text) {
-    logLines.push(text);
-    while (logLines.len() > 6)
-        logLines.remove(0);
+persist playerStack: dynamic = 1000
+persist aiStack: dynamic = 1000
+persist pot: dynamic = 0
+persist playerStreetBet: dynamic = 0
+persist aiStreetBet: dynamic = 0
+persist currentBet: dynamic = 0
+persist handNumber: dynamic = 0
+persist dealer: dynamic = "ai"
+persist street: dynamic = "preflop"
+persist actor: dynamic = ""
+persist actionsSinceRaise: dynamic = 0
+persist handState: dynamic = "idle"
+persist aiThinkTimer: dynamic = 0.0
+persist playerHole: dynamic = []
+persist aiHole: dynamic = []
+persist boardCards: dynamic = []
+persist burnCount: dynamic = 0
+persist resultText: dynamic = ""
+persist logLines: dynamic = []
+persist pokerUiVersion: dynamic = 0
+
+local smallBlind = 10;
+local bigBlind = 20;
+local suits = ["Clovers", "Hearts", "Pikes", "Tiles"];
+local ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"];
+local rankValues = [14, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+local cardInfoById = {};
+local defIds = [];
+
+foreach (suit in suits) {
+    for (local i = 0; i < ranks.len(); i += 1) {
+        local id = suit + "_" + ranks[i];
+        defIds.push(id);
+        cardInfoById.rawset(id, { id = id, suit = suit, rank = rankValues[i] });
+    }
 }
 
-function keyPressed(name) {
-    return key_just_pressed(name);
+function keyPressed(name, alternate = "") {
+    return key_just_pressed(name, alternate);
 }
 
 function readTextFile(path) {
@@ -45,273 +59,586 @@ function readTextFile(path) {
     return content;
 }
 
-// 注册卡牌类型定义（JSON，从 data/cards.json 读取）
-function registerCards() {
-    local json = readTextFile("data/cards.json");
-    if (json == null) {
-        print("cardgame: missing data/cards.json\n");
-        return;
-    }
-    card.registerCardsFromJson(json);
+function pushLog(text) {
+    logLines.push(text);
+    while (logLines.len() > 9) logLines.remove(0);
 }
 
-// 用定义填充牌库（24 张，混合生物与法术）
-function fillDeck() {
-    local deck = card.getDeck();
+function streetName() {
+    if (street == "preflop") return "翻牌前";
+    if (street == "flop") return "翻牌";
+    if (street == "turn") return "转牌";
+    return "河牌";
+}
+
+function otherPlayer(owner) {
+    return owner == "player" ? "ai" : "player";
+}
+
+function ownerName(owner) {
+    return owner == "player" ? "你" : "AI";
+}
+
+function getCardTexture(defId) {
+    if (defId in artTextures) return artTextures[defId];
+    local texture = gfx.newTextureFromFile("assets/playing-cards/" + defId + "_black.png");
+    artTextures.rawset(defId, texture);
+    return texture;
+}
+
+function registerCards() {
+    local json = readTextFile("data/cards.json");
+    if (json == null) throw "cardgame: missing data/cards.json";
+    if (pokerCard.registerCardsFromJson(json) != 52) throw "cardgame: expected 52 card definitions";
+}
+
+function configureLayout(cfg, cardW, cardH, spacing, x, y) {
+    cfg.setCardW(cardW);
+    cfg.setCardH(cardH);
+    cfg.setSpacing(spacing);
+    cfg.setHandX(x);
+    cfg.setHandY(y);
+    cfg.setArcHeight(0.0);
+    cfg.setRotationAngle(0.0);
+    cfg.setHoverScale(1.08);
+    cfg.setHoverLift(10.0);
+    cfg.setShowZones(false);
+}
+
+function createPokerTable() {
+    pokerCard = eve.Card();
+    registerCards();
+
+    playerCfg = pokerCard.newConfig();
+    configureLayout(playerCfg, 115.0, 163.0, 18.0, 790.0, 616.0);
+    playerCfg.setDeckX(1162.0);
+    playerCfg.setDeckY(355.0);
+    pokerCard.setConfig(playerCfg);
+
+    aiCfg = pokerCard.newConfig();
+    configureLayout(aiCfg, 92.0, 131.0, 12.0, 790.0, 108.0);
+    aiCfg.setHoverScale(1.0);
+    aiCfg.setHoverLift(0.0);
+
+    boardCfg = pokerCard.newConfig();
+    configureLayout(boardCfg, 96.0, 137.0, 12.0, 790.0, 358.0);
+    boardCfg.setHoverScale(1.0);
+    boardCfg.setHoverLift(0.0);
+
+    pokerCard.newDeck();
+
+    local playerHand = pokerCard.newHand(playerCfg);
+    playerHand.setOwner("player");
+    playerHand.setInteractive(false);
+
+    local aiHand = pokerCard.newHand(aiCfg);
+    aiHand.setOwner("ai");
+    aiHand.setFaceDown(true);
+    aiHand.setInteractive(false);
+
+    local boardHand = pokerCard.newHand(boardCfg);
+    boardHand.setOwner("board");
+    boardHand.setInteractive(false);
+
+    foreach (id in defIds) allCardObjects.push(pokerCard.newCard(id));
+}
+
+function resetDeck() {
+    local deck = pokerCard.getDeck();
+    pokerCard.findHand("player").clear();
+    pokerCard.findHand("ai").clear();
+    pokerCard.findHand("board").clear();
+    pokerCard.findHand("ai").setPeek(false);
     deck.clear();
-    local n = 0;
-    while (n < 24) {
-        foreach (did in defIds) {
-            deck.push(card.newCard(did));
-            n += 1;
-            if (n >= 24) break;
-        }
+    foreach (c in allCardObjects) {
+        c.setFaceUp(true);
+        c.setDisabled(false);
+        c.setState("deck");
+        deck.push(c);
     }
     deck.shuffle();
 }
 
-function resetRun() {
-    card.findHand("player").clear();
-    card.findHand("enemy").clear();
-    mana = 10;
-    played = 0;
-    discarded = 0;
-    selected = null;
-    fillDeck();
-    deckRemaining = 24;
-    for (local i = 0; i < 4; i += 1) card.drawCard("player");
-    for (local i = 0; i < 5; i += 1) card.drawCard("enemy");
-    deckRemaining -= 9;
-    pushLog("重置：洗牌并发牌。拖拽手牌到出牌区 / 弃牌区，或点按查看。");
+function drawTo(owner) {
+    local c = pokerCard.getDeck().draw();
+    if (c == null) throw "cardgame: deck exhausted";
+    pokerCard.findHand(owner).addCard(c);
+    local info = cardInfoById[c.getDefinitionId()];
+    if (owner == "player") playerHole.push(info);
+    else if (owner == "ai") aiHole.push(info);
+    else boardCards.push(info);
+    return c;
 }
 
-function buildPanel() {
+function burnCard() {
+    local c = pokerCard.getDeck().draw();
+    if (c == null) throw "cardgame: cannot burn from empty deck";
+    c.setState("discarded");
+    burnCount += 1;
+}
+
+function stackFor(owner) {
+    return owner == "player" ? playerStack : aiStack;
+}
+
+function betFor(owner) {
+    return owner == "player" ? playerStreetBet : aiStreetBet;
+}
+
+function setStack(owner, value) {
+    if (owner == "player") playerStack = value;
+    else aiStack = value;
+}
+
+function setBet(owner, value) {
+    if (owner == "player") playerStreetBet = value;
+    else aiStreetBet = value;
+}
+
+function commitChips(owner, requested) {
+    local paid = pokerMin(requested, stackFor(owner));
+    setStack(owner, stackFor(owner) - paid);
+    setBet(owner, betFor(owner) + paid);
+    pot += paid;
+    return paid;
+}
+
+function callAmount(owner) {
+    return pokerMax(0, currentBet - betFor(owner));
+}
+
+function maxEffectiveTarget(owner) {
+    local opponent = otherPlayer(owner);
+    return pokerMin(betFor(owner) + stackFor(owner), betFor(opponent) + stackFor(opponent));
+}
+
+function suggestedRaiseTarget(owner) {
+    local increment = pokerMax(bigBlind, (pot / 2).tointeger());
+    return pokerMin(currentBet + increment, maxEffectiveTarget(owner));
+}
+
+function allInfoFor(owner) {
+    local result = [];
+    local hole = owner == "player" ? playerHole : aiHole;
+    foreach (c in hole) result.push(c);
+    foreach (c in boardCards) result.push(c);
+    return result;
+}
+
+function finishHand(winner, reason) {
+    if (winner == "player") playerStack += pot;
+    else aiStack += pot;
+    resultText = reason + "\n" + ownerName(winner) + "赢得 " + pot + " 筹码";
+    pushLog(resultText);
+    pot = 0;
+    actor = "";
+    handState = "hand_over";
+}
+
+function showdown() {
+    pokerCard.findHand("ai").setPeek(true);
+    local playerResult = pokerEvaluate(allInfoFor("player"));
+    local aiResult = pokerEvaluate(allInfoFor("ai"));
+    local comparison = pokerCompare(playerResult, aiResult);
+    local contestedPot = pot;
+
+    if (comparison > 0) {
+        playerStack += pot;
+        resultText = "你以「" + playerResult.name + "」击败 AI 的「" + aiResult.name + "」\n赢得 " + pot + " 筹码";
+    } else if (comparison < 0) {
+        aiStack += pot;
+        resultText = "AI 以「" + aiResult.name + "」击败你的「" + playerResult.name + "」\nAI 赢得 " + pot + " 筹码";
+    } else {
+        local half = (pot / 2).tointeger();
+        playerStack += half;
+        aiStack += half;
+        if (pot - half * 2 > 0) {
+            // The odd chip goes to the first active seat left of the button.
+            if (dealer == "player") aiStack += 1;
+            else playerStack += 1;
+        }
+        resultText = "双方都是「" + playerResult.name + "」，平分底池 " + pot;
+    }
+    pushLog("摊牌：你 " + playerResult.name + " / AI " + aiResult.name + "。");
+    pot = 0;
+    actor = "";
+    handState = "hand_over";
+    if (contestedPot <= 0) throw "cardgame: showdown without a pot";
+}
+
+function runOutBoard() {
+    if (boardCards.len() == 0) {
+        burnCard();
+        for (local i = 0; i < 3; i += 1) drawTo("board");
+    }
+    if (boardCards.len() == 3) {
+        burnCard();
+        drawTo("board");
+    }
+    if (boardCards.len() == 4) {
+        burnCard();
+        drawTo("board");
+    }
+    street = "river";
+    showdown();
+}
+
+function beginBettingRound() {
+    playerStreetBet = 0;
+    aiStreetBet = 0;
+    currentBet = 0;
+    actionsSinceRaise = 0;
+    actor = dealer == "player" ? "ai" : "player";
+    if (playerStack == 0 || aiStack == 0) {
+        runOutBoard();
+        return;
+    }
+    if (actor == "ai") aiThinkTimer = 0.65;
+}
+
+function advanceStreet() {
+    if (street == "preflop") {
+        street = "flop";
+        burnCard();
+        for (local i = 0; i < 3; i += 1) drawTo("board");
+        pushLog("翻牌发出。");
+    } else if (street == "flop") {
+        street = "turn";
+        burnCard();
+        drawTo("board");
+        pushLog("转牌发出。");
+    } else if (street == "turn") {
+        street = "river";
+        burnCard();
+        drawTo("board");
+        pushLog("河牌发出。");
+    } else {
+        showdown();
+        return;
+    }
+    beginBettingRound();
+}
+
+function afterAction(owner) {
+    if (handState != "betting") return;
+    if (playerStreetBet == aiStreetBet && actionsSinceRaise >= 2) {
+        advanceStreet();
+        return;
+    }
+    actor = otherPlayer(owner);
+    if (actor == "ai") aiThinkTimer = 0.65;
+}
+
+function performFold(owner) {
+    if (handState != "betting" || actor != owner) return;
+    finishHand(otherPlayer(owner), ownerName(owner) + "弃牌。");
+}
+
+function performCallOrCheck(owner) {
+    if (handState != "betting" || actor != owner) return;
+    local needed = callAmount(owner);
+    if (needed > 0) {
+        local paid = commitChips(owner, needed);
+        pushLog(ownerName(owner) + "跟注 " + paid + "。");
+    } else {
+        pushLog(ownerName(owner) + "过牌。");
+    }
+    actionsSinceRaise += 1;
+    afterAction(owner);
+}
+
+function performRaise(owner, allIn) {
+    if (handState != "betting" || actor != owner) return;
+    local target = allIn ? maxEffectiveTarget(owner) : suggestedRaiseTarget(owner);
+    if (target <= currentBet) {
+        performCallOrCheck(owner);
+        return;
+    }
+    commitChips(owner, target - betFor(owner));
+    currentBet = betFor(owner);
+    actionsSinceRaise = 1;
+    pushLog(ownerName(owner) + (allIn ? "全押到 " : "加注到 ") + currentBet + "。");
+    afterAction(owner);
+}
+
+function aiStrength() {
+    if (boardCards.len() == 0) return pokerPreflopStrength(aiHole);
+    return pokerMadeHandStrength(allInfoFor("ai"));
+}
+
+function performAiAction() {
+    if (handState != "betting" || actor != "ai") return;
+    local needed = callAmount("ai");
+    local strength = aiStrength();
+    local noise = ((handNumber * 37 + pot * 7 + boardCards.len() * 19 + aiStack) % 100).tofloat() / 100.0;
+    local pressure = needed > 0 ? needed.tofloat() / pokerMax(1, pot + needed).tofloat() : 0.0;
+    local canRaise = suggestedRaiseTarget("ai") > currentBet;
+
+    if (needed > 0 && strength + noise * 0.18 < 0.22 + pressure * 0.82) {
+        performFold("ai");
+    } else if (canRaise && (strength > 0.70 || (strength > 0.48 && noise > 0.76))) {
+        performRaise("ai", strength > 0.92);
+    } else {
+        performCallOrCheck("ai");
+    }
+}
+
+function startNewHand() {
+    if (playerStack < bigBlind || aiStack < bigBlind) {
+        playerStack = 1000;
+        aiStack = 1000;
+        pushLog("一方筹码不足，双方自动补码到 1000。");
+    }
+
+    handNumber += 1;
+    dealer = handNumber % 2 == 1 ? "player" : "ai";
+    street = "preflop";
+    handState = "betting";
+    resultText = "";
+    playerHole.clear();
+    aiHole.clear();
+    boardCards.clear();
+    burnCount = 0;
+    pot = 0;
+    playerStreetBet = 0;
+    aiStreetBet = 0;
+    currentBet = bigBlind;
+    actionsSinceRaise = 0;
+    resetDeck();
+
+    for (local i = 0; i < 2; i += 1) {
+        drawTo(dealer);
+        drawTo(otherPlayer(dealer));
+    }
+
+    commitChips(dealer, smallBlind);
+    commitChips(otherPlayer(dealer), bigBlind);
+    actor = dealer;
+    pushLog("第 " + handNumber + " 手牌：" + ownerName(dealer) + "坐庄，盲注 " + smallBlind + "/" + bigBlind + "。");
+    if (actor == "ai") aiThinkTimer = 0.65;
+}
+
+function playerActionAllowed() {
+    return handState == "betting" && actor == "player";
+}
+
+function requestPlayerAction(action) {
+    if (!playerActionAllowed()) return;
+    if (action == "fold") performFold("player");
+    else if (action == "call") performCallOrCheck("player");
+    else if (action == "raise") performRaise("player", false);
+    else if (action == "allin") performRaise("player", true);
+}
+
+function buildPokerPanel() {
     ui.setTheme("dark");
     ui.beginBuild();
-    ui.beginWindow("卡牌工具配置（UiCard）", "root");
-    ui.text("手牌布局", "h1");
-    ui.slider("间距 spacing", playerCfg.getSpacing(), 0.0, 90.0, "spacing");
-    ui.slider("弧高 arcHeight", playerCfg.getArcHeight(), 0.0, 140.0, "arc");
-    ui.slider("旋转角 rotationAngle", playerCfg.getRotationAngle(), 0.0, 30.0, "rotation");
-    ui.slider("悬浮缩放 hoverScale", playerCfg.getHoverScale(), 1.0, 2.2, "hscale");
-    ui.slider("悬浮上移 hoverLift", playerCfg.getHoverLift(), 0.0, 120.0, "hlift");
-    ui.slider("悬浮速度 hoverSpeed", playerCfg.getHoverSpeed(), 0.02, 0.6, "hspeed");
-    ui.slider("运动速度 motionSpeed", playerCfg.getMotionSpeed(), 0.02, 0.6, "mspeed");
-    ui.slider("禁用透明度 disabledAlpha", playerCfg.getDisabledAlpha(), 0.05, 1.0, "dalpha");
-    ui.slider("手牌高度 Y handY", playerCfg.getHandY(), 200.0, config.height.tofloat(), "handy");
-    ui.checkbox("绘制落牌区", playerCfg.getShowZones(), "showzones");
-    ui.checkbox("悬浮时转正", playerCfg.getHoverRotation(), "hoverrotation");
-    ui.text("操作", "h1");
-    ui.button("抽一张牌 (1)", "draw");
-    ui.sameLine("sl_draw");
-    ui.button("重置 (R)", "reset");
-    ui.button("偷看敌方 (2)", "peek");
-    ui.sameLine("sl_peek");
-    ui.button("洗牌", "shuffle");
-    ui.text("", "hud");
+    ui.beginWindow("单机德州扑克", "root");
+    ui.text("", "status");
+    ui.separator("status_sep");
+    ui.text("", "hand_info");
+    ui.text("", "result");
+    ui.separator("action_sep");
+    ui.button("过牌 / 跟注 [C]", "call");
+    ui.sameLine("same_call");
+    ui.button("加注 [R]", "raise");
+    ui.button("弃牌 [F]", "fold");
+    ui.sameLine("same_fold");
+    ui.button("全押 [A]", "allin");
+    ui.button("开始下一手 [N]", "new_hand");
+    ui.separator("log_sep");
+    ui.text("牌局记录", "log_title");
     ui.text("", "log");
+    ui.textWrapped("标准烧牌、四轮下注与七选五摊牌。", 270.0, "help");
     ui.end();
-    ui.mountBuildAs("panel");
-    ui.select("panel");
+    ui.mountBuildAs("poker");
+    ui.select("poker");
     ui.setHostOverlay(true);
-    ui.setHostPos(14.0, 14.0, 0.0, 0.0);
-    uiBuilt = true;
+    ui.setHostPos(12.0, 12.0, 0.0, 0.0);
+    ui.setHostSize(310.0, 696.0);
+    pokerUiVersion = 1;
 }
 
-function syncHud() {
-    if (!uiBuilt) return;
-    ui.select("panel");
-    local deck = card.getDeck();
-    local deckCount = (deck != null && ("count" in deck)) ? deck.count() : deckRemaining;
-    local info = "法力 " + mana + "   牌库 " + deckCount +
-        "   已出 " + played + "   弃掉 " + discarded;
-    if (selected != null)
-        info += "\n选中: " + selected.describe();
-    ui.setText("hud", info);
-    local txt = "";
-    foreach (l in logLines)
-        txt += l + "\n";
-    ui.setText("log", txt);
+function cardNames(cards) {
+    local text = "";
+    foreach (c in cards) {
+        if (text != "") text += "  ";
+        text += pokerCard.getCardDefinitionName(c.id);
+    }
+    return text;
+}
+
+function syncPokerUi() {
+    if (pokerUiVersion != 1) return;
+    ui.select("poker");
+    local role = dealer == "player" ? "庄家 / 小盲" : "大盲";
+    local turnText = handState == "hand_over" ? "本手结束" : (actor == "player" ? "轮到你行动" : "AI 思考中…");
+    ui.setText("status", "第 " + handNumber + " 手牌 · " + streetName() + "\n" +
+        "底池  " + pot + "    盲注  " + smallBlind + "/" + bigBlind + "\n" +
+        "你  " + playerStack + "（" + role + "）\nAI  " + aiStack + "\n" + turnText);
+
+    local handText = "你的底牌：" + cardNames(playerHole);
+    if (boardCards.len() >= 3) {
+        local made = pokerEvaluate(allInfoFor("player"));
+        handText += "\n当前牌型：" + made.name;
+    }
+    handText += "\n本轮下注：你 " + playerStreetBet + " / AI " + aiStreetBet;
+    ui.setText("hand_info", handText);
+    ui.setText("result", resultText);
+
+    local needed = callAmount("player");
+    ui.setText("call", needed > 0 ? "跟注 " + needed + " [C]" : "过牌 [C]");
+    local target = suggestedRaiseTarget("player");
+    ui.setText("raise", target > currentBet ? "加注到 " + target + " [R]" : "无法加注 [R]");
+    local showActions = playerActionAllowed();
+    ui.setVisible("call", showActions);
+    ui.setVisible("raise", showActions);
+    ui.setVisible("fold", showActions);
+    ui.setVisible("allin", showActions);
+    ui.setVisible("new_hand", handState == "hand_over");
+
+    local logText = "";
+    foreach (line in logLines) logText += line + "\n";
+    ui.setText("log", logText);
+}
+
+function handContains(hand, instanceId) {
+    return hand != null && hand.findCard(instanceId) != null;
+}
+
+function renderPlayingCardBacks() {
+    pokerCard.capturePresentation();
+    local aiHand = pokerCard.findHand("ai");
+    local aiHidden = aiHand != null && aiHand.isFaceDown() && !aiHand.isPeek();
+    if (!aiHidden) return;
+
+    for (local i = 0; i < pokerCard.getPresentationCount(); i += 1) {
+        local snap = pokerCard.getPresentation(i);
+        local instanceId = snap.getInstanceId();
+        local inAi = handContains(aiHand, instanceId);
+        if (inAi) {
+            local backW = snap.getW() * snap.getScale();
+            local backH = snap.getH() * snap.getScale();
+            gfx.drawSolidRect(snap.getX() - backW * 0.25, snap.getY() - 3.0,
+                backW * 0.5, 6.0, 0.82, 0.62, 0.30, snap.getAlpha());
+            gfx.drawSolidRect(snap.getX() - backW * 0.5 + 9.0, snap.getY() - backH * 0.5 + 9.0,
+                backW - 18.0, backH - 18.0, 0.12, 0.035, 0.075, snap.getAlpha());
+            gfx.drawSolidRect(snap.getX() - backW * 0.5 + 6.0, snap.getY() - backH * 0.5 + 6.0,
+                backW - 12.0, backH - 12.0, 0.82, 0.62, 0.30, snap.getAlpha());
+            gfx.drawSolidRect(snap.getX() - backW * 0.5, snap.getY() - backH * 0.5,
+                backW, backH, 0.34, 0.055, 0.10, snap.getAlpha());
+        }
+    }
+}
+
+function renderPlayingCardFaces() {
+    pokerCard.capturePresentation();
+    local playerHand = pokerCard.findHand("player");
+    local aiHand = pokerCard.findHand("ai");
+    local boardHand = pokerCard.findHand("board");
+    local aiHidden = aiHand != null && aiHand.isFaceDown() && !aiHand.isPeek();
+
+    for (local i = 0; i < pokerCard.getPresentationCount(); i += 1) {
+        local snap = pokerCard.getPresentation(i);
+        local instanceId = snap.getInstanceId();
+        local inPlayer = handContains(playerHand, instanceId);
+        local inAi = handContains(aiHand, instanceId);
+        local inBoard = handContains(boardHand, instanceId);
+        if ((inPlayer || inAi || inBoard) && snap.isFaceUp() && !(inAi && aiHidden)) {
+            local scale = snap.getScale();
+            gfx.drawTexturedRectRotated(getCardTexture(snap.getDefinitionId()),
+                snap.getX(), snap.getY(), snap.getW() * scale, snap.getH() * scale,
+                snap.getAngle(), 1.0, 1.0, 1.0, snap.getAlpha());
+        }
+    }
+}
+
+function renderPokerTable() {
+    local dealerY = dealer == "player" ? 535.0 : 168.0;
+    gfx.drawSolidRect(920.0, dealerY, 36.0, 36.0, 0.96, 0.78, 0.28, 1.0);
+    gfx.drawSolidRect(926.0, dealerY + 6.0, 24.0, 24.0, 0.20, 0.12, 0.05, 1.0);
+
+    local slotW = 96.0;
+    local slotH = 137.0;
+    local gap = 12.0;
+    local totalW = slotW * 5.0 + gap * 4.0;
+    local left = 790.0 - totalW * 0.5;
+    for (local i = 0; i < 5; i += 1) {
+        gfx.drawSolidRect(left + i * (slotW + gap), 358.0 - slotH * 0.5,
+            slotW, slotH, 0.08, 0.29, 0.27, 0.72);
+    }
+
+    // Solid rectangles at equal depth keep the first submitted pixel, so build
+    // the nested table from foreground details toward the outer frame.
+    gfx.drawSolidRect(380.0, 253.0, 836.0, 210.0, 0.025, 0.24, 0.16, 0.72);
+    gfx.drawSolidRect(365.0, 49.0, 866.0, 622.0, 0.035, 0.34, 0.22, 1.0);
+    gfx.drawSolidRect(350.0, 34.0, 896.0, 652.0, 0.025, 0.16, 0.105, 1.0);
+    gfx.drawSolidRect(338.0, 22.0, 920.0, 676.0, 0.42, 0.16, 0.075, 1.0);
+    gfx.drawSolidRect(326.0, 10.0, 944.0, 700.0, 0.055, 0.025, 0.035, 1.0);
 }
 
 eve_init = function() {
-    gfx.setBackgroundColor(0.09, 0.11, 0.16, 1.0);
-    if (card == null) {
-        card = eve.Card();
-        registerCards();
-
-        playerCfg = card.newConfig();
-        playerCfg.setHandX(config.width * 0.5);
-        playerCfg.setHandY(config.height - 80.0);
-        playerCfg.setDeckX(config.width * 0.5 - 330.0);
-        playerCfg.setDeckY(config.height - 100.0);
-        card.setConfig(playerCfg);
-
-        enemyCfg = card.newConfig();
-        enemyCfg.setHandX(config.width * 0.5);
-        enemyCfg.setHandY(80.0);
-        enemyCfg.setArcHeight(28.0);
-        enemyCfg.setSpacing(30.0);
-
-        local deck = card.newDeck();
-
-        local ph = card.newHand(playerCfg);
-        ph.setOwner("player");
-
-        local eh = card.newHand(enemyCfg);
-        eh.setOwner("enemy");
-        eh.setFaceDown(true);
-        eh.setInteractive(false);
-
-        local hz = card.newZone("hand", "手牌区（松手归位）",
-            playerCfg.getHandX() - 340.0, playerCfg.getHandY() + 40.0, 680.0, 70.0);
-        hz.setColor(0.25, 0.60, 0.30); hz.setAlpha(0.14);
-
-        local pz = card.newZone("play", "出牌区",
-            config.width * 0.5 - 240.0, config.height * 0.32, 480.0, 170.0);
-        pz.setColor(0.90, 0.55, 0.20); pz.setAlpha(0.14);
-
-        local dz = card.newZone("discard", "弃牌区",
-            config.width * 0.5 + 300.0, playerCfg.getHandY() + 40.0, 140.0, 70.0);
-        dz.setColor(0.55, 0.35, 0.30); dz.setAlpha(0.14);
-
-        resetRun();
-    }
-    if (!uiBuilt) buildPanel();
-    syncHud();
+    pokerRulesSelfTest();
+    gfx.setBackgroundColor(0.018, 0.020, 0.028, 1.0);
+    createPokerTable();
+    startNewHand();
+    if (pokerUiVersion != 1) buildPokerPanel();
+    syncPokerUi();
 };
 
 eve_reload <- function() {
-    syncHud();
+    playerStack = 1000;
+    aiStack = 1000;
+    handNumber = 0;
+    logLines.clear();
+    pokerCard = null;
+    playerCfg = null;
+    aiCfg = null;
+    boardCfg = null;
+    artTextures.clear();
+    allCardObjects.clear();
+    createPokerTable();
+    startNewHand();
+    pushLog("脚本已热重载，牌桌重置为 1000 / 1000。");
+    buildPokerPanel();
+    syncPokerUi();
 };
 
 eve_update = function(dt) {
-    // 费用不足的牌自动置灰
-    local ph = card.findHand("player");
-    if (ph != null && ("count" in ph)) {
-        for (local i = 0; i < ph.count(); i += 1) {
-            local c = ph.getCard(i);
-            if (c != null && ("setDisabled" in c))
-                c.setDisabled(c.getCost() > mana);
-        }
-    }
-
-    // 面板按钮
     while (true) {
-        local c = ui.consumeClick();
-        if (c == "") break;
-        if (c == "panel/draw") {
-            if (card.drawCard("player") != null) {
-                deckRemaining -= 1;
-                pushLog("抽一张牌。");
-            }
-            else pushLog("牌库空了。");
-        } else if (c == "panel/reset") {
-            resetRun();
-        } else if (c == "panel/peek") {
-            local eh = card.findHand("enemy");
-            eh.setPeek(!eh.isPeek());
-            pushLog(eh.isPeek() ? "偷看敌方手牌。" : "收回敌方手牌。");
-        } else if (c == "panel/shuffle") {
-            card.getDeck().shuffle();
-            pushLog("洗牌。");
-        }
+        local click = ui.consumeClick();
+        if (click == "") break;
+        if (click == "poker/call") requestPlayerAction("call");
+        else if (click == "poker/raise") requestPlayerAction("raise");
+        else if (click == "poker/fold") requestPlayerAction("fold");
+        else if (click == "poker/allin") requestPlayerAction("allin");
+        else if (click == "poker/new_hand" && handState == "hand_over") startNewHand();
     }
 
-    // 面板滑块变更
-    while (true) {
-        local ch = ui.consumeChange();
-        if (ch == "") break;
-        if (ch == "panel/spacing") playerCfg.setSpacing(ui.getValue("spacing"));
-        else if (ch == "panel/arc") playerCfg.setArcHeight(ui.getValue("arc"));
-        else if (ch == "panel/rotation") playerCfg.setRotationAngle(ui.getValue("rotation"));
-        else if (ch == "panel/hscale") playerCfg.setHoverScale(ui.getValue("hscale"));
-        else if (ch == "panel/hlift") playerCfg.setHoverLift(ui.getValue("hlift"));
-        else if (ch == "panel/hspeed") playerCfg.setHoverSpeed(ui.getValue("hspeed"));
-        else if (ch == "panel/mspeed") playerCfg.setMotionSpeed(ui.getValue("mspeed"));
-        else if (ch == "panel/dalpha") playerCfg.setDisabledAlpha(ui.getValue("dalpha"));
-        else if (ch == "panel/handy") playerCfg.setHandY(ui.getValue("handy"));
-        else if (ch == "panel/showzones") playerCfg.setShowZones(ui.getChecked("showzones"));
-        else if (ch == "panel/hoverrotation") playerCfg.setHoverRotation(ui.getChecked("hoverrotation"));
+    if (!ui.wantCaptureKeyboard()) {
+        if (keyPressed("c", "C")) requestPlayerAction("call");
+        if (keyPressed("r", "R")) requestPlayerAction("raise");
+        if (keyPressed("a", "A")) requestPlayerAction("allin");
+        if (keyPressed("f", "F")) requestPlayerAction("fold");
+        if (keyPressed("n", "N") && handState == "hand_over") startNewHand();
     }
 
-    // 同步滑块显示
-    ui.select("panel");
-    ui.setValue("spacing", playerCfg.getSpacing());
-    ui.setValue("arc", playerCfg.getArcHeight());
-    ui.setValue("rotation", playerCfg.getRotationAngle());
-    ui.setValue("hscale", playerCfg.getHoverScale());
-    ui.setValue("hlift", playerCfg.getHoverLift());
-    ui.setValue("hspeed", playerCfg.getHoverSpeed());
-    ui.setValue("mspeed", playerCfg.getMotionSpeed());
-    ui.setValue("dalpha", playerCfg.getDisabledAlpha());
-    ui.setValue("handy", playerCfg.getHandY());
-    ui.setChecked("showzones", playerCfg.getShowZones());
-    ui.setChecked("hoverrotation", playerCfg.getHoverRotation());
-
-    // 键盘快捷键
-    if (keyPressed("1")) {
-        if (card.drawCard("player") != null) {
-            deckRemaining -= 1;
-            pushLog("抽一张牌。");
-        }
-        else pushLog("牌库空了。");
+    if (handState == "betting" && actor == "ai") {
+        aiThinkTimer -= dt;
+        if (aiThinkTimer <= 0.0) performAiAction();
     }
-    if (keyPressed("2")) {
-        local eh = card.findHand("enemy");
-        eh.setPeek(!eh.isPeek());
-        pushLog(eh.isPeek() ? "偷看敌方手牌。" : "收回敌方手牌。");
-    }
-    if (keyPressed("r") || keyPressed("R")) resetRun();
 
-    // 鼠标悬停 / 拖拽（ImGui 面板上时交给 UI 处理）
-    local overUi = ui.wantCaptureMouse();
-    card.update(dt, mouse.getX(), mouse.getY(), mouse.isDown(1) && !overUi);
-
-    // 交互事件
-    for (local i = 0; i < card.getEventCount(); i += 1) {
-        local type = card.getEventType(i);
-        local zoneId = card.getEventZone(i);
-        local cardId = card.getEventCardId(i);
-        if (type == "dropRejected") {
-            pushLog("无法放置：" + card.getEventReason(i));
-        } else if (type == "drop") {
-            local c = ph.findCard(cardId);
-            if (c != null) {
-                if (zoneId == "play") {
-                    if (c.getCost() > mana) {
-                        pushLog("法力不足，无法打出 " + c.getName() + "。");
-                    } else {
-                        ph.removeCard(c);
-                        c.setState("played");
-                        mana -= c.getCost();
-                        played += 1;
-                        pushLog("打出：" + c.describe());
-                    }
-                } else if (zoneId == "discard") {
-                    ph.removeCard(c);
-                    c.setState("discarded");
-                    discarded += 1;
-                    pushLog("弃掉：" + c.describe());
-                }
-            }
-            selected = null;
-        } else if (type == "click") {
-            local c = ph.findCard(cardId);
-            if (c != null) {
-                selected = c;
-                pushLog("点按：" + c.describe());
-            }
-        }
-    }
-    card.clearEvents();
-
-    syncHud();
+    pokerCard.update(dt, mouse.getX(), mouse.getY(), false);
+    pokerCard.clearEvents();
+    syncPokerUi();
 };
 
 eve_render = function() {
     gfx.clear();
-    card.render(gfx);
-    card.renderDeck(gfx);
+    renderPlayingCardBacks();
+    pokerCard.render(gfx);
+    pokerCard.renderDeck(gfx);
+    renderPokerTable();
+    renderPlayingCardFaces();
     ui.beginFrameAndRender();
 };

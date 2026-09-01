@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/Result.h"
+#include "ui/NinePatch.h"
 #include "ui/UIBackend.h"
 #include "ui/UIHost.h"
 #include "ui/Widget.h"
@@ -10,6 +12,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::graphics {
@@ -56,25 +59,82 @@ public:
     /** @brief True when the UI wants to capture keyboard input this frame. */
     bool wantCaptureKeyboard() const;
 
-    /** @brief Creates/replaces a named host from a WidgetDesc tree and selects it. */
-    UIHost *mountAs(const std::string &name, WidgetDesc root);
-    /** @brief Mounts the tree as an auto-named host and selects it. */
-    UIHost *mount(WidgetDesc root);
-    /** @brief Replaces the selected host's tree. */
-    UIHost *remount(WidgetDesc root);
-    /** @brief Remount with key reconcile (props-only when structure matches). */
-    UIHost *remountReconcile(WidgetDesc root);
-    /** @brief Creates/replaces a named host (does not select it). */
-    UIHost *remountAs(const std::string &name, WidgetDesc root);
+    /**
+     * @brief Creates/replaces a named host from a WidgetDesc tree and selects it.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown; retain the generation handle across frames.
+     * @thread Call on the UI thread.
+     * @reentrancy The operation may rebuild widgets but does not invoke external callbacks before returning.
+     */
+    [[nodiscard]] UIHostHandle mountAs(const std::string &name, WidgetDesc root);
+    /**
+     * @brief Mounts the tree as an auto-named host and selects it.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown; retain the generation handle across frames.
+     * @thread Call on the UI thread.
+     * @reentrancy The operation may rebuild widgets but does not invoke external callbacks before returning.
+     */
+    [[nodiscard]] UIHostHandle mount(WidgetDesc root);
+    /**
+     * @brief Replaces the selected host's tree.
+     * @return Borrowed nullable selected host, or null when no host is selected.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy Tree callbacks are not invoked while the returned pointer is being acquired.
+     */
+    [[nodiscard]] UIHostHandle remount(WidgetDesc root);
+    /**
+     * @brief Remount with key reconcile (props-only when structure matches).
+     * @return Borrowed nullable selected host, or null when no host is selected.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy Reconciliation callbacks are completed before the pointer is returned.
+     */
+    [[nodiscard]] UIHostHandle remountReconcile(WidgetDesc root);
+    /**
+     * @brief Creates/replaces a named host (does not select it).
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy The operation does not invoke external callbacks before returning.
+     */
+    [[nodiscard]] UIHostHandle remountAs(const std::string &name, WidgetDesc root);
 
     /** @brief Selects a named host; false when it does not exist. */
     bool select(const std::string &name);
-    /** @brief Finds a host by name, or nullptr. */
-    UIHost *findHost(const std::string &name) const;
-    /** @brief Finds the host bound to an owner id, or nullptr. */
-    UIHost *findHostByOwner(uint32_t ownerId) const;
-    /** @brief Currently selected host, or nullptr. */
-    UIHost *current() const { return selected_; }
+    /**
+     * @brief Finds a host by name, or null when absent.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy The lookup invokes no callbacks and is invalid across host mutation.
+     */
+    [[nodiscard]] UIHostHandle findHost(const std::string &name) const;
+    /**
+     * @brief Finds the host bound to an owner id, or null when absent.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy The lookup invokes no callbacks and is invalid across host mutation.
+     */
+    [[nodiscard]] UIHostHandle findHostByOwner(uint32_t ownerId) const;
+    /**
+     * @brief Returns the currently selected host, or null.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI owns the host; callers must not delete it.
+     * @lifetime Valid until selection/host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy The accessor invokes no callbacks and is invalid across selection mutation.
+     */
+    /** @brief Returns the generation-qualified selected host handle, or empty. */
+    [[nodiscard]] UIHostHandle current() const noexcept { return selected_; }
     /** @brief Binds the selected host to a UI/scene owner id. */
     void bindOwner(uint32_t ownerId);
 
@@ -92,6 +152,9 @@ public:
     void beginChild(const std::string &id, float width = 0.f, float height = 120.f);
     /** @brief Opens a bordered card surface. */
     void beginCard(const std::string &id = "");
+    /** @brief Opens a stretchable .9.png panel; false means the asset is invalid. */
+    bool beginNinePatch(const std::string &path, const std::string &id = "",
+                        float width = 0.f, float height = 0.f);
     /** @brief Opens a window menu bar. */
     void beginMenuBar(const std::string &id = "");
     /** @brief Opens a popup menu. */
@@ -147,6 +210,9 @@ public:
     void addProgress(float fraction, const std::string &id = "", const std::string &overlay = "");
     /** Colored / textured image; size 0 = default (32px or flex-assigned). */
     void addImage(const std::string &id = "", float width = 0.f, float height = 0.f);
+    /** @brief Adds a .9.png image after removing its one-pixel marker frame. */
+    bool addNinePatch(const std::string &path, const std::string &id = "",
+                      float width = 0.f, float height = 0.f);
     /** Clickable image button (click routes through consumeClick / callbacks). */
     void addImageButton(const std::string &id, float width, float height);
     /** Embedded viewport widget (see viewportCanvas / viewport* input getters). */
@@ -187,6 +253,37 @@ public:
     void setItemAbsolute(float anchorX, float anchorY, float x = 0.f, float y = 0.f);
     /** @brief Sets hover help on the most recently added item. */
     void setItemTooltip(const std::string &text);
+    /**
+     * @brief Marks the most recently added item as a desktop drag source.
+     * @param payloadType Stable application-defined type; "file" is reserved for OS files.
+     * @param payloadText Owning UTF-8 payload copied into retained state.
+     */
+    void setItemDragSource(const std::string &payloadType, const std::string &payloadText);
+    /**
+     * @brief Marks the most recently added item as a desktop drop target.
+     * @param acceptedType Exact payload type or "*" for any type.
+     */
+    void setItemDropTarget(const std::string &acceptedType);
+    /** @brief Enables or disables the most recently added item. */
+    void setItemEnabled(bool enabled);
+    /** @brief Sets the last item's focus mode: "none", "click", or "all". */
+    void setItemFocusMode(const std::string &mode);
+    /** @brief Sets the last item's pointer filter: "stop", "pass", or "ignore". */
+    void setItemMouseFilter(const std::string &filter);
+    /** @brief Overrides the last item's subtree theme: "inherit", "dark", or "light". */
+    void setItemTheme(const std::string &theme);
+    /** @brief Overrides the current open container's inherited subtree theme. */
+    void setThemeScope(const std::string &theme);
+    /** @brief Sets the last item's sequential focus order; negative excludes it. */
+    void setItemTabIndex(int index);
+    /** @brief Sets explicit previous and next focus neighbors on the last item. */
+    void setItemFocusOrder(const std::string &previous, const std::string &next);
+    /** @brief Sets explicit directional focus neighbors on the last item. */
+    void setItemFocusNeighbors(const std::string &left, const std::string &right,
+                               const std::string &up, const std::string &down);
+    /** @brief Sets the last item's accessibility role, name and description. */
+    void setItemAccessibility(const std::string &role, const std::string &name,
+                              const std::string &description = "");
     /** Set Flex container align/justify on the current open Flex (no-op otherwise). */
     /** @brief Set Flex container align/justify on the current open Flex (no-op otherwise). */
     void setFlexAlign(const std::string &align);
@@ -212,12 +309,16 @@ public:
     void setText(const std::string &id, const std::string &text);
     void setTextWrap(const std::string &id, float width);
     void setVisible(const std::string &id, bool visible);
+    /** @brief Enables or disables a mounted control. */
+    void setEnabled(const std::string &id, bool enabled);
     void setChecked(const std::string &id, bool checked);
     void setValue(const std::string &id, float value);
     void setValueText(const std::string &id, const std::string &value);
     void setImageTint(const std::string &id, float r, float g, float b, float a = 1.f);
     void setImageUv(const std::string &id, float u0, float v0, float u1, float v1);
     void setImageNinePatch(const std::string &id, float l, float t, float r, float b);
+    /** @brief Applies a .9.png texture and its parsed stretch metadata to an image. */
+    bool setImageNinePatchFile(const std::string &id, const std::string &path);
     void setImageCornerRadius(const std::string &id, float radius);
     /** Bind a texture id from registerTexture() to an Image/ImageButton node. */
     void setImageTextureId(const std::string &id, uint64_t textureId);
@@ -226,6 +327,7 @@ public:
      * @param tex Live engine texture retained by the caller until unregisterTexture().
      * @return Opaque backend-neutral id, or zero on failure.
      */
+    [[nodiscard("retain the UI texture registration id or explicitly handle failure")]]
     uint64_t registerTexture(graphics::Texture *tex);
     /**
      * @brief Release a texture id previously returned by registerTexture().
@@ -235,6 +337,12 @@ public:
     float getValue(const std::string &id) const;
     std::string getValueText(const std::string &id) const;
     bool getChecked(const std::string &id) const;
+    /** @brief Requests keyboard/gamepad focus for a mounted control. */
+    bool requestFocus(const std::string &id);
+    /** @brief Moves focus by "next", "previous", "left", "right", "up", or "down". */
+    bool moveFocus(const std::string &direction);
+    /** @brief Returns the focused control id, or an empty string. */
+    std::string getFocusedId() const;
     /** @brief Host-level state. */
     void setHostVisible(bool visible);
     void setHostLayer(int layer);
@@ -249,6 +357,45 @@ public:
     void setHostResizable(bool resizable);
     /** @brief Positions the host window with a pivot (0..1 each axis). */
     void setHostPos(float x, float y, float pivotX = 0.f, float pivotY = 0.f);
+    /**
+     * @brief Projects the selected host from a 3D world point through the active Camera3D.
+     * @param x World X coordinate.
+     * @param y World Y coordinate.
+     * @param z World Z coordinate.
+     */
+    void setHostWorldAnchor(float x, float y, float z);
+    /** @brief Returns the selected host to ordinary screen-space placement. */
+    void clearHostWorldAnchor();
+    /**
+     * @brief Configures off-screen handling and safe-edge margin.
+     * @param policy Either "hide" or "clamp".
+     * @param safeMargin Minimum distance from the viewport edge in pixels.
+     */
+    void setHostWorldEdgePolicy(const std::string &policy, float safeMargin = 8.f);
+    /**
+     * @brief Configures distance scaling.
+     * @param enabled Whether distance scaling is active.
+     * @param referenceDistance Distance producing scale 1; must be positive.
+     * @param minScale Lower scale bound.
+     * @param maxScale Upper scale bound.
+     */
+    void setHostWorldDistanceScale(bool enabled, float referenceDistance = 10.f,
+                                   float minScale = 0.65f, float maxScale = 1.25f);
+    /**
+     * @brief Configures deterministic overlap avoidance for projected hosts.
+     * @param enabled Whether this host may be displaced to avoid overlap.
+     * @param priority Higher values claim space first.
+     * @param padding Extra separation around the measured host rectangle.
+     * @param maxDisplacement Maximum vertical displacement in pixels.
+     */
+    void setHostWorldOverlap(bool enabled, int priority = 0, float padding = 4.f,
+                             float maxDisplacement = 96.f);
+    /** @brief Returns the selected host projection state as a stable lowercase name. @return State name. */
+    std::string getHostWorldState() const;
+    /** @brief Returns the selected host's derived screen X coordinate. @return Screen X in pixels. */
+    float getHostWorldScreenX() const;
+    /** @brief Returns the selected host's derived screen Y coordinate. @return Screen Y in pixels. */
+    float getHostWorldScreenY() const;
     /** Host anchor in display (0..1); offsets come from setHostPos. */
     void setHostAnchor(float x, float y);
     /** Explicit host window size (px). */
@@ -257,7 +404,7 @@ public:
     void setHostPercent(float w, float h);
     /**
      * Animate the selected host's window position (px) from its current value
-     * to (x, y) over durationMs (0 = jump immediately). Driven by wall clock
+     * to the target x and y over durationMs; zero jumps immediately. Driven by wall clock
      * inside beginFrameAndRender().
      */
     void animateHostPos(float x, float y, float durationMs);
@@ -265,13 +412,24 @@ public:
     std::string consumeClick();
     /** @brief Returns the id of the changed widget since the last frame (or ""). */
     std::string consumeChange();
+    /** @brief Returns "supported" on desktop builds and "unsupported-platform" elsewhere. */
+    std::string dragDropSupport() const;
+    /** @brief Pops one drop and returns its target as "host/node", or an empty string. */
+    std::string consumeDrop();
+    /** @brief Returns the payload type of the last successfully consumed drop. */
+    std::string getDropType() const;
+    /** @brief Returns the owning payload text of the last successfully consumed drop. */
+    std::string getDropText() const;
+    /** @brief Returns the source as "host/node", or empty for an OS file. */
+    std::string getDropSource() const;
+    /** @brief Returns "internal", "os-file", or an empty string. */
+    std::string getDropOrigin() const;
 
     /**
      * Script-side event callbacks (P0-3): register a closure on a node id of
-     * the selected host. onClick(id, fn) fires fn(); onChange(id, fn) fires
-     * fn(kind, value) where kind is "toggle"|"value"|"text" and value matches
-     * the widget type (bool / float / string). Handlers run inside
-     * dispatchEvents() (after the C++ callbacks and before the poll queues).
+     * the selected host. onClick registers a callback for a node; onChange
+     * registers a value callback whose kind is toggle, value or text. Handlers
+     * run inside dispatchEvents after C++ callbacks and before poll queues.
      */
     void onClick(const std::string &id, ssq::Function fn);
     void onChange(const std::string &id, ssq::Function fn);
@@ -297,10 +455,13 @@ public:
     /** Replace the selected host's tree from JSON produced by saveTreeJson(). */
     bool loadTreeJson(const std::string &json);
     /**
-     * Offscreen render target of a Viewport widget in the selected host.
-     * The game renders 2D (gfx.setCanvas) or 3D (gfx.renderScene3DToCanvas)
-     * into it each frame before ui.beginFrameAndRender(); the UI then shows it.
-     * Returns nullptr until the widget has a layout rect (first render frame).
+     * @brief Returns the offscreen render target of a selected-host Viewport widget.
+     * @return Borrowed nullable Canvas owned by Graphics; null precedes layout or when the id is absent.
+     * @ownership Graphics owns the canvas; UI only registers and presents it.
+     * @lifetime Valid until viewport recreation, graphics reset, or the next mutation that replaces the target; copy no
+     * pointer across frames.
+     * @thread Call on the render/UI thread.
+     * @reentrancy The query invokes no callbacks; do not destroy or replace the target re-entrantly.
      */
     graphics::Canvas *viewportCanvas(const std::string &id);
     bool viewportHovered(const std::string &id);
@@ -350,13 +511,29 @@ public:
      * @brief Registers a live script object in the database grid.
      * @param object Live script instance.
      * @param label  Optional display label ("" = auto "Class #n").
-     * @return Entry id, or 0 on failure.
+     * @return Explicit packed process-local ObjectHandle, or 0 on failure.
+     * @remarks This integer is a Squirrel compatibility projection. C++ code
+     *          should use ui::ObjectHandle from ObjectRegistry directly; it
+     *          is not a persistent ID.
      */
+    [[nodiscard("retain the packed UI object handle or explicitly handle failure")]]
     uint64_t dbRegister(ssq::Object object, const std::string &label);
-    /** @brief Creates + registers an instance of the selected class. */
+    /**
+     * @brief Creates and registers an instance of the selected class.
+     * @return Explicit packed process-local ObjectHandle, or 0 on failure.
+     */
+    [[nodiscard("retain the packed UI object handle or explicitly handle failure")]]
     uint64_t dbCreateInstance();
-    /** @brief Removes an entry from the database grid. */
-    bool dbUnregister(uint64_t id);
+    /**
+     * @brief Removes an entry from the database grid using its packed handle.
+     * @param id Process-local generation-qualified ObjectHandle packed for the
+     *            Squirrel-facing API.
+     * @return Applied on success, or a structured failure when the panel is
+     *         unavailable or the handle is invalid/stale.
+     * @thread Call on the UI thread.
+     */
+    [[nodiscard("inspect the database removal result or explicitly ignore it")]]
+    eve::Result<void> dbUnregister(uint64_t id);
 
     // ---- DevTools editor shell --------------------------------------------
     /** @brief Opens the menu bar and docks the inspector + database panels. */
@@ -381,17 +558,52 @@ public:
     bool sceneSetPickHandler(ssq::Function fn);
 
 private:
+    struct NinePatchResource {
+        graphics::Texture *texture = nullptr;
+        uint64_t textureId = 0;
+        NinePatchInfo info;
+    };
+    /**
+     * @brief Loads or finds a nine-patch resource for one synchronous build operation.
+     * @return Borrowed nullable cache entry owned by UI.
+     * @ownership UI owns the cache entry; Graphics owns its texture.
+     * @lifetime Valid until the cache mutates, releaseNinePatches(), or UI destruction.
+     * @thread Call on the UI/render thread.
+     * @reentrancy The loader does not invoke external callbacks while returning the entry.
+     */
+    NinePatchResource *loadNinePatch(const std::string &path);
+    void releaseNinePatches();
+
     WidgetDesc &currentParent();
     void pushOpen(WidgetDesc d);
     bool buildComplete() const;
-    UIHost *ensureSelected(const std::string &preferredName = "");
+    /**
+     * @brief Resolves or creates the selected host for one UI operation.
+     * @return Borrowed nullable UIHost owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal, replacement, or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy The helper may perform host selection but invokes no external callback while returning.
+     */
+    UIHostHandle ensureSelected(const std::string &preferredName = "");
+    /**
+     * @brief Resolves the selected host for one synchronous UI operation.
+     * @return A borrowed reference when the generation-qualified handle is live.
+     * @lifetime The reference is valid only for this synchronous operation.
+     */
+    [[nodiscard]] eve::OptionalRef<UIHost> resolveSelected() const noexcept;
 
     std::unique_ptr<UIBackend> backend_;
-    UIHost *selected_ = nullptr;
+    std::unordered_map<std::string, NinePatchResource> ninePatches_;
+    UIHostHandle                                       selected_{};
 
     std::vector<WidgetDesc> openStack_;
     WidgetDesc builtRoot_;
     bool hasBuiltRoot_ = false;
+    std::string lastDropType_;
+    std::string lastDropText_;
+    std::string lastDropSource_;
+    std::string lastDropOrigin_;
 
     struct ScriptHandler {
         ScriptHandler(std::string host, std::string node, std::string k, ssq::Function f)
@@ -406,7 +618,7 @@ private:
     void fireScriptHandlers(const UIEvent &ev);
 
     struct HostTween {
-        UIHost *host = nullptr;
+        UIHostHandle host{};
         float fromX = 0.f;
         float fromY = 0.f;
         float toX = 0.f;

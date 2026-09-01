@@ -224,11 +224,11 @@ TEST_CASE("rpg.status.durationBuffAppliesAndExpires") {
     CHECK_EQ(actor->getStatusCount(), 1);
     CHECK(actor->hasEffect("test.status.durationBuff"));
 
-    StatusSystem::update(0.5f);
+    CHECK(StatusSystem::update(0.5).ok());
     CHECK_EQ(actor->getStatusCount(), 1);
     CHECK_EQ(actor->getFinalAttribute("attack"), 30.0);
 
-    StatusSystem::update(0.6f);  // total elapsed 1.1s > duration 1.0s
+    CHECK(StatusSystem::update(0.6).ok());  // total elapsed 1.1s > duration 1.0s
     CHECK_EQ(actor->getStatusCount(), 0);
     CHECK_EQ(actor->getFinalAttribute("attack"), 20.0);
     CHECK(!actor->hasEffect("test.status.durationBuff"));
@@ -274,7 +274,7 @@ TEST_CASE("rpg.status.stackPolicyRefreshAndExtend") {
     RPGActor *actor = RPGActor::createActor();
 
     int r1 = actor->applyEffect("test.status.refresh");
-    StatusSystem::update(1.5f);
+    CHECK(StatusSystem::update(1.5).ok());
     CHECK(approxEq(actor->getStatusRemaining(0), 0.5, 1e-4));
     int r2 = actor->applyEffect("test.status.refresh");
     CHECK_EQ(r1, r2);
@@ -283,7 +283,7 @@ TEST_CASE("rpg.status.stackPolicyRefreshAndExtend") {
     actor->removeStatusByEffect("test.status.refresh");
 
     int e1 = actor->applyEffect("test.status.extend");
-    StatusSystem::update(1.0f);
+    CHECK(StatusSystem::update(1.0).ok());
     int e2 = actor->applyEffect("test.status.extend");
     CHECK_EQ(e1, e2);
     // remaining was ~1.0 before extend, +2.0 duration = ~3.0
@@ -344,7 +344,7 @@ TEST_CASE("rpg.status.periodicEffectProducesTickEvents") {
     CHECK(!actor->hasAttribute("health"));
 
     std::vector<StatusTickEvent> ticks;
-    StatusSystem::update(1.0f);
+    CHECK(StatusSystem::update(1.0).ok());
     StatusSystem::pollTicks(ticks);
     REQUIRE(ticks.size() == 1);
     CHECK_EQ(ticks[0].actor, actor);
@@ -352,18 +352,18 @@ TEST_CASE("rpg.status.periodicEffectProducesTickEvents") {
     CHECK_EQ(ticks[0].source, "caster-1");
 
     ticks.clear();
-    StatusSystem::update(1.0f);  // t=2.0 -> another tick
+    CHECK(StatusSystem::update(1.0).ok());  // t=2.0 -> another tick
     StatusSystem::pollTicks(ticks);
     REQUIRE(ticks.size() == 1);
 
     ticks.clear();
-    StatusSystem::update(1.0f);  // t=3.0 > duration 2.5 -> expires; no more ticks after expiry
+    CHECK(StatusSystem::update(1.0).ok());  // t=3.0 > duration 2.5 -> expires; no more ticks after expiry
     StatusSystem::pollTicks(ticks);
     CHECK(ticks.size() <= 1);  // may or may not tick exactly at expiry boundary depending on order
     CHECK_EQ(actor->getStatusCount(), 0);
 
     ticks.clear();
-    StatusSystem::update(5.0f);
+    CHECK(StatusSystem::update(5.0).ok());
     StatusSystem::pollTicks(ticks);
     CHECK_EQ(ticks.size(), 0u);  // expired: no further ticks ever
 
@@ -511,7 +511,7 @@ TEST_CASE("rpg.buff.customStackPolicyAndLifecycleHook") {
     CHECK_EQ(actor->getFinalAttribute("attack"), 16.0);  // 3 * 2 stacks
     CHECK_EQ(lastAction, "stack");
 
-    StatusSystem::update(4.1f);
+    CHECK(StatusSystem::update(4.1).ok());
     CHECK_EQ(actor->getBuffCount(), 0);
     CHECK_EQ(actor->getFinalAttribute("attack"), 10.0);
     CHECK_EQ(lastAction, "expire");
@@ -569,7 +569,9 @@ TEST_CASE("rpg.skill.registryAndCanCastChecks") {
     def.id = "test.skill.bolt";
     def.cooldown = 4.0f;
     def.castTime = 0.f;
-    def.costs.push_back({"mana", 10.0});
+    auto boltCost = eve::resource::CostSpec::single("mana", 10);
+    REQUIRE(boltCost.hasValue());
+    def.cost = std::move(boltCost).takeValue();
     SkillRegistry::registerSkill(def);
 
     RPGActor *actor = RPGActor::createActor();
@@ -602,7 +604,9 @@ TEST_CASE("rpg.skill.instantCastDeductsCostSetsCooldownAndAppliesEffect") {
     def.id = "test.skill.instant";
     def.cooldown = 3.0f;
     def.castTime = 0.f;
-    def.costs.push_back({"mana", 10.0});
+    auto instantCost = eve::resource::CostSpec::single("mana", 10);
+    REQUIRE(instantCost.hasValue());
+    def.cost = std::move(instantCost).takeValue();
     def.grantedEffects.push_back("test.skill.effect.burn");
     SkillRegistry::registerSkill(def);
 

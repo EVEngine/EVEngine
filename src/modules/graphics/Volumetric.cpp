@@ -16,6 +16,7 @@
 #include "graphics/shaders/volumetric_fog_frag_spv.inc"
 #include "graphics/shaders/volumetric_froxel_frag_spv.inc"
 #include "graphics/shaders/volumetric_cloud_frag_spv.inc"
+#include "graphics/shaders/VolumetricWgsl.h"
 
 #include <algorithm>
 #include <cmath>
@@ -29,12 +30,18 @@
 namespace eve::graphics {
 namespace {
 
+Shader *newVolShader(Graphics *gfx, const std::vector<uint32_t> &frag, const char *wgsl) {
+    if (gfx->getBackendName() == "webgpu")
+        return gfx->newShaderFromWgsl({}, std::string(shaders::kVolCommon) + wgsl);
+    return gfx->newShaderFromSpv({}, frag);
+}
+
 Shader *createScreenspaceShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("Volumetric: null graphics");
     std::vector<uint32_t> frag(volumetric_post_frag_spv,
                                volumetric_post_frag_spv + volumetric_post_frag_spv_count);
     std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolScreen);
     sh->declareFloat("lightX");
     sh->declareFloat("lightY");
     sh->declareFloat("exposure");
@@ -80,7 +87,7 @@ Shader *createRayMarchShader(Graphics *gfx) {
     std::vector<uint32_t> frag(volumetric_raymarch_frag_spv,
                                volumetric_raymarch_frag_spv + volumetric_raymarch_frag_spv_count);
     std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolRay);
     sh->declareMatrix("invViewProj");
     sh->declareFloat("lightDx");
     sh->declareFloat("lightDy");
@@ -124,7 +131,7 @@ Shader *createFogShader(Graphics *gfx) {
     std::vector<uint32_t> frag(volumetric_fog_frag_spv,
                                volumetric_fog_frag_spv + volumetric_fog_frag_spv_count);
     std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolFog);
     sh->declareMatrix("invViewProj");
     sh->declareFloat("lightDx");
     sh->declareFloat("lightDy");
@@ -168,7 +175,7 @@ Shader *createFroxelShader(Graphics *gfx) {
     std::vector<uint32_t> frag(volumetric_froxel_frag_spv,
                                volumetric_froxel_frag_spv + volumetric_froxel_frag_spv_count);
     std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolFroxel);
     sh->declareFloat("atlasCols");
     sh->declareFloat("atlasRows");
     sh->declareFloat("sliceCount");
@@ -187,7 +194,7 @@ Shader *createCloudShader(Graphics *gfx) {
     std::vector<uint32_t> frag(volumetric_cloud_frag_spv,
                                volumetric_cloud_frag_spv + volumetric_cloud_frag_spv_count);
     std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolCloud);
     sh->declareMatrix("invViewProj");
     sh->declareFloat("lightDx");
     sh->declareFloat("lightDy");
@@ -637,7 +644,7 @@ void Volumetric::scatterTo(Graphics *gfx, Texture *occlusion, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     scatter(gfx, occlusion);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void Volumetric::applyFromScene(Graphics *gfx, Texture *scene) {
@@ -651,7 +658,7 @@ void Volumetric::applyFromSceneTo(Graphics *gfx, Texture *scene, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyFromScene(gfx, scene);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void Volumetric::rayMarch(Graphics *gfx, Texture *linearDepth) {
@@ -665,7 +672,7 @@ void Volumetric::rayMarchTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     rayMarch(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void Volumetric::applyFog(Graphics *gfx, Texture *linearDepth) {
@@ -679,7 +686,7 @@ void Volumetric::applyFogTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyFog(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void Volumetric::renderClouds(Graphics *gfx, Texture *linearDepth) {
@@ -693,7 +700,7 @@ void Volumetric::renderCloudsTo(Graphics *gfx, Texture *linearDepth, Canvas *des
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     renderClouds(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void Volumetric::configureFroxelGrid(int width, int height, int depth, float nearDistance,
@@ -775,7 +782,7 @@ void Volumetric::applyFroxelTo(Graphics *gfx, Texture *linearDepth, Canvas *dest
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyFroxel(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 Texture *Volumetric::newLinearDepthTexture(Graphics *gfx, int width, int height,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "animation/AnimPose.h"
+#include "common/Time.h"
 
 #include <vector>
 
@@ -59,6 +60,9 @@ public:
     /** @brief Force an immediate search (also called periodically from update). */
     void search();
 
+    /** @brief Advance matching and pose blending by one scheduler step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void update(float dt);
 
 private:
@@ -91,6 +95,10 @@ private:
     float matchedTime_  = 0.f;
     float lastCost_     = 0.f;
     bool  playing_      = false;
+    eve::SimulationTick lastTick_     = eve::SimulationTick::zero();
+    bool                hasLastTick_  = false;
+
+    void updateUnchecked(float dt);
 };
 
 }  // namespace eve::animation

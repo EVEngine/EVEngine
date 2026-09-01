@@ -9,8 +9,8 @@
 
 namespace eve::graphics::vulkan {
 
-OffscreenCanvas::OffscreenCanvas(Graphics *owner, int width, int height)
-    : owner(owner), width(width), height(height) {
+OffscreenCanvas::OffscreenCanvas(Graphics *owner, int width, int height, bool hdr)
+    : owner(owner), width(width), height(height), hdr(hdr) {
     ASSERT(owner != nullptr);
     ASSERT_GT(width, 0);
     ASSERT_GT(height, 0);
@@ -18,9 +18,11 @@ OffscreenCanvas::OffscreenCanvas(Graphics *owner, int width, int height)
     if (width <= 0 || height <= 0) throw Exception("OffscreenCanvas: invalid size");
 
     auto &device = owner->getDevice();
-    color = device.createColorTarget(uint32_t(width), uint32_t(height));
+    const vk::Format format =
+        hdr ? vk::Format::eR16G16B16A16Sfloat : vk::Format::eR8G8B8A8Unorm;
+    color = device.createColorTarget(uint32_t(width), uint32_t(height), format);
 
-    fb = owner->getOffscreenRenderPass().createFramebuffer(
+    fb = owner->getOffscreenRenderPass(hdr).createFramebuffer(
         device, uint32_t(width), uint32_t(height), {color.asAttachment()});
 
     vkb::SamplerBuilder sb;
@@ -84,7 +86,7 @@ void OffscreenCanvas::ensure3D() {
     auto &device = owner->getDevice();
     depth = device.createDepthTarget(uint32_t(width), uint32_t(height), owner->getDepthFormat(),
                                      true);
-    fb3D = owner->getOffscreen3DRenderPass().createFramebuffer(
+    fb3D = owner->getOffscreen3DRenderPass(hdr).createFramebuffer(
         device, uint32_t(width), uint32_t(height), {color.asAttachment(), depth.asAttachment()});
 }
 
@@ -94,6 +96,7 @@ void OffscreenCanvas::clear(std::optional<Color> colorOpt, std::optional<int>, s
 }
 
 void OffscreenCanvas::readAllPixels(std::vector<uint8_t> &outRgba) {
+    if (hdr) throw Exception("HDR Canvas pixel readback requires an explicit tone-map pass");
     auto &device = owner->getDevice();
     device->waitIdle();
 
@@ -122,6 +125,34 @@ void OffscreenCanvas::readAllPixels(std::vector<uint8_t> &outRgba) {
     staging.release();
 }
 
+void OffscreenCanvas::readAllHDRPixels(std::vector<uint8_t> &outRgba16f) {
+    if (!hdr) throw Exception("Canvas is not an HDR render target");
+    auto &device = owner->getDevice();
+    device->waitIdle();
+
+    const vk::DeviceSize byteSize = vk::DeviceSize(width) * vk::DeviceSize(height) * 8;
+    vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+
+    vkb::executeImmediately(device.instance, owner->getUploadPool(),
+                            device.getQueue(vkb::QueueType::graphics), [&](vk::CommandBuffer cb) {
+                                color.setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                vk::BufferImageCopy region{};
+                                region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+                                region.imageExtent = vk::Extent3D{uint32_t(width), uint32_t(height), 1};
+                                cb.copyImageToBuffer(color.image(), vk::ImageLayout::eTransferSrcOptimal,
+                                                     staging.buffer, region);
+                                color.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                            });
+
+    outRgba16f.resize(size_t(byteSize));
+    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    std::memcpy(outRgba16f.data(), mapped, size_t(byteSize));
+    device->unmapMemory(staging.memory);
+    staging.release();
+}
+
 Color OffscreenCanvas::getPixel(int x, int y) {
     ASSERT_GE(x, 0);
     ASSERT_GE(y, 0);
@@ -139,6 +170,15 @@ image::ImageData *OffscreenCanvas::newImageData() {
     std::vector<uint8_t> px;
     readAllPixels(px);
     auto *img = new image::ImageData(width, height, "RGBA8");
+    std::memcpy(img->getData(), px.data(), px.size());
+    return img;
+}
+
+image::ImageData *OffscreenCanvas::newHDRImageData() {
+    if (!hdr) return nullptr;
+    std::vector<uint8_t> px;
+    readAllHDRPixels(px);
+    auto *img = new image::ImageData(width, height, "RGBA16F");
     std::memcpy(img->getData(), px.data(), px.size());
     return img;
 }

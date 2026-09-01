@@ -13,7 +13,7 @@ namespace eve::graphics::vulkan {
 
 class OffscreenCanvas final : public eve::graphics::Canvas {
 public:
-    OffscreenCanvas(Graphics *owner, int width, int height);
+    OffscreenCanvas(Graphics *owner, int width, int height, bool hdr = false);
     ~OffscreenCanvas() override;
 
     int getWidth() const override { return width; }
@@ -24,6 +24,8 @@ public:
                std::optional<double> depth) override;
     Color getPixel(int x, int y) override;
     image::ImageData *newImageData() override;
+    /** @ownership The caller owns the returned HDR image data. */
+    image::ImageData *newHDRImageData() override;
 
     void draw(eve::graphics::Graphics *, const glm::mat4 &) const override {}
     void draw(Canvas *, const glm::mat4 &) const override {}
@@ -34,12 +36,14 @@ public:
     vkb::DepthTarget &depthImage() { return depth; }
     Color pendingClearColor() const { return clearColor; }
     bool takePendingClear();
+    bool isHDR() const { return hdr; }
 
     /** @brief Ensure a D32 depth attachment + 3D (color+depth) framebuffer exist. */
     void ensure3D();
 
 private:
     void readAllPixels(std::vector<uint8_t> &outRgba);
+    void readAllHDRPixels(std::vector<uint8_t> &outRgba16f);
 
     Graphics *owner = nullptr;
     int width = 0;
@@ -53,6 +57,7 @@ private:
 
     Color clearColor{0.f, 0.f, 0.f, 1.f};
     bool hasPendingClear = true;
+    bool hdr = false;
 };
 
 }  // namespace eve::graphics::vulkan

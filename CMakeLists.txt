@@ -1,14 +1,100 @@
 cmake_minimum_required(VERSION 3.21)
+
+set(EVENGINE_BUILD_PLATFORM "" CACHE STRING
+    "EVEngine target platform override; unlike legacy BUILD_PLATFORM this cannot collide with dependencies")
+
+set(EVENGINE_COMPILER_CACHE "AUTO" CACHE STRING
+    "Compiler cache mode: AUTO detects sccache, SCCACHE requires it, OFF disables auto-detection")
+set_property(CACHE EVENGINE_COMPILER_CACHE PROPERTY STRINGS AUTO SCCACHE OFF)
+string(TOUPPER "${EVENGINE_COMPILER_CACHE}" _eve_compiler_cache_mode)
+if(NOT _eve_compiler_cache_mode MATCHES "^(AUTO|SCCACHE|OFF)$")
+    message(FATAL_ERROR
+        "EVENGINE_COMPILER_CACHE must be AUTO, SCCACHE, or OFF "
+        "(got: ${EVENGINE_COMPILER_CACHE})")
+endif()
+
+set(_eve_sccache_enabled OFF)
+if(_eve_compiler_cache_mode STREQUAL "AUTO" AND
+   (CMAKE_C_COMPILER_LAUNCHER OR CMAKE_CXX_COMPILER_LAUNCHER))
+    set(_eve_compiler_cache_status "custom launcher supplied")
+elseif(NOT _eve_compiler_cache_mode STREQUAL "OFF")
+    if(EVENGINE_SCCACHE_EXECUTABLE AND NOT EXISTS "${EVENGINE_SCCACHE_EXECUTABLE}")
+        unset(EVENGINE_SCCACHE_EXECUTABLE CACHE)
+    endif()
+    find_program(EVENGINE_SCCACHE_EXECUTABLE NAMES sccache
+        DOC "Path to the sccache compiler cache")
+    if(EVENGINE_SCCACHE_EXECUTABLE)
+        # Disable sccache's direct mode for both local and CI builds. The
+        # conservative path hashes the complete preprocessed input before a
+        # hit, including the contents of every header that was actually used.
+        set(_eve_sccache_launcher
+            "${CMAKE_COMMAND}" -E env SCCACHE_DIRECT=false
+            "${EVENGINE_SCCACHE_EXECUTABLE}")
+        set(CMAKE_C_COMPILER_LAUNCHER ${_eve_sccache_launcher})
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${_eve_sccache_launcher})
+        set(_eve_sccache_enabled ON)
+        set(_eve_compiler_cache_status "sccache (${EVENGINE_SCCACHE_EXECUTABLE})")
+        # CMP0141 must be NEW before project() for the first-class MSVC debug
+        # information setting below to replace /Zi instead of appending to it.
+        if(POLICY CMP0141)
+            cmake_policy(SET CMP0141 NEW)
+        endif()
+    elseif(_eve_compiler_cache_mode STREQUAL "SCCACHE")
+        message(FATAL_ERROR
+            "EVENGINE_COMPILER_CACHE=SCCACHE requires sccache on PATH or "
+            "-DEVENGINE_SCCACHE_EXECUTABLE=<path>")
+    else()
+        set(_eve_compiler_cache_status "disabled (sccache not found)")
+    endif()
+else()
+    set(_eve_compiler_cache_status "disabled")
+endif()
+
 project(EVEngine)
 
+if(WIN32 AND MSVC AND CMAKE_GENERATOR MATCHES "Ninja")
+    # sccache (and any other launcher) CreateProcess()es cl.exe with a pipe;
+    # localized cl then writes ACP /showIncludes (GBK) while Ninja's
+    # msvc_deps_prefix is UTF-8, so every header leaks into the build log.
+    # Route compiles through cmake/msvc-cl.cmd so cl inherits CP65001.
+    set(_eve_msvc_cl_wrap "${CMAKE_SOURCE_DIR}/cmake/msvc-cl.cmd")
+    foreach(_eve_lang IN ITEMS C CXX)
+        get_filename_component(_eve_comp_name "${CMAKE_${_eve_lang}_COMPILER}" NAME)
+        if(_eve_comp_name MATCHES "^cl(\\.exe)?$")
+            set(CMAKE_${_eve_lang}_COMPILER "${_eve_msvc_cl_wrap}"
+                CACHE FILEPATH "MSVC cl UTF-8 /showIncludes wrapper" FORCE)
+        endif()
+    endforeach()
+endif()
+
+if(_eve_sccache_enabled AND MSVC)
+    if(POLICY CMP0141)
+        # Embed debug information in each object. Cached objects are then
+        # self-contained and parallel cl.exe processes do not share a PDB.
+        set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT
+            "$<$<CONFIG:Debug,RelWithDebInfo>:Embedded>")
+    else()
+        # CMake 3.21-3.24 have no MSVC debug-information abstraction. /Z7 is
+        # appended after CMake's default /Zi, and cl.exe honors the last flag.
+        add_compile_options(/Z7)
+    endif()
+endif()
+message(STATUS "Compiler cache: ${_eve_compiler_cache_status}")
+
 set(EVENGINE_MAJOR_VERSION "0")
-set(EVENGINE_MINOR_VERSION "3")
+set(EVENGINE_MINOR_VERSION "4")
 set(EVENGINE_PATCH_VERSION "0")
 set(EVENGINE_DEV_VERSION "")
 
 set(EVENGINE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}${EVENGINE_DEV_VERSION}")
 
 option(BUILD_TESTING "enable testing" ON)
+option(EVENGINE_BUILD_HOST
+    "Build the interactive/native eve host (disabled by core/headless/server profiles)" ON)
+option(EVENGINE_BUILD_PROFILE_CHECKS
+    "Build independent public-header and optional-capability profile checks" OFF)
+option(EVENGINE_BUILD_PIXELWORLD_BENCHMARK
+    "Build the renderer-independent PixelWorld million-cell benchmark" OFF)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
@@ -33,10 +119,7 @@ if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
             "Use a prebuilt third-party install tree" FORCE)
     endif()
 endif()
-set(EVENGINE_THIRD_PARTY_PIN "566e4073d2ec1c723b581daa50334a4b05956091" CACHE STRING
-    "Pinned commit for the EVEngine/third-party aggregate checkout. The checkout is
-     moved onto this commit at configure time (or verified against it), and every
-     prebuilt third-party tree must be built from it.")
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/third_party_pin.cmake)
 option(EVENGINE_ANDROID_TEST_APP
     "Build the unit_test suite as an Android test app (libmain.so entry replaced by the zeroerr runner)"
     OFF)
@@ -56,6 +139,8 @@ option(EVENGINE_ENABLE_STRICT_WARNINGS
      Third-party targets are not affected."
     OFF)
 message("Build UnitTest: " ${BUILD_TESTING})
+message("Build native host: " ${EVENGINE_BUILD_HOST})
+message("Build profile checks: " ${EVENGINE_BUILD_PROFILE_CHECKS})
 message("Build Demo module: " ${EVENGINE_BUILD_DEMO})
 message("Build Android test app: " ${EVENGINE_ANDROID_TEST_APP})
 message("Build iOS test app: " ${EVENGINE_IOS_TEST_APP})
@@ -67,6 +152,38 @@ endif()
 
 include(CTest)
 
+set(_vkbuilder_header "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/vkbuilder.hpp")
+set(EVENGINE_VKBUILDER_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/vkbuilder")
+if(EXISTS "${_vkbuilder_header}")
+    file(READ "${_vkbuilder_header}" _vkbuilder_source)
+    set(_vkbuilder_original [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
+    use_default_color_blending = false;
+    this->color_blending = color_blending;
+    return *this;
+  }]=])
+    set(_vkbuilder_fixed [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
+    use_default_color_blending = false;
+    this->color_blending = color_blending;
+    if (color_blending.attachmentCount > 0 && color_blending.pAttachments) {
+      colorBlendAttachments.assign(color_blending.pAttachments,
+                                   color_blending.pAttachments + color_blending.attachmentCount);
+    } else {
+      colorBlendAttachments.clear();
+    }
+    return *this;
+  }]=])
+    string(FIND "${_vkbuilder_source}" "${_vkbuilder_original}" _vkbuilder_patch_offset)
+    if(_vkbuilder_patch_offset EQUAL -1)
+        message(FATAL_ERROR "Pinned VKBuilder no longer matches the custom-blending compatibility fix")
+    endif()
+    string(REPLACE "${_vkbuilder_original}" "${_vkbuilder_fixed}" _vkbuilder_source
+        "${_vkbuilder_source}")
+    file(MAKE_DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/"
+        DESTINATION "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
+    file(WRITE "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder.hpp" "${_vkbuilder_source}")
+endif()
+
 
 # This is the main function of the build script
 function(main)
@@ -76,7 +193,27 @@ function(main)
     # and the third-party install trees register their include/link dirs here.
     add_library(eve_engine_includes INTERFACE)
     get_available_build()
+    # Resolve the manifest before loading the aggregate dependency project. The
+    # selected third-party groups are passed to that project, so a trimmed
+    # profile does not configure/build an unrelated codec, renderer or database.
+    include(${CMAKE_SOURCE_DIR}/cmake/module_manifest.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/thirdparty_libs.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/system_libraries.cmake)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten" AND NOT EVENGINE_PROFILE)
+        # The browser runtime drops the modules whose third-party deps were cut.
+        set(EVENGINE_PROFILE "web")
+    endif()
+    # DevTools (DAP / MCP / snapshot) rely on Poco JSON+Net and have never been
+    # part of the mobile or browser runtimes.
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS"
+       OR EVENGINE_IOS OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        set(EVENGINE_MODULE_devtools OFF)
+    endif()
+    eve_resolve_modules()
+
     load_third_party()
+    load_asset_zstd()
+    load_asset_utf8proc()
     load_webgpu_backend()
     set_include()
     check_ipo()
@@ -84,9 +221,19 @@ function(main)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     # cl.exe gets STL/UCRT from %INCLUDE% (vcvars); CMake omits those from compile_commands.json.
     # Export them so clangd can resolve <cstdint> etc. Configure via cmake/with-msvc.cmd.
+    # Do not use CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES: CMake emits those as
+    # /external:I, which vanilla clangd rejects (drv_unknown_argument) and then
+    # fails the whole TU. -I is accepted by both cl.exe and clang; for cl.exe it
+    # is redundant with %INCLUDE% and does not change search order in practice.
     if(MSVC AND DEFINED ENV{INCLUDE} AND NOT "$ENV{INCLUDE}" STREQUAL "")
-        set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES $ENV{INCLUDE})
-        set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES $ENV{INCLUDE})
+        set(_eve_msvc_include "$ENV{INCLUDE}")
+        foreach(_eve_std_inc IN LISTS _eve_msvc_include)
+            if(NOT _eve_std_inc STREQUAL "")
+                add_compile_options("-I${_eve_std_inc}")
+            endif()
+        endforeach()
+        unset(_eve_msvc_include)
+        unset(_eve_std_inc)
         message(STATUS "Exported MSVC INCLUDE paths into compile_commands for clangd")
     elseif(MSVC)
         message(STATUS "MSVC INCLUDE unset; clangd may not find STL headers. Use cmake/with-msvc.cmd")
@@ -205,17 +352,24 @@ function(main)
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
         message(STATUS "Emscripten/webgpu build: unit tests disabled")
+        # Poco's platform header still recognizes the legacy EMSCRIPTEN token,
+        # while current em++ defines __EMSCRIPTEN__. Keep the third-party
+        # architecture detection explicit for modules that consume Poco on web.
+        add_compile_definitions(EMSCRIPTEN)
         # Emdawnwebgpu port: provides <webgpu/webgpu.h> + <webgpu/webgpu_cpp.h>
         # and the browser WebGPU JS glue. Directory-scope so every module target
         # (EVGraphics, EVUI, EVGpgpu, eve_imgui, ...) gets it at compile + link.
         add_compile_options(--use-port=emdawnwebgpu)
         add_link_options(--use-port=emdawnwebgpu)
-        # SDL2 and zlib come from Emscripten ports (vendored trees are skipped
+        # SDL2, zlib and FreeType come from Emscripten ports (vendored trees are
+        # skipped
         # by third-party/CMakeLists.txt on Emscripten). -sUSE_SDL=2 must also be
         # a compile flag so TUs that include <SDL.h> (imgui_impl_sdl, window,
-        # event, mouse, keyboard, ...) resolve the port headers.
-        add_compile_options(-sUSE_SDL=2 -sUSE_ZLIB)
-        add_link_options(-sUSE_SDL=2 -sUSE_ZLIB)
+        # event, mouse, keyboard, ...) resolve the port headers. FreeType must
+        # likewise be enabled while compiling so <ft2build.h> is installed in
+        # and exposed from the Emscripten sysroot.
+        add_compile_options(-sUSE_SDL=2 -sUSE_ZLIB -sUSE_FREETYPE=1)
+        add_link_options(-sUSE_SDL=2 -sUSE_ZLIB -sUSE_FREETYPE=1)
         # PROXY_TO_PTHREAD turns on shared memory; every TU must be compiled
         # with atomics/bulk-memory or wasm-ld rejects the final link.
         add_compile_options(-matomics -mbulk-memory)
@@ -246,24 +400,6 @@ function(main)
     elseif(BUILD_PLATFORM STREQUAL "webgpu" AND BUILD_TESTING)
         message(STATUS "webgpu (native Dawn) build: unit tests enabled")
     endif()
-    # Resolve which modules this build contains before descending into any
-    # subdirectory: src/modules, src/engine and src/scripts all derive their
-    # content from the result. See cmake/module_manifest.cmake.
-    include(${CMAKE_SOURCE_DIR}/cmake/module_manifest.cmake)
-    include(${CMAKE_SOURCE_DIR}/cmake/thirdparty_libs.cmake)
-    include(${CMAKE_SOURCE_DIR}/cmake/system_libraries.cmake)
-    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten" AND NOT EVENGINE_PROFILE)
-        # The browser runtime drops the modules whose third-party deps were cut.
-        set(EVENGINE_PROFILE "web")
-    endif()
-    # DevTools (DAP / MCP / snapshot) rely on Poco JSON+Net and have never been
-    # part of the mobile or browser runtimes.
-    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS"
-       OR EVENGINE_IOS OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        set(EVENGINE_MODULE_devtools OFF)
-    endif()
-    eve_resolve_modules()
-
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug builds (upstream ZEROERR_NO_ASSERT under
@@ -273,13 +409,18 @@ function(main)
         add_compile_definitions($<$<NOT:$<CONFIG:Debug>>:ZEROERR_NO_ASSERT>)
     endif()
 
-    # Platform CMake may set EVENGINE_PLATFORM_LIB; clear stale cache from other platforms.
-    unset(EVENGINE_PLATFORM_LIB CACHE)
-    add_subdirectory(platform/${BUILD_PLATFORM})
-    # Platform libraries (android / ios / macosx / webgpu) also compile against
-    # the shared engine include set.
-    if(EVENGINE_PLATFORM_LIB AND TARGET ${EVENGINE_PLATFORM_LIB})
-        target_link_libraries(${EVENGINE_PLATFORM_LIB} PUBLIC eve_engine_includes)
+    if(EVENGINE_BUILD_HOST)
+        # Platform CMake may set EVENGINE_PLATFORM_LIB; clear stale cache from other platforms.
+        unset(EVENGINE_PLATFORM_LIB CACHE)
+        add_subdirectory(platform/${BUILD_PLATFORM})
+        # Platform libraries (android / ios / macosx / webgpu) also compile against
+        # the shared engine include set.
+        if(EVENGINE_PLATFORM_LIB AND TARGET ${EVENGINE_PLATFORM_LIB})
+            target_link_libraries(${EVENGINE_PLATFORM_LIB} PUBLIC eve_engine_includes)
+        endif()
+    else()
+        set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
+        message(STATUS "Hostless profile: platform runtime and unit_test disabled")
     endif()
     # Build metadata: bake the engine git commit/dirty + build time + the
     # third-party version into a generated header consumed by
@@ -314,19 +455,81 @@ function(main)
     endif()
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
-    add_subdirectory(src/scripts)
+    if(EVENGINE_BUILD_PIXELWORLD_BENCHMARK)
+        add_subdirectory(benchmarks/pixelworld)
+    endif()
+    if(EVENGINE_BUILD_HOST)
+        add_subdirectory(src/scripts)
+    endif()
 
-    if(BUILD_TESTING)
+    if(EVENGINE_BUILD_PROFILE_CHECKS)
+        include(${CMAKE_SOURCE_DIR}/cmake/profile_checks.cmake)
+    endif()
+
+    if(EVENGINE_BUILD_HOST AND BUILD_TESTING)
         add_subdirectory(test)
     endif()
 
     # Doxygen documentation lives in docs/CMakeLists.txt (`--target docs`).
     add_subdirectory(docs)
 
-    include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
-    eve_stage_timidity_share()
+    if(EVENGINE_BUILD_HOST)
+        include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
+        eve_stage_timidity_share()
+        include(${CMAKE_SOURCE_DIR}/cmake/install_sdk.cmake)
+    endif()
+endfunction()
 
-    include(${CMAKE_SOURCE_DIR}/cmake/install_sdk.cmake)
+# Zstd is part of the stable .evpack wire contract rather than the legacy
+# aggregate dependency checkout. Keep it independently pinned so prebuilt
+# third-party trees remain read-only and native/Web builds use the same codec.
+function(load_asset_zstd)
+    eve_module_enabled(asset _eve_has_asset)
+    if(NOT _eve_has_asset)
+        set(EVENGINE_ASSET_ZSTD_TARGET "" CACHE INTERNAL "Asset Zstd target" FORCE)
+        return()
+    endif()
+
+    include(FetchContent)
+    set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
+    set(ZSTD_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
+    set(ZSTD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+    set(ZSTD_BUILD_STATIC ON CACHE BOOL "" FORCE)
+    set(ZSTD_LEGACY_SUPPORT OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(evengine_zstd
+        URL https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz
+        URL_HASH SHA256=eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3
+        DOWNLOAD_EXTRACT_TIMESTAMP FALSE
+        SOURCE_SUBDIR build/cmake)
+    FetchContent_MakeAvailable(evengine_zstd)
+    if(TARGET deps)
+        add_dependencies(deps libzstd_static)
+    endif()
+    set(EVENGINE_ASSET_ZSTD_TARGET libzstd_static CACHE INTERNAL "Asset Zstd target" FORCE)
+endfunction()
+
+# Unicode NFC is part of the .eva path wire contract. Pin the Unicode table and
+# normalization algorithm so every host accepts exactly the same archive names.
+function(load_asset_utf8proc)
+    eve_module_enabled(asset _eve_has_asset)
+    if(NOT _eve_has_asset)
+        set(EVENGINE_ASSET_UTF8PROC_TARGET "" CACHE INTERNAL "Asset utf8proc target" FORCE)
+        return()
+    endif()
+
+    include(FetchContent)
+    set(BUILD_SHARED_LIBS OFF)
+    set(UTF8PROC_INSTALL OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(evengine_utf8proc
+        URL https://github.com/JuliaStrings/utf8proc/archive/refs/tags/v2.11.3.tar.gz
+        URL_HASH SHA256=abfed50b6d4da51345713661370290f4f4747263ee73dc90356299dfc7990c78
+        DOWNLOAD_EXTRACT_TIMESTAMP FALSE)
+    FetchContent_MakeAvailable(evengine_utf8proc)
+    if(TARGET deps)
+        add_dependencies(deps utf8proc)
+    endif()
+    set(EVENGINE_ASSET_UTF8PROC_TARGET utf8proc CACHE INTERNAL "Asset utf8proc target" FORCE)
 endfunction()
 
 
@@ -380,7 +583,14 @@ macro(create_module libname folder)
     
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${folder}_src.txt)
     
-    add_dependencies(${libname} third-party check_sources_${folder})
+    if(EVENGINE_PROFILE_HOSTLESS)
+        # Hostless/core profile targets are compile-only boundaries. Their
+        # headers come from the pinned checkout and they must not pull the
+        # aggregate ExternalProject merely to prove source isolation.
+        add_dependencies(${libname} check_sources_${folder})
+    else()
+        add_dependencies(${libname} third-party check_sources_${folder})
+    endif()
 endmacro()
 
 
@@ -427,7 +637,7 @@ function(set_include)
         # sunxfancy/VKBuilder (git submodule) — header-only Vulkan wrapper. Exposed
         # globally (like the old third-party flattened install) so any module that
         # pulls in Graphics.h can resolve <vkbuilder.hpp>.
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include
+        ${EVENGINE_VKBUILDER_INCLUDE_DIR}
     )
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
         # Raw source-checkout headers for medialoader/assimp/DTL. In prebuilt
@@ -440,6 +650,20 @@ function(set_include)
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include
             # Dungeon Template Library (header-only)
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
+        # Hostless/core profiles still compile selected domain translation units
+        # without building the aggregate third-party project. Expose the pinned
+        # source headers for those compile-only targets; normal host builds still
+        # receive the same roots in addition to the installed prefix.
+        target_include_directories(eve_engine_includes INTERFACE
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL2/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/squirrel/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/simplesquirrel/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Foundation/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/JSON/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Net/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/XML/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Data/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Data/SQLite/include)
         # Third-party headers are external for warning purposes on strict
         # builds (vendored header-only libraries).
         eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include)
@@ -451,7 +675,7 @@ function(set_include)
     eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src)
     eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp)
     eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include)
-    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include)
+    eve_external_include(${EVENGINE_VKBUILDER_INCLUDE_DIR})
 
     # Prefer system Vulkan SDK (find_package). No vendored vulkan-1.lib fallback.
     # On Apple desktop, MoltenVK from the LunarG Vulkan SDK is required.
@@ -461,6 +685,11 @@ function(set_include)
     # WebGPU builds (browser WASM or native Dawn) use webgpu.h and do not touch
     # the Vulkan SDK at all; the Vulkan backend directories are excluded by the
     # source scanner, so this probe would only ever FATAL_ERROR a valid build.
+    if(NOT EVENGINE_BUILD_HOST)
+        message(STATUS "Hostless profile: skipping Vulkan SDK probe")
+        set(EVENGINE_VULKAN_LIB "" CACHE INTERNAL "Vulkan link target (unused by hostless profiles)")
+        return()
+    endif()
     if(EVENGINE_WEBGPU)
         message(STATUS "WebGPU build: skipping Vulkan SDK probe")
         set(EVENGINE_VULKAN_LIB "" CACHE INTERNAL "Vulkan link target (unused on webgpu)")
@@ -487,6 +716,18 @@ function(set_include)
     unset(Vulkan_INCLUDE_DIR CACHE)
     unset(Vulkan_LIBRARY CACHE)
     find_package(Vulkan QUIET)
+    # LunarG Linux SDK 1.4.357+ may package the loader in its own install
+    # prefix instead of directly under $VULKAN_SDK/lib. FindVulkan only probes
+    # the legacy location, so retry with the packaged loader while retaining
+    # the headers and shader tools discovered from the SDK root.
+    if(NOT Vulkan_FOUND AND UNIX AND NOT APPLE
+       AND DEFINED ENV{VULKAN_SDK}
+       AND EXISTS "$ENV{VULKAN_SDK}/lib/VulkanLoader/lib/libvulkan.so")
+        set(Vulkan_LIBRARY
+            "$ENV{VULKAN_SDK}/lib/VulkanLoader/lib/libvulkan.so"
+            CACHE FILEPATH "Vulkan loader library" FORCE)
+        find_package(Vulkan QUIET)
+    endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         find_library(ANDROID_VULKAN_LIB vulkan)
         if(NOT ANDROID_VULKAN_LIB)
@@ -603,6 +844,15 @@ endfunction()
 macro(get_available_build)
     set(AVAILABLE_PLATFORM "")
 
+    # BUILD_PLATFORM predates FetchContent usage and is also owned by Dawn.
+    # Prefer the namespaced override when supplied so dependency configuration
+    # and automatic top-level reconfiguration cannot change EVEngine's target.
+    if(EVENGINE_BUILD_PLATFORM)
+        set(BUILD_PLATFORM "${EVENGINE_BUILD_PLATFORM}")
+        set(BUILD_PLATFORM "${EVENGINE_BUILD_PLATFORM}" CACHE STRING
+            "The EVEngine target build platform" FORCE)
+    endif()
+
     # Cross-compiling for Emscripten (web/WASM, browser WebGPU) must win over host detection.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         list(APPEND AVAILABLE_PLATFORM "webgpu")
@@ -668,30 +918,49 @@ macro(get_available_build)
     set_platform_var(ios EVENGINE_IOS)
     set_platform_var(webgpu EVENGINE_WEBGPU)
 
+    # BUILD_PLATFORM selects the renderer/runtime profile, while native Dawn
+    # still needs the host OS branches for filesystem, process and UTF-8 APIs.
+    # Emscripten does not report WIN32, so browser builds remain WebGPU-only.
+    if(BUILD_PLATFORM STREQUAL "webgpu" AND WIN32)
+        set(EVENGINE_WINDOWS 1 CACHE INTERNAL "EVEngine native host platform define")
+    endif()
+
     # Backend directories compiled out of the active build. Native backends
     # (graphics/vulkan, gpgpu/vulkan) are excluded from a webgpu build; the
     # webgpu backend is excluded from every other platform. ui/imgui stays in
     # the scan — ImGuiBackend.cpp is the EVUI implementation and gains a
     # webgpu branch instead.
     if(BUILD_PLATFORM STREQUAL "webgpu")
-        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "vulkan" CACHE INTERNAL "Backend subdirs excluded from webgpu builds")
+        set(_eve_excluded_backend_subdirs "vulkan")
+        set(_eve_backend_exclusion_help "Backend subdirs excluded from webgpu builds")
     else()
-        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "webgpu" CACHE INTERNAL "Backend subdirs excluded from native builds")
+        set(_eve_excluded_backend_subdirs "webgpu")
+        set(_eve_backend_exclusion_help "Backend subdirs excluded from native builds")
     endif()
+    # Keep both bindings synchronized. With CMP0126=NEW, updating a CACHE entry
+    # does not replace a same-named normal variable in the current scope, and
+    # create_module() reads the normal variable first.
+    set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "${_eve_excluded_backend_subdirs}")
+    set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "${_eve_excluded_backend_subdirs}"
+        CACHE INTERNAL "${_eve_backend_exclusion_help}" FORCE)
 
     # Poco-heavy sources trimmed from the WASM (Emscripten) build. The data
     # module keeps ByteData (needed by gpgpu/webgpu) but drops the JSON/XML/
-    # DataModule files that require Poco. graphics/Font.cpp needs the EVFont
-    # module (FreeType/Poco, skipped on WASM), so it is trimmed as well.
+    # DataModule files that require Poco. Font/FreeType is supported on WASM.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        set(EVENGINE_EXCLUDED_MODULE_FILES
-            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;Font.cpp;ImGuiHostPanels.cpp"
-            CACHE INTERNAL "Exact basenames excluded from module source scan on Emscripten")
+        set(_eve_excluded_module_files
+            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp")
+        set(_eve_module_exclusion_help
+            "Exact basenames excluded from module source scan on Emscripten")
     else()
-        set(EVENGINE_EXCLUDED_MODULE_FILES
-            "ImGuiHostPanels.cpp"
-            CACHE INTERNAL "Exact basenames excluded from module source scan")
+        set(_eve_excluded_module_files "ImGuiHostPanels.cpp")
+        set(_eve_module_exclusion_help "Exact basenames excluded from module source scan")
     endif()
+    set(EVENGINE_EXCLUDED_MODULE_FILES "${_eve_excluded_module_files}")
+    set(EVENGINE_EXCLUDED_MODULE_FILES "${_eve_excluded_module_files}"
+        CACHE INTERNAL "${_eve_module_exclusion_help}" FORCE)
+
+    message(STATUS "Backend source exclusions: ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS}")
 
     message("Available: ${AVAILABLE_PLATFORM}")
 
@@ -730,476 +999,7 @@ endfunction()
 # commit. ExternalProject only downloads during the build of target
 # `third-party`, but modules (e.g. eve_imgui) list files under third-party/
 # at configure time.
-function(ensure_third_party_checkout)
-    set(_eve_tp_dir "${CMAKE_SOURCE_DIR}/third-party")
-    find_package(Git REQUIRED)
-    if(EXISTS "${_eve_tp_dir}/CMakeLists.txt")
-        # An existing checkout is authoritative for the build, so verify it is
-        # actually the pinned commit instead of silently compiling whatever
-        # main happened to be at clone time (the ExternalProject GIT_TAG has
-        # no effect when the source dir already exists).
-        execute_process(
-            COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
-            WORKING_DIRECTORY "${_eve_tp_dir}"
-            RESULT_VARIABLE _eve_tp_head_result
-            OUTPUT_VARIABLE _eve_tp_head
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_QUIET)
-        if(NOT _eve_tp_head_result EQUAL 0)
-            message(FATAL_ERROR
-                "third-party exists at ${_eve_tp_dir} but is not a readable git checkout")
-        endif()
-        if(NOT _eve_tp_head STREQUAL EVENGINE_THIRD_PARTY_PIN)
-            message(FATAL_ERROR
-                "third-party checkout is at ${_eve_tp_head}, expected pinned ${EVENGINE_THIRD_PARTY_PIN}.\n"
-                "Fix with:\n"
-                "  git -C third-party fetch --depth 1 origin ${EVENGINE_THIRD_PARTY_PIN}\n"
-                "  git -C third-party checkout --detach ${EVENGINE_THIRD_PARTY_PIN}\n"
-                "then force a deps rebuild (remove build/third-party/<plat>/third-party-prefix),\n"
-                "or override the pin with -DEVENGINE_THIRD_PARTY_PIN=<commit>.")
-        endif()
-        message(STATUS "third-party: pinned checkout ${_eve_tp_head} verified")
-        return()
-    endif()
-
-    message(STATUS "third-party: cloning https://github.com/EVEngine/third-party at ${EVENGINE_THIRD_PARTY_PIN} ...")
-    file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}")
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} clone --depth 1 --branch main --recurse-submodules
-            https://github.com/EVEngine/third-party.git "${_eve_tp_dir}"
-        RESULT_VARIABLE _eve_tp_clone_result
-        OUTPUT_VARIABLE _eve_tp_clone_out
-        ERROR_VARIABLE _eve_tp_clone_err
-    )
-    if(NOT _eve_tp_clone_result EQUAL 0)
-        message(FATAL_ERROR
-            "Failed to clone third-party (exit ${_eve_tp_clone_result}).\n"
-            "${_eve_tp_clone_out}${_eve_tp_clone_err}\n"
-            "Manually run: git clone --recurse-submodules https://github.com/EVEngine/third-party ${_eve_tp_dir}")
-    endif()
-    # The shallow main clone is not guaranteed to be the pinned commit; move
-    # it onto the pin before submodules are synced.
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} fetch --depth 1 origin ${EVENGINE_THIRD_PARTY_PIN}
-        WORKING_DIRECTORY "${_eve_tp_dir}"
-        RESULT_VARIABLE _eve_tp_fetch_result
-        OUTPUT_VARIABLE _eve_tp_fetch_out
-        ERROR_VARIABLE _eve_tp_fetch_err
-    )
-    if(NOT _eve_tp_fetch_result EQUAL 0)
-        message(FATAL_ERROR
-            "Failed to fetch pinned third-party commit ${EVENGINE_THIRD_PARTY_PIN}.\n"
-            "${_eve_tp_fetch_out}${_eve_tp_fetch_err}")
-    endif()
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} checkout --detach ${EVENGINE_THIRD_PARTY_PIN}
-        WORKING_DIRECTORY "${_eve_tp_dir}"
-        RESULT_VARIABLE _eve_tp_checkout_result
-        OUTPUT_VARIABLE _eve_tp_checkout_out
-        ERROR_VARIABLE _eve_tp_checkout_err
-    )
-    if(NOT _eve_tp_checkout_result EQUAL 0)
-        message(FATAL_ERROR
-            "Failed to check out pinned third-party commit ${EVENGINE_THIRD_PARTY_PIN}.\n"
-            "${_eve_tp_checkout_out}${_eve_tp_checkout_err}")
-    endif()
-    # Shallow + recurse can leave nested submodules empty on some runners; force-init.
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-        WORKING_DIRECTORY "${_eve_tp_dir}"
-        RESULT_VARIABLE _eve_tp_sub_result
-        OUTPUT_VARIABLE _eve_tp_sub_out
-        ERROR_VARIABLE _eve_tp_sub_err
-    )
-    if(NOT _eve_tp_sub_result EQUAL 0)
-        message(FATAL_ERROR
-            "Failed to init third-party submodules (exit ${_eve_tp_sub_result}).\n"
-            "${_eve_tp_sub_out}${_eve_tp_sub_err}")
-    endif()
-    if(NOT EXISTS "${_eve_tp_dir}/imgui/imgui.cpp")
-        message(FATAL_ERROR
-            "third-party clone is incomplete (missing imgui/imgui.cpp).\n"
-            "Check ${_eve_tp_dir}")
-    endif()
-    if(NOT EXISTS "${_eve_tp_dir}/medialoader/CMakeLists.txt")
-        message(FATAL_ERROR
-            "third-party clone is incomplete (missing medialoader submodule).\n"
-            "Check ${_eve_tp_dir}/medialoader")
-    endif()
-    if(NOT EXISTS "${_eve_tp_dir}/medialoader/model-libs/assimp/CMakeLists.txt")
-        message(FATAL_ERROR
-            "third-party clone is incomplete (missing medialoader/assimp submodule).\n"
-            "Check ${_eve_tp_dir}/medialoader/model-libs/assimp")
-    endif()
-endfunction()
-
-# This function will check the third party project
-function(check_third_party_project name repo)
-    include(ExternalProject)
-
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        get_filename_component(_eve_tp_binary "${EVENGINE_THIRD_PARTY_BINARY_DIR}" ABSOLUTE)
-        if(NOT IS_DIRECTORY "${_eve_tp_binary}/include" OR
-           NOT IS_DIRECTORY "${_eve_tp_binary}/lib")
-            message(FATAL_ERROR
-                "EVENGINE_THIRD_PARTY_BINARY_DIR must contain include/ and lib/: "
-                "${_eve_tp_binary}")
-        endif()
-        add_custom_target(${name})
-        target_include_directories(eve_engine_includes INTERFACE "${_eve_tp_binary}/include")
-        eve_external_include("${_eve_tp_binary}/include")
-        # SDL2 and FreeType install their public headers one level below include/.
-        # Their sources use <SDL.h> and <ft2build.h>, so expose those roots too.
-        if(IS_DIRECTORY "${_eve_tp_binary}/include/SDL2")
-            target_include_directories(eve_engine_includes INTERFACE
-                "${_eve_tp_binary}/include/SDL2")
-            eve_external_include("${_eve_tp_binary}/include/SDL2")
-        endif()
-        if(IS_DIRECTORY "${_eve_tp_binary}/include/freetype2")
-            target_include_directories(eve_engine_includes INTERFACE
-                "${_eve_tp_binary}/include/freetype2")
-            eve_external_include("${_eve_tp_binary}/include/freetype2")
-        endif()
-        target_link_directories(eve_engine_includes INTERFACE "${_eve_tp_binary}/lib")
-        message(STATUS "third-party: using read-only prebuilt tree ${_eve_tp_binary}")
-        return()
-    endif()
-
-    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${name}/CMakeLists.txt)
-        # This is a git clone version
-        message("load ${name} folder from git")
-        set(GIT_HTTPS_LINK "")
-    else()
-        message("download ${name} source code")
-        set(GIT_HTTPS_LINK ${repo})
-    endif()
-
-    # macOS/Linux/iOS: keep third-party as Release (stable). A Debug deps build
-    # would inherit Poco's CMAKE_DEBUG_POSTFIX=d and rename physfs → physfsd,
-    # while the engine still links -lphysfs.
-    # Windows: Debug engine must get Debug deps (*mdd.lib), otherwise CI links
-    # *mdd against Release *md installs (LNK1104).
-    set(_eve_tp_build_type "Release")
-    if(WIN32)
-        set(_eve_tp_build_type "${CMAKE_BUILD_TYPE}")
-    endif()
-    set(_eve_tp_cmake_args
-        -DCMAKE_BUILD_TYPE=${_eve_tp_build_type}
-        -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
-    )
-    # Windows only: force md/mdd before any add_subdirectory so squirrel/OpenAL
-    # match the names the engine already links. Do not set these on Apple/Linux.
-    if(WIN32)
-        list(APPEND _eve_tp_cmake_args
-            -DCMAKE_DEBUG_POSTFIX=mdd
-            -DCMAKE_RELEASE_POSTFIX=md
-            -DCMAKE_MINSIZEREL_POSTFIX=md
-            -DCMAKE_RELWITHDEBINFO_POSTFIX=md
-        )
-    endif()
-    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-        list(APPEND _eve_tp_cmake_args
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            -DANDROID_ABI=${ANDROID_ABI}
-            -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-            -DANDROID_STL=${ANDROID_STL}
-            -DANDROID_NDK=${ANDROID_NDK}
-            -DCMAKE_SYSTEM_NAME=Android
-        )
-        if(CMAKE_MAKE_PROGRAM)
-            list(APPEND _eve_tp_cmake_args -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM})
-        endif()
-        message(STATUS "third-party Android toolchain: ABI=${ANDROID_ABI} PLATFORM=${ANDROID_PLATFORM}")
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-        find_program(_eve_ninja ninja REQUIRED)
-        set(_eve_ios_tp_toolchain "${CMAKE_SOURCE_DIR}/cmake/ios.toolchain.cmake")
-        list(APPEND _eve_tp_cmake_args
-            -DCMAKE_TOOLCHAIN_FILE=${_eve_ios_tp_toolchain}
-            -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
-            -DCMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}
-            -DIOS=TRUE
-            -DVIDEO_COCOA=OFF
-            -DVIDEO_OPENGL=OFF
-            -DCMAKE_MAKE_PROGRAM=${_eve_ninja}
-        )
-        # Force Ninja for deps: parent Xcode generator makes SDL try_compile unbearably slow.
-        set(_eve_tp_use_ninja TRUE)
-        message(STATUS "third-party iOS toolchain: ARCH=${CMAKE_OSX_ARCHITECTURES} DEPLOY=${CMAKE_OSX_DEPLOYMENT_TARGET} GEN=Ninja FILE=${_eve_ios_tp_toolchain}")
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        # Third-party aggregates for the browser build use emcmake so they pick
-        # up the emcc toolchain; Ninja keeps the many try_compile probes fast.
-        find_program(_eve_ninja ninja REQUIRED)
-        list(APPEND _eve_tp_cmake_args
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            -DCMAKE_SYSTEM_NAME=Emscripten
-            -DCMAKE_MAKE_PROGRAM=${_eve_ninja}
-        )
-        set(_eve_tp_use_ninja TRUE)
-        message(STATUS "third-party Emscripten toolchain: ${CMAKE_TOOLCHAIN_FILE}")
-    endif()
-
-    # --config is required for multi-config generators (VS); ignored by Ninja.
-    set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --config ${_eve_tp_build_type} --parallel 8)
-
-    # Tracked patch applied at build time (never by mutating the checkout at
-    # configure time). Paths in the patch are relative to the medialoader
-    # submodule root. See cmake/patch_third_party.cmake.
-    set(_eve_tp_patch_cmd ${CMAKE_COMMAND}
-        -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-smooth-normals.patch
-        -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-        -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Second patch: export squirrel/ssq symbols from the win32 host binary
-    # (paths relative to the third-party aggregate root).
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/third-party-squirrel-ssq-export.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Third patch: ssq class allocators must translate C++ exceptions from
-    # module constructors into Squirrel errors. Without this, a throwing ctor
-    # (e.g. Audio with no audio device) escapes the native call, corrupts the
-    # VM's exception state and hangs during sq_close (SQInstance::Release).
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-constructor-exceptions.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Fourth patch: SimpleSquirrel's Object move constructor swaps an
-    # uninitialized `weak` flag. Optimized arm64 builds can observe that UB
-    # when script bindings pass Array/Object wrappers by value.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-object-move-init.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-
-    # Stamp the git versions into the install tree after every install so
-    # prebuilt-mode consumers (and eve's build info) can report exactly which
-    # third-party commit the libraries were built from.
-    set(_eve_tp_version_cmd ${CMAKE_COMMAND}
-        -DPREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
-        -DTP_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-        -DPLATFORM=${BUILD_PLATFORM}
-        -DBUILD_TYPE=${_eve_tp_build_type}
-        -P ${CMAKE_SOURCE_DIR}/cmake/write_third_party_version.cmake)
-
-    if(_eve_tp_use_ninja)
-        ExternalProject_Add(${name}
-            GIT_REPOSITORY ${GIT_HTTPS_LINK}
-            GIT_TAG ${EVENGINE_THIRD_PARTY_PIN}
-            SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
-            CMAKE_GENERATOR "Ninja"
-            CMAKE_ARGS ${_eve_tp_cmake_args}
-            PATCH_COMMAND ${_eve_tp_patch_cmd}
-            BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
-            BUILD_ALWAYS 0
-            EXCLUDE_FROM_ALL 1
-        )
-    else()
-        ExternalProject_Add(${name}
-            GIT_REPOSITORY ${GIT_HTTPS_LINK}
-            GIT_TAG ${EVENGINE_THIRD_PARTY_PIN}
-            SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
-            CMAKE_ARGS ${_eve_tp_cmake_args}
-            PATCH_COMMAND ${_eve_tp_patch_cmd}
-            BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
-            BUILD_ALWAYS 0
-            EXCLUDE_FROM_ALL 1
-        )
-    endif()
-    target_include_directories(eve_engine_includes INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
-    eve_external_include(
-        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
-    target_link_directories(eve_engine_includes INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib)
-endfunction()
-
-# Load third party project from github
-function(load_third_party)
-    # Debug gets its own third-party install tree (<plat>-debug); the other
-    # supported single-config build types (Release, RelWithDebInfo, MinSizeRel)
-    # share the release-style tree and the md library postfixes on Windows.
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(DEBUG_APPENDIX "-debug")
-    else()
-        set(DEBUG_APPENDIX "")
-    endif()
-    message("Build Type: ${CMAKE_BUILD_TYPE} (third-party tree suffix '${DEBUG_APPENDIX}')")
-
-    # Simulator builds cannot reuse the device third-party tree (the linker
-    # rejects iphoneos Mach-O slices for an iphonesimulator target), so give
-    # them their own install prefix instead of clobbering build/third-party-binary/ios-debug.
-    if(CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_SYSROOT MATCHES "simulator")
-        set(_eve_tp_platform "ios-simulator")
-    else()
-        set(_eve_tp_platform ${BUILD_PLATFORM})
-    endif()
-    set(TP_BUILD_PATH ${_eve_tp_platform}${DEBUG_APPENDIX})
-    message("Third Party Build Path: ${TP_BUILD_PATH}")
-
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        cmake_path(ABSOLUTE_PATH EVENGINE_THIRD_PARTY_BINARY_DIR NORMALIZE
-                   OUTPUT_VARIABLE _eve_prebuilt_tp)
-        if(NOT IS_DIRECTORY "${_eve_prebuilt_tp}/include" OR
-           NOT IS_DIRECTORY "${_eve_prebuilt_tp}/lib")
-            message(FATAL_ERROR
-                "EVENGINE_THIRD_PARTY_BINARY_DIR must contain include/ and lib/: ${_eve_prebuilt_tp}")
-        endif()
-        message(STATUS "third-party: using read-only prebuilt install ${_eve_prebuilt_tp}")
-        target_include_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/include")
-        eve_external_include("${_eve_prebuilt_tp}/include")
-        target_link_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/lib")
-        set(EVENGINE_THIRD_PARTY_BINARY_ONLY ON CACHE INTERNAL
-            "Use installed third-party prefix" FORCE)
-        # Read the install tree's version stamp (written by
-        # cmake/write_third_party_version.cmake at install time). A missing
-        # stamp is tolerated with a warning (older prebuilt trees); a stamp
-        # that disagrees with a present source checkout is a hard error,
-        # because the engine would otherwise compile against new source
-        # headers while linking stale prebuilt libraries.
-        find_package(Git QUIET)
-        set(EVENGINE_TP_DESC "unknown" CACHE INTERNAL "Third-party version for build info")
-        set(_eve_tp_version_file "${_eve_prebuilt_tp}/third-party-version.txt")
-        if(EXISTS "${_eve_tp_version_file}")
-            file(STRINGS "${_eve_tp_version_file}" _eve_tp_version_lines)
-            set(_eve_tp_aggregate "")
-            set(_eve_tp_built "")
-            foreach(_eve_tp_line IN LISTS _eve_tp_version_lines)
-                if(_eve_tp_line MATCHES "^aggregate=(.*)$")
-                    set(_eve_tp_aggregate "${CMAKE_MATCH_1}")
-                elseif(_eve_tp_line MATCHES "^built=(.*)$")
-                    set(_eve_tp_built "${CMAKE_MATCH_1}")
-                endif()
-            endforeach()
-            if(_eve_tp_aggregate)
-                string(SUBSTRING "${_eve_tp_aggregate}" 0 12 _eve_tp_agg_short)
-                set(EVENGINE_TP_DESC "prebuilt@${_eve_tp_agg_short}" CACHE INTERNAL
-                    "Third-party version for build info" FORCE)
-                message(STATUS "third-party prebuilt ${_eve_prebuilt_tp}: aggregate ${_eve_tp_aggregate} (built ${_eve_tp_built})")
-            else()
-                message(WARNING "third-party-version.txt has no aggregate= line: ${_eve_tp_version_file}")
-            endif()
-            if(EXISTS "${CMAKE_SOURCE_DIR}/third-party/.git" AND GIT_EXECUTABLE)
-                execute_process(
-                    COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD
-                    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/third-party"
-                    RESULT_VARIABLE _eve_tp_src_result
-                    OUTPUT_VARIABLE _eve_tp_src_head
-                    OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
-                if(_eve_tp_src_result EQUAL 0 AND _eve_tp_aggregate
-                   AND NOT _eve_tp_src_head STREQUAL _eve_tp_aggregate)
-                    message(FATAL_ERROR
-                        "third-party mismatch: prebuilt tree ${_eve_prebuilt_tp} was built from aggregate\n"
-                        "  ${_eve_tp_aggregate}\n"
-                        "but the source checkout third-party/ is at\n"
-                        "  ${_eve_tp_src_head}\n"
-                        "The engine would compile against new headers but link old prebuilt libraries.\n"
-                        "Sync the checkout to the pinned commit and reinstall, or point\n"
-                        "EVENGINE_THIRD_PARTY_BINARY_DIR at a prebuilt tree matching the source.")
-                endif()
-            endif()
-        else()
-            message(WARNING
-                "prebuilt third-party tree has no ${_eve_tp_version_file}.\n"
-                "Run 'make reinstall/third-party/<plat>' once to stamp the git version into the tree.")
-        endif()
-        # Preserve the dependency target expected by create_module(), but give it no
-        # configure/build/install commands so the prebuilt tree can remain read-only.
-        add_custom_target(third-party)
-        add_custom_target(deps DEPENDS third-party)
-        return()
-    endif()
-
-    ensure_third_party_checkout()
-    # EVEngine's database module uses POCO Data + SQLite. The third-party
-    # aggregate already defaults ENABLE_DATA / ENABLE_DATA_SQLITE to ON (pinned
-    # by GIT_TAG below), so no configure-time edits are needed for it.
-    #
-    # Normal generation for assets without authored normals: medialoader maps
-    # generateNormalsIfMissing to aiProcess_GenNormals (per-face, flat shading).
-    # A tracked patch (cmake/patches/medialoader-smooth-normals.patch) switches
-    # it to aiProcess_GenSmoothNormals, so sphere-like models shade smoothly
-    # while hard edges (default smoothing angle 80 degrees) keep seams. The
-    # patch is applied by the third-party ExternalProject's PATCH_COMMAND at
-    # build time — never by mutating the checkout during configure.
-    check_third_party_project(third-party "https://github.com/EVEngine/third-party")
-
-    ADD_CUSTOM_TARGET(deps DEPENDS third-party)
-    # The source checkout was verified against the pin by
-    # ensure_third_party_checkout(); report it in the generated BuildInfo.h.
-    string(SUBSTRING "${EVENGINE_THIRD_PARTY_PIN}" 0 12 _eve_tp_pin_short)
-    set(EVENGINE_TP_DESC "source@${_eve_tp_pin_short}" CACHE INTERNAL
-        "Third-party version for build info" FORCE)
-endfunction()
-
-
-# Resolve the WebGPU headers / library for BUILD_PLATFORM=webgpu.
-#   * Emscripten (browser): webgpu.h / webgpu_cpp.h ship with the emsdk and are
-#     already on emcc's include path; no link target is needed.
-#   * Native desktop: Google Dawn is fetched via FetchContent and linked through
-#     Dawn's native WebGPU target (set into EVENGINE_WEBGPU_LIB).
-function(load_webgpu_backend)
-    if(NOT BUILD_PLATFORM STREQUAL "webgpu")
-        set(EVENGINE_WEBGPU_LIB "" CACHE INTERNAL "WebGPU link target (unused)")
-        return()
-    endif()
-
-    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        message(STATUS "WebGPU: using emsdk headers (no Dawn build needed)")
-        set(EVENGINE_WEBGPU_LIB "" CACHE INTERNAL "WebGPU link target (unused on Emscripten)")
-        return()
-    endif()
-
-    message(STATUS "WebGPU (native): fetching Google Dawn")
-    include(FetchContent)
-    set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
-    set(DAWN_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    set(DAWN_BUILD_WGPU_TESTS OFF CACHE BOOL "" FORCE)
-    set(DAWN_ENABLE_NULL OFF CACHE BOOL "" FORCE)
-    set(DAWN_ENABLE_D3D11 OFF CACHE BOOL "" FORCE)
-    set(DAWN_ENABLE_OPENGLES OFF CACHE BOOL "" FORCE)
-    set(DAWN_USE_XCODE OFF CACHE BOOL "" FORCE)
-
-    # Pinned Dawn commit (2026-08-19 main HEAD) so native WebGPU builds stay
-    # reproducible; override with -DEVENGINE_DAWN_TAG=<commit> if needed.
-    set(EVENGINE_DAWN_TAG "c3845d0d962656a2ea03063bddc85dc1ef1a0baa" CACHE STRING
-        "Dawn commit/tag to fetch for the native WebGPU backend (pin for reproducible builds)")
-    FetchContent_Declare(dawn
-        GIT_REPOSITORY https://github.com/google/dawn.git
-        GIT_TAG ${EVENGINE_DAWN_TAG}
-        GIT_SHALLOW TRUE
-        GIT_PROGRESS TRUE
-    )
-    FetchContent_MakeAvailable(dawn)
-
-    if(TARGET dawn::webgpu_dawn)
-        set(_eve_dawn_target dawn::webgpu_dawn)
-    elseif(TARGET dawn::dawn)
-        set(_eve_dawn_target dawn::dawn)
-    else()
-        message(FATAL_ERROR "Dawn fetch did not produce a native WebGPU target")
-    endif()
-    # Dawn's webgpu.h / webgpu_cpp.h live under src/ in the checkout; expose
-    # them to every module target (engine, eve_imgui, gpgpu/webgpu, ...).
-    target_include_directories(eve_engine_includes INTERFACE
-        "${dawn_SOURCE_DIR}/include"
-        "${dawn_SOURCE_DIR}/src"
-        "${dawn_BINARY_DIR}/gen/include")
-    if(TARGET dawncpp_headers)
-        add_dependencies(eve_engine_includes dawncpp_headers)
-    endif()
-    if(TARGET dawn_headers)
-        add_dependencies(eve_engine_includes dawn_headers)
-    endif()
-    if(TARGET emdawnwebgpu_headers_gen)
-        add_dependencies(eve_engine_includes emdawnwebgpu_headers_gen)
-    endif()
-    set(EVENGINE_WEBGPU_LIB ${_eve_dawn_target} CACHE INTERNAL "WebGPU link target")
-    message(STATUS "WebGPU (native): Dawn ready, link target = ${EVENGINE_WEBGPU_LIB}")
-endfunction()
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/third_party_build.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/webgpu_backend.cmake)
 
 main()

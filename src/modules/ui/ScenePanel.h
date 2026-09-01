@@ -37,8 +37,8 @@ public:
     void close();
     /** @brief True while the scene host is mounted and visible. */
     bool isOpen() const;
-    /** @brief The mounted host (nullptr until open()); for embedding/tests. */
-    UIHost* host() const { return host_; }
+    /** @brief Returns the mounted scene host handle, or an empty handle until open(). */
+    [[nodiscard]] UIHostHandle host() const noexcept { return host_; }
 
     /** @brief Re-queries the scene graph and rebuilds the tree. */
     void refresh();
@@ -60,7 +60,7 @@ private:
                         const std::vector<eve::SceneNodeInfo>& all);
     void rebuildHost();
 
-    UIHost* host_ = nullptr;
+    UIHostHandle                            host_{};
     std::string selectedId_;
     std::function<void(const std::string&)> pickHandler_;
 };

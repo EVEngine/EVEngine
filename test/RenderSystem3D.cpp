@@ -404,9 +404,11 @@ TEST_CASE("RenderSystem3D.textureCheckerPixels") {
     const int cx = gfx->getWidth() / 2;
     const int cy = gfx->getHeight() / 2;
     const int dx = std::max(16, gfx->getWidth() / 10);
-    // Sample left vs right of the projected front face (UV u≈0.25 vs u≈0.75).
-    Color a = gfx->getPixel(cx - dx, cy);
-    Color b = gfx->getPixel(cx + dx, cy);
+    // Sample inside a checker row rather than on its v=0.5 boundary, where
+    // backend-specific filtering can blend both cells to nearly the same gray.
+    const int sampleY = cy - dx / 2;
+    Color a = gfx->getPixel(cx - dx, sampleY);
+    Color b = gfx->getPixel(cx + dx, sampleY);
     // Lit PBR softens albedo contrast vs unlit; still require a clear left/right split.
     REQUIRE(std::abs(luma(a) - luma(b)) > 0.05f);
 
@@ -767,6 +769,24 @@ TEST_CASE("Camera3D.screenToRayPick") {
     CHECK(std::fabs(len - 1.f) < 1e-4f);
 }
 
+TEST_CASE("Camera3D.orthographicScreenRaysAreParallel") {
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 0.f, 10.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setOrthographic(8.f);
+
+    cam->screenToRay(20.f, 60.f, 160.f, 120.f);
+    const float leftOrigin = cam->getScreenRayOriginX();
+    const float leftDirX = cam->getScreenRayDirX();
+    const float leftDirZ = cam->getScreenRayDirZ();
+    cam->screenToRay(140.f, 60.f, 160.f, 120.f);
+
+    CHECK(cam->getScreenRayOriginX() > leftOrigin + 1.f);
+    CHECK(std::fabs(cam->getScreenRayDirX() - leftDirX) < 1e-4f);
+    CHECK(std::fabs(cam->getScreenRayDirZ() - leftDirZ) < 1e-4f);
+    CHECK(cam->getScreenRayDirZ() < -0.99f);
+}
+
 // ---------------------------------------------------------------------------
 // GPU 验证：逐像素实体 ID mask（renderEntityIdMask）与通用纹理读回
 // （readTextureToImageData）。这两条路径支撑 capture_render_frame 的
@@ -829,7 +849,7 @@ TEST_CASE("RenderSystem3D.entityIdMaskPixels") {
     CHECK(sawBg);     // 背景为 (0,0,0,0)
 
     // 保存 ID mask PNG 供人工核对（可选）。
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::filesystem::FileData *png =
         img->encode(medialoader::FormatHandler::ENCODED_PNG, "entity_id_mask.png", false);
     if (png) {

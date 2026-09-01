@@ -7,6 +7,7 @@
 
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/GraphicsInternal.h"
+#include "graphics/vulkan/Canvas.h"
 
 #include "common/Exception.h"
 #include "image/Image.h"
@@ -14,13 +15,71 @@
 #include "zeroerr/assert.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
+#if __has_include("graphics/shaders/reflection_probe_filter_comp_spv.inc")
+#include "graphics/shaders/reflection_probe_filter_comp_spv.inc"
+#define EVENGINE_HAS_REFLECTION_PROBE_FILTER_SPV 1
+#endif
+
 
 namespace eve::graphics::vulkan {
+
+namespace {
+
+template <class TextureImage>
+void uploadTextureForAllShaderStages(vkb::Device &device, vk::CommandPool commandPool,
+                                     vk::Queue graphicsQueue, TextureImage &image,
+                                     uint32_t width, uint32_t height, uint32_t mipLevels,
+                                     uint32_t layers, const std::vector<uint8_t> &bytes) {
+    vkb::GenericBuffer staging(
+        device, vk::BufferUsageFlagBits::eTransferSrc, vk::DeviceSize(bytes.size()),
+        vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+    staging.updateLocal(vkb::FrameSlot::gpuIdle(), bytes.data(), vk::DeviceSize(bytes.size()));
+
+    vkb::executeImmediately(device.instance, commandPool, graphicsQueue,
+                            [&](vk::CommandBuffer cb) {
+                                vk::DeviceSize offset = 0;
+                                for (uint32_t mip = 0; mip < mipLevels; ++mip) {
+                                    const uint32_t mipWidth = std::max(width >> mip, 1u);
+                                    const uint32_t mipHeight = std::max(height >> mip, 1u);
+                                    for (uint32_t layer = 0; layer < layers; ++layer) {
+                                        image.copy(cb, staging.buffer, mip, layer, mipWidth,
+                                                   mipHeight, 1, uint32_t(offset));
+                                        offset += vk::DeviceSize(mipWidth) * mipHeight * 4u;
+                                    }
+                                }
+                                // VKBuilder's shader-read transition targets
+                                // vertex shaders only. Perform the final image
+                                // transition here so fragment and compute
+                                // texture consumers are in its destination
+                                // scope as well.
+                                vk::ImageMemoryBarrier barrier{};
+                                barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+                                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+                                barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+                                barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+                                barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                barrier.image = image.image();
+                                barrier.subresourceRange = {
+                                    vk::ImageAspectFlagBits::eColor, 0, mipLevels, 0, layers};
+                                cb.pipelineBarrier(
+                                    vk::PipelineStageFlagBits::eTransfer,
+                                    vk::PipelineStageFlagBits::eVertexShader |
+                                        vk::PipelineStageFlagBits::eFragmentShader |
+                                        vk::PipelineStageFlagBits::eComputeShader,
+                                    {}, 0, nullptr, 0, nullptr, 1, &barrier);
+                                image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+                            });
+    staging.release();
+}
+
+}  // namespace
 
 void Graphics::writeCombinedImageDescriptor(GpuTexture *gpu) {
     if (!gpu || !gpu->descriptorSet || !gpu->sampler) return;
@@ -67,7 +126,9 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
     std::vector<uint8_t> bytes =
         (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
                         : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
-    gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
+    uploadTextureForAllShaderStages(device, uploadPool,
+                                    device.getQueue(vkb::QueueType::graphics), gpu->image,
+                                    uint32_t(w), uint32_t(h), mipLevels, 1, bytes);
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
 
@@ -93,7 +154,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
 }
 
 Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces) {
-    // IBL shaders use textureLod(roughness * 5); generate mips by default.
+    // IBL shaders query the actual GGX-prefiltered mip count; generate it by default.
     return newCubemap(faceSize, rgbaFaces, TextureCreateInfo::withMipmaps(false));
 }
 
@@ -125,7 +186,9 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
     std::vector<uint8_t> bytes =
         (mipLevels > 1) ? buildMipChainCube(rgbaFaces, uint32_t(faceSize), mipLevels)
                         : std::vector<uint8_t>(rgbaFaces, rgbaFaces + faceBytes * 6u);
-    gpu->cubeImage.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
+    uploadTextureForAllShaderStages(device, uploadPool,
+                                    device.getQueue(vkb::QueueType::graphics), gpu->cubeImage,
+                                    uint32_t(faceSize), uint32_t(faceSize), mipLevels, 6, bytes);
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
     // Cubemap sampled via mesh3d descriptor sets — no 2D texSetLayout binding required here.
@@ -145,6 +208,388 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
     ownedTextures.push_back(std::move(tex));
     ownedGpuTextures.push_back(std::move(gpu));
     return raw;
+}
+
+Texture *Graphics::newHDRCubemap(int faceSize) {
+    if (!initialized || faceSize <= 0) return nullptr;
+    const uint32_t size = static_cast<uint32_t>(faceSize);
+    const uint32_t mipLevels = uint32_t(mipmapCountForSize(faceSize, faceSize));
+    vk::ImageCreateInfo imageInfo{};
+    imageInfo.flags = vk::ImageCreateFlagBits::eCubeCompatible;
+    imageInfo.imageType = vk::ImageType::e2D;
+    imageInfo.format = vk::Format::eR16G16B16A16Sfloat;
+    imageInfo.extent = vk::Extent3D{size, size, 1};
+    imageInfo.mipLevels = mipLevels;
+    imageInfo.arrayLayers = 6;
+    imageInfo.samples = vk::SampleCountFlagBits::e1;
+    imageInfo.tiling = vk::ImageTiling::eOptimal;
+    imageInfo.usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst |
+                      vk::ImageUsageFlagBits::eTransferSrc |
+                      vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eStorage;
+    imageInfo.sharingMode = vk::SharingMode::eExclusive;
+
+    auto gpu = std::make_unique<GpuTexture>();
+    gpu->rawCubeImage = device->createImageUnique(imageInfo);
+    const vk::MemoryRequirements requirements =
+        device->getImageMemoryRequirements(*gpu->rawCubeImage);
+    uint32_t memoryType = UINT32_MAX;
+    const auto &memoryProperties = device.physical_device.memory_properties;
+    for (uint32_t index = 0; index < memoryProperties.memoryTypeCount; ++index) {
+        if ((requirements.memoryTypeBits & (1u << index)) != 0u &&
+            (memoryProperties.memoryTypes[index].propertyFlags &
+             vk::MemoryPropertyFlagBits::eDeviceLocal) != vk::MemoryPropertyFlags{}) {
+            memoryType = index;
+            break;
+        }
+    }
+    if (memoryType == UINT32_MAX) return nullptr;
+    gpu->rawCubeMemory = device->allocateMemoryUnique(
+        vk::MemoryAllocateInfo{requirements.size, memoryType});
+    device->bindImageMemory(*gpu->rawCubeImage, *gpu->rawCubeMemory, 0);
+
+    vk::ImageViewCreateInfo viewInfo{};
+    viewInfo.image = *gpu->rawCubeImage;
+    viewInfo.viewType = vk::ImageViewType::eCube;
+    viewInfo.format = imageInfo.format;
+    viewInfo.subresourceRange =
+        vk::ImageSubresourceRange{vk::ImageAspectFlagBits::eColor, 0, mipLevels, 0, 6};
+    gpu->rawCubeView = device->createImageViewUnique(viewInfo);
+    gpu->width = faceSize;
+    gpu->height = faceSize;
+    gpu->isCube = true;
+    gpu->isHDR = true;
+    gpu->mipLevels = mipLevels;
+    gpu->samplerState = TextureSampler::linearMipmap();
+    gpu->sampler = createVkSampler(gpu->samplerState, mipLevels);
+
+    vkb::executeImmediately(device.instance, uploadPool,
+                            device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer command) {
+                                vk::ImageMemoryBarrier barrier{};
+                                barrier.srcAccessMask = {};
+                                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+                                barrier.oldLayout = vk::ImageLayout::eUndefined;
+                                barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+                                barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                barrier.image = *gpu->rawCubeImage;
+                                barrier.subresourceRange = viewInfo.subresourceRange;
+                                command.pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe,
+                                                        vk::PipelineStageFlagBits::eFragmentShader,
+                                                        {}, 0, nullptr, 0, nullptr, 1, &barrier);
+                            });
+    registerBindlessTextureCube(gpu.get());
+
+    auto texture = std::make_unique<Texture>();
+    texture->width = faceSize;
+    texture->height = faceSize;
+    texture->pixelWidth = faceSize;
+    texture->pixelHeight = faceSize;
+    texture->layers = 6;
+    texture->mipmapCount = int(mipLevels);
+    texture->sampler = gpu->samplerState;
+    texture->gpuHandle = gpu.get();
+    Texture *raw = texture.get();
+    ownedTextures.push_back(std::move(texture));
+    ownedGpuTextures.push_back(std::move(gpu));
+    return raw;
+}
+
+bool Graphics::copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int face) {
+    auto *canvas = dynamic_cast<OffscreenCanvas *>(source);
+    if (!canvas || !canvas->isHDR() || !cubemap || !cubemap->gpuHandle || face < 0 || face >= 6)
+        return false;
+    auto *target = static_cast<GpuTexture *>(cubemap->gpuHandle);
+    if (!target->isCube || !target->isHDR || !target->rawCubeImage ||
+        canvas->getWidth() != target->width || canvas->getHeight() != target->height)
+        return false;
+    ensureOffscreen3DResources();
+    lastOffscreen3DGpuDurationMs = 0.f;
+    vkb::executeImmediately(device.instance, uploadPool,
+                            device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer command) {
+                                if (offscreen3DTimestampQueryPool) {
+                                    command.resetQueryPool(offscreen3DTimestampQueryPool, 0, 2);
+                                    command.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe,
+                                                           offscreen3DTimestampQueryPool, 0);
+                                }
+                                canvas->colorImage().setLayout(command,
+                                                              vk::ImageLayout::eTransferSrcOptimal);
+                                vk::ImageMemoryBarrier toCopy{};
+                                toCopy.srcAccessMask = vk::AccessFlagBits::eShaderRead;
+                                toCopy.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+                                toCopy.oldLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+                                toCopy.newLayout = vk::ImageLayout::eTransferDstOptimal;
+                                toCopy.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                toCopy.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                toCopy.image = *target->rawCubeImage;
+                                toCopy.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1,
+                                                           uint32_t(face), 1};
+                                command.pipelineBarrier(vk::PipelineStageFlagBits::eFragmentShader,
+                                                        vk::PipelineStageFlagBits::eTransfer, {}, 0,
+                                                        nullptr, 0, nullptr, 1, &toCopy);
+                                vk::ImageCopy copy{};
+                                copy.srcSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+                                copy.dstSubresource = {vk::ImageAspectFlagBits::eColor, 0,
+                                                       uint32_t(face), 1};
+                                copy.extent = vk::Extent3D{uint32_t(target->width),
+                                                           uint32_t(target->height), 1};
+                                command.copyImage(canvas->colorImage().image(),
+                                                  vk::ImageLayout::eTransferSrcOptimal,
+                                                  *target->rawCubeImage,
+                                                  vk::ImageLayout::eTransferDstOptimal, 1, &copy);
+                                std::swap(toCopy.srcAccessMask, toCopy.dstAccessMask);
+                                std::swap(toCopy.oldLayout, toCopy.newLayout);
+                                command.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                                                        vk::PipelineStageFlagBits::eFragmentShader,
+                                                        {}, 0, nullptr, 0, nullptr, 1, &toCopy);
+                                canvas->colorImage().setLayout(
+                                    command, vk::ImageLayout::eShaderReadOnlyOptimal);
+                                if (offscreen3DTimestampQueryPool)
+                                    command.writeTimestamp(
+                                        vk::PipelineStageFlagBits::eBottomOfPipe,
+                                        offscreen3DTimestampQueryPool, 1);
+                            });
+    if (offscreen3DTimestampQueryPool && offscreen3DTimestampPeriodNs > 0.f) {
+        std::array<uint64_t, 2> ticks{};
+        const vk::Result result = device->getQueryPoolResults(
+            offscreen3DTimestampQueryPool, 0, uint32_t(ticks.size()), sizeof(ticks), ticks.data(),
+            sizeof(uint64_t), vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
+        if (result == vk::Result::eSuccess && ticks[1] >= ticks[0])
+            lastOffscreen3DGpuDurationMs =
+                float(double(ticks[1] - ticks[0]) * double(offscreen3DTimestampPeriodNs) * 1.0e-6);
+    }
+    return true;
+}
+
+bool Graphics::copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
+                                        Texture *cubemap) {
+    if (!sources || faceCount < 1 || faceCount > 6 || !cubemap || !cubemap->gpuHandle)
+        return false;
+    auto *target = static_cast<GpuTexture *>(cubemap->gpuHandle);
+    if (!target->isCube || !target->isHDR || !target->rawCubeImage) return false;
+
+    std::array<OffscreenCanvas *, 6> canvases{};
+    for (int face = 0; face < faceCount; ++face) {
+        auto *canvas = dynamic_cast<OffscreenCanvas *>(sources[face]);
+        if (!canvas || !canvas->isHDR() || canvas->getWidth() != target->width ||
+            canvas->getHeight() != target->height)
+            return false;
+        canvases[static_cast<size_t>(face)] = canvas;
+    }
+
+    ensureOffscreen3DResources();
+    lastOffscreen3DGpuDurationMs = 0.f;
+    vkb::executeImmediately(device.instance, uploadPool,
+                            device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer command) {
+                                if (offscreen3DTimestampQueryPool) {
+                                    command.resetQueryPool(offscreen3DTimestampQueryPool, 0, 2);
+                                    command.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe,
+                                                           offscreen3DTimestampQueryPool, 0);
+                                }
+                                for (int face = 0; face < faceCount; ++face) {
+                                    auto *canvas = canvases[static_cast<size_t>(face)];
+                                    canvas->colorImage().setLayout(
+                                        command, vk::ImageLayout::eTransferSrcOptimal);
+
+                                    vk::ImageMemoryBarrier toCopy{};
+                                    toCopy.srcAccessMask = vk::AccessFlagBits::eShaderRead;
+                                    toCopy.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+                                    toCopy.oldLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+                                    toCopy.newLayout = vk::ImageLayout::eTransferDstOptimal;
+                                    toCopy.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                    toCopy.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                    toCopy.image = *target->rawCubeImage;
+                                    toCopy.subresourceRange =
+                                        vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor,
+                                                                  0, 1, uint32_t(face), 1);
+                                    command.pipelineBarrier(
+                                        vk::PipelineStageFlagBits::eFragmentShader,
+                                        vk::PipelineStageFlagBits::eTransfer, {}, 0, nullptr, 0,
+                                        nullptr, 1, &toCopy);
+
+                                    vk::ImageCopy copy{};
+                                    copy.srcSubresource =
+                                        vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor,
+                                                                   0, 0, 1);
+                                    copy.dstSubresource =
+                                        vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor,
+                                                                   0, uint32_t(face), 1);
+                                    copy.extent = vk::Extent3D(uint32_t(canvas->getWidth()),
+                                                               uint32_t(canvas->getHeight()), 1);
+                                    command.copyImage(canvas->colorImage().image(),
+                                                      vk::ImageLayout::eTransferSrcOptimal,
+                                                      *target->rawCubeImage,
+                                                      vk::ImageLayout::eTransferDstOptimal, 1,
+                                                      &copy);
+
+                                    std::swap(toCopy.srcAccessMask, toCopy.dstAccessMask);
+                                    std::swap(toCopy.oldLayout, toCopy.newLayout);
+                                    command.pipelineBarrier(
+                                        vk::PipelineStageFlagBits::eTransfer,
+                                        vk::PipelineStageFlagBits::eFragmentShader, {}, 0, nullptr,
+                                        0, nullptr, 1, &toCopy);
+                                    canvas->colorImage().setLayout(
+                                        command, vk::ImageLayout::eShaderReadOnlyOptimal);
+                                }
+                                if (offscreen3DTimestampQueryPool)
+                                    command.writeTimestamp(
+                                        vk::PipelineStageFlagBits::eBottomOfPipe,
+                                        offscreen3DTimestampQueryPool, 1);
+                            });
+    if (offscreen3DTimestampQueryPool && offscreen3DTimestampPeriodNs > 0.f) {
+        std::array<uint64_t, 2> ticks{};
+        const vk::Result result = device->getQueryPoolResults(
+            offscreen3DTimestampQueryPool, 0, uint32_t(ticks.size()), sizeof(ticks), ticks.data(),
+            sizeof(uint64_t), vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
+        if (result == vk::Result::eSuccess && ticks[1] >= ticks[0])
+            lastOffscreen3DGpuDurationMs =
+                float(double(ticks[1] - ticks[0]) * double(offscreen3DTimestampPeriodNs) * 1.0e-6);
+    }
+    return true;
+}
+
+bool Graphics::filterHDRReflectionCubemap(Texture *cubemap, int sampleCount) {
+#ifndef EVENGINE_HAS_REFLECTION_PROBE_FILTER_SPV
+    (void)cubemap;
+    (void)sampleCount;
+    return false;
+#else
+    if (!cubemap || !cubemap->gpuHandle) return false;
+    auto *target = static_cast<GpuTexture *>(cubemap->gpuHandle);
+    if (!target->isCube || !target->isHDR || !target->rawCubeImage || target->mipLevels < 2)
+        return false;
+    sampleCount = std::clamp(sampleCount, 8, 512);
+    ensureOffscreen3DResources();
+    lastOffscreen3DGpuDurationMs = 0.f;
+
+    if (!reflectionProbeFilterPass.pipeline()) {
+        std::array<vk::DescriptorSetLayoutBinding, 2> bindings{
+            vk::DescriptorSetLayoutBinding{0, vk::DescriptorType::eCombinedImageSampler, 1,
+                                           vk::ShaderStageFlagBits::eCompute},
+            vk::DescriptorSetLayoutBinding{1, vk::DescriptorType::eStorageImage, 1,
+                                           vk::ShaderStageFlagBits::eCompute},
+        };
+        reflectionProbeFilterSetLayout = device->createDescriptorSetLayoutUnique(
+            vk::DescriptorSetLayoutCreateInfo{{}, uint32_t(bindings.size()), bindings.data()});
+        vk::DescriptorSetLayout layout = *reflectionProbeFilterSetLayout;
+        vk::PushConstantRange push{vk::ShaderStageFlagBits::eCompute, 0, 16};
+        reflectionProbeFilterPipelineLayout = device->createPipelineLayoutUnique(
+            vk::PipelineLayoutCreateInfo{{}, 1, &layout, 1, &push});
+        const std::vector<uint32_t> spv(reflection_probe_filter_comp_spv,
+                                        reflection_probe_filter_comp_spv +
+                                            reflection_probe_filter_comp_spv_count);
+        if (!reflectionProbeFilterPass.create(device, *reflectionProbeFilterPipelineLayout, spv))
+            return false;
+    }
+
+    vk::ImageViewCreateInfo sourceInfo{};
+    sourceInfo.image = *target->rawCubeImage;
+    sourceInfo.viewType = vk::ImageViewType::eCube;
+    sourceInfo.format = vk::Format::eR16G16B16A16Sfloat;
+    sourceInfo.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 6};
+    vk::UniqueImageView sourceView = device->createImageViewUnique(sourceInfo);
+    std::vector<vk::UniqueImageView> targetViews;
+    targetViews.reserve(target->mipLevels - 1u);
+    for (uint32_t mip = 1; mip < target->mipLevels; ++mip) {
+        vk::ImageViewCreateInfo info{};
+        info.image = *target->rawCubeImage;
+        info.viewType = vk::ImageViewType::e2DArray;
+        info.format = sourceInfo.format;
+        info.subresourceRange = {vk::ImageAspectFlagBits::eColor, mip, 1, 0, 6};
+        targetViews.push_back(device->createImageViewUnique(info));
+    }
+
+    std::array<vk::DescriptorPoolSize, 2> poolSizes{
+        vk::DescriptorPoolSize{vk::DescriptorType::eCombinedImageSampler,
+                               target->mipLevels - 1u},
+        vk::DescriptorPoolSize{vk::DescriptorType::eStorageImage, target->mipLevels - 1u},
+    };
+    vk::UniqueDescriptorPool pool = device->createDescriptorPoolUnique(vk::DescriptorPoolCreateInfo{
+        {}, target->mipLevels - 1u, uint32_t(poolSizes.size()), poolSizes.data()});
+    std::vector<vk::DescriptorSetLayout> layouts(target->mipLevels - 1u,
+                                                  *reflectionProbeFilterSetLayout);
+    std::vector<vk::DescriptorSet> sets = device->allocateDescriptorSets(
+        vk::DescriptorSetAllocateInfo{*pool, uint32_t(layouts.size()), layouts.data()});
+    for (size_t index = 0; index < sets.size(); ++index) {
+        vk::DescriptorImageInfo sourceImage{target->sampler, *sourceView,
+                                             vk::ImageLayout::eShaderReadOnlyOptimal};
+        vk::DescriptorImageInfo destinationImage{{}, *targetViews[index],
+                                                  vk::ImageLayout::eGeneral};
+        std::array<vk::WriteDescriptorSet, 2> writes{
+            vk::WriteDescriptorSet{sets[index], 0, 0, 1,
+                                   vk::DescriptorType::eCombinedImageSampler, &sourceImage},
+            vk::WriteDescriptorSet{sets[index], 1, 0, 1,
+                                   vk::DescriptorType::eStorageImage, &destinationImage},
+        };
+        device->updateDescriptorSets(uint32_t(writes.size()), writes.data(), 0, nullptr);
+    }
+
+    struct FilterPush {
+        float roughness;
+        uint32_t sampleCount;
+        uint32_t diffuseMode;
+        uint32_t targetSize;
+    };
+    vkb::executeImmediately(device.instance, uploadPool,
+                            device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer command) {
+                                if (offscreen3DTimestampQueryPool) {
+                                    command.resetQueryPool(offscreen3DTimestampQueryPool, 0, 2);
+                                    command.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe,
+                                                           offscreen3DTimestampQueryPool, 0);
+                                }
+                                for (uint32_t mip = 1; mip < target->mipLevels; ++mip) {
+                                    vk::ImageMemoryBarrier toWrite{};
+                                    toWrite.srcAccessMask = vk::AccessFlagBits::eShaderRead;
+                                    toWrite.dstAccessMask = vk::AccessFlagBits::eShaderWrite;
+                                    toWrite.oldLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+                                    toWrite.newLayout = vk::ImageLayout::eGeneral;
+                                    toWrite.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                    toWrite.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                    toWrite.image = *target->rawCubeImage;
+                                    toWrite.subresourceRange = {vk::ImageAspectFlagBits::eColor, mip,
+                                                                1, 0, 6};
+                                    command.pipelineBarrier(vk::PipelineStageFlagBits::eFragmentShader,
+                                                            vk::PipelineStageFlagBits::eComputeShader,
+                                                            {}, 0, nullptr, 0, nullptr, 1, &toWrite);
+                                    const uint32_t size = std::max(uint32_t(target->width) >> mip, 1u);
+                                    const FilterPush push{
+                                        float(mip) / float(target->mipLevels - 1u),
+                                        uint32_t(sampleCount),
+                                        mip + 1u == target->mipLevels ? 1u : 0u, size};
+                                    command.bindDescriptorSets(
+                                        vk::PipelineBindPoint::eCompute,
+                                        *reflectionProbeFilterPipelineLayout, 0, 1,
+                                        &sets[static_cast<size_t>(mip - 1u)], 0, nullptr);
+                                    command.pushConstants(*reflectionProbeFilterPipelineLayout,
+                                                          vk::ShaderStageFlagBits::eCompute, 0,
+                                                          sizeof(push), &push);
+                                    reflectionProbeFilterPass.record(command, (size + 7u) / 8u,
+                                                                     (size + 7u) / 8u, 6);
+                                    std::swap(toWrite.srcAccessMask, toWrite.dstAccessMask);
+                                    std::swap(toWrite.oldLayout, toWrite.newLayout);
+                                    command.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader,
+                                                            vk::PipelineStageFlagBits::eFragmentShader,
+                                                            {}, 0, nullptr, 0, nullptr, 1, &toWrite);
+                                }
+                                if (offscreen3DTimestampQueryPool)
+                                    command.writeTimestamp(
+                                        vk::PipelineStageFlagBits::eBottomOfPipe,
+                                        offscreen3DTimestampQueryPool, 1);
+                            });
+    if (offscreen3DTimestampQueryPool && offscreen3DTimestampPeriodNs > 0.f) {
+        std::array<uint64_t, 2> ticks{};
+        const vk::Result result = device->getQueryPoolResults(
+            offscreen3DTimestampQueryPool, 0, uint32_t(ticks.size()), sizeof(ticks), ticks.data(),
+            sizeof(uint64_t), vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
+        if (result == vk::Result::eSuccess && ticks[1] >= ticks[0])
+            lastOffscreen3DGpuDurationMs =
+                float(double(ticks[1] - ticks[0]) * double(offscreen3DTimestampPeriodNs) * 1.0e-6);
+    }
+    return true;
+#endif
 }
 
 Texture *Graphics::newTexture(image::ImageData *data) {
@@ -231,7 +676,113 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
 
 bool Graphics::updateTexture(Texture *tex, int width, int height, const uint8_t *rgba) {
     if (!tex || width <= 0 || height <= 0 || !rgba) return false;
+    if (width != tex->width || height != tex->height) return false;
     return replaceTexturePixelsRGBA(tex, width, height, rgba);
+}
+
+eve::Result<void> Graphics::updateTextureRegion(Texture *tex, int x, int y, int width,
+                                                int height,
+                                                std::span<const std::uint8_t> rgba,
+                                                std::size_t bytesPerRow) {
+    const TextureRegionUpload upload{x, y, width, height, rgba, bytesPerRow};
+    return updateTextureRegions(tex, std::span<const TextureRegionUpload>(&upload, 1));
+}
+
+eve::Result<void> Graphics::updateTextureRegions(
+    Texture *tex, std::span<const TextureRegionUpload> regions) {
+    if (!tex)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "texture must be non-null",
+            "graphics.updateTextureRegions.texture"));
+    if (tex->mipmapCount != 1)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "partial updates require a single-mip texture",
+            "graphics.updateTextureRegions.mipmaps"));
+
+    auto *gpu = static_cast<GpuTexture *>(tex->gpuHandle);
+    const auto owned = std::find_if(ownedGpuTextures.begin(), ownedGpuTextures.end(),
+                                    [gpu](const std::unique_ptr<GpuTexture> &candidate) {
+                                        return candidate.get() == gpu;
+                                    });
+    if (!gpu || owned == ownedGpuTextures.end() || gpu->isCube)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "texture is not an owned 2D texture",
+            "graphics.updateTextureRegions.texture"));
+    if (regions.empty()) return eve::Result<void>::success();
+
+    std::vector<std::size_t> packedOffsets;
+    packedOffsets.reserve(regions.size());
+    std::size_t packedSize = 0;
+    for (const TextureRegionUpload &region : regions) {
+        if (region.x < 0 || region.y < 0 || region.width <= 0 || region.height <= 0 ||
+            region.x > tex->width - region.width || region.y > tex->height - region.height)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "invalid texture region",
+                "graphics.updateTextureRegions.region"));
+        const std::size_t packedRow = std::size_t(region.width) * 4U;
+        const std::size_t stride = region.bytesPerRow == 0 ? packedRow : region.bytesPerRow;
+        const std::size_t requiredBytes = stride * std::size_t(region.height - 1) + packedRow;
+        if (stride < packedRow || region.rgba.size() < requiredBytes)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument,
+                "source bytes do not cover the texture region",
+                "graphics.updateTextureRegions.bytes"));
+        packedOffsets.push_back(packedSize);
+        packedSize += packedRow * std::size_t(region.height);
+    }
+
+    std::vector<std::uint8_t> packed(packedSize);
+    for (std::size_t index = 0; index < regions.size(); ++index) {
+        const TextureRegionUpload &region = regions[index];
+        const std::size_t packedRow = std::size_t(region.width) * 4U;
+        const std::size_t stride = region.bytesPerRow == 0 ? packedRow : region.bytesPerRow;
+        for (int row = 0; row < region.height; ++row)
+            std::copy_n(region.rgba.data() + std::size_t(row) * stride, packedRow,
+                        packed.data() + packedOffsets[index] + std::size_t(row) * packedRow);
+    }
+    vkb::GenericBuffer staging(
+        device, vk::BufferUsageFlagBits::eTransferSrc, vk::DeviceSize(packed.size()),
+        vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+    staging.updateLocal(vkb::FrameSlot::gpuIdle(), packed.data(), vk::DeviceSize(packed.size()));
+
+    waitForSharedGpuResources();
+    vkb::executeImmediately(device.instance, uploadPool,
+                            device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+        gpu->image.setLayout(cb, vk::ImageLayout::eTransferDstOptimal);
+        std::vector<vk::BufferImageCopy> copies;
+        copies.reserve(regions.size());
+        for (std::size_t index = 0; index < regions.size(); ++index) {
+            const TextureRegionUpload &source = regions[index];
+            vk::BufferImageCopy copy{};
+            copy.bufferOffset = packedOffsets[index];
+            copy.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+            copy.imageOffset = vk::Offset3D{source.x, source.y, 0};
+            copy.imageExtent = vk::Extent3D{std::uint32_t(source.width),
+                                            std::uint32_t(source.height), 1};
+            copies.push_back(copy);
+        }
+        cb.copyBufferToImage(staging.buffer, gpu->image.image(),
+                             vk::ImageLayout::eTransferDstOptimal, copies);
+
+        vk::ImageMemoryBarrier barrier{};
+        barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+        barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+        barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.image = gpu->image.image();
+        barrier.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+        cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                           vk::PipelineStageFlagBits::eVertexShader |
+                               vk::PipelineStageFlagBits::eFragmentShader |
+                               vk::PipelineStageFlagBits::eComputeShader,
+                           {}, 0, nullptr, 0, nullptr, 1, &barrier);
+        gpu->image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+    });
+    staging.release();
+    return eve::Result<void>::success();
 }
 
 bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_t *rgba) {
@@ -254,7 +805,9 @@ bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_
     std::vector<uint8_t> bytes =
         (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
                         : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
-    gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
+    uploadTextureForAllShaderStages(device, uploadPool,
+                                    device.getQueue(vkb::QueueType::graphics), gpu->image,
+                                    uint32_t(w), uint32_t(h), mipLevels, 1, bytes);
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
 
@@ -337,4 +890,3 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
 }
 
 }  // namespace eve::graphics::vulkan
-

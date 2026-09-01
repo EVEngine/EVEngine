@@ -95,6 +95,16 @@ def doc_for(module: str) -> Path | None:
     return p if p.is_file() else None
 
 
+def doc_text(doc: Path) -> str:
+    """Read a module overview and all topic files in its sibling directory."""
+
+    paths = [doc]
+    topic_dir = doc.with_suffix("")
+    if topic_dir.is_dir():
+        paths.extend(sorted(topic_dir.rglob("*.md")))
+    return "\n".join(path.read_text(encoding="utf-8", errors="replace") for path in paths)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--quiet", action="store_true", help="only print failures")
@@ -124,7 +134,7 @@ def main() -> int:
         if doc is None:
             warnings.append(f"{module}: no user doc chapter ({DOCS / module}.md)")
             continue
-        text = doc.read_text(encoding="utf-8", errors="replace")
+        text = doc_text(doc)
         missing = sorted(n for n in names if n not in text)
         checked += len(names)
         if missing:
@@ -146,7 +156,7 @@ def main() -> int:
         if doc is None:
             continue
         names = bound_names(d)
-        text = doc.read_text(encoding="utf-8", errors="replace")
+        text = doc_text(doc)
         doc_names = set(ADDFUNC_RE.findall(text)) | {
             m for m in re.findall(r"`([a-zA-Z][a-zA-Z0-9_]*)\(\)", text)
         }

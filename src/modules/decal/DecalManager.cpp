@@ -189,6 +189,41 @@ bool DecalManager::setBlend(int id, const std::string &mode) {
     return false;
 }
 
+int DecalManager::replace(int previousId, DecalInstance candidate) {
+    const float normalLength2 = candidate.nx * candidate.nx + candidate.ny * candidate.ny +
+                                candidate.nz * candidate.nz;
+    if (!std::isfinite(normalLength2) || normalLength2 <= 1e-12f ||
+        !std::isfinite(candidate.size) || candidate.size <= 0.f ||
+        !std::isfinite(candidate.depth) || candidate.depth <= 0.f ||
+        candidate.blendMode < 0 || candidate.blendMode > 1)
+        return 0;
+    std::vector<DecalInstance> next = decals_;
+    if (previousId != 0) {
+        auto previous = std::find_if(next.begin(), next.end(),
+            [previousId](const DecalInstance& decal) { return decal.id == previousId; });
+        if (previous == next.end()) return 0;
+        next.erase(previous);
+    }
+    const int limit = limitFor(candidate.kind);
+    if (limit > 0) {
+        while (std::count_if(next.begin(), next.end(), [&](const DecalInstance& decal) {
+                   return decal.kind == candidate.kind;
+               }) >= limit) {
+            auto oldest = next.end();
+            for (auto it = next.begin(); it != next.end(); ++it)
+                if (it->kind == candidate.kind &&
+                    (oldest == next.end() || it->age > oldest->age)) oldest = it;
+            if (oldest == next.end()) break;
+            next.erase(oldest);
+        }
+    }
+    candidate.id = nextId_++;
+    candidate.age = 0.f;
+    next.push_back(std::move(candidate));
+    decals_.swap(next);
+    return decals_.back().id;
+}
+
 void DecalManager::setLimit(const std::string &kind, int limit) {
     for (auto &l : limits_) {
         if (l.kind == kind) {

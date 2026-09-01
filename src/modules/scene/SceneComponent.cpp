@@ -3,6 +3,8 @@
 #include "scene/Scene.h"
 #include "scene/TransformSystem.h"
 
+#include <utility>
+
 namespace eve::scene {
 
 void SceneComponent::attach(SceneHost *host) {
@@ -14,8 +16,15 @@ void SceneComponent::attach(SceneHost *host) {
 }
 
 void SceneComponent::mountAs(const std::string &hostName) {
-    SceneHost *h = Scene::create()->findHost(hostName);
-    if (!h) h = SceneHost::createHost(hostName);
+    SceneHost *h     = nullptr;
+    auto       found = Scene::create()->findHost(hostName);
+    if (found.ok()) {
+        h = std::move(found).takeValue();
+    } else {
+        auto created = SceneHost::createHost(hostName);
+        if (!created.ok()) return;
+        h = std::move(created).takeValue();
+    }
     attach(h);
     rebuild(true);
 }

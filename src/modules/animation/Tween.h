@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Time.h"
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -79,10 +81,13 @@ public:
     /** @brief Eased progress used for interpolation, [0,1]. */
     float getEasedProgress() const;
 
-    /**
-     * @brief Advance by dt seconds. Returns true while the tween is still active
-     * (delayed / running / paused).
-     */
+    /** @brief Advance by one scheduler-owned deterministic step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+    /** @brief Whether this tween has consumed a scheduler step. */
+    [[nodiscard]] bool hasCurrentTick() const noexcept { return hasLastTick_; }
+    /** @brief Last scheduler tick consumed by this tween. */
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+    /** @brief Advance by dt seconds; legacy facade that forwards to advance(). */
     bool update(float dt);
 
     /** @brief Sample property at linear t in [0,1] using current from/to (no state change). */
@@ -134,6 +139,10 @@ private:
     State                                   state_    = State::Idle;
     std::unordered_map<std::string, Track>  tracks_;
     std::vector<std::string>                order_;
+    eve::SimulationTick                     lastTick_    = eve::SimulationTick::zero();
+    bool                                    hasLastTick_ = false;
+
+    bool updateUnchecked(float dt);
 };
 
 }  // namespace eve::animation

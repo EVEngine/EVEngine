@@ -40,6 +40,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "ProcgenGridTestSupport.h"
 #include "RenderImageAudit.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/AmbientOcclusion.h"
@@ -207,7 +208,7 @@ HexDungeon buildHexDungeon(Map *mapMod, Procgen *gen, uint32_t seed, int w, int 
     gen->setPaletteGid("hex_test", "floor", kFloorGid);
     gen->setPaletteGid("hex_test", "corridor", kFloorGid);
     gen->setPaletteGid("hex_test", "door", kDoorGid);
-    REQUIRE(gen->applyToLayer(&d.grid, "hex_test", d.layer));
+    eve::test_support::applyGridToLayer(*gen, d.grid, "hex_test", *d.layer);
 
     for (int i = 0; i < d.grid.getObjectCount(); ++i) {
         const std::string t = d.grid.getObjectType(i);
@@ -2291,7 +2292,7 @@ TEST_CASE("hex.level.26.drunkardCaveHex") {
     gen->setPaletteGid("hex_drunk", "floor", kFloorGid);
     gen->setPaletteGid("hex_drunk", "corridor", kFloorGid);
     gen->setPaletteGid("hex_drunk", "door", kDoorGid);
-    REQUIRE(gen->applyToLayer(&grid, "hex_drunk", layer));
+    eve::test_support::applyGridToLayer(*gen, grid, "hex_drunk", *layer);
 
     int floors = 0;
     for (uint32_t c : grid.cells())
@@ -2356,7 +2357,7 @@ TEST_CASE("hex.level.28.wfcDungeonHex") {
         gen->setPaletteGid("hex_wfc", "floor", kFloorGid);
         gen->setPaletteGid("hex_wfc", "corridor", kFloorGid);
         gen->setPaletteGid("hex_wfc", "door", kDoorGid);
-        REQUIRE(gen->applyToLayer(&grid, "hex_wfc", layer));
+        eve::test_support::applyGridToLayer(*gen, grid, "hex_wfc", *layer);
         Pathfinder *pf = mapMod->newPathfinder(layer);
         pf->blockGid(kWallGid);
         pf->setTopology("hex");

@@ -1,0 +1,8 @@
+#pragma once
+#include "particles_graphics_editing/ParticleOffscreen.h"
+namespace eve::editor {
+using ParticleOffscreenPreviewRequest=eve::particles_graphics_editing::ParticleOffscreenPreviewRequest;
+using IParticleOffscreenPresenter=eve::particles_graphics_editing::IParticleOffscreenPresenter;
+using ParticleOffscreenPreviewService=eve::particles_graphics_editing::ParticleOffscreenPreviewService;
+using ParticleEmitterOffscreenPresenter=eve::particles_graphics_editing::ParticleEmitterOffscreenPresenter;
+}

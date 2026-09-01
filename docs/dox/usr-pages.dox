@@ -39,6 +39,10 @@
  * @subpage mod_physics
  * @subpage mod_map
  * @subpage mod_particles
+ * @subpage mod_pixelworld
+ * @subpage mod_pixelworld_replay
+ * @subpage mod_pixelworld_streaming
+ * @subpage mod_pixelworld_editor
  * @subpage mod_animation
  * @subpage mod_rpg
  * @subpage mod_inventory

@@ -920,8 +920,10 @@ VariableInfo Debugger::evaluate(const std::string& expression, int frameLevel) c
     }
 
     const std::string src = "return (" + expression + ");";
+    // Debugger/MCP evaluation is an in-memory operation. Do not register the
+    // expression as a project script or give it a filesystem-shaped identity.
     if (SQ_FAILED(sq_compilebuffer(vm, src.c_str(), static_cast<SQInteger>(src.size()),
-                                   _SC("eval"), SQTrue))) {
+                                   _SC("memory://devtools/evaluate"), SQTrue))) {
         sq_settop(vm, top);
         eve::script::ScriptErrorContext ctx = eve::script::captureCompileError(vm);
         VariableInfo info;

@@ -66,6 +66,14 @@ public:
     bool setTextures(int id, graphics::Texture *normal, graphics::Texture *params);
     bool setBlend(int id, const std::string &mode);
 
+    /**
+     * @brief Atomically install a fully configured instance and remove a previous generation.
+     * @param previousId Existing runtime id, or zero for first publication.
+     * @param candidate Complete value; its input id/age are ignored.
+     * @return New runtime id, or zero when the candidate is invalid.
+     */
+    int replace(int previousId, DecalInstance candidate);
+
     /** @brief Per-kind quota ("blood" -> 64 etc.); oldest of the kind is evicted. */
     void setLimit(const std::string &kind, int limit);
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "editing/EditingSelection.h"
 #include "editor/EditorIds.h"
 #include "editor/EditorResult.h"
 
@@ -13,33 +14,16 @@
 namespace eve::editor {
 
 /** @brief Semantic domain of one selection channel. */
-enum class SelectionDomain { Scene, Asset, Graph, Timeline, UI, Custom };
+using SelectionDomain = eve::editing::SelectionDomain;
 
 /** @brief Stable item stored in a selection snapshot. */
-struct SelectionItem {
-    SelectionDomain domain = SelectionDomain::Custom;
-    TargetId        target;
-    StableId        item;
-    std::string     type;
-
-    auto operator<=>(const SelectionItem&) const = default;
-};
+using SelectionItem = eve::editing::SelectionItem;
 
 /** @brief Immutable multi-selection captured for property and command work. */
-struct SelectionSnapshot {
-    std::string                  channel;
-    std::vector<SelectionItem>   items;
-    std::optional<SelectionItem> primary;
-    std::uint64_t                sequence = 0;
-};
+using SelectionSnapshot = eve::editing::SelectionSnapshot;
 
 /** @brief Semantic focus independent from keyboard focus of a particular UI toolkit. */
-struct EditorFocusSnapshot {
-    std::string   channel;
-    StableId      surface;
-    StableId      item;
-    std::uint64_t sequence = 0;
-};
+using EditorFocusSnapshot = eve::editing::FocusSnapshot;
 
 /** @brief Channelled selection/focus state shared by editor and in-game presentations. */
 class EditorSelectionService {

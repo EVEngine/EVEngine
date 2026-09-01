@@ -15,7 +15,8 @@ namespace eve::ui {
  * @brief Headless MCP editor host (MVVM).
  *
  * The AI drives an EVEngine process through MCP: the View is a JSON widget
- * tree (applyEditor), the ViewModel is a Squirrel table (registerVM) that the
+ * tree assembled by applyEditor, and the ViewModel is a Squirrel table
+ * registered by registerVM that the
  * host binds to the View each frame (two-way `bind`, one-way commands /
  * `onChange` / `bind:options` / `bind:label` / `bind:visible` / `bind:enabled`).
  * Model data lives in the engine (Heightmap / Material / Scene) and is only

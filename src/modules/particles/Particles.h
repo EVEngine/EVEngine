@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/Time.h"
 #include "particles/ParticleEmitter.h"
 
 #include <string>
@@ -11,10 +12,16 @@ class Graphics;
 
 namespace eve::particles {
 
+class ParticleEffect;
+
 /**
  * @brief Particles module — factory + script binding.
- * Per-frame: ParticleConfigSystem (hot reload) → ParticleSimSystem →
- * ParticleRenderSystem. Module `update`/`render` forward to Systems.
+ * Per-frame: scheduler step → config reload → ParticleSimSystem →
+ * ParticleRenderSystem. `advance(SimulationStep)` is the deterministic entry;
+ * `update(float)` remains a compatibility facade that explicitly consumes its
+ * Result. CPU particle integration is deterministic for fixed seed/tick within
+ * float integration tolerance; resident GPU integration is tolerance-bounded
+ * and may expose a backend-specific observable particle count.
  */
 class Particles : public Module {
 public:
@@ -25,13 +32,59 @@ public:
     ParticleEmitter *newEmitter(int bufferSize = 1000);
     /** @brief Create emitter from JSON config file (reads optional "buffer"). */
     ParticleEmitter *newEmitterFromFile(const std::string &path);
+    /** @brief Create a versioned multi-emitter effect from JSON text. */
+    ParticleEffect* newEffectFromText(const std::string& json);
+    /** @brief Create a versioned multi-emitter effect asset from a JSON file. */
+    ParticleEffect* newEffectFromFile(const std::string& path);
+    /** @brief Return the latest effect asset parse or load error. */
+    std::string getLastEffectError() const { return lastEffectError_; }
 
+    /** @brief Advance simulation from an injected scheduler step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    /** @brief Legacy seconds facade; invalid conversion/step is explicitly consumed. */
     void update(float dt);
     void render(graphics::Graphics *gfx);
     /** @brief Explicit hot-reload poll; also invoked from update(). */
     int pollConfigs();
 
     int getEmitterCount() const;
+
+    /** @brief Set global soft particle and simulated-emitter budgets; zero is unlimited. */
+    void setBudget(int maxParticles, int maxSimulatedEmitters);
+    /** @brief Return the global live-particle soft cap, or zero when unlimited. */
+    int getMaxParticles() const;
+    /** @brief Return the per-frame simulated-emitter cap, or zero when unlimited. */
+    int getMaxSimulatedEmitters() const;
+    /** @brief Select the runtime VFX quality tier in [0,3]. */
+    void setQualityLevel(int quality);
+    /** @brief Return the current runtime VFX quality tier. */
+    int getQualityLevel() const;
+
+    /** @brief Return emitters simulated during the last update. */
+    int getLastSimulatedEmitters() const;
+    /** @brief Return emitters skipped by culling during the last update. */
+    int getLastCulledEmitters() const;
+    /** @brief Return emitters skipped by quality or capacity budgets. */
+    int getLastBudgetSkippedEmitters() const;
+    /** @brief Return live particles after the last update. */
+    int getLastParticleCount() const;
+    /** @brief Return particles spawned during the last update. */
+    int getLastSpawnedParticles() const;
+    /** @brief Return automatic spawns dropped by budget during the last update. */
+    int getLastDroppedSpawns() const;
+    /** @brief Return emitters using the resident GPU backend after the last update. */
+    int getLastGpuResidentEmitters() const;
+    /** @brief Return the CPU lifetime estimate for resident GPU particles. */
+    int getLastGpuResidentParticles() const;
+    /** @brief Return particles submitted during the last render. */
+    int getLastRenderedParticles() const;
+    /** @brief Return CPU simulation wall time in milliseconds. */
+    float getLastSimulationMs() const;
+    /** @brief Return particle render-build and submission wall time in milliseconds. */
+    float getLastRenderMs() const;
+
+private:
+    std::string lastEffectError_;
 };
 
 }  // namespace eve::particles

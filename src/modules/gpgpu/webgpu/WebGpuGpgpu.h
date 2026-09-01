@@ -2,6 +2,7 @@
 
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/GpuBuffer.h"
+#include "gpgpu/Sequence.h"
 
 #include <webgpu/webgpu_cpp.h>
 
@@ -12,6 +13,7 @@
 namespace eve::gpgpu {
 
 class WebGpuGpuBuffer;
+class WebGpuSequence;
 
 /**
  * @brief Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V
@@ -61,6 +63,7 @@ public:
 
     void uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset = 0) override;
     void downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset = 0) const override;
+    GpuResidentBufferView residentView() const override;
 
     wgpu::Buffer buffer;
     uint64_t size_ = 0;
@@ -73,5 +76,20 @@ WebGpuComputeShader *webgpuNewShaderFromWgsl(const std::string &wgsl);
 WebGpuComputeShader *webgpuNewShaderFromSpirv(const std::vector<uint32_t> &spv);
 WebGpuGpuBuffer *webgpuNewBuffer(int byteSize, const std::string &usage);
 void webgpuDispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ);
+WebGpuSequence *webgpuSequenceCreate();
+void webgpuSequenceDestroy(WebGpuSequence *sequence);
+bool webgpuSequenceReady(WebGpuSequence *sequence);
+void webgpuSequenceBegin(WebGpuSequence *sequence);
+void webgpuSequenceRecordUpload(WebGpuSequence *sequence, GpuBuffer *dst, const void *src,
+                                uint64_t nbytes, uint64_t dstOffset);
+void webgpuSequenceRecordDownload(WebGpuSequence *sequence, GpuBuffer *src, GpuBuffer *staging,
+                                  uint64_t nbytes, uint64_t srcOffset);
+void webgpuSequenceRecordDispatch(WebGpuSequence *sequence, ComputeShader *shader, int groupsX,
+                                  int groupsY, int groupsZ);
+void webgpuSequenceSubmit(WebGpuSequence *sequence);
+SequenceStatus       webgpuSequenceSubmitAsync(WebGpuSequence *sequence);
+SequenceStatus       webgpuSequencePoll(WebGpuSequence *sequence);
+SequenceStatus       webgpuSequenceWait(WebGpuSequence *sequence);
+SequenceStatus       webgpuSequenceStatus(const WebGpuSequence *sequence);
 
 }  // namespace eve::gpgpu

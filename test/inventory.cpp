@@ -423,7 +423,7 @@ TEST_CASE("inventory.bag.uiPreview") {
             slots.push_back(text(label, "s" + std::to_string(i)));
         }
 
-        ui->remountAs("bag", window("Inventory", slots, "root"));
+        REQUIRE(UIHost::resolve(ui->remountAs("bag", window("Inventory", slots, "root"))).has_value());
         ui->beginFrameAndRender();
         RenderSystem::render(*gfx);
         ui->dispatchEvents();

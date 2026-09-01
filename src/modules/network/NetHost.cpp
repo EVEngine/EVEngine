@@ -1,8 +1,8 @@
 #include "network/NetHost.h"
+#include "data/ByteData.h"
 #include "network/Network.h"
 #include "network/UdpSocket.h"
-#include "data/ByteData.h"
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 
 namespace eve::network {
 
@@ -93,11 +93,11 @@ bool NetHost::sendStringTo(uint32_t peerId, UdpLink::MsgType type, uint8_t chann
 void NetHost::emitPeerConnected(uint32_t peerId) {
     if (onConnect_) onConnect_(peerId);
     if (net_) {
-        auto* ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+        auto* ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
         if (ev) {
-            std::vector<eve::event::Variant> args;
-            args.push_back(eve::event::Variant::makeInt(peerId));
-            ev->push(new eve::event::Message("peerconn", args));
+            std::vector<eve::platform_event::Variant> args;
+            args.push_back(eve::platform_event::Variant::makeInt(peerId));
+            ev->push(new eve::platform_event::Message("peerconn", args));
         }
     }
 }
@@ -115,11 +115,11 @@ void NetHost::emitPeerDisconnected(uint32_t peerId) {
     }
     if (onDisconnect_) onDisconnect_(peerId);
     if (net_) {
-        auto* ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+        auto* ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
         if (ev) {
-            std::vector<eve::event::Variant> args;
-            args.push_back(eve::event::Variant::makeInt(peerId));
-            ev->push(new eve::event::Message("peerdisconn", args));
+            std::vector<eve::platform_event::Variant> args;
+            args.push_back(eve::platform_event::Variant::makeInt(peerId));
+            ev->push(new eve::platform_event::Message("peerdisconn", args));
         }
     }
 }

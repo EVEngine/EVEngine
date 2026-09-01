@@ -40,8 +40,13 @@ public:
     Texture *getHwDepthTexture() const { return hwDepth_; }
     Texture *getNormalTexture() const { return normal_; }
     Texture *getAlbedoTexture() const { return albedo_; }
+    /**
+     * @brief Packed rigid-object velocity in depth texture G/B (0.5 = zero motion).
+     * @lifetime The returned borrowed texture remains valid while this GBuffer owns its attachments.
+     */
+    Texture *getVelocityTexture() const { return depth_; }
 
-    /** @brief "depth" | "hwDepth" | "normal" | "albedo" */
+    /** @brief "depth" | "hwDepth" | "normal" | "albedo" | "velocity" */
     bool hasBuffer(const std::string &name) const;
     Texture *getBuffer(const std::string &name) const;
 

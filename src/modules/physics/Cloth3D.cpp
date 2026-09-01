@@ -9,7 +9,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <exception>
 #include <limits>
+#include <utility>
 
 namespace eve::physics {
 
@@ -1038,7 +1040,12 @@ void Cloth3D::update(float dt) {
     if (dt < 0.f) dt = 0.f;
     if (dt > 0.05f) dt = 0.05f;
 
-    const int substeps = 2;
+    updateSubsteps(dt, 2);
+}
+
+void Cloth3D::updateSubsteps(float dt, int substeps) {
+    if (destroyed_ || substeps < 1) return;
+
     const float h = dt / float(substeps);
     for (int s = 0; s < substeps; ++s) {
         integrate(h);
@@ -1059,6 +1066,38 @@ void Cloth3D::update(float dt) {
     forceY_ = 0.f;
     forceZ_ = 0.f;
     interactStrength_ = 0.f;
+}
+
+eve::Result<void> Cloth3D::step(const eve::SimulationStep &stepValue, const SimulationSettings &settings) {
+    if (destroyed_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "Cannot step a destroyed cloth", "physics.cloth3d.step"));
+    auto valid = detail::validateSimulationStep(stepValue, settings, observation_);
+    if (!valid) return valid;
+    auto next = detail::advanceSimulationObservation(observation_, stepValue);
+    if (!next) return eve::Result<void>::failure(next.status());
+    try {
+        updateSubsteps(static_cast<float>(stepValue.delta.seconds()), settings.subStepCount);
+    } catch (const std::exception &error) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("Cloth3D step failed: ") + error.what(), "physics.cloth3d.step"));
+    } catch (...) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "Cloth3D step failed with an unknown exception", "physics.cloth3d.step"));
+    }
+    observation_ = std::move(next).takeValue();
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> Cloth3D::restoreObservation(const SimulationObservation &observation) {
+    auto valid = detail::validateSimulationObservation(observation, "physics.cloth3d.restoreObservation");
+    if (!valid) return valid;
+    if (destroyed_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "Cannot restore a destroyed cloth",
+                                                                 "physics.cloth3d.restoreObservation"));
+    observation_ = observation;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 void Cloth3D::draw(graphics::Graphics *gfx) {

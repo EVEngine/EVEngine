@@ -575,7 +575,7 @@ uint32_t Graphics::registerBindlessTextureCube(GpuTexture *tex) {
     bindlessFreeCube_.erase(bindlessFreeCube_.begin());
     bindlessCubemaps_[slot] = tex;
     tex->bindlessIndexCube = slot;
-    vk::DescriptorImageInfo img{tex->sampler, tex->cubeImage.imageView(),
+    vk::DescriptorImageInfo img{tex->sampler, tex->imageView(),
                                 vk::ImageLayout::eShaderReadOnlyOptimal};
     for (vk::DescriptorSet set : bindlessSets_) {
         vk::WriteDescriptorSet write{};
@@ -588,6 +588,13 @@ uint32_t Graphics::registerBindlessTextureCube(GpuTexture *tex) {
         device->updateDescriptorSets(1, &write, 0, nullptr);
     }
     return slot;
+}
+
+uint32_t Graphics::gpuDrivenReflectionProbeSlot(Texture *cubemap) {
+    if (!cubemap || !cubemap->gpuHandle) return kInvalidGpuDrivenSlot;
+    auto *gpu = static_cast<GpuTexture *>(cubemap->gpuHandle);
+    if (!gpu->isCube) return kInvalidGpuDrivenSlot;
+    return registerBindlessTextureCube(gpu);
 }
 
 void Graphics::unregisterBindlessTexture(GpuTexture *tex) {
@@ -767,6 +774,11 @@ void Graphics::bindVgFrameBindless(vk::DescriptorSet bindless, size_t slot) {
 }
 
 uint32_t Graphics::gpuDrivenVgUpload(const GpuVgAssetUpload &asset) {
+    // The compacted cluster command stream needs an indirect-count draw. Keep
+    // ordinary GPU-driven meshes available on devices without that optional
+    // Vulkan 1.2 feature, but reject VG explicitly instead of accepting an
+    // asset that can never be rasterized.
+    if (!gpuDrivenCaps_.drawIndirectCount) return kInvalidBindlessSlot;
     if (!asset.positions || asset.vertexCount <= 0 || !asset.triangles ||
         asset.triangleCount <= 0 || !asset.clusters || asset.clusterCount <= 0)
         return kInvalidBindlessSlot;
@@ -982,6 +994,9 @@ uint32_t Graphics::gpuDrivenMeshRecord(Mesh *mesh) {
 }
 
 bool Graphics::gpuDrivenMaterialUsable(Material *material) {
+    if (!material ||
+        material->virtualTextureMode() == MaterialVirtualTextureMode::AtlasPageTable)
+        return false;
     const uint32_t id = materialTableGetOrCreate(material);
     // Any material with a GPU table record is representable by the bindless
     // path; descriptor-array indexing handles arbitrary slots.
@@ -990,6 +1005,7 @@ bool Graphics::gpuDrivenMaterialUsable(Material *material) {
 
 bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {
     if (!gpuDrivenEnabled() || !gpuDrivenCaps_.gpuDrivenAvailable()) return false;
+    initGpuDrivenResources();
     if (!mesh3dGpuDrivenPipeline || bindlessSets_.empty() || !meshTableBuffer_.buffer) return false;
     if (!instances || instanceCount == 0) return false;
 
@@ -1065,6 +1081,85 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
     return true;
 }
 
+GpuResidentSubmitStatus Graphics::gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) {
+    if (!gpuDrivenEnabled() || !gpuDrivenCaps_.gpuDrivenAvailable())
+        return GpuResidentSubmitStatus::ResourceUnavailable;
+    initGpuDrivenResources();
+    if (!mesh3dGpuDrivenPipeline || bindlessSets_.empty() || !meshTableBuffer_.buffer)
+        return GpuResidentSubmitStatus::ResourceUnavailable;
+    if (batch.buffer.backend != GpuResidentBackend::Vulkan) return GpuResidentSubmitStatus::BackendMismatch;
+    if (batch.buffer.nativeHandle == 0 || batch.buffer.offsetBytes % kGpuResidentStorageOffsetAlignment != 0 ||
+        batch.buffer.strideBytes != sizeof(GpuInstance) || !batch.buckets || batch.bucketCount == 0 ||
+        batch.instanceCount == 0)
+        return GpuResidentSubmitStatus::InvalidArgument;
+    if (batch.instanceCount > kMaxGpuDrivenInstances || batch.bucketCount > kMaxGpuDrivenBuckets)
+        return GpuResidentSubmitStatus::CapacityExceeded;
+    const uint64_t required = batch.buffer.offsetBytes + uint64_t(batch.instanceCount) * sizeof(GpuInstance);
+    if (required < batch.buffer.offsetBytes || required > batch.buffer.sizeBytes)
+        return GpuResidentSubmitStatus::InvalidArgument;
+
+    std::vector<GpuIndirectCommand> commands(batch.bucketCount);
+    uint64_t                        coveredInstances = 0;
+    for (uint32_t i = 0; i < batch.bucketCount; ++i) {
+        const GpuResidentInstanceBucket &bucket = batch.buckets[i];
+        const uint64_t                   end    = uint64_t(bucket.firstInstance) + bucket.instanceCount;
+        if (bucket.instanceCount == 0 || bucket.firstInstance != coveredInstances || end > batch.instanceCount ||
+            bucket.meshId >= meshTableRecords_.size() || bucket.meshId >= meshRecordOwners_.size() ||
+            bucket.materialId >= materialTableRecords_.size() || !meshRecordOwners_[bucket.meshId])
+            return GpuResidentSubmitStatus::InvalidArgument;
+        const GpuMeshRecord &mesh = meshTableRecords_[bucket.meshId];
+        commands[i] = {mesh.indexCount, bucket.instanceCount, mesh.firstIndex, mesh.vertexBase, bucket.firstInstance};
+        coveredInstances = end;
+    }
+    if (coveredInstances != batch.instanceCount) return GpuResidentSubmitStatus::InvalidArgument;
+
+    auto             &arena        = currentFrameArena();
+    FrameArena::Alloc commandAlloc = arena.alloc(batch.bucketCount * sizeof(GpuIndirectCommand), 16);
+    if (!commandAlloc.mapped) return GpuResidentSubmitStatus::CapacityExceeded;
+    std::memcpy(commandAlloc.mapped, commands.data(), batch.bucketCount * sizeof(GpuIndirectCommand));
+
+    VkBuffer rawBuffer{};
+    static_assert(sizeof(rawBuffer) <= sizeof(batch.buffer.nativeHandle));
+    std::memcpy(&rawBuffer, &batch.buffer.nativeHandle, sizeof(rawBuffer));
+    vk::Buffer              residentBuffer(rawBuffer);
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (!bindless || !residentBuffer) return GpuResidentSubmitStatus::ResourceUnavailable;
+    vk::DescriptorBufferInfo instanceInfo{residentBuffer, batch.buffer.offsetBytes,
+                                          uint64_t(batch.instanceCount) * sizeof(GpuInstance)};
+    vk::WriteDescriptorSet   instanceWrite{};
+    instanceWrite.dstSet          = bindless;
+    instanceWrite.dstBinding      = 4;
+    instanceWrite.descriptorCount = 1;
+    instanceWrite.descriptorType  = vk::DescriptorType::eStorageBuffer;
+    instanceWrite.pBufferInfo     = &instanceInfo;
+    device->updateDescriptorSets(1, &instanceWrite, 0, nullptr);
+
+    const Graphics::GpuDrivenFrameSet0 frame = gpuDrivenFrameSet0();
+    if (!frame.set) return GpuResidentSubmitStatus::ResourceUnavailable;
+    if (gpuDrivenScenePassPending()) gpuDrivenOpenScenePass();
+    const uint32_t dynamicOffsets[2] = {frame.uboOffset, frame.shadowOffset};
+    auto          &cb                = currentPresentCb();
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipeline);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 0, 1, &frame.set, 2,
+                          dynamicOffsets);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1, 1, &bindless, 0, nullptr);
+
+    GpuMesh *boundMesh = nullptr;
+    for (uint32_t i = 0; i < batch.bucketCount; ++i) {
+        GpuMesh *mesh = meshRecordOwners_[batch.buckets[i].meshId];
+        if (mesh != boundMesh) {
+            const vk::DeviceSize vertexOffset = 0;
+            cb.bindVertexBuffers(0, 1, mesh->vertices, &vertexOffset);
+            cb.bindIndexBuffer(mesh->indices.buffer, 0, mesh->indexType);
+            boundMesh = mesh;
+        }
+        cb.drawIndexedIndirect(arena.buffer(), commandAlloc.offset + uint64_t(i) * sizeof(GpuIndirectCommand), 1,
+                               sizeof(GpuIndirectCommand));
+    }
+    lastGpuDrivenDrawCount_ = batch.bucketCount;
+    return GpuResidentSubmitStatus::Submitted;
+}
+
 // --- Stage 2: HZB + GPU cull ------------------------------------------------
 
 namespace {
@@ -1102,6 +1197,7 @@ Graphics::GpuDrivenCullSlot &Graphics::currentGpuDrivenCullSlot() {
 
 void Graphics::ensureGpuDrivenCullResources(int width, int height) {
     if (!gpuDrivenCaps_.gpuDrivenCullAvailable() || width <= 0 || height <= 0) return;
+    if (!bindlessSetLayout_) return;
     if (gpuDrivenCullReady_ && gpuDrivenCullWidth == width && gpuDrivenCullHeight == height)
         return;
     destroyGpuDrivenCullResources();
@@ -1604,6 +1700,21 @@ Graphics::GpuDrivenFrameSet0 Graphics::gpuDrivenFrameSet0() {
     ubo.lightDir.w = float(lightCount);
     ubo.cameraPos.w = mesh3dRoughness;
     ubo.lightColor.w = mesh3dEnvIntensity;
+    const uint32_t envSlot = gpuEnv->bindlessIndexCube;
+    uint32_t probeSlots[ReflectionProbeUpload::kMaxProbes] = {kInvalidBindlessSlot,
+                                                              kInvalidBindlessSlot};
+    for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
+        if (i >= mesh3dReflectionProbes.count) continue;
+        const auto &probe = mesh3dReflectionProbes.probes[i];
+        if (!probe.cubemap || !probe.cubemap->gpuHandle) continue;
+        auto *gpuProbe = static_cast<GpuTexture *>(probe.cubemap->gpuHandle);
+        if (!gpuProbe->isCube || gpuProbe->bindlessIndexCube == kInvalidBindlessSlot) continue;
+        probeSlots[i] = gpuProbe->bindlessIndexCube;
+        ubo.reflectionProbeCenter[i] = glm::vec4(probe.center, probe.intensity);
+        ubo.reflectionProbeExtent[i] = glm::vec4(probe.extent, probe.blendDistance);
+    }
+    ubo.bindlessEnv = glm::vec4(float(envSlot), mesh3dEnvIntensity,
+                                float(probeSlots[0]), float(probeSlots[1]));
     ubo.ambient = glm::vec4(glm::vec3(mesh3dLighting.ambient), mesh3dMetallic);
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     int dirI = -1;
@@ -1843,8 +1954,6 @@ void Graphics::drawVgClusters(vk::CommandBuffer cb) {
     if (!gbufferVgVisPipeline || vgAssetCount_ == 0 || vgClusterCount_ == 0) return;
     const vk::DescriptorSet bindless = bindlessSetForFrame();
     if (!bindless || !mesh3dGpuDrivenPipelineLayout) return;
-    if (!gpuDrivenCaps_.drawIndirectCount) return;
-
     const size_t slot = currentFrameSlot() % kAsyncResourceCopies;
     const vk::DeviceSize slotInd = vk::DeviceSize(kMaxVgClusters) * sizeof(glm::uvec4);
     const vk::DeviceSize slotVis = (vk::DeviceSize(kMaxVgClusters) + 1) * sizeof(uint32_t);

@@ -31,11 +31,14 @@ make run/<platform>-debug GAME=examples/<name>
 |---|---|
 | [rpg](rpg/README.md) | RPG 五系统：属性 / 效果 / 状态 / 技能 / 结算（最小可玩动作 RPG） |
 | [inventory](inventory/README.md) | 背包：物品定义、主背包 / 任务栏 / 仓库、装备穿脱、跨包转移 |
-| [cardgame](cardgame/README.md) | 卡牌：扇形手牌、拖拽出牌、费用置灰、实时配置面板 |
+| [cardgame](cardgame/README.md) | 可玩的双人德州扑克：四轮下注、AI、七选五牌型、真实烧牌与 52 张 CC0 牌面 |
 | [dialogue](dialogue/README.md) | 对话 + Avatar：Squirrel generator 剧情、i18n 翻译表、分层立绘、程序化台词池（.dnut） |
+| [galgame](galgame/README.md) | 完整视觉小说《潮汐电台》：原创美术、分支结局、AUTO/SKIP/回想与存读档 |
 | [building](building/README.md) | 建筑放置：地形约束、道路邻接、鬼影预览、旋转拆除 |
 | [building-tilemap](building-tilemap/README.md) | 在等距 / 六角 tilemap 上放置建筑（2D 精灵穿插） |
+| [pixelworld](pixelworld/README.md) | Noita 风格的分块沙、水、油、火焰与蒸汽像素物质仿真 |
 | [iso-grid-walk](iso-grid-walk/README.md) | 独立 2.5D PNG 经可插拔 pipeline 生成 TileSet，方格移动与 A* |
+| [dynamic-water-grid](dynamic-water-grid/README.md) | 双网格岸线、逐格守恒水量、等距连续水面 Shader 与素材替换契约 |
 | [metroidvania](metroidvania/README.md) | 物理驱动的横版动作游戏：连击、蹬墙跳、空中冲刺、Boss |
 | [hex-levels](hex-levels/README.md) | 六边形引擎功能测试关卡：寻路 / FOV / 光照 / 掉落 / WFC（31 关） |
 | [i18n](i18n/README.md) | 本地化：翻译表、占位符、复数规则、热重载 |
@@ -46,6 +49,7 @@ make run/<platform>-debug GAME=examples/<name>
 |---|---|
 | [camera-controllers](camera-controllers/README.md) | 第三人称相机：follow / orbit / topdown / firstperson / cinematic |
 | [building-3d](building-3d/README.md) | 3D 地面放置：射线求交、网格吸附、鬼影与放置会话 |
+| [climbing-playground](climbing-playground/README.md) | 攀爬与跑酷：真实物理探测、低/高跨越、翻越、空中抓边、阻挡与移动平台 |
 | [daynight](daynight/README.md) | 昼夜循环：太阳轨道、程序化天空盒、月光 / 星光 / 火焰 / 萤火虫 |
 | [weather](weather/README.md) | 天气系统：雨 / 雪 / 雷暴 / 雾 / 风，实时滑块 |
 | [softbody](softbody/README.md) | 布料与 2D 流体解算器（拖拽 / 排斥 / 吸引） |
@@ -58,6 +62,7 @@ make run/<platform>-debug GAME=examples/<name>
 |---|---|
 | [procgen](procgen/README.md) | 六种地图算法（BSP / Cellular / Drunkard / Maze / 地形 / WFC）+ 纹理配方 |
 | [procgen-script-pipeline](procgen-script-pipeline/README.md) | 纯脚本 PointSet 组合、确定性 seed、事务式 hot reload |
+| [pcg-biome](pcg-biome/README.md) | UE PCG 风格空间数据、多层运行时 Cell、时间预算与 Scene 实例批次 |
 | [roguelike-generator](roguelike-generator/README.md) | 种子驱动的房间走廊地牢：autotile、装饰、2D ↔ 2.5D |
 | [tree-generator](tree-generator/README.md) | 确定性树木：Weber-Penn / 空间殖民两种骨架算法 |
 | [bush-generator](bush-generator/README.md) | 低多边形灌木配方（mesh.bush）与参数实时调节 |
@@ -73,7 +78,7 @@ make run/<platform>-debug GAME=examples/<name>
 |---|---|
 | [outline](outline/README.md) | 屏幕空间描边（G-buffer 深度 + 法线） |
 | [waterfall-demo](waterfall-demo/README.md) | 瀑布流动着色器（条纹 / 湍流 / 泡沫） |
-| [virtualgeometry](virtualgeometry/README.md) | 虚拟几何体：cluster DAG + GPU 剔除 + 软件光栅化（仅 Vulkan，计算演示） |
+| [virtualgeometry](virtualgeometry/README.md) | 虚拟几何体：cluster DAG + GPU 剔除 + 软件光栅化（Vulkan/WebGPU） |
 | [tensor](tensor/README.md) | 张量编译管线：策略网络 / conv / SDPA / 批量模拟（纯计算） |
 
 ## 工具与扩展

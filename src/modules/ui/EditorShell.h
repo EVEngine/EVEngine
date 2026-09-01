@@ -27,17 +27,17 @@ public:
 
     /**
      * @brief Mounts the menu bar and docks the given panel hosts.
-     * @param inspector Inspector panel host (may be null).
-     * @param database  Database panel host (may be null).
-     * @param scene     Scene panel host (may be null).
+     * @param inspector Inspector panel host handle (may be empty).
+     * @param database  Database panel host handle (may be empty).
+     * @param scene     Scene panel host handle (may be empty).
      */
-    void open(UIHost* inspector, UIHost* database, UIHost* scene);
+    void open(UIHostHandle inspector, UIHostHandle database, UIHostHandle scene);
     /** @brief Hides the menu bar and every docked panel. */
     void close();
     /** @brief True while the shell is mounted and visible. */
     bool isOpen() const;
-    /** @brief The menu-bar host (nullptr until open()); for tests/embedding. */
-    UIHost* host() const { return host_; }
+    /** @brief Returns the menu-bar host handle, or an empty handle until open(). */
+    [[nodiscard]] UIHostHandle host() const noexcept { return host_; }
 
     /**
      * @brief Shows one panel and hides the others.
@@ -55,10 +55,10 @@ public:
 private:
     void relayout();
 
-    UIHost* host_          = nullptr;
-    UIHost* inspector_     = nullptr;
-    UIHost* database_      = nullptr;
-    UIHost* scene_         = nullptr;
+    UIHostHandle host_{};
+    UIHostHandle inspector_{};
+    UIHostHandle database_{};
+    UIHostHandle scene_{};
     float   toolbarHeight_ = 52.f;
 };
 

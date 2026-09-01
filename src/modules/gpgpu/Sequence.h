@@ -1,11 +1,15 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 namespace eve::gpgpu {
 
 class ComputeShader;
 class GpuBuffer;
+
+/** @brief Observable lifecycle state of a reusable GPU command sequence. */
+enum class SequenceStatus : uint8_t { Idle, Recording, Submitted, Complete, Failed };
 
 /**
  * Kompute-style GPU command sequence.
@@ -23,11 +27,13 @@ class GpuBuffer;
  *     seq->recordDispatch(shaderB, groupsB);   // constants already set
  *     seq->recordDownload(outputBuffer, staging, nbytes);
  *     seq->submit();                            // one submit, waits once
+ *     // or submitAsync() + poll()/wait() to overlap unrelated CPU work
  *     staging->downloadBytes(dst, nbytes);      // host-visible memcpy
  *
- * A Sequence is reusable: call begin() again after submit(). Shaders keep
- * their bindings between records; only buffers they reference may be
- * re-bound between dispatches.
+ * A Sequence is reusable after synchronous submit(), or after an asynchronous
+ * submission reaches Complete/Failed. Shaders keep their bindings between
+ * records; pending work retains no C++ owners, so callers must keep referenced
+ * shaders and buffers alive until completion.
  */
 class Sequence {
 public:
@@ -37,7 +43,7 @@ public:
     Sequence(const Sequence &) = delete;
     Sequence &operator=(const Sequence &) = delete;
 
-    /** True when the active backend (Vulkan) supports command recording. */
+    /** True when the active Vulkan or WebGPU backend supports command recording. */
     bool isAvailable() const;
 
     /** Start recording. Safe to call again after submit() to reuse. */
@@ -64,6 +70,25 @@ public:
 
     /** End recording, submit the whole sequence once, and wait for completion. */
     void submit();
+
+    /**
+     * @brief Submit without waiting for GPU completion.
+     * @lifetime Buffers and shaders referenced by recorded work must remain alive until
+     * poll() or wait() returns Complete/Failed. begin() rejects pending work.
+     */
+    [[nodiscard]] SequenceStatus submitAsync();
+
+    /** @brief Non-blocking completion query; also retires completed backend resources. */
+    [[nodiscard]] SequenceStatus poll();
+
+    /** @brief Wait for pending work and retire its backend resources. */
+    [[nodiscard]] SequenceStatus wait();
+
+    /** @brief Current lifecycle state without driving backend event processing. */
+    SequenceStatus getStatus() const;
+
+    /** @brief Stable script/debug name for getStatus(). */
+    std::string getStatusName() const;
 
 private:
     struct Impl;

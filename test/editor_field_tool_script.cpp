@@ -11,7 +11,8 @@ TEST_CASE("editor.script.composes_heightmap_target_field_tool_and_transaction") 
     vm.run(vm.compileSource(R"(
         editor <- eve.Editor();
         procgen <- eve.Procgen();
-        heightmap <- procgen.newHeightmap(8, 8);
+        heightmapResult <- procgen.newHeightmap(8, 8);
+        heightmap <- heightmapResult.ok ? heightmapResult.value : null;
         target <- editor.newHeightmapTarget("terrain", heightmap);
         falloff <- editor.newSmoothBrushFalloff();
         kernel <- editor.newCircleBrushKernel();

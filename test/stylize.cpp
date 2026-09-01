@@ -133,7 +133,7 @@ void resetScene3D() {
 
 void saveImageDataPng(ImageData *frame, const std::string &path) {
     REQUIRE(frame != nullptr);
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::filesystem::FileData *png =
         frame->encode(medialoader::FormatHandler::ENCODED_PNG, "stylize.png", false);
     REQUIRE(png != nullptr);
@@ -208,7 +208,7 @@ ImageData *renderCylinderFrame(Graphics *gfx, Mesh *mesh, Texture *albedo, Shade
     CHECK(luma(mid) > 0.12f);
     CHECK(luma(mid) < 0.92f);
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     return frame;
@@ -239,18 +239,32 @@ TEST_CASE("stylize.styles.registry") {
     auto *mod = Stylize::create();
     REQUIRE(mod != nullptr);
     CHECK_EQ(mod->getName(), std::string("Stylize"));
-    CHECK_EQ(mod->getStyleCount(), 5);
+    CHECK_EQ(mod->getStyleCount(), 12);
     CHECK(mod->hasStyle("cartoon"));
     CHECK(mod->hasStyle("watercolor"));
     CHECK(mod->hasStyle("ink"));
     CHECK(mod->hasStyle("pixel"));
     CHECK(mod->hasStyle("xray"));
+    CHECK(mod->hasStyle("rim"));
+    CHECK(mod->hasStyle("dissolve"));
+    CHECK(mod->hasStyle("hologram"));
+    CHECK(mod->hasStyle("snow"));
+    CHECK(mod->hasStyle("vignette"));
+    CHECK(mod->hasStyle("chromatic"));
+    CHECK(mod->hasStyle("grain"));
     CHECK(!mod->hasStyle("oil"));
     CHECK(mod->hasMeshStyle("cartoon"));
     CHECK(mod->hasMeshStyle("ink"));
     CHECK(!mod->hasMeshStyle("watercolor"));
     CHECK(!mod->hasMeshStyle("pixel"));
     CHECK(mod->hasMeshStyle("xray"));
+    CHECK(mod->hasMeshStyle("rim"));
+    CHECK(mod->hasMeshStyle("dissolve"));
+    CHECK(mod->hasMeshStyle("hologram"));
+    CHECK(mod->hasMeshStyle("snow"));
+    CHECK(!mod->hasMeshStyle("vignette"));
+    CHECK(!mod->hasMeshStyle("chromatic"));
+    CHECK(!mod->hasMeshStyle("grain"));
 
     CHECK(mod->supports("cartoon", "post"));
     CHECK(mod->supports("cartoon", "mesh"));
@@ -261,6 +275,12 @@ TEST_CASE("stylize.styles.registry") {
     CHECK(!mod->supports("xray", "post"));
     CHECK(!mod->supports("xray", "cpu"));
     CHECK(!mod->supports("oil", "post"));
+
+    CHECK(mod->supports("rim", "mesh"));
+    CHECK(!mod->supports("rim", "post"));
+    CHECK(mod->supports("vignette", "post"));
+    CHECK(!mod->supports("vignette", "mesh"));
+    CHECK(!mod->supports("vignette", "cpu"));
 
     CHECK_GT(mod->getStyleParamCount("pixel"), 0);
     CHECK_EQ(mod->getStyleParamName("pixel", 0), std::string("pixelSize"));

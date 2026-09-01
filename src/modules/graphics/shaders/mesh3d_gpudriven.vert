@@ -44,6 +44,7 @@ layout(location = 3) out vec3 vWorldPos;
 layout(location = 4) out vec3 vCameraPos;
 layout(location = 5) out vec3 vViewPos;
 layout(location = 6) out flat uint vMaterialId;
+layout(location = 7) out flat uint vInstanceId;
 
 void main() {
     // gl_InstanceIndex already includes VkDrawIndexedIndirectCommand.firstInstance,
@@ -65,4 +66,5 @@ void main() {
     vTint = m.tint;
     vCameraPos = ubo.cameraPos.xyz;
     vMaterialId = gi.materialId;
+    vInstanceId = inst;
 }

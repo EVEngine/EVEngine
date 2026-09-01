@@ -1,3 +1,24 @@
+# Windows GNU Make (Chocolatey Win32 port) defaults to cmd.exe. Point SHELL at
+# Git Bash so POSIX recipes work from PowerShell/cmd. Use bash.exe (not WSL's
+# System32\bash.exe). Prepend only Git\bin — Git\usr\bin has GNU link.exe and
+# would shadow MSVC's linker if it stays at the front of PATH.
+ifeq ($(OS),Windows_NT)
+	ifneq ($(wildcard C:/Program\ Files/Git/bin/bash.exe),)
+		export PATH := C:\Program Files\Git\bin;$(PATH)
+		SHELL := C:/Program Files/Git/bin/bash.exe
+	else ifneq ($(wildcard C:/Program\ Files\ \(x86\)/Git/bin/bash.exe),)
+		export PATH := C:\Program Files (x86)\Git\bin;$(PATH)
+		SHELL := C:/Program Files (x86)/Git/bin/bash.exe
+	else
+		$(error Git Bash not found (bin/bash.exe). Install Git for Windows from https://git-scm.com/download/win — this Makefile cannot run under cmd.exe.)
+	endif
+	.SHELLFLAGS := -c
+	# Win32 GNU Make CreateProcess()es recipes with no |&; even when SHELL is
+	# bash (mkdir.exe is not on PATH). Prefix simple POSIX commands with this.
+	SH = : &&
+endif
+SH ?=
+
 INSIDE_DOCKER=$(shell [ -f /.dockerenv ] && echo 1 || echo 0 )
 PWD = $(shell pwd)
 
@@ -28,7 +49,7 @@ else ifeq ($(PLATFORM),win32)
 else
 	ANDROID_SDK ?= $(HOME)/Android/Sdk
 endif
-ANDROID_NDK ?= $(ANDROID_SDK)/ndk/26.1.10909125
+ANDROID_NDK ?= $(ANDROID_SDK)/ndk/27.3.13750724
 ifeq ($(wildcard $(ANDROID_NDK)/build/cmake/android.toolchain.cmake),)
 	ANDROID_NDK := $(shell ls -d "$(ANDROID_SDK)/ndk"/* 2>/dev/null | sort -V | tail -1)
 endif
@@ -105,7 +126,7 @@ GAME ?=
 	build/android-debug-test \
 	build/ios-debug-test \
 	build/ios-sim-debug-test \
-	wsl/linux wsl/linux-debug show-targets \
+	wsl/linux wsl/linux-debug show-targets stats/build \
 	debug release example devlab \
 	run run/win32 run/linux run/macosx \
 	run/win32-debug run/linux-debug run/macosx-debug \
@@ -122,7 +143,9 @@ GAME ?=
 	reinstall/third-party/android reinstall/third-party/android-debug \
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands download-classic-scenes download-skinned-character \
-	check/test-manifest check/module-layers \
+	check/test-manifest check/module-layers check/bindings check/nodiscard check/quality-metadata \
+	check/profile-matrix check/architecture-contracts check/quality \
+	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
 	ensure-built/macosx ensure-built/macosx-debug \
 	init/submodules \
@@ -143,6 +166,8 @@ show-targets:
 	@echo "release -> build/$(PLATFORM)"
 	@echo "sdk -> sdk/$(PLATFORM) (Release) or sdk/$(PLATFORM)-debug"
 	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME), empty = embedded demo)"
+	@echo "profile -> PROFILE=$(PROFILE) in $(PROFILE_BUILD_ROOT)"
+	@echo "profile stages -> profile/configure profile/build profile/smoke"
 
 # Verify every test/*.cpp on disk is registered in test/CMakeLists.txt.
 check/test-manifest:
@@ -159,6 +184,49 @@ check/module-layers:
 check/bindings:
 	python3 scripts/check_bindings.py --strict
 
+# Validate the bounded exception inventory and its reviewed baseline. This
+# target never rewrites the baseline.
+check/quality-metadata:
+	python3 scripts/check_quality_metadata.py
+
+# Compile-fail diagnostics for critical Result/ID/Subscription returns. This
+# is a source-only check and does not configure or build the engine.
+check/nodiscard:
+	python3 scripts/check_nodiscard.py
+
+# Validate the ten top-level architecture contracts and lint changed C/C++
+# lines. The source-only gate never configures or builds the engine.
+check/architecture-contracts:
+	python3 scripts/check_architecture_contracts.py $(if $(ARCHITECTURE_BASE),--base "$(ARCHITECTURE_BASE)")
+	python3 -m unittest scripts.tests.test_architecture_contracts -v
+
+# Resolve all supported module profiles without a compiler or build tree.
+check/profile-matrix:
+	python3 scripts/profile_matrix.py --check
+
+# Fast local quality gate for the profile and debt contracts.
+check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts
+
+# Profile stages are separate so CI can report configure, build, and
+# independent capability smoke failures independently. The default build root
+# is /tmp; no normal build/<platform> directory is touched.
+profile/configure:
+	python3 scripts/profile_matrix.py $(PROFILE_MATRIX_ARGS) --configure
+
+profile/build:
+	python3 scripts/profile_matrix.py $(PROFILE_MATRIX_ARGS) --build
+
+profile/smoke:
+	python3 scripts/profile_matrix.py $(PROFILE_MATRIX_ARGS) --smoke
+
+profile:
+	@$(MAKE) profile/configure PROFILE="$(PROFILE)" PROFILE_BUILD_ROOT="$(PROFILE_BUILD_ROOT)" PROFILE_GENERATOR="$(PROFILE_GENERATOR)" PROFILE_PLATFORM="$(PROFILE_PLATFORM)" PROFILE_JOBS="$(PROFILE_JOBS)" PROFILE_CMAKE_COMMAND="$(PROFILE_CMAKE_COMMAND)"
+	@$(MAKE) profile/build PROFILE="$(PROFILE)" PROFILE_BUILD_ROOT="$(PROFILE_BUILD_ROOT)" PROFILE_GENERATOR="$(PROFILE_GENERATOR)" PROFILE_PLATFORM="$(PROFILE_PLATFORM)" PROFILE_JOBS="$(PROFILE_JOBS)" PROFILE_CMAKE_COMMAND="$(PROFILE_CMAKE_COMMAND)"
+	@$(MAKE) profile/smoke PROFILE="$(PROFILE)" PROFILE_BUILD_ROOT="$(PROFILE_BUILD_ROOT)" PROFILE_GENERATOR="$(PROFILE_GENERATOR)" PROFILE_PLATFORM="$(PROFILE_PLATFORM)" PROFILE_JOBS="$(PROFILE_JOBS)" PROFILE_CMAKE_COMMAND="$(PROFILE_CMAKE_COMMAND)"
+
+profile/dry-run:
+	python3 scripts/profile_matrix.py --all --dry-run
+
 # Worktree/agent setup: initialize the pinned git submodules (external/*).
 # third-party/ itself is fetched by the first cmake configure at the pinned
 # commit (EVENGINE_THIRD_PARTY_PIN in CMakeLists.txt).
@@ -167,12 +235,20 @@ init/submodules:
 
 # clangd: build/compile_commands.json -> host platform debug CDB
 link-compile-commands:
-	@mkdir -p build
-	ln -sfn $(PLATFORM)-debug/compile_commands.json build/compile_commands.json
+	@$(SH) mkdir -p build
+	@$(SH) ln -sfn $(PLATFORM)-debug/compile_commands.json build/compile_commands.json \
+		|| cp -f build/$(PLATFORM)-debug/compile_commands.json build/compile_commands.json
 
 # Host platform only.
 debug: build/$(PLATFORM)-debug
 	@$(MAKE) link-compile-commands
+
+# Local build-size and header-fanout report. This intentionally remains an
+# explicit developer target so normal incremental builds do not pay for a full
+# source/header scan. Override BUILD_DIR to inspect another configuration.
+BUILD_STATS_DIR ?= build/$(PLATFORM)-debug
+stats/build:
+	python3 scripts/analyze_build.py --source-dir . --build-dir "$(BUILD_STATS_DIR)"
 release: build/$(PLATFORM)
 
 # Windows host: build Linux targets inside WSL2 (same tree).
@@ -183,7 +259,9 @@ wsl/linux:
 	wsl --cd "$(CURDIR)" -- make build/linux
 
 # win32: Ninja/MSVC helpers（debug/release 都用 Ninja+cl，经 vcvars 定位任意 VS）
-WITH_MSVC = cmake\with-msvc.cmd
+# `: &&` forces the recipe through Git Bash. Windows GNU Make otherwise
+# CreateProcess()es a leading .cmd and mishandles flags like -j 32.
+WITH_MSVC = : && cmake/with-msvc.cmd
 # Override in CI, e.g. VS_GENERATOR="Visual Studio 17 2022"
 VS_GENERATOR ?= Visual Studio 18 2026
 # Extra cmake -D... flags (CI: CMAKE_EXTRA_ARGS=-DBUILD_TESTING=OFF)
@@ -192,10 +270,30 @@ JOBS ?= 32
 ANDROID_JOBS ?= 8
 CTEST_JOBS ?= 4
 
+# Profile contract checks deliberately use a separate root so they cannot
+# mutate the normal build/<platform> tree. Set PROFILE_BUILD_ROOT explicitly
+# when several profile jobs share a workspace (CI uses runner.temp).
+PROFILE ?= minimal
+PROFILE_BUILD_ROOT ?= /tmp/evengine-profile-matrix
+PROFILE_GENERATOR ?= Ninja
+PROFILE_PLATFORM ?=
+PROFILE_JOBS ?= 4
+PROFILE_CMAKE_COMMAND ?= cmake
+PROFILE_MATRIX_ARGS = --profile "$(PROFILE)" \
+	--build-root "$(PROFILE_BUILD_ROOT)" \
+	--generator "$(PROFILE_GENERATOR)" \
+	--jobs "$(PROFILE_JOBS)" \
+	$(if $(PROFILE_PLATFORM),--platform "$(PROFILE_PLATFORM)") \
+	--cmake-command "$(PROFILE_CMAKE_COMMAND)"
+
+# Local checks inspect the current worktree diff; CI supplies the PR base SHA.
+ARCHITECTURE_BASE ?= HEAD
+
 # Reusable configure command lines: used both by the first-configure rules and
 # by the on-change reconfigure inside the build recipes below.
-WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
-WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
+MSVC_COMPILER_WRAPPER   := $(abspath cmake/msvc-cl.cmd)
+WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
+WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
 LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
 LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
 MACOSX_CMAKE_ARGS       = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
@@ -367,6 +465,7 @@ build/linux-fuzz: build/linux-fuzz/build.ninja
 build/linux-fuzz/build.ninja:
 	cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug \
 		-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+		$(CMAKE_EXTRA_ARGS) \
 		-B build/linux-fuzz -S test/fuzz
 
 fuzz/linux: build/linux-fuzz
@@ -971,6 +1070,18 @@ run/linux: ensure-built/linux
 run/macosx: ensure-built/macosx
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run $(RUN_ARGS); \
 	else build/macosx/src/engine/eve $(RUN_ARGS); fi
+
+debug/win32:
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
+	else build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
+
+debug/linux:
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
+	else build/linux-debug/src/engine/eve $(RUN_ARGS); fi
+
+debug/macosx:
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
+	else build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
 
 tools/debug:
 	cd tools/vscode-eve-debug && npx @vscode/vsce package 

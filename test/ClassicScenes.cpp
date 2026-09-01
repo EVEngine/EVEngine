@@ -177,7 +177,7 @@ Texture *loadAssimpDiffuseTexture(Graphics *gfx, const aiScene *scene, const aiM
     const char *p = path.C_Str();
     if (!p || !p[0]) return nullptr;
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     if (p[0] == '*') {
         int idx = std::atoi(p + 1);
@@ -498,6 +498,12 @@ float viewHz() {
     return 30.f;
 }
 
+/** Extra per-phase / diagnostic PNGs. Default is one hero shot per scene. */
+bool dumpPhaseFrames() {
+    const char *env = std::getenv("EVENGINE_DUMP_PHASES");
+    return env && env[0] && env[0] != '0';
+}
+
 std::string classicOutDir() {
     return std::string(EVENGINE_TEST_BINARY_DIR) + "/out/classic_scenes";
 }
@@ -588,7 +594,8 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
         RenderSystem::render(*gfx);
         eve::image::ImageData *snap = gfx->newImageData();
         REQUIRE(snap != nullptr);
-        saveFramePng(gfx, std::string(sceneTag) + "_" + ex.tag + ".png", snap);
+        if (dumpPhaseFrames())
+            saveFramePng(gfx, std::string(sceneTag) + "_" + ex.tag + ".png", snap);
         auditCapturedFrame(snap, gfx, sceneTag, ex.tag);
         delete snap;
         gfx->setScreenReadbackEnabled(false);
@@ -953,7 +960,8 @@ std::vector<CamKey> makeSponzaPath(const Bounds &b) {
 
 /**
  * Fly the camera through @p path while cycling render configs.
- * Presents live frames to the window and writes PNG snapshots per phase.
+ * Presents live frames to the window and writes one FullLit PNG per scene
+ * (`{tag}.png`). Set EVENGINE_DUMP_PHASES=1 to also write per-phase dumps.
  * Returns mean luma sampled at the end of each config phase.
  */
 std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
@@ -982,9 +990,26 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
     const float secPerPhase = viewSecondsPerPhase();
     const float totalSec = float(nPhases) * secPerPhase;
     const int legs = int(path.size()) - 1;
-    const float tFly0 = timer->getTime();
     std::printf("ClassicScenes[%s] view %.1fs/phase @ %.0f Hz (set EVENGINE_VIEW_SECONDS to change)\n",
                 sceneTag, secPerPhase, hz);
+
+    auto dumpHero = [&]() {
+        applyCam(actors.cam, path[0]);
+        if (std::string(sceneTag) == "pbr_chart") {
+            for (auto *e : actors.ents) e->transform()->yaw = 0.f;
+        }
+        applyConfig(actors, RenderCfg::FullLit, polishMetalsForIbl);
+        resetRenderControl(gfx);
+        gfx->setScreenReadbackEnabled(true);
+        warmPresent(gfx);
+        eve::image::ImageData *hero = gfx->newImageData();
+        REQUIRE(hero != nullptr);
+        saveFramePng(gfx, std::string(sceneTag) + ".png", hero);
+        delete hero;
+        gfx->setScreenReadbackEnabled(false);
+    };
+    dumpHero();
+    const float tFly0 = timer->getTime();
 
     int frame = 0;
     for (int pi = 0; pi < nPhases; ++pi) {
@@ -1038,12 +1063,16 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
         phaseLuma.push_back(L);
         eve::image::ImageData *snap = gfx->newImageData();
         REQUIRE(snap != nullptr);
-        saveFramePng(gfx, std::string(sceneTag) + "_" + cfgName(phases[pi]) + ".png", snap);
+        if (dumpPhaseFrames())
+            saveFramePng(gfx, std::string(sceneTag) + "_" + cfgName(phases[pi]) + ".png", snap);
         auditCapturedFrame(snap, gfx, sceneTag, cfgName(phases[pi]));
         delete snap;
         std::printf("ClassicScenes[%s] phase=%s meanLuma=%.4f\n", sceneTag, cfgName(phases[pi]), L);
         gfx->setScreenReadbackEnabled(false);
     }
+
+    dumpHero();
+
     // Callers (cornell wall sampling) may read pixels after we return.
     gfx->setScreenReadbackEnabled(true);
     return phaseLuma;
@@ -1262,7 +1291,7 @@ TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     auto L = flyThroughConfigs(gfx, actors, path, "cornell", /*polishMetalsForIbl=*/true);
     expectLightingResponse(L);
     snapStaticConfigGrid(gfx, actors, "cornell", /*polishMetals=*/true);
-    dumpCornellShadowSweep(gfx, actors, path);
+    if (dumpPhaseFrames()) dumpCornellShadowSweep(gfx, actors, path);
 
     // Red vs green walls should remain distinguishable under directional light.
     applyConfig(actors, RenderCfg::DirectionalLit, false);
@@ -1329,7 +1358,7 @@ TEST_CASE("ClassicScenes.pbrChart.flythroughConfigs") {
     auto L = flyThroughConfigs(gfx, actors, path, "pbr_chart", /*polishMetalsForIbl=*/false);
     expectLightingResponse(L);
     snapStaticConfigGrid(gfx, actors, "pbr_chart", /*polishMetals=*/false);
-    dumpPbrChartGroundDiag(gfx, actors, path[0]);
+    if (dumpPhaseFrames()) dumpPbrChartGroundDiag(gfx, actors, path[0]);
 
     // IBL phase should brighten metals relative to ambient-only.
     CHECK(L[4] > L[0] + 0.01f);
@@ -1693,4 +1722,3 @@ TEST_CASE("ClassicScenes.perf.maxFps") {
                 bestTag);
     REQUIRE(globalBest > 1.0);
 }
-

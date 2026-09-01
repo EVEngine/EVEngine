@@ -35,6 +35,9 @@ struct GpuInstance {
     uint materialId;
     uint flags;
     uint lodGroupId;
+    uvec4 reflectionProbeSlots;
+    vec4 reflectionProbeCenter[2];
+    vec4 reflectionProbeExtent[2];
 };
 
 const uint kInvalidSlot = 0xFFFFFFFFu;

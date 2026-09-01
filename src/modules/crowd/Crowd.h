@@ -48,7 +48,7 @@ class Crowd : public Module {
 public:
     Module_REG(Crowd);
     Crowd();
-    ~Crowd() override = default;
+    ~Crowd() override;
 
     // --- 流场（内部持有一个 CrowdField） ---
     /** @brief 配置流场网格（世界单位/格）。 */

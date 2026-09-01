@@ -10,6 +10,15 @@
 > `Graphics::renderScene3DToCanvas`（RenderSystem3D::renderToCanvas 前向离屏 3D 通道）、
 > `editor.newHeightmapMesh / updateHeightmapMesh`（高度图 → 地形网格），
 > 示例 `examples/terrain-editor`。
+> 2026-08-30 新增 3D 世界锚点：`UIHost::WorldAnchor` 由活动 `Camera3D` 投影到 retained
+> UI overlay，支持视锥外隐藏/安全边缘钳制、相机缺失/背后状态与距离缩放；HUD、头顶
+> 血条、场景标注和编辑器浮层使用同一条 UIHost/UISystem 路径。
+> 2026-08-30 第二阶段新增确定性重叠避让：高优先级、近距离、稳定 Host 顺序决定占位，
+> 有界位移失败显式进入 `Crowded`，并向脚本公开最终状态与屏幕坐标。
+> 2026-08-26 完成框架整合：新增纯数据 `presentation` 层、Squirrel 反射与 Editor
+> PropertyModel 适配器、共享 `PropertyView`、Inspector 标量字段迁移，以及 Control 级
+> enabled/focus/mouse/accessibility 语义、主题子树作用域和确定性事件冒泡；
+> `examples/editor-ui-gallery` 同帧展示游戏 HUD 与编辑器 UI。
 > 对外模型：**声明式** retained 组件树 + ECS `UIHost`（非每帧脚本命令式 ImGui）。
 > 后端：Dear ImGui（SDL 输入 + Vulkan 绘制），由 C++ `UISystem` 每帧 walk。
 > ECS 基础库：[sunxfancy/ECS.hpp](https://github.com/sunxfancy/ECS.hpp)（`external/ECS.hpp`）。
@@ -110,6 +119,72 @@ flowchart TB
 - `Meta.ownerId` 把 UI 挂到游戏实体 id（`bindOwner` / `findHostByOwner`）
 - 点击全局队列：`consumeClick()` → `"hostName/nodeId"`
 - 控件仍在 `Tree` 内（不做每 Button 一 Entity）
+
+### 2.4 整合后的分层与依赖方向
+
+依赖只允许自上而下，View 不直接认识 Squirrel VM，Editor 命令也不进入通用模型层：
+
+1. `presentation`：`Value`、`PropertySchema`、`IPropertyModel`、订阅与校验结果；纯 C++、
+   无 UI/VM/Editor 依赖。
+2. `scriptmodel` / `editor::EditorPropertyModel`：分别把 Squirrel 反射对象和编辑器属性源
+   适配为同一个 `IPropertyModel`；Editor 写入只产生 command intent。
+3. `ui::PropertyView`：只消费 schema/value，选择控件、生成稳定 ID、双向写回并按 revision
+   增量同步；既可嵌入游戏 UI，也可嵌入编辑器面板。
+4. `Inspector`、游戏 HUD、Editor shell：组合 View、命令、权限与目标选择；不复制属性控件。
+5. `WidgetDesc → UINode → UIHost/UISystem → UIBackend`：保留树、布局、焦点/输入、主题与
+   后端呈现。ImGui 只是默认 renderer，不定义公开 UI 语义。
+
+这使“反射生成 UI”成为普通 MVVM adapter，而不是 Inspector 私有代码；游戏内调试器、
+运行时编辑菜单和桌面 Editor 可以共享 schema/view，却保留不同命令权限和外壳。
+
+### 2.5 Godot GUI 基线对应
+
+| Godot GUI 概念 | EVEngine 对应 | 本轮状态 |
+|---|---|---|
+| `Control` 的可见/启用、focus mode、focus neighbor、mouse filter | `UINode` / `WidgetDesc` 的平台中立 Control 语义 | 已实现并序列化 |
+| `Container` 自动布局与 size flags | Flex、Row/Column、Toolbar、Sidebar、Toolbox、SplitPane、box model | 已实现核心组合与响应式布局 |
+| Theme 继承与局部 override | 全局 preset + `ThemePreset` 子树作用域 + `setThemeScope` | 已实现 dark/light 作用域与嵌套恢复 |
+| Inspector 按属性元数据生成 editor | `IPropertyModel` + `PropertyView` + 反射/Editor adapter | 已实现标量生成、校验、双向同步与结构值只读展示 |
+| `_gui_input` / mouse filter 传播 | UIEvent target + retained-tree `pass/ignore/stop` 冒泡 | 已实现 click 路由与自动化同路径 |
+| 键盘/手柄焦点导航 | 显式邻居 + 稳定 tabIndex fallback + `moveFocus` | 已实现后端中立 API 与 ImGui 键盘桥 |
+
+当前对标的是可协作的基础框架，而不是宣称已有 Godot 的全部控件目录。Tree/TabContainer、
+富文本编辑、IME、平台无障碍桥和完整样式资源导入仍应作为后续独立能力建设，不能
+重新塞回 Inspector 或 ImGui backend。
+
+Drag & Drop 首期只在 Windows、macOS、Linux 生效。retained 节点保存 payload type 与
+owning UTF-8 text，`UISystem` 在完成投递后发布 owning `UIDrop`；源/目标节点地址不进入
+跨帧状态。SDL `DROPFILE` 在事件泵释放平台缓冲前同步复制，并统一投影为 `type=file`。
+Android、iOS、Web/WASM 保留相同脚本 API，但 `dragDropSupport()` 明确返回
+`unsupported-platform`；测试会按当前目标平台验证对应的 supported/unsupported 契约。
+
+### 2.6 与 3D 场景的双向组合
+
+现有 `Viewport` 控件解决“3D 场景嵌入 GUI”；`WorldAnchor` 解决“GUI 跟随 3D 场景”。
+脚本在选中/挂载 host 后调用：
+
+```squirrel
+ui.setHostOverlay(true)
+ui.setHostWorldAnchor(enemyX, enemyY + 2.0, enemyZ)
+ui.setHostWorldEdgePolicy("clamp", 12.0)
+ui.setHostWorldDistanceScale(true, 10.0, 0.7, 1.2)
+ui.setHostWorldOverlap(true, 10, 4.0, 96.0)
+```
+
+每帧由 `UISystem` 读取活动 `Camera3D` 并只写 transient 投影结果，不复制 Scene transform
+权威状态。玩法/Scene owner 负责提供世界坐标并在目标销毁时禁用锚点；这里不保存 Scene 裸指针，
+因此销毁顺序不会悬空。相机先销毁或裁剪配置没有 camera 时状态为 `NoCamera` 且不绘制；相机
+恢复、热重载或 host restore 后会从 authoritative world position 自动重建投影。
+
+重叠解析在 measure 后、walk 前运行，读取 Host 的实测/显式尺寸，在屏幕空间按 priority、
+depth、stable index 排序并做上下交替的有界搜索。它只写 `screenX/Y`、displacement 和
+`Crowded` transient 状态，不改世界坐标，也不创建第二套布局树。固定 Host 可占位但不会
+被移动；启用避让的 Host 无空位时不绘制，脚本可据此切换聚类标记或降低信息密度。
+
+遮挡分两层：本轮已处理相机背面与视锥/屏幕边界；真实几何深度遮挡应由 Graphics 的深度查询
+capability 后续接入，不能用 UI 自己复制深度或 Scene raycast 作为第二真源。屏幕 HUD 继续不启用
+WorldAnchor；场景内可交互 3D 面板若需要透视表面和深度写入，应使用 mesh/material 路径，而不是
+把 overlay 硬伪装成世界几何。
 
 
 

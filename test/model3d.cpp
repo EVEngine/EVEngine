@@ -207,7 +207,7 @@ Texture *loadAssimpDiffuseTexture(Graphics *gfx, const aiScene *scene, const aiM
     if (!p || !p[0])
         return nullptr;
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     // Embedded: "*0", "*1", ...
     if (p[0] == '*') {
@@ -295,7 +295,7 @@ Texture *loadTextureFile(Graphics *gfx, const char *relPathBesideTest) {
     auto fileBytes = readBinaryFile(pathBesideThisSource(relPathBesideTest));
     if (fileBytes.empty())
         return nullptr;
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     try {
         eve::data::ByteData bytes(fileBytes.data(), fileBytes.size());
         eve::image::ImageData *img = eve::image::Image::create()->newImageData(&bytes);
@@ -504,7 +504,6 @@ void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName,
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     CHECK(luma(mid) > 0.05f);
 
-    eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     eve::filesystem::FileData *png =
@@ -961,7 +960,7 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
             p[3] = 255;
         }
     }
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::image::ImageData pngImg(tw, th, "RGBA8", px.data(), false);
     eve::filesystem::FileData *png =
         pngImg.encode(eve::image::ImageData::FormatHandler::ENCODED_PNG, "gltf_uv.png", false);
@@ -976,6 +975,32 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
     auto *md = mod->newModelData(&data, ".gltf");
     REQUIRE(md != nullptr);
     REQUIRE(md->getMeshCount() >= 1);
+
+    const aiMesh *sourceMesh = md->getMesh(0);
+    REQUIRE(sourceMesh != nullptr);
+    REQUIRE(sourceMesh->mNumFaces > 0);
+    const aiFace &sourceFace = sourceMesh->mFaces[0];
+    REQUIRE(sourceFace.mNumIndices == 3);
+    const aiVector3D centroid =
+        (sourceMesh->mVertices[sourceFace.mIndices[0]] +
+         sourceMesh->mVertices[sourceFace.mIndices[1]] +
+         sourceMesh->mVertices[sourceFace.mIndices[2]]) / 3.f;
+    auto mapped = md->mapSurfacePointToUv(0, 0, centroid.x, centroid.y, centroid.z, 0);
+    REQUIRE(mapped.ok());
+    const auto surfaceUv = std::move(mapped).takeValue();
+    const float expectedU =
+        (sourceMesh->mTextureCoords[0][sourceFace.mIndices[0]].x +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[1]].x +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[2]].x) / 3.f;
+    const float expectedV =
+        (sourceMesh->mTextureCoords[0][sourceFace.mIndices[0]].y +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[1]].y +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[2]].y) / 3.f;
+    CHECK(std::fabs(surfaceUv.u - expectedU) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.v - expectedV) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.barycentricA - 1.f / 3.f) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.barycentricB - 1.f / 3.f) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.barycentricC - 1.f / 3.f) < 1e-5f);
 
     // Material API on the synthetic file: PBR factors + embedded texture.
     CHECK(md->getMaterialMetallicFactor(0) == 0.f);
@@ -1039,7 +1064,6 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
     CHECK(top.r > top.b);  // red on top → not V-flipped
     CHECK(bot.b > bot.r);  // blue on bottom
 
-    eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     eve::filesystem::FileData *framePng =
@@ -1129,7 +1153,7 @@ TEST_CASE("model3d.render.cesiumManGltf") {
     const Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     CHECK(luma(mid) > 0.05f);
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     eve::filesystem::FileData *png =

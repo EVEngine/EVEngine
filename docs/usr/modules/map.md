@@ -24,6 +24,25 @@ map.render(gfx);
 
 把 JSON 和图集放在游戏目录，用 `newLayerFromFile(path)` 创建层；初始化后设置 origin、layer 和 visible。每帧 `map.update(dt)`，渲染时 `map.render(gfx)`。
 
+产品内容应使用 `loadFromFileWithObjectContract(path, contractJson)`。它先在候选区解析地图，再按
+`eve.map.object-contract` version 1 校验对象类型、唯一名称、自定义属性的必填性、类型、范围和枚举；
+只有全部通过才替换当前图层与对象缓存。返回值是结构化 Result（`ok/status/value`），失败时当前可玩
+场景保持不变。契约可以禁止未知对象类型和未知属性，从而在地图加载边界捕获拼写错误和不完整 portal：
+
+```squirrel
+local contract = readTextFile("data/world-object-contract.json");
+local loaded = map.loadFromFileWithObjectContract("maps/village.json", contract);
+if (!loaded.ok) print(loaded.status.summary + "\n");
+else {
+    local layer = map.getLayer(0);
+    // 构建寻路、碰撞和游戏对象投影
+}
+```
+
+契约属性规则支持 `kind: string|int|number|bool`、`required`、数值 `min/max` 与字符串 `enum`。
+对象几何必须为有限数，宽高不得为负；默认要求对象名称非空且唯一。契约只负责通用结构准入，诸如
+“朝向必须恰有一个非零分量”之类跨字段领域规则仍由项目在发布游戏状态前校验。
+
 ### 运行时修改瓦片
 
 先用地图坐标换算接口把世界位置转成格子，再 `setTile(x, y, gid)`；批量生成地图时先 resize，再填充，避免重复重建图层。0 通常表示空瓦片。
@@ -67,7 +86,9 @@ layer.paintTerrain(4, 4, 1);
 print(layer.getTerrain(4, 4) + "\n");
 ```
 
-Tiled JSON 的 `animation`、typed `properties` 与无限地图 `chunks` 可直接导入。无限地图当前会按已存在 chunk 的包围盒规范化为运行时图层，并把负 chunk 坐标折算进图层 origin。
+Tiled JSON 的 `animation`、typed `properties`、`wangsets` 与无限地图 `chunks` 可直接导入。地图可以引用多个外部 JSON `.tsj` 或 XML `.tsx` tileset；每个 atlas 按地图中的 `firstgid` 选择，图片路径相对 tileset 文件解析。外部 tileset 也会加入热重载依赖。无限地图当前会按已存在 chunk 的包围盒规范化为运行时图层，并把负 chunk 坐标折算进图层 origin。
+
+Tile properties 中的 `walkable`、`cost`、`enterMask`、`exitMask` 会进入统一导航资料。方向位为 `N=1, E=2, S=4, W=8`；寻路同时检查源格的 `exitMask` 和目标格的反向 `enterMask`。没有声明时四向均允许。这样悬崖边、单向台阶和墙口不需要再维护一份独立的 Pathfinder 阻挡表。
 
 ### 组合项目自己的 2.5D 资产工作流
 
@@ -186,6 +207,54 @@ map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
 
 `publishCollision(layer)` 会把 `setTileMetadata(..., walkable=false)` 标记的正交瓦片贪心合并成世界坐标矩形，减少静态碰撞体数量；已注册的物理/项目适配器会通过 `ITileCollisionSink` 一次性收到替换后的几何。没有适配器时仍可读取矩形，自行创建物理夹具：
 
+`setTileNavigationProfile(gid, walkable, cost, enterMask, exitMask, opaque, semanticFlags)`
+是同行性、碰撞与视野遮挡的统一画像。`Pathfinder`/Flow Field 使用 walkable、cost 与四向
+enter/exit mask，`publishCollision` 使用不可通行状态或 Tiled tile object collision，`Fov`
+使用 opaque；三者随同一 tile revision 自动失效，避免分别维护“可走”和“墙体”两套事实。
+
+## 生产级自动贴图
+
+逻辑 terrain grid 是权威数据，GID 只是派生显示结果。先定义 family 与精确 8 邻域规则，再由
+point/rectangle/fill/erase 操作只重算 dirty region 外扩一格：
+
+```nut
+layer.defineAutotileFamily(1, "shore", 1337) // terrain | shore | wall | waterfall
+layer.setAutotileRule(101, 1, neighborMask, 1) // gid, terrain, exact mask, weight
+layer.paintTerrain(4, 3, 1)
+layer.paintTerrainRect(2, 2, 8, 5, 1)
+layer.fillTerrain(1)
+layer.eraseTerrainRect(5, 2, 2, 1)
+```
+
+同一 mask 可配置多个带权变体；选择由 family seed、terrain 与坐标确定，不依赖时间或容器遍历
+顺序。`wall` 解析四个正交邻居，`waterfall` 解析上下连续性，因此可以稳定表达墙顶/墙身/墙脚
+以及瀑布口/循环水体/水花脚；动画仍使用 `addTileAnimationFrame`。完整的无素材示例位于
+`examples/autotile-production`。
+
+## Tiled 与 RPG Maker MV/MZ
+
+Tiled JSON/TMJ 支持 embedded tileset、外部 TSJ/TSX、多 tileset、无限 chunk、嵌套 group、
+typed properties、animation、Wang connectivity、水平/垂直/对角 transform flags，以及 tile
+objectgroup 的矩形/多边形包围盒碰撞。外部引用相对 map/tileset 文件解析并参与 hot reload。
+导入失败会恢复 Config、Tiles、Tileset、Draw 与 Resource 的旧快照，不留下半更新状态。
+
+C++ 可直接导入 RPG Maker 工程，无需启动 RPG Maker：
+
+```cpp
+auto result = eve::map::importRpgMakerMap("data/Map001.json", "data/Tilesets.json", "RPG Maker MZ");
+if (!result) {
+    // inspect result.error() / diagnostic domain_code
+} else {
+    auto receipt = std::move(result).value();
+    auto *navigation = receipt.navigationLayer;
+}
+```
+
+适配器读取 A1-A5/B-E sheet、四个 tile plane 与 shadow plane，按 MV/MZ 官方 quarter-tile
+table 解码 A1 水面/瀑布动画、A2 地面、A3 屋顶/墙、A4 墙顶/墙身。`navigationLayer` 把
+passage、四方向 passage、star overlay、ladder、bush、counter、damage floor 与 terrain tag
+合成为单一隐藏画像；源文件不会被修改，`Resource.sourceEngine/sourceVersion` 会记录来源。
+
 ```squirrel
 local count = map.publishCollision(layer);
 for (local i = 0; i < count; ++i) {
@@ -212,6 +281,8 @@ for (local i = 0; i < count; ++i) {
 
 - `applyConfig()`、`clear()`、`depthYAt()`、`fill()`、`getAutoReload()`、`getConfigPath()`、`getLayer()`、`getLayerCount()`
 - `getMapHeight()`、`getMapWidth()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
+- `findObjectByName(name)`：返回第一个同名对象的临时索引；不存在返回 `-1`。
+- `findObjectAt(x, y, type)`：返回包含该点的第一个对象；空 `type` 接受任意类型，点对象要求坐标精确匹配，不存在返回 `-1`。
 - `getLastVisibleTileCount()`、`getLastCustomVisualCount()`、`getLastAtlasCount()`
 - `publishCollision()`、`getCollisionRectCount()`、`getCollisionRectX()`、`getCollisionRectY()`、`getCollisionRectWidth()`、`getCollisionRectHeight()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
@@ -232,6 +303,13 @@ Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgori
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
+- 对象索引只在当前对象缓存内有效；地图加载、热重载或 `setObjects` 后应按稳定名称重新查询，不能把索引写入存档。
+- Tiled object 的 `properties` 会按名称排序并投影为 owning UTF-8 文本，可用
+  `getObjectPropertyCount` / `getObjectPropertyName` / `hasObjectProperty` /
+  `getObjectProperty(index, name, defaultValue)` 查询。数值和布尔值由玩法边界按自己的 schema 再解析与校验；
+  热重载后同样必须重新按对象名查询，不能保存属性索引。
+- `newLayerFromFile` / `loadFromFile` 采用事务式场景替换：加载失败保留当前图层和对象缓存；
+  成功后清空并隐藏被替换图层，再发布新图层与对象缓存。这使传送门和场景切换不会因坏资源把当前场景清空。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 

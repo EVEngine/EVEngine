@@ -8,12 +8,12 @@
 #include "audio/Audio.h"
 #include "common/Capability.h"
 #include "common/Module.h"
-#include "event/PlatformEventSink.h"
+#include "platform_event/PlatformEventSink.h"
 
 namespace eve::audio {
 namespace {
 
-class AudioPumpSink : public eve::event::IPlatformEventSink {
+class AudioPumpSink : public eve::platform_event::IPlatformEventSink {
 public:
     void onPumpFinished() override {
         if (auto *audio = eve::ModuleManager::getInstance<Audio>("Audio")) audio->pump();
@@ -23,7 +23,7 @@ public:
 struct Register {
     Register() {
         static AudioPumpSink sink;
-        eve::cap::addListener<eve::event::IPlatformEventSink>(&sink);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(&sink);
     }
 } g_register;
 

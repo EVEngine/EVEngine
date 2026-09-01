@@ -10,6 +10,22 @@
 
 using namespace eve::ui;
 
+namespace {
+
+UIHost *resolveHost(UIHostHandle handle) {
+    auto host = UIHost::resolve(handle);
+    return host ? &host->get() : nullptr;
+}
+
+UINode *findNode(UIHostHandle handle, const std::string &id) {
+    UIHost *host = resolveHost(handle);
+    if (host == nullptr) return nullptr;
+    auto node = host->findById(id);
+    return node ? &node->get() : nullptr;
+}
+
+}  // namespace
+
 /** Game-facing panel: subclass UIHost so View<UIHost,…> still finds it. */
 class HudPanel : public UIHost {
 public:
@@ -24,23 +40,24 @@ public:
 
 TEST_CASE("UI.ecs.namedHostsAndSelect") {
     UI *ui = UI::create();
-    ui->mountAs("hud", window("HUD", {text("HP", "hp"), button("Pause", "pause")}));
-    ui->mountAs("menu", window("Menu", {button("Quit", "quit")}));
+    REQUIRE(ui->mountAs("hud", window("HUD", {text("HP", "hp"), button("Pause", "pause")})));
+    REQUIRE(ui->mountAs("menu", window("Menu", {button("Quit", "quit")})));
 
-    CHECK(UISystem::findHost("hud") != nullptr);
-    CHECK(UISystem::findHost("menu") != nullptr);
+    CHECK(resolveHost(UISystem::findHost("hud")) != nullptr);
+    CHECK(resolveHost(UISystem::findHost("menu")) != nullptr);
     CHECK(ui->select("hud"));
-    CHECK(ui->current() == UISystem::findHost("hud"));
+    CHECK(resolveHost(ui->current()) == resolveHost(UISystem::findHost("hud")));
     ui->setText("hp", "HP 80");
-    CHECK(ui->current()->findById("hp")->text == "HP 80");
+    REQUIRE(findNode(ui->current(), "hp") != nullptr);
+    CHECK(findNode(ui->current(), "hp")->text == "HP 80");
 
     CHECK(ui->select("menu"));
-    CHECK(ui->current()->findById("quit") != nullptr);
+    CHECK(findNode(ui->current(), "quit") != nullptr);
 }
 
 TEST_CASE("UI.ecs.subclassVisibleInView") {
     HudPanel *hud = HudPanel::create();
-    hud->meta()->entity = hud;
+    hud->meta()->entity = ecs::handle_of(hud);
     hud->setName("playerhud");
     hud->hp()->value = 42;
     hud->setTree(window("P", {text("x", "x")}));
@@ -52,19 +69,19 @@ TEST_CASE("UI.ecs.subclassVisibleInView") {
         (void)tree;
         if (meta->name == "playerhud") {
             ++found;
-            CHECK(meta->entity != nullptr);
+            CHECK(ecs::try_get(meta->entity) != nullptr);
         }
     }
     CHECK_GE(found, 1);
     CHECK_EQ(hud->hp()->value, 42);
-    CHECK(UISystem::findHost("playerhud") == static_cast<UIHost *>(hud));
+    CHECK(resolveHost(UISystem::findHost("playerhud")) == static_cast<UIHost *>(hud));
 }
 
 TEST_CASE("UI.ecs.ownerBindingAndClicks") {
     UI *ui = UI::create();
-    ui->mountAs("inv", window("Inv", {button("Use", "use")}));
+    REQUIRE(ui->mountAs("inv", window("Inv", {button("Use", "use")})));
     ui->bindOwner(7);
-    CHECK(UISystem::findHostByOwner(7) == ui->current());
+    CHECK(resolveHost(UISystem::findHostByOwner(7)) == resolveHost(ui->current()));
 
     UIEvent ev;
     ev.host = ui->current();
@@ -93,7 +110,8 @@ TEST_CASE("UI.scriptStyleBuilder.mountBuildAs") {
     ui->end();
     CHECK(ui->mountBuildAs("shop"));
     CHECK(ui->select("shop"));
-    CHECK(ui->current()->findById("gold") != nullptr);
+    CHECK(findNode(ui->current(), "gold") != nullptr);
     ui->setText("gold", "Gold: 9");
-    CHECK(ui->current()->findById("gold")->text == "Gold: 9");
+    REQUIRE(findNode(ui->current(), "gold") != nullptr);
+    CHECK(findNode(ui->current(), "gold")->text == "Gold: 9");
 }

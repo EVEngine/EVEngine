@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common/Export.h"
-#include "common/ScriptError.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -16,6 +15,12 @@
 #include <vector>
 
 namespace eve {
+
+namespace script {
+class ScriptCompiler;
+class ScriptModuleResolver;
+struct ScriptErrorContext;
+}  // namespace script
 
 /**
  * @brief Shortest round-trip float formatting (portable).
@@ -227,6 +232,14 @@ public:
     const ssq::VM& vm() const noexcept;
     /** @brief Raw Squirrel VM handle; nullptr after shutdown. */
     HSQUIRRELVM handle() const noexcept;
+    /** @brief Script module provider registry and dependency resolver for this VM. */
+    script::ScriptModuleResolver& scriptModules() noexcept;
+    /** @brief Const script module resolver for diagnostics and graph inspection. */
+    const script::ScriptModuleResolver& scriptModules() const noexcept;
+    /** @brief Unified EveScript compiler, metadata store, and binding contracts. */
+    script::ScriptCompiler& scriptCompiler() noexcept;
+    /** @brief Const EveScript compiler and metadata store. */
+    const script::ScriptCompiler& scriptCompiler() const noexcept;
     /** @brief Root script table of the VM. */
     ssq::Table root() const;
     /**
@@ -382,6 +395,8 @@ private:
     void installErrorHandler();
 
     std::unique_ptr<ssq::VM> vm_;
+    std::unique_ptr<script::ScriptModuleResolver> script_modules_;
+    std::unique_ptr<script::ScriptCompiler> script_compiler_;
     std::unordered_map<ScriptId, std::unique_ptr<ScriptRecord>> scripts_;
     std::unordered_map<std::string, ReflectedClass> classes_;
     std::unordered_map<std::string, ScriptId> class_owners_;

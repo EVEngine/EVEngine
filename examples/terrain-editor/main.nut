@@ -6,23 +6,25 @@
 //
 // Run: make run/win32-debug GAME=examples/terrain-editor
 
-if (!("hm" in getroottable())) hm <- null;
-if (!("terrainMesh" in getroottable())) terrainMesh <- null;
-if (!("terrainEnt" in getroottable())) terrainEnt <- null;
-if (!("cam" in getroottable())) cam <- null;
-if (!("vpCanvas" in getroottable())) vpCanvas <- null;
-if (!("yaw" in getroottable())) yaw <- 0.75;
-if (!("pitch" in getroottable())) pitch <- 0.45;
-if (!("dist" in getroottable())) dist <- 26.0;
-if (!("tool" in getroottable())) tool <- "raise";
-if (!("brushR" in getroottable())) brushR <- 4.0;
-if (!("strength" in getroottable())) strength <- 0.06;
-if (!("orbitDragging" in getroottable())) orbitDragging <- false;
-if (!("orbitMouseX" in getroottable())) orbitMouseX <- 0.0;
-if (!("orbitMouseY" in getroottable())) orbitMouseY <- 0.0;
-if (!("editStatus" in getroottable())) editStatus <- "ready";
-if (!("meshDirty" in getroottable())) meshDirty <- false;
-if (!("meshCooldown" in getroottable())) meshCooldown <- 0.0;
+persist hm = null
+persist terrainMesh = null
+persist terrainEnt = null
+persist cam = null
+persist vpCanvas = null
+persist yaw = 0.75
+persist pitch = 0.45
+persist dist = 26.0
+persist tool = "raise"
+persist brushR = 4.0
+persist strength = 0.06
+persist orbitDragging = false
+persist orbitMouseX = 0.0
+persist orbitMouseY = 0.0
+persist editStatus = "ready"
+persist meshDirty = false
+persist meshCooldown = 0.0
+persist terrainLayers = null
+persist analysisText = "not analyzed"
 
 const W = 64;
 const H = 64;
@@ -30,23 +32,41 @@ const CELL = 0.5;      // world units per heightmap cell
 const HSCALE = 3.2;    // world units per unit of height
 
 function regenTerrain() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return;
+    local p = paramsResult.value;
     p.setSize(W, H);
     p.setSeed(20260819);
     p.setFloat("frequency", 1.0 / 22.0);
     p.setInt("octaves", 5);
-    local generated = procgen.generateHeightmap(p);
-    if (generated != null) {
-        hm = generated;
+    local generatedResult = procgen.generateHeightmap(p);
+    if (generatedResult.ok) {
+        hm = generatedResult.value;
     } else {
-        if (hm == null) hm = procgen.newHeightmap(W, H);
+        if (hm == null) {
+            local fallbackResult = procgen.newHeightmap(W, H);
+            if (!fallbackResult.ok) return;
+            hm = fallbackResult.value;
+        }
         for (local y = 0; y < H; y++) {
             for (local x = 0; x < W; x++) {
                 hm.setHeight(x, y, 0.5 + 0.22 * sin(x * 0.18) * cos(y * 0.18));
             }
         }
     }
+    analyzeTerrainLayers();
     rebuildMesh();
+}
+
+function analyzeTerrainLayers() {
+    if (hm == null) return;
+    terrainLayers = procgen.analyzeTerrain(hm, 48.0, 0.25, 0.65);
+    if (terrainLayers != null) {
+        local cx = W / 2;
+        local cy = H / 2;
+        analysisText = "center biome=" + terrainLayers.getBiomeName(cx, cy) +
+                       "  flow=" + terrainLayers.getFlowAccumulation(cx, cy);
+    }
 }
 
 function rebuildMesh() {
@@ -122,6 +142,9 @@ eve_init = function() {
     ui.button("Raise (1)", "raise");
     ui.button("Lower (2)", "lower");
     ui.button("Regenerate (R)", "reset");
+    ui.button("Thermal erosion", "thermal");
+    ui.button("Hydraulic erosion", "hydraulic");
+    ui.button("Analyze rivers/biomes", "analyze");
     ui.separator("sep");
     ui.text("Brush radius", "lbl_brush");
     ui.slider("Radius", brushR, 1.0, 12.0, "brush");
@@ -204,6 +227,18 @@ eve_update = function(dt) {
             tool = "lower";
         } else if (c == "ed/reset") {
             regenTerrain();
+        } else if (c == "ed/thermal") {
+            if (procgen.erodeTerrainThermal(hm, 20, 0.018, 0.32)) {
+                analyzeTerrainLayers();
+                rebuildMesh();
+            }
+        } else if (c == "ed/hydraulic") {
+            if (procgen.erodeTerrainHydraulic(hm, 40, 0.01, 0.08, 2.0, 0.16, 0.12)) {
+                analyzeTerrainLayers();
+                rebuildMesh();
+            }
+        } else if (c == "ed/analyze") {
+            analyzeTerrainLayers();
         }
         c = ui.consumeClick();
     }
@@ -212,7 +247,7 @@ eve_update = function(dt) {
         if (ch == "ed/brush") brushR = ui.getValue("brush");
         ch = ui.consumeChange();
     }
-    ui.setText("status", editStatus + "  radius=" + brushR);
+    ui.setText("status", editStatus + "  tool=" + tool + "  radius=" + brushR + "\n" + analysisText);
 };
 
 eve_render = function() {

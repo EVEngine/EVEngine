@@ -41,7 +41,9 @@ env:
   # Single source of truth: repository variables (Settings -> Secrets and
   # variables -> Actions -> Variables), falling back to these defaults.
   VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
-  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '26.1.10909125' }}
+  # Aligned to the NDK preinstalled on the windows-latest / macos-latest runner
+  # images (27.3.13750724), so setup-android downloads nothing extra.
+  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '27.3.13750724' }}
   ANDROID_API: ${{ vars.ANDROID_API || '34' }}
 
 jobs:
@@ -75,6 +77,9 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
           cache: true
+          # Release refs are one-shot cache scopes. Restore a long-lived cache
+          # when available, but do not create a copy that no later run can use.
+          cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan (SwiftShader, best-effort)
@@ -132,7 +137,7 @@ jobs:
 
       - name: Setup Java
         timeout-minutes: 10
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           distribution: temurin
           java-version: "17"
@@ -220,6 +225,7 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           # Keep full macOS tree so MoltenVK remains available.
           cache: true
+          cache_save_if: false
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -280,6 +286,7 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           # Keep full macOS tree so MoltenVK / iOS xcframework remain available.
           cache: true
+          cache_save_if: false
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -380,6 +387,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe, best-effort)
@@ -458,7 +466,7 @@ jobs:
         # until the maintainer enables it. Attestations bind to the zips by
         # digest, so they survive the GitHub Release upload.
         continue-on-error: true
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: artifacts/eve-sdk-*.zip
 
@@ -545,6 +553,7 @@ jobs:
           install_runtime: true
           install_swiftshader: true
           cache: true
+          cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (SwiftShader)
@@ -716,7 +725,7 @@ jobs:
     steps:
       - name: Checkout
         timeout-minutes: 10
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || inputs.tag }}
 
@@ -728,6 +737,7 @@ jobs:
           install_runtime: true
           install_swiftshader: true
           cache: true
+          cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (SwiftShader)
@@ -785,7 +795,7 @@ jobs:
     steps:
       - name: Checkout
         timeout-minutes: 10
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || inputs.tag }}
 
@@ -851,7 +861,7 @@ jobs:
 
       - name: Boot arm64 emulator, install and launch the game
         timeout-minutes: 40
-        uses: reactivecircus/android-emulator-runner@b530d96654c385303d652368551fb075bc2f0b6b # v2.35.0
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 30
           arch: arm64-v8a
@@ -902,6 +912,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: false
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 

@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -17,9 +18,8 @@ class ImageData;
 
 namespace eve::procgen {
 
-/** @brief Recipe returns a new RGBA8 ImageData (caller owns), or nullptr on failure. */
-using TextureRecipeFn =
-    std::function<image::ImageData *(const Params &params, std::string &error)>;
+/** @brief Recipe returns a newly owned RGBA8 image, or null on failure. */
+using TextureRecipeFn = std::function<std::unique_ptr<image::ImageData>(const Params &params, std::string &error)>;
 
 class TextureRecipeRegistry {
 public:
@@ -32,8 +32,16 @@ public:
     void registerRecipe(RecipeDescriptor descriptor, TextureRecipeFn fn);
     /** @brief Test whether a recipe exists. @param id Recipe id. @return True when registered. */
     bool has(const std::string &id) const;
-    /** @brief Generate an image. @param id Recipe id. @param params Values. @param error Failure text. @return Caller-owned image or nullptr. */
-    image::ImageData *generate(const std::string &id, const Params &params, std::string &error) const;
+    /**
+     * @brief Generates an image and transfers its unique ownership to the caller.
+     * @param id Stable recipe id.
+     * @param params Validated recipe parameters.
+     * @param error Receives a human-readable failure description when generation fails.
+     * @return The newly owned image, or null when the recipe is unknown or generation fails.
+     * @ownership The returned image is owned by the caller.
+     */
+    [[nodiscard]] std::unique_ptr<image::ImageData> generate(const std::string &id, const Params &params,
+                                                             std::string &error) const;
     /** @brief List registered recipe ids. @return Sorted ids. */
     std::vector<std::string> list() const;
     /** @brief Look up recipe metadata. @param id Recipe id. @return Registry-owned schema or nullptr. */
@@ -76,8 +84,12 @@ void fillHeightField(const TextureGenContext &ctx,
                      const std::function<float(float, float, const NoiseField &)> &fn,
                      std::vector<float> &height);
 
-image::ImageData *heightToNormalImage(const std::vector<float> &height, int w, int h,
-                                      float strength, bool seamless);
+/**
+ * @brief Builds a normal-map image and transfers its unique ownership to the caller.
+ * @return The newly owned image, or null only when allocation fails.
+ */
+[[nodiscard]] std::unique_ptr<image::ImageData> heightToNormalImage(const std::vector<float> &height, int w, int h,
+                                                                    float strength, bool seamless);
 
 /**
  * @brief PBR surface defaults for a generated material. Every map in a PBR set is

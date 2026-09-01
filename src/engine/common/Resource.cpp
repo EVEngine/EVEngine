@@ -1,7 +1,10 @@
 #include "common/Resource.h"
 #include "common/Capability.h"
 
+#include <memory>
 #include <mutex>
+#include <set>
+#include <vector>
 
 namespace eve {
 
@@ -123,37 +126,101 @@ bool ResourceManager::handlesPath(const std::string &normPath) const {
     return false;
 }
 
-bool ResourceManager::reload(const std::string &normPath) {
+eve::Result<bool> ResourceManager::reload(const std::string &normPath) {
     const std::string norm = normalizePath(normPath);
-    if (norm.empty()) return false;
+    if (norm.empty()) return eve::Result<bool>::success(false);
+
+    struct Prepared {
+        std::string               key;
+        Resource                 *cached = nullptr;
+        std::unique_ptr<Resource> replacement;
+    };
 
     std::vector<std::string> keys;
+    std::set<std::string>     selectedKeys;
+    std::set<Resource *>      selectedResources;
     {
         std::lock_guard<std::mutex> lock(mu_);
-        for (const auto &kv : resources) {
-            if (pathOfKey(kv.first) == norm) keys.push_back(kv.first);
+        for (auto &kv : resources) {
+            if (pathOfKey(kv.first) != norm) continue;
+            keys.push_back(kv.first);
+            selectedKeys.insert(kv.first);
+            selectedResources.insert(kv.second.get());
+        }
+
+        // Close over reverse dependencies before loading anything. This gives
+        // the transaction a stable, root-first order and makes cycles safe.
+        bool expanded = true;
+        while (expanded) {
+            expanded = false;
+            for (auto &kv : resources) {
+                if (selectedKeys.count(kv.first)) continue;
+                bool dependsOnSelection = false;
+                for (auto dependency : kv.second->getDependencies()) {
+                    if (selectedResources.count(dependency.get())) {
+                        dependsOnSelection = true;
+                        break;
+                    }
+                }
+                if (!dependsOnSelection) continue;
+                keys.push_back(kv.first);
+                selectedKeys.insert(kv.first);
+                selectedResources.insert(kv.second.get());
+                expanded = true;
+            }
         }
     }
+    if (keys.empty()) return eve::Result<bool>::success(false);
 
-    std::set<std::string> visited;
-    bool any = false;
+    // Decode every root and dependent into detached candidates. A single
+    // invalid file aborts the whole graph without touching live objects.
+    std::vector<Prepared> prepared;
+    std::vector<ref<Resource>> keepAlive;
+    prepared.reserve(keys.size());
+    keepAlive.reserve(keys.size());
     for (const auto &key : keys) {
-        if (refreshEntry(key, visited)) any = true;
+        Resource *cached = nullptr;
+        {
+            std::lock_guard<std::mutex> lock(mu_);
+            auto it = resources.find(key);
+            if (it == resources.end()) return eve::Result<bool>::success(false);
+            cached = it->second.get();
+            keepAlive.emplace_back(cached);
+        }
+        std::unique_ptr<Resource> replacement(loadReplacement(key));
+        if (!replacement) return eve::Result<bool>::success(false);
+        prepared.push_back({key, cached, std::move(replacement)});
     }
-    return any;
+
+    std::lock_guard<std::mutex> lock(mu_);
+    for (const auto &item : prepared) {
+        auto it = resources.find(item.key);
+        if (it == resources.end() || it->second.get() != item.cached) return eve::Result<bool>::success(false);
+    }
+
+    size_t committed = 0;
+    try {
+        for (; committed < prepared.size(); ++committed)
+            prepared[committed].cached->adopt(*prepared[committed].replacement);
+    } catch (...) {
+        // adopt() is a payload swap. Candidates therefore hold the old state
+        // after a successful commit and can restore it in reverse order.
+        while (committed > 0) {
+            --committed;
+            try {
+                prepared[committed].cached->adopt(*prepared[committed].replacement);
+            } catch (...) {
+                // The adopt contract requires a non-mutating failure. Keep
+                // unwinding other entries even if a broken implementation
+                // violates it.
+            }
+        }
+        return eve::Result<bool>::success(false);
+    }
+    return eve::Result<bool>::success(true, eve::Status::success(eve::StatusCode::Applied));
 }
 
-bool ResourceManager::refreshEntry(const std::string &key, std::set<std::string> &visited) {
-    if (!visited.insert(key).second) return false;  // cycle guard
-
-    Resource *cached = nullptr;
-    {
-        std::lock_guard<std::mutex> lock(mu_);
-        auto it = resources.find(key);
-        if (it == resources.end()) return false;
-        cached = it->second.get();  // identity token; the cache entry keeps it alive
-    }
-
+Resource *ResourceManager::loadReplacement(const std::string &key) {
     Resource *replacement = nullptr;
     eve::cap::forEachUntil<eve::caps::IAssetReloader>([&](eve::caps::IAssetReloader *r) {
         if (r == this) return false;
@@ -165,38 +232,7 @@ bool ResourceManager::refreshEntry(const std::string &key, std::set<std::string>
         }
         return replacement != nullptr;
     });
-    if (replacement == nullptr) return false;
-
-    {
-        std::lock_guard<std::mutex> lock(mu_);
-        auto it = resources.find(key);
-        if (it == resources.end()) {
-            delete replacement;  // entry unloaded while we were loading
-            return false;
-        }
-        it->second->adopt(*replacement);
-    }
-    delete replacement;
-
-    refreshDependents(cached, visited);
-    return true;
-}
-
-void ResourceManager::refreshDependents(Resource *updated, std::set<std::string> &visited) {
-    std::vector<std::string> dependents;
-    {
-        std::lock_guard<std::mutex> lock(mu_);
-        for (auto &kv : resources) {
-            if (visited.count(kv.first)) continue;
-            for (auto dep : kv.second->getDependencies()) {  // copy: operator-> is non-const
-                if (dep.get() == updated) {
-                    dependents.push_back(kv.first);
-                    break;
-                }
-            }
-        }
-    }
-    for (const auto &key : dependents) refreshEntry(key, visited);
+    return replacement;
 }
 
 }  // namespace eve

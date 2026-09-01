@@ -1,11 +1,18 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Runtime.h"
+#include "common/Capability.h"
+#include "common/EditorAutomation.h"
+#include "common/RenderCapture.h"
+#include "common/SceneQuery.h"
+#include "common/ScriptCompiler.h"
 #include "devtools/AiPanel.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
 #include "editor/Editor.h"
+#include "pixelworld/PixelWorldModule.h"
 #include "ui/EditorHost.h"
 
 #include <Poco/Dynamic/Var.h>
@@ -30,6 +37,135 @@
 using namespace eve::dev;
 
 namespace {
+
+class ClosedLoopCapture final : public eve::IRenderCapture {
+public:
+    eve::RenderStatusInfo status() const override { return {}; }
+    void setReadbackEnabled(bool) override {}
+    bool savePng(const std::string&, int*, int*, std::string*) override { return false; }
+    std::string capturePngDataUrl() override { return {}; }
+    bool ensureCamera() override { return false; }
+    bool setCameraPose(float, float, float, float, float, float, float) override { return false; }
+    bool setCameraPoseYawPitch(float, float, float, float, float, float) override { return false; }
+    std::string cameraPoseJson() override { return "{}"; }
+    eve::Result<eve::Renderable3DInfo> inspectRenderable3D(std::uint32_t entityId,
+                                                           std::uint32_t generation) override {
+        if (entityId != info.entityId || generation != info.generation)
+            return eve::Result<eve::Renderable3DInfo>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::StaleHandle, "Renderable3D handle is missing or stale", "entity"));
+        return eve::Result<eve::Renderable3DInfo>::success(info);
+    }
+    std::string visibleEntitiesJson(float, bool*) override { return "{}"; }
+    std::string visibleEntitiesJsonAt(float, float, float, float, float, float, float, bool*) override {
+        return "{}";
+    }
+    std::string entityIdMaskJson(int*, int*, bool*) override { return "{}"; }
+    bool entityIdMaskPng(const std::string&, std::string*) override { return false; }
+    bool gbufferPng(const std::string&, const std::string&, std::string*) override { return false; }
+
+    eve::Renderable3DInfo info{42, 7, 1.f, 2.f, 3.f, 0.1f, 0.2f, 0.3f, 1.f};
+};
+
+class ClosedLoopEditor final : public eve::IEditorAutomation {
+public:
+    explicit ClosedLoopEditor(ClosedLoopCapture& capture) : capture_(&capture) {}
+
+    std::string invoke(const std::string& operation, const std::string&) override {
+        if (operation == "execute") {
+            ++executeCount;
+            if (rejectNext) {
+                rejectNext = false;
+                return R"({"status":"rejected","accepted":false,"diagnostics":[{"rule":"test.reject","message":"rejected"}]})";
+            }
+            capture_->info.tintG = 0.8f;
+            return R"({"status":"applied","accepted":true,"diagnostics":[],"transactionId":"closed-loop.1"})";
+        }
+        if (operation == "inspect")
+            return R"({"status":"applied","accepted":true,"diagnostics":[],"target":{"snapshot":{"revision":2}}})";
+        return R"({"status":"unsupported","accepted":false,"diagnostics":[]})";
+    }
+
+    int executeCount = 0;
+    bool rejectNext = true;
+
+private:
+    ClosedLoopCapture* capture_ = nullptr;
+};
+
+class ClosedLoopScene final : public eve::ISceneQuery {
+public:
+    std::string activeHost() const override { return "world"; }
+    int hostCount() const override { return 1; }
+    std::string hostNameAt(int index) const override { return index == 0 ? "world" : std::string{}; }
+    int nodeCount() const override { return 1; }
+    std::string rootId() const override { return "player"; }
+    std::vector<eve::SceneNodeInfo> nodes(int) const override { return {node}; }
+    std::vector<eve::SceneNodeInfo> nodesOf(const std::string& host, int) const override {
+        return host == "world" ? std::vector<eve::SceneNodeInfo>{node} : std::vector<eve::SceneNodeInfo>{};
+    }
+    bool getNode(const std::string& id, eve::SceneNodeInfo* out) const override {
+        return getNodeIn("world", id, out);
+    }
+    bool getNodeIn(const std::string& host, const std::string& id, eve::SceneNodeInfo* out) const override {
+        if (host != "world" || id != node.id || !out) return false;
+        *out = node;
+        return true;
+    }
+    bool setNodeTransform(const std::string& id, float x, float y, float z) override {
+        if (id != node.id) return false;
+        node.x = x;
+        node.y = y;
+        node.z = z;
+        return true;
+    }
+    bool setNodeVisible(const std::string& id, bool visible) override {
+        if (id != node.id) return false;
+        node.visible = visible;
+        return true;
+    }
+    void syncTransforms() override {}
+
+    eve::SceneNodeInfo node{"player", "Player", "root/player", true, 1.f, 2.f, 3.f};
+};
+
+class ClosedLoopSceneEditor final : public eve::IEditorAutomation {
+public:
+    explicit ClosedLoopSceneEditor(ClosedLoopScene& scene) : scene_(&scene) {}
+
+    std::string invoke(const std::string& operation, const std::string&) override {
+        if (operation == "execute") {
+            ++executeCount;
+            scene_->node.x = 4.f;
+            scene_->node.y = 5.f;
+            return R"({"status":"applied","accepted":true,"diagnostics":[],"transactionId":"scene-loop.1"})";
+        }
+        if (operation == "inspect")
+            return R"({"status":"applied","accepted":true,"diagnostics":[],"target":{"snapshot":{"revision":2}}})";
+        return R"({"status":"unsupported","accepted":false,"diagnostics":[]})";
+    }
+
+    int executeCount = 0;
+
+private:
+    ClosedLoopScene* scene_ = nullptr;
+};
+
+template <class Interface>
+class CapabilityOverride final {
+public:
+    explicit CapabilityOverride(Interface& replacement)
+        : previous_(eve::cap::query<Interface>()), replacement_(&replacement) {
+        eve::cap::provide<Interface>(replacement_);
+    }
+    ~CapabilityOverride() {
+        eve::cap::revoke<Interface>(replacement_);
+        if (previous_) eve::cap::provide<Interface>(previous_);
+    }
+
+private:
+    Interface* previous_ = nullptr;
+    Interface* replacement_ = nullptr;
+};
 
 class McpClient {
 public:
@@ -141,6 +277,9 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     dt.attach(vm, false);
     dt.exposeScriptApi(vm);
 
+    eve::pixelworld::PixelWorldModule pixelworldModule;
+    eve::pixelworld::PixelWorld       pixelworld(9081);
+
     eve::editor::Editor            editor;
     eve::editor::CommandDescriptor editorCommand;
     editorCommand.id          = eve::editor::CommandId("mcp.test-command");
@@ -152,7 +291,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
                                      return eve::editor::EditorResult<eve::editor::EditorValue>::applied(
                                          eve::editor::EditorValue("executed"));
                                  })
-                .accepted());
+                .isAccepted());
 
     const int port = mcp.listen(0);
     REQUIRE(port > 0);
@@ -202,6 +341,22 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     bool foundHotReloadStatus = false;
     bool foundEditorCommands  = false;
     bool foundEditorPlan      = false;
+    bool foundEditorCreate    = false;
+    bool foundEditorInspect   = false;
+    bool foundEditorObserve   = false;
+    bool foundObserveStart    = false;
+    bool foundObservePoll     = false;
+    bool foundObserveClose    = false;
+    bool foundRenderableGet   = false;
+    bool foundSkeletonInspect = false;
+    bool foundAgentStart      = false;
+    bool foundAgentEvidence   = false;
+    bool foundAgentComplete   = false;
+    bool foundPixelWorlds     = false;
+    bool foundPixelSamples    = false;
+    bool foundPixelCatalog    = false;
+    bool foundPixelValidate   = false;
+    bool foundPixelApply      = false;
     for (size_t i = 0; i < tools->size(); ++i) {
         auto              t    = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
@@ -228,6 +383,22 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_host_hot_reload_status") foundHotReloadStatus = true;
         if (name == "eve_editor_commands") foundEditorCommands = true;
         if (name == "eve_editor_plan") foundEditorPlan = true;
+        if (name == "eve_editor_target_create") foundEditorCreate = true;
+        if (name == "eve_editor_inspect") foundEditorInspect = true;
+        if (name == "eve_editor_execute_observe") foundEditorObserve = true;
+        if (name == "eve_editor_observe_start") foundObserveStart = true;
+        if (name == "eve_editor_observe_poll") foundObservePoll = true;
+        if (name == "eve_editor_observe_close") foundObserveClose = true;
+        if (name == "eve_renderable3d_get") foundRenderableGet = true;
+        if (name == "eve_skeleton_inspect") foundSkeletonInspect = true;
+        if (name == "eve_agent_session_start") foundAgentStart = true;
+        if (name == "eve_agent_session_evidence") foundAgentEvidence = true;
+        if (name == "eve_agent_session_complete") foundAgentComplete = true;
+        if (name == "eve_pixelworld_worlds") foundPixelWorlds = true;
+        if (name == "eve_pixelworld_samples") foundPixelSamples = true;
+        if (name == "eve_pixelworld_catalog_builtin") foundPixelCatalog = true;
+        if (name == "eve_pixelworld_catalog_validate") foundPixelValidate = true;
+        if (name == "eve_pixelworld_catalog_apply") foundPixelApply = true;
     }
     CHECK(foundStatus);
     CHECK(foundEval);
@@ -252,6 +423,22 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundHotReloadStatus);
     CHECK(foundEditorCommands);
     CHECK(foundEditorPlan);
+    CHECK(foundEditorCreate);
+    CHECK(foundEditorInspect);
+    CHECK(foundEditorObserve);
+    CHECK(foundObserveStart);
+    CHECK(foundObservePoll);
+    CHECK(foundObserveClose);
+    CHECK(foundRenderableGet);
+    CHECK(foundSkeletonInspect);
+    CHECK(foundAgentStart);
+    CHECK(foundAgentEvidence);
+    CHECK(foundAgentComplete);
+    CHECK(foundPixelWorlds);
+    CHECK(foundPixelSamples);
+    CHECK(foundPixelCatalog);
+    CHECK(foundPixelValidate);
+    CHECK(foundPixelApply);
 
     client.sendRequest(3, "tools/call", "{\"name\":\"eve_status\",\"arguments\":{}}");
     auto statusMsg = client.expectResult(3);
@@ -332,9 +519,212 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     const std::string editorExecuted =
         textOf(18, "{\"name\":\"eve_editor_execute\",\"arguments\":{\"command\":\"mcp.test-command\",\"payload\":{}}}");
     CHECK(editorExecuted.find("\"status\":\"applied\"") != std::string::npos);
+    const std::string renderableAbsent = textOf(
+        19, "{\"name\":\"eve_renderable3d_get\",\"arguments\":{\"entityId\":0,\"generation\":1}}");
+    CHECK(renderableAbsent.find("graphics module not available") != std::string::npos);
+    const std::string observeAbsent = textOf(
+        20, "{\"name\":\"eve_editor_execute_observe\",\"arguments\":{\"target\":\"mcp.test\",\"command\":\"mcp.test-command\",\"payload\":{},\"entityId\":0,\"generation\":1}}");
+    CHECK(observeAbsent.find("graphics module not available") != std::string::npos);
+    const std::string sceneObserveAbsent = textOf(
+        21, "{\"name\":\"eve_editor_execute_observe\",\"arguments\":{\"target\":\"mcp.test\",\"command\":\"mcp.test-command\",\"payload\":{},\"observer\":\"scene-node\",\"host\":\"world\",\"node\":\"player\"}}");
+    CHECK(sceneObserveAbsent.find("scene module not available") != std::string::npos);
+    const std::string pixelWorlds = textOf(22, "{\"name\":\"eve_pixelworld_worlds\",\"arguments\":{}}");
+    CHECK(pixelWorlds.find("\"seed\":9081") != std::string::npos);
+    const std::string worldId = std::to_string(pixelworld.worldLink().world);
+    const std::string pixelPaused = textOf(
+        23, "{\"name\":\"eve_pixelworld_pause\",\"arguments\":{\"world\":" + worldId +
+                ",\"paused\":true}}");
+    CHECK(pixelPaused.find("\"paused\":true") != std::string::npos);
+    const std::string pixelStepped = textOf(
+        24, "{\"name\":\"eve_pixelworld_step\",\"arguments\":{\"world\":" + worldId +
+                ",\"count\":2}}");
+    CHECK(pixelStepped.find("\"lastTick\":2") != std::string::npos);
+    const std::string pixelSamples = textOf(
+        25, "{\"name\":\"eve_pixelworld_samples\",\"arguments\":{\"world\":" + worldId + "}}");
+    CHECK(pixelSamples.find("\"tick\":2") != std::string::npos);
+    const std::string pixelCatalog =
+        textOf(26, "{\"name\":\"eve_pixelworld_catalog_builtin\",\"arguments\":{}}");
+    CHECK(pixelCatalog.find("eve.pixelworld.material-catalog") != std::string::npos);
+    const std::string invalidCatalog = textOf(
+        27, "{\"name\":\"eve_pixelworld_catalog_validate\",\"arguments\":{\"catalog\":{}}}");
+    CHECK(invalidCatalog.find("\"ok\":false") != std::string::npos);
 
     mcp.stop();
     dt.detach();
+}
+
+TEST_CASE("devtools.mcp.executeObserveCorrelatesEditorTransactionWithLiveRuntime") {
+    auto& mcp = McpServer::instance();
+    mcp.stop();
+
+    ClosedLoopCapture capture;
+    ClosedLoopEditor editor(capture);
+    CapabilityOverride<eve::IRenderCapture> captureOverride(capture);
+    CapabilityOverride<eve::IEditorAutomation> editorOverride(editor);
+
+    const int port = mcp.listen(0);
+    REQUIRE(port > 0);
+    McpClient client(port);
+    client.sendRequest(1, "initialize",
+                       "{\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},"
+                       "\"clientInfo\":{\"name\":\"closed-loop-test\"}}");
+    REQUIRE(client.expectResult(1));
+    client.sendNotification("notifications/initialized");
+
+    const auto call = [&](int id, int generation, const std::string& expectation) {
+        client.sendRequest(
+            id, "tools/call",
+            "{\"name\":\"eve_editor_execute_observe\",\"arguments\":{\"target\":\"material.live\","
+            "\"command\":\"material.property.set.v1\",\"payload\":{\"path\":\"shading.tint\","
+            "\"value\":[0.1,0.8,0.3,1]},\"entityId\":42,\"generation\":" +
+                std::to_string(generation) + ",\"expect\":" + expectation + ",\"tolerance\":0.001}}");
+        auto message = client.expectResult(id);
+        REQUIRE(message);
+        auto content = message->getObject("result")->getArray("content");
+        REQUIRE(content);
+        return content->getObject(0)->getValue<std::string>("text");
+    };
+
+    const std::string stale = call(2, 8, "{\"tint\":[0.1,0.8,0.3,1]}");
+    CHECK(stale.find("\"status\":\"stale\"") != std::string::npos);
+    CHECK_EQ(editor.executeCount, 0);
+    CHECK_EQ(capture.info.tintG, 0.2f);
+
+    const std::string invalid = call(3, 7, "{\"missing\":1}");
+    CHECK(invalid.find("\"status\":\"invalid-expectation\"") != std::string::npos);
+    CHECK(invalid.find("Observed value has no field missing") != std::string::npos);
+    CHECK_EQ(editor.executeCount, 0);
+    CHECK_EQ(capture.info.tintG, 0.2f);
+
+    const std::string rejected = call(4, 7, "{\"tint\":[0.1,0.8,0.3,1]}");
+    CHECK(rejected.find("\"status\":\"transaction-rejected\"") != std::string::npos);
+    CHECK(rejected.find("\"converged\":false") != std::string::npos);
+    CHECK(rejected.find("tint[1]") != std::string::npos);
+    CHECK(rejected.find("\"tint\":[0.1,0.2,0.3,1]") != std::string::npos);
+    CHECK_EQ(editor.executeCount, 1);
+    CHECK_EQ(capture.info.tintG, 0.2f);
+
+    const std::string observed = call(5, 7, "{\"tint\":[0.1,0.8,0.3,1]}");
+    CHECK(observed.find("\"status\":\"observed\"") != std::string::npos);
+    CHECK(observed.find("\"converged\":true") != std::string::npos);
+    CHECK(observed.find("\"maxError\":0") != std::string::npos);
+    CHECK(observed.find("\"transactionId\":\"closed-loop.1\"") != std::string::npos);
+    CHECK(observed.find("\"tint\":[0.1,0.2,0.3,1]") != std::string::npos);
+    CHECK(observed.find("\"tint\":[0.1,0.8,0.3,1]") != std::string::npos);
+    CHECK_EQ(editor.executeCount, 2);
+
+    mcp.stop();
+}
+
+TEST_CASE("devtools.mcp.executeObserveCorrelatesSceneEditorWithNamedHost") {
+    auto& mcp = McpServer::instance();
+    mcp.stop();
+
+    ClosedLoopScene scene;
+    ClosedLoopSceneEditor editor(scene);
+    CapabilityOverride<eve::ISceneQuery> sceneOverride(scene);
+    CapabilityOverride<eve::IEditorAutomation> editorOverride(editor);
+
+    const int port = mcp.listen(0);
+    REQUIRE(port > 0);
+    McpClient client(port);
+    client.sendRequest(1, "initialize",
+                       "{\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},"
+                       "\"clientInfo\":{\"name\":\"scene-loop-test\"}}");
+    REQUIRE(client.expectResult(1));
+    client.sendNotification("notifications/initialized");
+
+    const auto call = [&](int id, const std::string& node) {
+        client.sendRequest(
+            id, "tools/call",
+            "{\"name\":\"eve_editor_execute_observe\",\"arguments\":{\"target\":\"scene.live\","
+            "\"command\":\"scene.transform.set.v1\",\"payload\":{\"object\":\"player\","
+            "\"position\":[4,5,3]},\"observer\":\"scene-node\",\"host\":\"world\",\"node\":\"" +
+                node + "\",\"expect\":{\"x\":4,\"y\":5},\"tolerance\":0.001}}");
+        auto message = client.expectResult(id);
+        REQUIRE(message);
+        auto content = message->getObject("result")->getArray("content");
+        REQUIRE(content);
+        return content->getObject(0)->getValue<std::string>("text");
+    };
+
+    const std::string missing = call(2, "missing");
+    CHECK(missing.find("\"status\":\"not-found\"") != std::string::npos);
+    CHECK_EQ(editor.executeCount, 0);
+    CHECK_EQ(scene.node.x, 1.f);
+
+    const std::string observed = call(3, "player");
+    CHECK(observed.find("\"status\":\"observed\"") != std::string::npos);
+    CHECK(observed.find("\"converged\":true") != std::string::npos);
+    CHECK(observed.find("\"transactionId\":\"scene-loop.1\"") != std::string::npos);
+    CHECK(observed.find("\"x\":1") != std::string::npos);
+    CHECK(observed.find("\"x\":4") != std::string::npos);
+    CHECK_EQ(editor.executeCount, 1);
+    CHECK_EQ(scene.node.y, 5.f);
+
+    mcp.stop();
+}
+
+TEST_CASE("devtools.mcp.rxObservationSessionTracksChangesDeduplicatesAndCloses") {
+    auto& mcp = McpServer::instance();
+    mcp.stop();
+
+    ClosedLoopScene scene;
+    CapabilityOverride<eve::ISceneQuery> sceneOverride(scene);
+    eve::editor::Editor editor;
+
+    const int port = mcp.listen(0);
+    REQUIRE(port > 0);
+    McpClient client(port);
+    client.sendRequest(1, "initialize",
+                       "{\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},"
+                       "\"clientInfo\":{\"name\":\"rx-observation-test\"}}");
+    REQUIRE(client.expectResult(1));
+    client.sendNotification("notifications/initialized");
+
+    const auto call = [&](int id, const std::string& arguments) {
+        client.sendRequest(id, "tools/call", arguments);
+        auto message = client.expectResult(id);
+        REQUIRE(message);
+        auto content = message->getObject("result")->getArray("content");
+        REQUIRE(content);
+        return content->getObject(0)->getValue<std::string>("text");
+    };
+
+    const std::string started = call(
+        2, R"({"name":"eve_editor_observe_start","arguments":{"observer":"scene-node","host":"world","node":"player","expect":{"x":4},"tolerance":0.001}})"
+    );
+    Poco::JSON::Parser parser;
+    auto startedObject = parser.parse(started).extract<Poco::JSON::Object::Ptr>();
+    REQUIRE(startedObject);
+    const std::string sessionId = startedObject->getValue<std::string>("sessionId");
+    CHECK(started.find("\"converged\":false") != std::string::npos);
+
+    const std::string request = "{\"name\":\"eve_editor_observe_poll\",\"arguments\":{\"sessionId\":\"" +
+                                sessionId + "\"}}";
+    const std::string initial = call(3, request);
+    CHECK(initial.find("\"events\":[]") != std::string::npos);
+    const std::string duplicate = call(4, request);
+    CHECK(duplicate.find("\"events\":[]") != std::string::npos);
+
+    scene.node.x = 4.f;
+    const std::string changed = call(5, request);
+    CHECK(changed.find("\"x\":4") != std::string::npos);
+    CHECK(changed.find("\"converged\":true") != std::string::npos);
+
+    scene.node.id = "gone";
+    const std::string unavailable = call(6, request);
+    CHECK(unavailable.find("\"status\":\"observation-unavailable\"") != std::string::npos);
+    CHECK(unavailable.find("\"status\":\"not-found\"") != std::string::npos);
+    CHECK(unavailable.find("\"converged\":false") != std::string::npos);
+
+    const std::string closed = call(
+        7, "{\"name\":\"eve_editor_observe_close\",\"arguments\":{\"sessionId\":\"" + sessionId + "\"}}");
+    CHECK(closed.find("\"status\":\"applied\"") != std::string::npos);
+    const std::string afterClose = call(8, request);
+    CHECK(afterClose.find("not-found") != std::string::npos);
+
+    mcp.stop();
 }
 
 TEST_CASE("devtools.mcp.evalAndPause") {
@@ -345,12 +735,19 @@ TEST_CASE("devtools.mcp.evalAndPause") {
     mcp.stop();
     dt.detach();
 
-    ssq::VM vm(1024, ssq::Libs::ALL);
-    {
-        auto script = vm.compileSource("score <- 42;\n");
-        vm.run(script);
-    }
-    dt.attach(vm, false);
+    const auto projectRoot =
+        std::filesystem::temp_directory_path() /
+        ("eve_mcp_eval_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directories(projectRoot);
+
+    eve::Runtime runtime(1024, ssq::Libs::ALL);
+    runtime.runSource(
+        "score <- 42;\n"
+        "eve_mcp_skeleton_inspect <- function(actor,bone) { "
+        "return \"{\\\"actor\\\":\\\"\" + actor + \"\\\",\\\"bone\\\":\\\"\" + bone + \"\\\"}\"; };\n",
+        "game:/main.nut");
+    dt.attach(runtime, false);
+    mcp.setGameRoot(projectRoot.string());
 
     const int port = mcp.listen(0);
     REQUIRE(port > 0);
@@ -368,16 +765,46 @@ TEST_CASE("devtools.mcp.evalAndPause") {
         evalMsg->getObject("result")->getArray("content")->getObject(0)->getValue<std::string>("text");
     CHECK(evalText.find("42") != std::string::npos);
 
-    client.sendRequest(3, "tools/call", "{\"name\":\"eve_pause\",\"arguments\":{}}");
-    REQUIRE(client.expectResult(3));
+    client.sendRequest(3, "tools/call", "{\"name\":\"eve_run_script\",\"arguments\":{\"source\":\"score = 43;\"}}");
+    auto runMsg = client.expectResult(3);
+    REQUIRE(runMsg);
+    const std::string runText =
+        runMsg->getObject("result")->getArray("content")->getObject(0)->getValue<std::string>("text");
+    CHECK(runText == "ok");
+
+    // One-shot MCP source must remain in memory: no user-space script and no
+    // persistent compiler identity that can collide with project hot reload.
+    CHECK(runtime.scriptCompiler().metadata("mcp_snippet.nut") == nullptr);
+    CHECK(runtime.scriptCompiler().metadata("eval") == nullptr);
+    bool foundScript = false;
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(projectRoot)) {
+        if (entry.is_regular_file() && entry.path().extension() == ".nut") foundScript = true;
+    }
+    CHECK(!foundScript);
+
+    client.sendRequest(4, "tools/call",
+                       "{\"name\":\"eve_skeleton_inspect\",\"arguments\":{\"actor\":\"Lyra\",\"bone\":\"handslot.r\"}}");
+    auto skeletonMsg = client.expectResult(4);
+    REQUIRE(skeletonMsg);
+    const std::string skeletonText = skeletonMsg->getObject("result")
+                                         ->getArray("content")
+                                         ->getObject(0)
+                                         ->getValue<std::string>("text");
+    CHECK(skeletonText.find("\"actor\":\"Lyra\"") != std::string::npos);
+    CHECK(skeletonText.find("\"bone\":\"handslot.r\"") != std::string::npos);
+
+    client.sendRequest(5, "tools/call", "{\"name\":\"eve_pause\",\"arguments\":{}}");
+    REQUIRE(client.expectResult(5));
     CHECK(dbg.isPaused());
 
-    client.sendRequest(4, "tools/call", "{\"name\":\"eve_continue\",\"arguments\":{}}");
-    REQUIRE(client.expectResult(4));
+    client.sendRequest(6, "tools/call", "{\"name\":\"eve_continue\",\"arguments\":{}}");
+    REQUIRE(client.expectResult(6));
     CHECK(!dbg.isPaused());
 
     mcp.stop();
     dt.detach();
+    mcp.setGameRoot({});
+    std::filesystem::remove_all(projectRoot);
 }
 
 TEST_CASE("devtools.ai.panelLog") {

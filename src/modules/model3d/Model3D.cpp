@@ -193,11 +193,30 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getMaterialCount", &ModelData::getMaterialCount);
     md.addFunc("getVertexCount", &ModelData::getVertexCount);
     md.addFunc("getFaceCount", &ModelData::getFaceCount);
+    md.addFunc("getVertexPosition", &ModelData::getVertexPosition);
+    md.addFunc("getFaceVertexIndex", &ModelData::getFaceVertexIndex);
     md.addFunc("hasNormals", &ModelData::hasNormals);
     md.addFunc("hasTexCoords", &ModelData::hasTexCoords);
     md.addFunc("getTexCoordChannelCount", &ModelData::getTexCoordChannelCount);
     md.addFunc("hasTexCoordChannel", &ModelData::hasTexCoordChannel);
     md.addFunc("getTexCoord", &ModelData::getTexCoord);
+    auto surfaceUv = table.addClass<SurfaceUv>(
+        "SurfaceUv", std::function<SurfaceUv *()>([]() { return new SurfaceUv(); }), true);
+    surfaceUv.addFunc("getU", [](SurfaceUv *value) { return value->u; });
+    surfaceUv.addFunc("getV", [](SurfaceUv *value) { return value->v; });
+    surfaceUv.addFunc("getBarycentricA", [](SurfaceUv *value) { return value->barycentricA; });
+    surfaceUv.addFunc("getBarycentricB", [](SurfaceUv *value) { return value->barycentricB; });
+    surfaceUv.addFunc("getBarycentricC", [](SurfaceUv *value) { return value->barycentricC; });
+    surfaceUv.addFunc("getTriangleIndex", [](SurfaceUv *value) { return value->triangleIndex; });
+    surfaceUv.addFunc("getUvChannel", [](SurfaceUv *value) { return value->uvChannel; });
+    md.addFunc("mapSurfacePointToUv",
+               [](ModelData *self, int meshIndex, int triangleIndex, float x, float y,
+                  float z, int channel) -> SurfaceUv * {
+                   auto mapped = self->mapSurfacePointToUv(meshIndex, triangleIndex, x, y, z,
+                                                           channel);
+                   if (!mapped.ok()) throw eve::Exception("%s", mapped.status().describe().c_str());
+                   return new SurfaceUv(std::move(mapped).takeValue());
+               });
     md.addFunc("hasTangents", &ModelData::hasTangents);
     md.addFunc("getTangent", &ModelData::getTangent);
     md.addFunc("getBitangent", &ModelData::getBitangent);

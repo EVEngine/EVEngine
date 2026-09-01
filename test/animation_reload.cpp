@@ -16,8 +16,8 @@ using namespace eve::animation;
 
 namespace {
 
-const char* kRefreshEvaPath = "eve_anim_reload_refresh.eva";
-const char* kBrokenEvaPath  = "eve_anim_reload_broken.eva";
+const char* kRefreshFixturePath = "eve_anim_reload_refresh.anim.txt";
+const char* kBrokenFixturePath  = "eve_anim_reload_broken.anim.txt";
 
 std::unique_ptr<AnimSkeleton> makeSkeleton() {
     auto sk   = std::make_unique<AnimSkeleton>();
@@ -28,7 +28,7 @@ std::unique_ptr<AnimSkeleton> makeSkeleton() {
     return sk;
 }
 
-std::string makeEva(float duration, int keyCount) {
+std::string makeAnimationFixture(float duration, int keyCount) {
     auto     sk = makeSkeleton();
     AnimClip clip("walk");
     clip.setDuration(duration);
@@ -37,10 +37,10 @@ std::string makeEva(float duration, int keyCount) {
     for (int i = 0; i < keyCount; ++i) {
         clip.addPositionKey(0, static_cast<float>(i) * 0.5f, 0.f, 0.f, static_cast<float>(i));
     }
-    return AnimImporter::exportEva(sk.get(), &clip);
+    return AnimImporter::exportAnimationFixtureText(sk.get(), &clip);
 }
 
-void writeEva(const char* path, const std::string& text) {
+void writeAnimationFixture(const char* path, const std::string& text) {
     std::ofstream ofs(path, std::ios::binary | std::ios::trunc);
     ofs << text;
 }
@@ -67,48 +67,53 @@ TEST_CASE("animClip.registryTracksPathAndUnregistersOnDestroy") {
     AnimClipRegistry::clear();
     {
         std::unique_ptr<AnimClip> c(new AnimClip("c"));
-        AnimClipRegistry::registerPath("anim\\walk.eva", c.get());
-        CHECK(AnimClipRegistry::hasPath("anim/walk.eva"));
+        AnimClipRegistry::registerPath("anim\\walk.anim.txt", c.get());
+        CHECK(AnimClipRegistry::hasPath("anim/walk.anim.txt"));
         CHECK_EQ(AnimClipRegistry::count(), 1);
 
-        const std::vector<AnimClip*> found = AnimClipRegistry::findByPath("anim/walk.eva");
+        const std::vector<AnimClip*> found = AnimClipRegistry::findByPath("anim/walk.anim.txt");
         REQUIRE(found.size() == 1u);
         CHECK(found[0] == c.get());
     }
     CHECK_EQ(AnimClipRegistry::count(), 0);
-    CHECK(!AnimClipRegistry::hasPath("anim/walk.eva"));
+    CHECK(!AnimClipRegistry::hasPath("anim/walk.anim.txt"));
     AnimClipRegistry::clear();
 }
 
 TEST_CASE("animClip.reloadPathRefreshesRegisteredClips") {
-    writeEva(kRefreshEvaPath, makeEva(1.f, 2));
+    writeAnimationFixture(kRefreshFixturePath, makeAnimationFixture(1.f, 2));
 
     Animation*                anim = Animation::create();
-    std::unique_ptr<AnimClip> loaded(anim->newClipFromEvaFile(kRefreshEvaPath));
+    std::unique_ptr<AnimClip> loaded(anim->newClipFromAnimationFixtureText(kRefreshFixturePath));
     REQUIRE(loaded.get() != nullptr);
     AnimClip* identity = loaded.get();
     CHECK(loaded->getDuration() == 1.f);
-    CHECK_EQ(AnimClipRegistry::findByPath(kRefreshEvaPath).size(), 1u);
+    CHECK_EQ(AnimClipRegistry::findByPath(kRefreshFixturePath).size(), 1u);
 
     // Rewrite the source with different content and hot-reload.
-    writeEva(kRefreshEvaPath, makeEva(2.f, 4));
-    CHECK_EQ(AnimClipRegistry::reloadPath(kRefreshEvaPath), 1);
+    writeAnimationFixture(kRefreshFixturePath, makeAnimationFixture(2.f, 4));
+    auto refreshed = AnimClipRegistry::reloadPath(kRefreshFixturePath);
+    REQUIRE(refreshed.ok());
+    CHECK_EQ(std::move(refreshed).takeValue(), 1);
 
     CHECK(loaded.get() == identity);  // instance identity is stable
     CHECK(loaded->getDuration() == 2.f);
     CHECK_EQ(loaded->getPositionKeyCount(0), 4);
 
     AnimClipRegistry::clear();
-    std::remove(kRefreshEvaPath);
+    std::remove(kRefreshFixturePath);
 }
 
 TEST_CASE("animClip.reloadUnknownOrBrokenPathIsNoop") {
-    CHECK_EQ(AnimClipRegistry::reloadPath("no_such_file.eva"), 0);
+    auto absent = AnimClipRegistry::reloadPath("no_such_file.anim.txt");
+    REQUIRE(absent.ok());
+    CHECK_EQ(std::move(absent).takeValue(), 0);
 
     std::unique_ptr<AnimClip> c(new AnimClip("c"));
-    AnimClipRegistry::registerPath(kBrokenEvaPath, c.get());
-    writeEva(kBrokenEvaPath, "not an eva file");
-    CHECK_EQ(AnimClipRegistry::reloadPath(kBrokenEvaPath), 0);
+    AnimClipRegistry::registerPath(kBrokenFixturePath, c.get());
+    writeAnimationFixture(kBrokenFixturePath, "not an animation fixture");
+    auto broken = AnimClipRegistry::reloadPath(kBrokenFixturePath);
+    REQUIRE(!broken.ok());
     AnimClipRegistry::clear();
-    std::remove(kBrokenEvaPath);
+    std::remove(kBrokenFixturePath);
 }

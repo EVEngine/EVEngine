@@ -11,7 +11,8 @@
 # switched off and its dependencies, its third-party libraries and its script
 # binding follow automatically.
 #
-#   -DEVENGINE_PROFILE=minimal|2d|3d|full|web    pick a preset (default: full)
+#   -DEVENGINE_PROFILE=minimal|2d|3d|runtime-3d|full|web|procgen-core-only|physics-core-only|asset-core-only|headless|server
+#                                                   pick a preset (default: full)
 #   -DEVENGINE_MODULE_<NAME>=ON|OFF              override one module
 #
 # See docs/dev/模块编排与裁剪架构.md.
@@ -93,11 +94,60 @@ function(eve_resolve_modules)
         set(EVENGINE_PROFILE "full")
     endif()
 
-    set(_valid full minimal 2d 3d web)
+    set(_valid full minimal 2d 3d runtime-3d web procgen-core-only physics-core-only asset-core-only headless server)
     if(NOT EVENGINE_PROFILE IN_LIST _valid)
         message(FATAL_ERROR "EVENGINE_PROFILE must be one of: ${_valid} (got: ${EVENGINE_PROFILE})")
     endif()
     message(STATUS "Module profile: ${EVENGINE_PROFILE}")
+
+    # Host profiles retain the historical required runtime (cmdline, window,
+    # graphics, ...). Core/server profiles are deliberately different: they
+    # compile and smoke-test domain code without constructing a window or
+    # linking a renderer. Keep the seed list explicit so adding a new module
+    # cannot silently turn a server build into a client build.
+    set(_hostless_profile FALSE)
+    set(_profile_seed "")
+    if(EVENGINE_PROFILE STREQUAL "procgen-core-only")
+        set(_hostless_profile TRUE)
+        set(_profile_seed common)
+        set(EVENGINE_PROFILE_CORE_KIND procgen CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    elseif(EVENGINE_PROFILE STREQUAL "physics-core-only")
+        set(_hostless_profile TRUE)
+        set(_profile_seed common event)
+        set(EVENGINE_PROFILE_CORE_KIND physics CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    elseif(EVENGINE_PROFILE STREQUAL "asset-core-only")
+        set(_hostless_profile TRUE)
+        set(_profile_seed common data asset)
+        set(EVENGINE_PROFILE_CORE_KIND asset CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    elseif(EVENGINE_PROFILE STREQUAL "headless")
+        set(_hostless_profile TRUE)
+        set(_profile_seed common data event timer pixelworld)
+        set(EVENGINE_PROFILE_CORE_KIND headless CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    elseif(EVENGINE_PROFILE STREQUAL "server")
+        set(_hostless_profile TRUE)
+        set(_profile_seed
+            common data event timer network authority decision definitions effects
+            game_event orders schema social statepatch steering tags transaction
+            economy attributes sensing spatial action settlement tactics pixelworld)
+        set(EVENGINE_PROFILE_CORE_KIND server CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    else()
+        unset(EVENGINE_PROFILE_CORE_KIND CACHE)
+    endif()
+    if(_hostless_profile)
+        set(EVENGINE_BUILD_HOST OFF CACHE BOOL
+            "Build the interactive/native host executable" FORCE)
+        set(EVENGINE_PROFILE_HOSTLESS ON CACHE INTERNAL
+            "The active profile does not build a host executable" FORCE)
+        message(STATUS "Hostless profile: renderer/window host disabled")
+    else()
+        set(EVENGINE_PROFILE_HOSTLESS OFF CACHE INTERNAL
+            "The active profile does not build a host executable" FORCE)
+    endif()
 
     # Accept either casing for the overrides: -DEVENGINE_MODULE_map=OFF and
     # -DEVENGINE_MODULE_MAP=OFF mean the same thing.
@@ -112,19 +162,38 @@ function(eve_resolve_modules)
     set(_wanted "")
     foreach(m IN LISTS EVE_ALL_MODULES)
         set(_on FALSE)
-        if(EVE_MODULE_${m}_REQUIRED)
+        set(_selection_profile "${EVENGINE_PROFILE}")
+        if(EVENGINE_PROFILE STREQUAL "runtime-3d")
+            set(_selection_profile "3d")
+        endif()
+        if(_hostless_profile)
+            if("${m}" IN_LIST _profile_seed)
+                set(_on TRUE)
+            endif()
+        elseif(EVE_MODULE_${m}_REQUIRED)
             set(_on TRUE)
         elseif(EVENGINE_PROFILE STREQUAL "full")
             set(_on TRUE)
-        elseif("${EVENGINE_PROFILE}" IN_LIST EVE_MODULE_${m}_GROUP)
+        elseif("${_selection_profile}" IN_LIST EVE_MODULE_${m}_GROUP)
             set(_on TRUE)
+        endif()
+
+        if(EVENGINE_PROFILE STREQUAL "runtime-3d" AND
+           m MATCHES "^(editor|editing|.*_editing)$")
+            set(_on FALSE)
         endif()
 
         # --- 2. explicit override -------------------------------------------
         if(DEFINED EVENGINE_MODULE_${m})
-            if(EVE_MODULE_${m}_REQUIRED AND NOT EVENGINE_MODULE_${m})
+            if(EVE_MODULE_${m}_REQUIRED AND NOT EVENGINE_MODULE_${m} AND NOT _hostless_profile)
                 message(FATAL_ERROR
                     "Module '${m}' is required by the engine core and cannot be disabled")
+            endif()
+            if(_hostless_profile AND EVENGINE_MODULE_${m} AND NOT "${m}" IN_LIST _profile_seed)
+                message(FATAL_ERROR
+                    "Hostless profile '${EVENGINE_PROFILE}' cannot enable '${m}'. "
+                    "Use a normal client profile for the interactive/renderer module, "
+                    "or add it to the explicit server/core profile seed.")
             endif()
             set(_on ${EVENGINE_MODULE_${m}})
         endif()
@@ -155,6 +224,15 @@ function(eve_resolve_modules)
             endif()
         endforeach()
     endwhile()
+
+    if(EVENGINE_PROFILE STREQUAL "runtime-3d")
+        foreach(m IN LISTS _wanted)
+            if(m MATCHES "^(editor|editing|.*_editing)$")
+                message(FATAL_ERROR
+                    "Runtime-only profile '${EVENGINE_PROFILE}' acquired editing module '${m}'")
+            endif()
+        endforeach()
+    endif()
 
     # --- 4. emit in declaration order ----------------------------------------
     set(_enabled "")
@@ -211,6 +289,7 @@ endfunction()
 # Only modules that expose a Squirrel class and name a slot appear.
 function(eve_write_module_manifest out_file)
     set(_entries "")
+    set(_contracts "")
     foreach(m IN LISTS EVE_ENABLED_MODULES)
         set(_classes ${EVE_MODULE_${m}_SCRIPT})
         set(_slots ${EVE_MODULE_${m}_SLOT})
@@ -225,9 +304,35 @@ function(eve_write_module_manifest out_file)
             list(APPEND _entries "{ slot = \"${_slot}\", cls = \"${_cls}\" }")
         endforeach()
     endforeach()
+    foreach(m IN LISTS EVE_ALL_MODULES)
+        if("${m}" IN_LIST EVE_ENABLED_MODULES)
+            set(_enabled true)
+        else()
+            set(_enabled false)
+        endif()
+        foreach(_field IN ITEMS DEPS OPTIONAL_DEPS GROUP SCRIPT SLOT)
+            set(_values ${EVE_MODULE_${m}_${_field}})
+            if(_values)
+                string(JOIN "\", \"" _values_joined ${_values})
+                set(_${_field}_array "[\"${_values_joined}\"]")
+            else()
+                set(_${_field}_array "[]")
+            endif()
+        endforeach()
+        if(EVE_MODULE_${m}_REQUIRED)
+            set(_required true)
+        else()
+            set(_required false)
+        endif()
+        list(APPEND _contracts
+            "{ name = \"${m}\", enabled = ${_enabled}, required = ${_required}, layer = ${EVE_MODULE_${m}_LAYER}, deps = ${_DEPS_array}, optionalDeps = ${_OPTIONAL_DEPS_array}, profiles = ${_GROUP_array}, classes = ${_SCRIPT_array}, slots = ${_SLOT_array} }")
+    endforeach()
     string(JOIN "\n    " _joined ${_entries})
+    string(JOIN "\n    " _contracts_joined ${_contracts})
     file(WRITE "${out_file}"
         "// Generated from cmake/module_manifest.cmake -- do not edit.\n"
         "// Consumed by src/scripts/load.nut to bind whatever modules this build contains.\n"
-        "eve_modules <- [\n    ${_joined}\n];\n")
+        "eve_modules <- [\n    ${_joined}\n];\n"
+        "// Complete build/tooling contract, including modules disabled by the selected profile.\n"
+        "eve_module_contract <- [\n    ${_contracts_joined}\n];\n")
 endfunction()

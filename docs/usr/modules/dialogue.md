@@ -113,7 +113,7 @@ endconversation
 ```
 
 - 内容：`loadFromDnut/loadFromDnutFile`、`importYarn/importTwee`、`clear`、
-  `getConversationCount()`、`getConversationId(index)`、`hasConversation`、`getLastError`。
+  `getConversationCount()`、`getConversationId(index)`、`hasConversation`；失败详情通过诊断查询 API 获取。
 - 外部格式：Yarn Spinner 节点和 Twine Twee 3 passages 会转换为相同的稳定节点模型；
   角色前缀、参数占位符、双向 Twine 链接、Yarn shortcut options、`jump/stop/wait/call/set`
   命令以及 `#line:/#voice:` 标签都会保留，并进入统一的引用校验流程。Twee 的
@@ -137,7 +137,10 @@ endconversation
   `exportVoiceRecordingCsv(locale)` 生成并可再次回导的录音清单，包含角色、源文、译文、
   voice key、录制状态和时长；当前行可用 `getVoiceStatus/getVoiceDuration` 读取回导结果，
   将时长直接交给 `dialogueVoice.registerVoice` 即可驱动语音结束自动推进。
-- 执行：`start(id, bindings)`、`advance`、`select(routeId)`、`isActive/isBlocked`、
+- 内容包提交前可调用 `validateLocalization(i18n, locale)`，逐节点验证 `i18n` 引用在指定
+  精确语言中存在；该检查故意不接受默认语言回退，并返回结构化 Result 和节点路径。
+- 执行：产品路径使用 `startChecked(id, bindings)`、`advanceChecked()` 和 `select(routeId)` 的
+  结构化 Result；`start(id, bindings)` / `advance()` 仅作兼容投影；`isActive/isBlocked`、
   `getActiveConversationId/getNodeId/getNodeKind`。
 - 当前节点：`getSpeaker/getText/getPool/getI18nKey/getVoice`、
   `getRouteCount/getRouteId`。
@@ -193,7 +196,7 @@ if (doc.validate()) dialogueFlow.applyDocument(doc);
 - 连线：`getRouteCount/getRouteLabel/getRouteTarget/addRoute/setRoute/removeRoute`；
   route 适用于 branch 与 choice，节点改名或删除会同步维护引用。
 - 结构化诊断：`validate`、`getDiagnosticCount/getDiagnosticSeverity/getDiagnosticPath`
-  `/getDiagnosticLine/getDiagnosticMessage`、`getLastError`。
+  `/getDiagnosticLine/getDiagnosticMessage`。
 - Registry 桥接：`DialogueFlow.newDocument/getDocument/applyDocument`。文档只是数据类，
   不依赖 editor 或 ui 模块，因此同一资产可被桌面编辑器、游戏内工具、自动化生成器和测试复用。
 

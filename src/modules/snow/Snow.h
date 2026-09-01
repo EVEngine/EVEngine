@@ -60,7 +60,7 @@ public:
     /**
      * @brief Replace an uploaded snow texture's pixels in place.
      * @param kind one of "height" | "albedo" | "normal" (must match the upload).
-     * Returns false when unsupported (e.g. WebGPU backend).
+     * Returns false when the texture dimensions or pixel data are invalid.
      */
     bool updateTexture(SnowField *field, graphics::Texture *texture,
                        graphics::Graphics *gfx, const std::string &kind);

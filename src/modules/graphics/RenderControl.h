@@ -30,9 +30,15 @@ class Graphics;
  *   "frustumCull"   — conservative bounding-sphere frustum culling during the job-ified
  *                     frame data prep (default off; meshes without bounds are never culled)
  *   "gi"            — enables gbufferAlbedo; mesh hemispheric GI (fullscreen SSGI is not auto-applied)
+ *   "rtgi"          — fullscreen real-time GI post pass (SSGI) overlay
  *   "aa"            — FXAA resolve of the 3D scene color into the swapchain (default on)
+ *   "taa"           — full temporal AA with projection jitter, motion/depth reprojection,
+ *                     Catmull-Rom history, YCoCg variance clipping and adaptive sharpening;
+ *                     enabling it disables MSAA by default
  *   "msaa"          — hardware MSAA on the 3D scene color pass (default on; sample count via
  *                     Graphics.setMsaaSamples, default 4, clamped to device support)
+ *   "ssr"           — PBR-aware screen-space reflections with coarse/fine tracing and temporal denoise
+ *   "reflectionChain"— enables TAA plus the complete RTGI then SSR lighting chain (default off)
  *   "decal"         — screen-space decal layer pass between gbuffer and forward
  *                     (implies gbuffer; default off)
  *   "atmosphere"    — analytic sky/aerial-perspective pass (default on)
@@ -62,6 +68,18 @@ public:
     void disable(const std::string &feature);
     bool isEnabled(const std::string &feature) const;
 
+    /**
+     * @brief Set the shared TAA/RTGI/SSR quality preset used by the automatic reflection chain.
+     * @param quality One of "low", "medium", "high" or "ultra"; unknown values use "high".
+     */
+    void setReflectionQuality(const std::string &quality);
+    /** @brief Return the shared TAA/RTGI/SSR quality preset. */
+    std::string getReflectionQuality() const { return reflectionQuality_; }
+    /** @brief Set the unified post-process quality for TAA, RTGI and SSR. */
+    void setPostProcessQuality(const std::string &quality) { setReflectionQuality(quality); }
+    /** @brief Return the unified post-process quality for TAA, RTGI and SSR. */
+    std::string getPostProcessQuality() const { return reflectionQuality_; }
+
     /** @brief Rebuild the executable pass list from current feature flags. */
     void compile();
     bool isCompiled() const { return compiled_ && !dirty_; }
@@ -84,6 +102,7 @@ private:
     Graphics *gfx_ = nullptr;
     std::unordered_map<std::string, bool> features_;
     std::vector<std::string> passes_;
+    std::string reflectionQuality_ = "high";
     GBuffer gbuffer_;
     bool dirty_ = true;
     bool compiled_ = false;

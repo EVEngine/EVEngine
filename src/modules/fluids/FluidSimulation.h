@@ -73,6 +73,12 @@ public:
 
     /** @brief Advance the simulation by dt seconds (params.iterations substeps). */
     void step(float dt);
+    /**
+     * @brief Advance using an explicit shared-backend substep count.
+     * @param dt Non-negative simulation duration in seconds.
+     * @param substeps Positive integration substeps supplied by the backend contract.
+     */
+    void step(float dt, int substeps);
 
     /** @return number of live particles. */
     int particleCount() const { return count_; }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common/ECS.h"
+#include "common/Identity.h"
+#include "common/Result.h"
 
 #include <cstdint>
 #include <functional>
@@ -33,11 +35,16 @@ class Source;
 
 namespace eve::scene {
 
+/** @brief Outcome of an atomic scene-tree mutation. */
+enum class SceneMutationStatus { Applied, Rejected };
+
 /**
  * @brief Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.
  */
 struct SceneNode {
     std::string id;
+    /** @brief Persisted object identity; nil means the legacy locator is still in use. */
+    eve::SceneObjectId persistentId;
     std::string key;
     std::string name;
     std::string space = "3d";  // "2d" | "3d"
@@ -62,7 +69,7 @@ struct SceneNode {
     /** @brief Generic links (renderable / physics / camera / audio). Target owned elsewhere. */
     std::vector<SceneLink> links;
 
-    /** @brief Lazy companion SceneObject ECS entity id; 0 = none. */
+    /** @brief Lazy companion SceneObject ECS runtime id; 0 = none. Never a persisted identity. */
     uint32_t objectId = 0;
 
     int firstChild = -1;
@@ -100,10 +107,27 @@ public:
         int root = -1;
     };
 
+    /**
+     * @brief Builds a detached replacement tree without mutating a host or firing callbacks.
+     * @param
+     * previous Optional previous tree whose links and lazy object ids are preserved by node id.
+     * @param root
+     * Declarative target root.
+     * @return Fully indexed replacement tree, or a validation failure.
+     */
+    [[nodiscard]] static eve::Result<Tree> buildDetachedTree(const Tree* previous, NodeDesc root);
+
     COMPONENT(Meta, meta)
     COMPONENT(Tree, tree)
 
-    static SceneHost *createHost(const std::string &name = "");
+    /**
+     * @brief Creates an ECS-owned scene host with an explicit Result contract.
+     * @param name Stable host name; empty names receive a process-local name.
+     * @return Borrowed host pointer, or a structured allocation/ownership failure.
+     * @remarks The ECS table owns the host. The pointer becomes stale after
+     *          entity destruction; retain a runtime handle across deferred work.
+     */
+    [[nodiscard]] static eve::Result<SceneHost *> createHost(const std::string &name = "");
 
     void setName(const std::string &name);
     const std::string &getName();
@@ -115,12 +139,26 @@ public:
     /** @brief Key-aware patch when structure matches; else full replace. */
     bool setTreeReconcile(NodeDesc root);
 
-    SceneNode *findById(const std::string &id);
-    SceneNode *findByKey(const std::string &key);
-    /** @brief First node whose name equals `name` (DFS from root). */
-    SceneNode *findByName(const std::string &name);
-    /** @brief Path of ids joined by '/', e.g. "root/player/weapon". Relative to host root. */
-    SceneNode *findByPath(const std::string &path);
+    /**
+     * @brief Finds a node by stable id with an explicit status.
+     * @return Borrowed node, invalidated by the next tree replacement/reconcile, or a failure.
+     */
+    [[nodiscard]] eve::Result<SceneNode *> findById(const std::string &id);
+    /**
+     * @brief Finds a node by reconcile key with an explicit status.
+     * @return Borrowed node, invalidated by the next tree replacement/reconcile, or a failure.
+     */
+    [[nodiscard]] eve::Result<SceneNode *> findByKey(const std::string &key);
+    /**
+     * @brief Finds the first node name match with an explicit status.
+     * @return Borrowed node, invalidated by the next tree replacement/reconcile, or a failure.
+     */
+    [[nodiscard]] eve::Result<SceneNode *> findByName(const std::string &name);
+    /**
+     * @brief Finds a node path with an explicit status.
+     * @return Borrowed node, invalidated by the next tree replacement/reconcile, or a failure.
+     */
+    [[nodiscard]] eve::Result<SceneNode *> findByPath(const std::string &path);
     int findIndexById(const std::string &id);
     int findIndexByKey(const std::string &key);
     int findIndexByName(const std::string &name);
@@ -129,18 +167,18 @@ public:
     bool hasNode(const std::string &id);
     int getNodeCount();
     int getRootIndex();
-    SceneNode *getRoot();
-    SceneNode *getNode(int index);
+    [[nodiscard]] SceneNode *getRoot();
+    [[nodiscard]] SceneNode *getNode(int index);
 
     int getParentIndex(int nodeIndex);
-    SceneNode *getParent(int nodeIndex);
-    SceneNode *getParentById(const std::string &id);
+    [[nodiscard]] SceneNode *getParent(int nodeIndex);
+    [[nodiscard]] SceneNode *getParentById(const std::string &id);
     int getChildCount(int nodeIndex);
     int getChildCountById(const std::string &id);
     /** @brief Child ordinal 0..count-1; -1 if out of range. */
     int getChildIndexAt(int parentIndex, int childOrdinal);
-    SceneNode *getChildAt(int parentIndex, int childOrdinal);
-    SceneNode *getChildAtById(const std::string &parentId, int childOrdinal);
+    [[nodiscard]] SceneNode *getChildAt(int parentIndex, int childOrdinal);
+    [[nodiscard]] SceneNode *getChildAtById(const std::string &parentId, int childOrdinal);
     std::vector<int> getChildIndices(int nodeIndex);
     std::vector<SceneNode *> getChildren(int nodeIndex);
     std::vector<std::string> getChildIds(const std::string &parentId);
@@ -183,6 +221,27 @@ public:
     bool addChild(int parentIndex, int childIndex);
     bool removeChild(int parentIndex, int childIndex);
 
+    /**
+     * @brief Append one retained node without rebuilding existing nodes or links.
+     * @param node Node value with a unique non-empty id; hierarchy indices are ignored.
+     * @param parentId Existing parent id, or empty to append a detached root-level node.
+     * @return True when the node was appended and linked successfully.
+     * @remarks Appending may reallocate the node arena and invalidates borrowed SceneNode pointers.
+     */
+    SceneMutationStatus appendNode(SceneNode node, const std::string &parentId = {});
+    /**
+     * @brief Remove a leaf node while preserving every other node and external link.
+     * @param nodeId Stable id of a node without children.
+     * @return True when the leaf existed and was removed.
+     * @remarks Removal compacts the arena and invalidates borrowed SceneNode pointers.
+     */
+    SceneMutationStatus removeLeaf(const std::string &nodeId);
+    /** @brief Rename a retained node and emit a node_changed event. */
+    SceneMutationStatus renameNode(const std::string &nodeId, const std::string &name);
+    /** @brief Replace a node's local TRS and mark its subtree dirty. */
+    SceneMutationStatus setLocalTransform(const std::string &nodeId, float x, float y, float z,
+                           float yaw, float pitch, float roll, float sx, float sy, float sz);
+
     /** @brief Depth-first visit of arena indices under `nodeIndex` (inclusive). C callback. */
     void forEachDepthFirst(int nodeIndex, void (*fn)(SceneHost *, int, void *), void *user);
 
@@ -201,8 +260,8 @@ public:
     void walkAncestors(int nodeIndex, NodeVisitFn fn);
 
     /** @brief First DFS match; nullptr if none. */
-    SceneNode *findIf(NodePredFn pred);
-    SceneNode *findIfFrom(int nodeIndex, NodePredFn pred);
+    [[nodiscard]] SceneNode *findIf(NodePredFn pred);
+    [[nodiscard]] SceneNode *findIfFrom(int nodeIndex, NodePredFn pred);
     std::vector<SceneNode *> filter(NodePredFn pred);
     std::vector<SceneNode *> filterFrom(int nodeIndex, NodePredFn pred);
     std::vector<int> filterIndices(NodePredFn pred);
@@ -242,8 +301,16 @@ public:
     /** @brief Remove every link on the node. */
     bool unlink(const std::string &nodeId);
 
-    SceneLink *findLink(SceneNode *node, int kind);
-    const SceneLink *findLink(const SceneNode *node, int kind) const;
+    [[nodiscard]] SceneLink *findLink(SceneNode *node, int kind);
+    /**
+     * @brief Find a link on a node without transferring ownership.
+     * @return Borrowed nullable link owned by the node's host.
+     * @ownership SceneHost owns link records; callers must not delete or mutate the result.
+     * @lifetime Valid until link mutation, tree replacement, or host destruction.
+     * @thread Call on the scene thread owning this host.
+     * @reentrancy Do not retain across link callbacks or host mutation.
+     */
+    [[nodiscard]] const SceneLink *findLink(const SceneNode *node, int kind) const;
     int linkCount(const std::string &nodeId);
 
     /** @brief Reparent by id; empty parentId detaches (parent = -1). Cycle-safe. */

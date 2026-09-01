@@ -1,4 +1,7 @@
 #version 450
+
+#extension GL_GOOGLE_include_directive : enable
+#include "tonemap.glsl"
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
 layout(location = 2) in vec4 vTint;
@@ -20,10 +23,21 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 parallax;
     mat4 view;
     vec4 clipInfo;
+    vec4 cloud;
+    vec4 cloudWind;
+    vec4 bindlessEnv;
+    vec4 envProbeCenter;
+    vec4 envProbeExtent;
+    vec4 skinInfo;
+    mat4 skinBones[128];
+    vec4 reflectionProbeCenter[2];
+    vec4 reflectionProbeExtent[2];
 } ubo;
 
 layout(set = 0, binding = 1) uniform sampler2D albedo;
 layout(set = 0, binding = 3) uniform samplerCube env;
+layout(set = 0, binding = 16) uniform samplerCube reflectionProbe0;
+layout(set = 0, binding = 17) uniform samplerCube reflectionProbe1;
 
 layout(push_constant) uniform Externals { float data[32]; } u;
 layout(location = 0) out vec4 outColor;
@@ -32,6 +46,24 @@ const float PI = 3.14159265;
 
 // Classic pseudo-random value noise.
 float hash(float n) { return fract(sin(n) * 43758.5453123); }
+float probeWeight(int index, vec3 worldPos) {
+    vec3 edge = ubo.reflectionProbeExtent[index].xyz -
+                abs(worldPos - ubo.reflectionProbeCenter[index].xyz);
+    float inside = min(edge.x, min(edge.y, edge.z));
+    if (inside <= 0.0 || ubo.reflectionProbeCenter[index].w <= 0.0) return 0.0;
+    return clamp(inside / max(ubo.reflectionProbeExtent[index].w, 1e-4), 0.0, 1.0);
+}
+vec3 probeDirection(int index, vec3 direction, vec3 worldPos) {
+    vec3 center = ubo.reflectionProbeCenter[index].xyz;
+    vec3 extent = ubo.reflectionProbeExtent[index].xyz;
+    vec3 safeDir = mix(vec3(1e-5), direction, greaterThan(abs(direction), vec3(1e-5)));
+    vec3 exitT = max((center - extent - worldPos) / safeDir,
+                     (center + extent - worldPos) / safeDir);
+    float distanceToBox = min(exitT.x, min(exitT.y, exitT.z));
+    return distanceToBox > 0.0
+        ? normalize(worldPos + direction * distanceToBox - center)
+        : normalize(direction);
+}
 float noise(vec2 p) {
     vec2 i = floor(p);
     vec2 f = fract(p);
@@ -109,21 +141,60 @@ void main() {
     vec3 V = normalize(ubo.cameraPos.xyz - vWorldPos);
     vec3 R = reflect(-V, N);
 
-    // Sky reflection via the env cubemap, Fresnel-weighted.
+    // Microfacet sky reflection; turbulent slope broadens the lobe.
     float ndv = max(dot(V, N), 0.0);
-    float lod = 1.0 + (1.0 - ndv) * 3.0;
-    vec3 refl = textureLod(env, R, lod).rgb;
+    float roughness = clamp(0.14 + length(grad) * 0.08, 0.08, 0.48);
+    float maxLod = float(max(textureQueryLevels(env) - 1, 0));
+    float specMaxLod = maxLod >= 2.0 ? maxLod - 1.0 : maxLod;
+    float lod = roughness * specMaxLod;
+    float probeWeight0 = probeWeight(0, vWorldPos);
+    float probeWeight1 = probeWeight(1, vWorldPos);
+    float probeWeightSum = probeWeight0 + probeWeight1;
+    if (probeWeightSum > 1.0) {
+        probeWeight0 /= probeWeightSum;
+        probeWeight1 /= probeWeightSum;
+        probeWeightSum = 1.0;
+    }
+    vec3 refl = textureLod(env, R, lod).rgb * ubo.lightColor.w * (1.0 - probeWeightSum);
+    if (probeWeight0 > 0.0) {
+        float probeLod = float(max(textureQueryLevels(reflectionProbe0) - 1, 0));
+        refl += textureLod(reflectionProbe0, probeDirection(0, R, vWorldPos),
+                           roughness * max(probeLod - 1.0, 0.0)).rgb *
+                ubo.reflectionProbeCenter[0].w * probeWeight0;
+    }
+    if (probeWeight1 > 0.0) {
+        float probeLod = float(max(textureQueryLevels(reflectionProbe1) - 1, 0));
+        refl += textureLod(reflectionProbe1, probeDirection(1, R, vWorldPos),
+                           roughness * max(probeLod - 1.0, 0.0)).rgb *
+                ubo.reflectionProbeCenter[1].w * probeWeight1;
+    }
     float fresnel = 0.02 + 0.98 * pow(1.0 - ndv, 5.0);
+    vec4 brdf = roughness * vec4(-1.0, -0.0275, -0.572, 0.022) +
+                vec4(1.0, 0.0425, 1.04, -0.04);
+    float a004 = min(brdf.x * brdf.x, exp2(-9.28 * ndv)) * brdf.x + brdf.y;
+    vec2 dfg = vec2(-1.04, 1.04) * a004 + brdf.zw;
+    float envWeight = max(0.02 * dfg.x + dfg.y, 0.0);
 
     vec3 waterCol = vec3(u.data[10], u.data[11], u.data[12]);
-    float reflectAmt = clamp(fresnel * u.data[8] + 0.05, 0.0, 1.0);
+    float reflectAmt = clamp(max(fresnel, envWeight) * u.data[8], 0.0, 1.0);
     vec3 color = mix(waterCol, refl, reflectAmt);
 
-    // Sun glint highlight.
+    // GGX sun glint, sharing the turbulent surface roughness.
     vec3 L = normalize(ubo.lightDirIntensity.xyz);
     vec3 H = normalize(V + L);
-    float spec = pow(max(dot(N, H), 0.0), 96.0);
-    color += ubo.lightColor.rgb * spec * u.data[9];
+    float NoL = max(dot(N, L), 0.0);
+    float NoH = max(dot(N, H), 0.0);
+    float VoH = max(dot(V, H), 0.0);
+    float alpha = max(roughness * roughness, 0.002);
+    float alpha2 = alpha * alpha;
+    float denom = NoH * NoH * (alpha2 - 1.0) + 1.0;
+    float D = alpha2 / max(3.14159265 * denom * denom, 1e-4);
+    float k = (roughness + 1.0) * (roughness + 1.0) * 0.125;
+    float Gv = ndv / max(ndv * (1.0 - k) + k, 1e-4);
+    float Gl = NoL / max(NoL * (1.0 - k) + k, 1e-4);
+    float Fsun = 0.02 + 0.98 * pow(1.0 - VoH, 5.0);
+    float spec = D * Gv * Gl * Fsun / max(4.0 * ndv * max(NoL, 0.001), 1e-3);
+    color += ubo.lightColor.rgb * spec * NoL * u.data[9];
 
     // White-water foam: crests in the body plus foam bands at the top lip and
     // the splash pool at the bottom.

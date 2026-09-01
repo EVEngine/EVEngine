@@ -89,6 +89,12 @@ const CommandDescriptor* EditorCommandService::find(const CommandId& id) const {
     return it == commands_.end() ? nullptr : &it->descriptor;
 }
 
+bool EditorCommandService::supportsPlanning(const CommandId& id) const {
+    const auto it = std::find_if(commands_.begin(), commands_.end(),
+                                 [&](const Registration& entry) { return entry.descriptor.id == id; });
+    return it != commands_.end() && static_cast<bool>(it->planner) && static_cast<bool>(it->planExecutor);
+}
+
 std::vector<CommandDescriptor> EditorCommandService::commands(const HostProfile& profile) const {
     std::vector<CommandDescriptor> result;
     result.reserve(commands_.size());
@@ -115,7 +121,7 @@ EditorResult<EditorValue> EditorCommandService::execute(const CommandId& id, con
     if (context.source == CommandSource::Automation && !it->descriptor.automationAllowed)
         return error(EditorStatus::Rejected, "editor.command.automation-denied",
                      "Command is not available to automation: " + id.value());
-    if (!payload.withinLimits(kMaxPayloadDepth, kMaxPayloadElements, context.profile->maxPayloadBytes()))
+    if (!payload.isWithinLimits(kMaxPayloadDepth, kMaxPayloadElements, context.profile->maxPayloadBytes()))
         return error(EditorStatus::Rejected, "editor.command.payload-limit",
                      "Command payload exceeds host limits: " + id.value());
 
@@ -151,7 +157,7 @@ EditorResult<CommandPlan> EditorCommandService::plan(const CommandRequest& reque
     if (request.source == CommandSource::Automation && !it->descriptor.automationAllowed)
         return failure(EditorStatus::Rejected, "editor.command.automation-denied",
                        "Command is not available to automation: " + request.id.value());
-    if (!request.payload.withinLimits(kMaxPayloadDepth, kMaxPayloadElements, profile.maxPayloadBytes()))
+    if (!request.payload.isWithinLimits(kMaxPayloadDepth, kMaxPayloadElements, profile.maxPayloadBytes()))
         return failure(EditorStatus::Rejected, "editor.command.payload-limit",
                        "Command payload exceeds host limits: " + request.id.value());
     if (request.expectedRevision && *request.expectedRevision != request.context.targetRevision)
@@ -162,7 +168,7 @@ EditorResult<CommandPlan> EditorCommandService::plan(const CommandRequest& reque
                        "Command does not provide a planning handler");
     try {
         EditorResult<CommandPlan> result = it->planner(request);
-        if (result.accepted() && result.value) {
+        if (result.isAccepted() && result.value) {
             result.value->command      = request.id;
             result.value->target       = request.context.target;
             result.value->baseRevision = request.context.targetRevision;

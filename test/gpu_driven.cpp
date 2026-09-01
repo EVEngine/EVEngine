@@ -1,10 +1,13 @@
+#include "Fixtures.h"
+#include "ScriptTest.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
 
+#include "gpgpu/Gpgpu.h"
+#include "gpgpu/GpuBuffer.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
@@ -13,14 +16,16 @@
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
-#include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/GpuDriven.h"
+#include "graphics/vulkan/Graphics.h"
 #include "virtualgeometry/Builder.h"
 #include "virtualgeometry/VirtualGeometryAsset.h"
 #include "window/Window.h"
 
 #include <algorithm>
 #include <cmath>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
 using namespace eve::graphics;
@@ -89,6 +94,120 @@ TEST_CASE("GpuDriven.meshTableRegistration") {
     REQUIRE(gpu->record.vertexCount > 0);
     REQUIRE(gpu->record.indexCount > 0);
     REQUIRE(gpu->record.boundsCenterRadius.w > 0.f);  // bounds computed at upload
+    win->close();
+}
+
+TEST_CASE("GpuDriven.residentInstanceBufferDirectSubmit") {
+    eve::window::Window *win = nullptr;
+    Graphics            *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vg != nullptr);
+    if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
+        win->close();
+        return;
+    }
+
+    Mesh          *mesh       = gfx->newMeshSphere(12, 8);
+    Material      *material   = gfx->newMaterial();
+    const uint32_t meshId     = gfx->gpuDrivenMeshRecord(mesh);
+    const uint32_t materialId = gfx->gpuDrivenMaterialRecord(material);
+    REQUIRE(meshId != kInvalidGpuDrivenSlot);
+    REQUIRE(materialId != kInvalidGpuDrivenSlot);
+
+    GpuInstance instance;
+    instance.model      = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -3.f));
+    instance.meshId     = meshId;
+    instance.materialId = materialId;
+    auto *compute       = eve::gpgpu::Gpgpu::create();
+    REQUIRE(compute->isAvailable());
+    eve::gpgpu::GpuBuffer *resident = compute->newBuffer(sizeof(instance), "storage");
+    resident->uploadBytes(&instance, sizeof(instance));
+
+    GpuResidentInstanceBucket bucket{0, 1, meshId, materialId};
+    GpuResidentInstanceBatch  batch;
+    batch.buffer             = resident->residentView();
+    batch.buffer.strideBytes = sizeof(GpuInstance);
+    batch.buckets            = &bucket;
+    batch.bucketCount        = 1;
+    batch.instanceCount      = 1;
+
+    const glm::vec3 eye(0.f, 0.f, 2.f);
+    const glm::mat4 view = glm::lookAtRH(eye, glm::vec3(0.f, 0.f, -3.f), glm::vec3(0.f, 1.f, 0.f));
+    glm::mat4       proj = glm::perspectiveRH_ZO(glm::radians(50.f), 320.f / 240.f, 0.1f, 100.f);
+    proj[1][1] *= -1.f;
+    gfx->setMesh3DViewProj(proj * view);
+    gfx->setMesh3DView(view);
+    gfx->setMesh3DCameraPos(eye);
+    gfx->gpuDrivenSetEnabled(true);
+    gfx->begin3DFrame();
+    REQUIRE(gfx->had3DThisFrame());
+    GpuResidentInstanceBatch invalid = batch;
+    invalid.buffer.backend           = GpuResidentBackend::WebGpu;
+    CHECK(int(gfx->gpuDrivenSubmitResident(invalid)) == int(GpuResidentSubmitStatus::BackendMismatch));
+    invalid                    = batch;
+    invalid.buffer.strideBytes = sizeof(GpuInstance) - sizeof(uint32_t);
+    CHECK(int(gfx->gpuDrivenSubmitResident(invalid)) == int(GpuResidentSubmitStatus::InvalidArgument));
+    invalid                             = batch;
+    GpuResidentInstanceBucket gapBucket = bucket;
+    gapBucket.firstInstance             = 1;
+    invalid.buckets                     = &gapBucket;
+    CHECK(int(gfx->gpuDrivenSubmitResident(invalid)) == int(GpuResidentSubmitStatus::InvalidArgument));
+    const GpuResidentSubmitStatus submitted = gfx->gpuDrivenSubmitResident(batch);
+    CHECK(int(submitted) == int(GpuResidentSubmitStatus::Submitted));
+    gfx->present();
+    CHECK_EQ(vg->debugLastGpuDrivenDrawCount(), uint32_t(1));
+
+    delete resident;
+    win->close();
+}
+
+TEST_CASE("GpuDriven.squirrelResidentInstanceSubmit") {
+    eve::window::Window *win = nullptr;
+    Graphics            *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    if (!gfx->supportsGpuDriven3D()) {
+        win->close();
+        return;
+    }
+
+    {
+        ScriptTest script(R"SQ(
+        local gfx = eve.Graphics()
+        local gpu = eve.Gpgpu()
+        if (!gpu.isAvailable()) throw "GPGPU unavailable"
+        local instanceStride = gpu.getGpuDrivenInstanceStride()
+        if (instanceStride < 80) throw "unexpected instance stride"
+        if (gpu.getGpuResidentOffsetAlignment() != 256) throw "unexpected offset alignment"
+
+        local mesh = gfx.newMeshSphere(12, 8)
+        local material = gfx.newMaterial()
+        local meshId = gpu.gpuDrivenMeshRecord(mesh)
+        local materialId = gpu.gpuDrivenMaterialRecord(material)
+        if (meshId < 0 || materialId < 0) throw "resource registration failed"
+        if (!gpu.gpuDrivenMaterialUsable(material)) throw "material is not usable"
+
+        local instances = gpu.newBuffer(instanceStride, "storage")
+        local model = [1.0, 0.0, 0.0, 0.0,
+                       0.0, 1.0, 0.0, 0.0,
+                       0.0, 0.0, 1.0, 0.0,
+                       0.0, 0.0, -3.0, 1.0]
+        gpu.writeGpuDrivenInstance(instances, 0, model, meshId, materialId, 0, -1)
+        local buckets = [{ firstInstance = 0, instanceCount = 1,
+                           meshId = meshId, materialId = materialId }]
+
+        gpu.setGpuDrivenEnabled(true)
+        if (!gpu.isGpuDrivenEnabled()) throw "GPU-driven renderer did not enable"
+        gfx.begin3DFrame()
+        local status = gpu.submitResidentInstances(instances, buckets, 1, 0)
+        if (status != "submitted") throw "resident submit failed: " + status
+        gfx.present()
+    )SQ");
+    }
+
+    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vg != nullptr);
+    CHECK_EQ(vg->debugLastGpuDrivenDrawCount(), uint32_t(1));
     win->close();
 }
 
@@ -466,6 +585,10 @@ TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
         mat->setNormalTexture(nullptr);
         mat->setRoughness(0.5f);
         mat->setMetallic(0.1f);
+        // The GPU-driven forward pipeline is currently double-sided. Keep the
+        // legacy comparison on the same documented material mode so this test
+        // isolates bindless texture selection instead of raster culling.
+        mat->setDoubleSided(true);
         auto *obj = Renderable3D::create();
         obj->setMesh(mesh);
         obj->setMaterial(mat);
@@ -538,6 +661,9 @@ TEST_CASE("GpuDriven.opaqueForwardCullParity") {
         mat->setNormalTexture(nullptr);
         mat->setRoughness(0.5f);
         mat->setMetallic(0.1f);
+        // Match the GPU-driven pipeline's current double-sided raster state;
+        // frustum rejection, not back-face culling, is under test here.
+        mat->setDoubleSided(true);
         auto *obj = Renderable3D::create();
         obj->setMesh(mesh);
         obj->setMaterial(mat);

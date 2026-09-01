@@ -17,6 +17,7 @@
  *
  * @par 文档导航
  * - @ref usr_guide "EVEngine 用户指南"：下载、创建并运行游戏、调试与打包发布；
+ * - @ref usr_evescript "EveScript 完整教程"：语言语法、编码规范、异步、模块与 Squirrel 迁移；
  * - @ref usr_modules "模块使用手册"：按功能逐个说明脚本 API 与示例（也可从用户指南进入）；
  * - @ref usr_trimming "按需裁剪模块"：从源码构建时按档位裁剪模块；
  * - @ref usr_conventions "API 使用约定"：模块对象、生命周期与脚本 API 边界；

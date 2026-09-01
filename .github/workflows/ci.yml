@@ -52,48 +52,70 @@ env:
   # Single source of truth: repository variables (Settings -> Secrets and
   # variables -> Actions -> Variables), falling back to these defaults.
   VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
-  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '26.1.10909125' }}
+  # Aligned to the NDK preinstalled on the windows-latest / macos-latest runner
+  # images (27.3.13750724), so setup-android downloads nothing extra.
+  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '27.3.13750724' }}
   ANDROID_API: ${{ vars.ANDROID_API || '34' }}
 
 jobs:
-  # Fast structural check: no build, no toolchain. Fails when a module gains an
-  # #include that points up the dependency layering (see
-  # docs/dev/模块编排与裁剪架构.md). The known back-edges are whitelisted in the
-  # script and shrink as the capability registry lands.
-  format:
-    name: Formatting (clang-format)
-    runs-on: ubuntu-latest
+  change-scope:
+    name: Classify CI change scope
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
+    outputs:
+      windows: ${{ steps.scope.outputs.windows }}
+      android: ${{ steps.scope.outputs.android }}
+      macos: ${{ steps.scope.outputs.macos }}
+      ios: ${{ steps.scope.outputs.ios }}
+      linux: ${{ steps.scope.outputs.linux }}
+      asan: ${{ steps.scope.outputs.asan }}
+      fuzz: ${{ steps.scope.outputs.fuzz }}
+      webgpu: ${{ steps.scope.outputs.webgpu }}
+      tools: ${{ steps.scope.outputs.tools }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
           fetch-depth: 0
 
-      - name: Install clang-format
+      - name: Classify changed paths
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-format-18
-          sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            python3 scripts/ci_change_scope.py \
+              --base "$BASE_SHA" --head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT"
+          else
+            python3 scripts/ci_change_scope.py --all --github-output "$GITHUB_OUTPUT"
+          fi
 
-      - name: Check changed lines are clang-format clean
-        run: bash .github/scripts/check-format.sh "${{ github.event.pull_request.base.sha || 'origin/dev' }}"
-
-  # Fast structural check: no build, no toolchain. Fails when a module gains an
-  # #include that points up the dependency layering (see
-  # docs/dev/模块编排与裁剪架构.md). The known back-edges are whitelisted in the
-  # script and shrink as the capability registry lands.
-  layering:
-    name: Module layering
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+  # Fast source-only gate for formatting, module boundaries, architecture
+  # contracts and the Python scripts that make later CI results trustworthy.
+  source-quality:
+    name: Source quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - name: Checkout
         timeout-minutes: 10
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Install source-quality tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format-18
+          sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
+          python3 -m pip install --user --quiet pillow ruff
+
+      - name: Check changed lines are clang-format clean
+        run: bash .github/scripts/check-format.sh "${{ github.event.pull_request.base.sha || 'origin/dev' }}"
 
       - name: Check module dependency layering
         timeout-minutes: 5
@@ -102,6 +124,10 @@ jobs:
       - name: Check script bindings are documented (all modules)
         timeout-minutes: 5
         run: python3 scripts/check_bindings.py --strict
+
+      - name: Check binding gap ownership and budget metadata
+        timeout-minutes: 5
+        run: python3 scripts/check_binding_gap_metadata.py
 
       - name: Check declared module layers vs includes
         timeout-minutes: 5
@@ -116,16 +142,81 @@ jobs:
         timeout-minutes: 5
         run: python3 scripts/check_test_manifest.py
 
-      - name: Test release.py
+      - name: Check critical return-value diagnostics
         timeout-minutes: 5
-        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
+        run: python3 scripts/check_nodiscard.py
 
       - name: Check release version consistency
         timeout-minutes: 5
         run: python3 scripts/release.py check-versions
 
-  python-tools:
-    name: Python tools
+      - name: Check bounded quality debt and profile matrix
+        timeout-minutes: 5
+        run: make check/quality
+
+      - name: Audit top-level architecture contracts and changed API shapes
+        timeout-minutes: 5
+        run: |
+          python3 scripts/check_architecture_contracts.py \
+            --base "${{ github.event.pull_request.base.sha || github.event.before || 'HEAD^' }}"
+      - name: Ruff lint CI and repository scripts
+        timeout-minutes: 5
+        run: python3 -m ruff check scripts
+
+      - name: Test CI and repository scripts
+        timeout-minutes: 10
+        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
+
+  profile-matrix:
+    name: Profile ${{ matrix.profile }}
+    # Pull requests already run the toolchain-free profile contract check in
+    # source-quality. Full configure/build/smoke coverage belongs to dev
+    # pushes, scheduled/manual runs and release workflow calls.
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && github.event_name != 'pull_request' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, asset-core-only, headless, server]
+    env:
+      PROFILE: ${{ matrix.profile }}
+      PROFILE_BUILD_ROOT: /tmp/evengine-profile-matrix
+      PROFILE_JOBS: 2
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install profile toolchain
+        timeout-minutes: 15
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build libvulkan-dev \
+            libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
+            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev
+
+      - name: Configure profile
+        timeout-minutes: 30
+        run: make profile/configure
+
+      - name: Build independent profile smoke target
+        timeout-minutes: 35
+        run: make profile/build
+
+      - name: Run independent capability smoke probes
+        timeout-minutes: 10
+        run: make profile/smoke
+
+  tool-tests:
+    name: Standalone Python tools
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.tools == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -139,9 +230,9 @@ jobs:
           python3 -m pip install --user --quiet \
             pytest pydantic requests numpy opencv-python-headless pillow ffmpy ruff
 
-      - name: Ruff lint (scripts + tools)
+      - name: Ruff lint standalone tools
         timeout-minutes: 5
-        run: python3 -m ruff check scripts tools
+        run: python3 -m ruff check tools
 
       - name: Test asset-pipeline-agent
         timeout-minutes: 5
@@ -169,9 +260,20 @@ jobs:
 
   windows:
     name: Windows
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    # This lane builds and tests both Vulkan and native Dawn configurations.
+    # A cold Windows runner needs more than 90 minutes for the two independent
+    # unit_test builds; keep the per-step limits below as the hang guards.
+    timeout-minutes: 180
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
+      # Pull-request cache entries are scoped to refs/pull/*/merge and cannot
+      # warm other PRs. Let PRs consume the dev cache without duplicating it.
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     defaults:
       run:
         shell: bash
@@ -189,6 +291,41 @@ jobs:
         run: |
           choco install make ninja -y --no-progress
           echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
+
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsRoot = & $vswhere -latest -products * `
+            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationPath
+          $toolsetFile = Join-Path $vsRoot "VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt"
+          $toolset = (Get-Content $toolsetFile -Raw).Trim()
+          $sdkVersion = (& cmd.exe /d /s /c `
+            'cmake\with-msvc.cmd cmd.exe /d /c echo %WindowsSDKVersion%').Trim().TrimEnd('\')
+          $cmakeVersion = ((cmake --version | Select-Object -First 1) -split '\s+')[-1]
+          "id=msvc-$toolset-winsdk-$sdkVersion-cmake-$cmakeVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Restore win32 third-party cache
+        id: third-party-cache
+        timeout-minutes: 15
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: build/third-party-binary/win32-debug
+          key: third-party-v1-${{ runner.os }}-${{ runner.arch }}-win32-debug-${{ steps.third-party-toolchain.outputs.id }}-${{ hashFiles('cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/patch_third_party.cmake', 'cmake/patches/**', 'cmake/write_third_party_version.cmake') }}
+
+      - name: Verify restored win32 third-party cache
+        if: steps.third-party-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/win32-debug win32 Debug
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
@@ -200,6 +337,7 @@ jobs:
           # VK_KHR_surface so SDL_WINDOW_VULKAN / unit tests can run.
           install_swiftshader: true
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (SwiftShader)
@@ -207,23 +345,137 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 debug
-        timeout-minutes: 40
+        timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=ON
+        run: |
+          tp_args=""
+          if [ "${{ steps.third-party-cache.outputs.cache-hit }}" = "true" ]; then
+            tp_args="-DEVENGINE_THIRD_PARTY_BINARY_DIR=build/third-party-binary/win32-debug"
+          fi
+          make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
+              -DEVENGINE_COMPILER_CACHE=SCCACHE $tp_args"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Verify built win32 third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/win32-debug win32 Debug
+
+      - name: Save win32 third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: build/third-party-binary/win32-debug
+          key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
-        timeout-minutes: 30
+        timeout-minutes: 40
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/win32-debug
 
+      - name: Capture Vulkan parity artifacts
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_RENDER_PARITY_DIR: ${{ github.workspace }}/artifacts/render-parity
+        run: ctest --test-dir build/win32-debug -R '^graphics\.backendParity\.' --output-on-failure
+
+      - name: Configure native Dawn parity lane
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          cmake\with-msvc.cmd cmake.exe -S . -B build/webgpu-native -G Ninja `
+            -DCMAKE_BUILD_TYPE=Debug `
+            -DCMAKE_C_COMPILER="$PWD/cmake/msvc-cl.cmd" `
+            -DCMAKE_CXX_COMPILER="$PWD/cmake/msvc-cl.cmd" `
+            -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
+            -DEVENGINE_COMPILER_CACHE=SCCACHE `
+            -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/win32-debug" `
+            -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF `
+            -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+
+      - name: Verify native Dawn platform selection
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          $config = Get-Content build/webgpu-native/src/engine/common/config.h -Raw
+          $sources = Get-Content build/webgpu-native/src/modules/graphics_src.txt -Raw
+          if ($config -notmatch '(?m)^#define EVENGINE_WEBGPU\s*$') {
+            throw 'native Dawn build lost EVENGINE_WEBGPU during configuration'
+          }
+          if ($sources -notmatch 'graphics[/\\]webgpu[/\\]' -or
+              $sources -match 'graphics[/\\]vulkan[/\\]') {
+            throw 'native Dawn graphics source list does not exclusively select webgpu'
+          }
+
+      - name: Build native Dawn parity lane
+        # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
+        # 95% only when the former 40-minute guard fired on windows-latest. The
+        # full test link reached 2,401/2,403 at 60 minutes as the module matrix
+        # grew, so retain a bounded 15-minute link/cache variance margin.
+        timeout-minutes: 75
+        shell: pwsh
+        run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
+
+      - name: Report native Dawn compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Run native Dawn parity and PCG compute
+        # Dawn initialization takes roughly two minutes per isolated test on
+        # the Windows software adapter. Keep per-case process isolation while
+        # allowing all parity cases plus the PCG compute parity case to complete.
+        timeout-minutes: 40
+        shell: pwsh
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_RENDER_PARITY_DIR: ${{ github.workspace }}/artifacts/render-parity
+        run: >-
+          ctest --test-dir build/webgpu-native
+          -R '^(graphics\.backendParity\..*|gpgpu\.procgen\.transformParity)$'
+          --output-on-failure
+
+      - name: Compare Vulkan and WebGPU parity images
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          python -m pip install --quiet pillow
+          python scripts/compare_render_backends.py `
+            artifacts/render-parity/vulkan artifacts/render-parity/webgpu
+
+      - name: Upload render parity artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: render-parity-windows
+          path: artifacts/render-parity
+          if-no-files-found: warn
+
   windows-release:
     name: Windows (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    # A cold Release build took 55 minutes and the process-isolated 3510-case
+    # suite reached 3060/3510 at the former 30-minute test guard. Preserve
+    # bounded hang detection while budgeting setup, build, and the full suite.
+    timeout-minutes: 120
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
+      SCCACHE_GHA_RW_MODE: ${{ (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     defaults:
       run:
         shell: bash
@@ -242,6 +494,12 @@ jobs:
           choco install make ninja -y --no-progress
           echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
@@ -250,6 +508,7 @@ jobs:
           install_runtime: true
           install_swiftshader: true
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (SwiftShader)
@@ -257,22 +516,38 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        timeout-minutes: 40
+        timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/win32 JOBS="${NUMBER_OF_PROCESSORS:-8}"
+        run: >-
+          make build/win32 JOBS="${NUMBER_OF_PROCESSORS:-8}"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_ENABLE_ASSERTS=ON"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run win32 release unit tests
-        timeout-minutes: 30
+        timeout-minutes: 45
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/win32
 
   android:
     name: Android
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    # A cold NDK build can consume almost the entire 45-minute build-step budget
+    # before Gradle packages the finished native library. Keep the step timeout
+    # below as the hang guard while leaving enough job budget for setup/cleanup.
+    timeout-minutes: 90
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     defaults:
       run:
         shell: bash
@@ -289,9 +564,15 @@ jobs:
         shell: pwsh
         run: choco install make ninja -y --no-progress
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Setup Java 17
         timeout-minutes: 10
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           distribution: temurin
           java-version: "17"
@@ -319,20 +600,32 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android debug
-        timeout-minutes: 45
+        timeout-minutes: 60
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android-debug \
             ANDROID_SDK="$ANDROID_SDK" \
             ANDROID_NDK="$ANDROID_NDK" \
             JAVA_HOME="$JAVA_HOME" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE" \
             ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
   android-release:
     name: Android (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
+      SCCACHE_GHA_RW_MODE: ${{ (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     defaults:
       run:
         shell: bash
@@ -349,9 +642,15 @@ jobs:
         shell: pwsh
         run: choco install make ninja -y --no-progress
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Setup Java 17
         timeout-minutes: 10
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           distribution: temurin
           java-version: "17"
@@ -377,20 +676,32 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android release
-        timeout-minutes: 45
+        timeout-minutes: 60
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android \
             ANDROID_SDK="$ANDROID_SDK" \
             ANDROID_NDK="$ANDROID_NDK" \
             JAVA_HOME="$JAVA_HOME" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_ENABLE_ASSERTS=ON" \
             ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
   macos:
     name: macOS
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -403,12 +714,19 @@ jobs:
         timeout-minutes: 10
         run: brew install ninja || true
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -420,7 +738,9 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
+        run: >-
+          make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
         timeout-minutes: 30
@@ -428,11 +748,59 @@ jobs:
           ALSOFT_DRIVERS: "null"
         run: make test/macosx-debug
 
+      - name: Configure native Dawn Metal lane
+        timeout-minutes: 20
+        run: |
+          cmake -S . -B build/webgpu-macos -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
+            -DEVENGINE_COMPILER_CACHE=SCCACHE \
+            -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/macosx-debug" \
+            -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
+            -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+
+      - name: Verify native Dawn Metal platform selection
+        timeout-minutes: 5
+        run: |
+          grep -Eq '^#define EVENGINE_WEBGPU[[:space:]]*$' \
+            build/webgpu-macos/src/engine/common/config.h
+          grep -Eq 'graphics[/\\]webgpu[/\\]' \
+            build/webgpu-macos/src/modules/graphics_src.txt
+          if grep -Eq 'graphics[/\\]vulkan[/\\]' \
+            build/webgpu-macos/src/modules/graphics_src.txt; then
+            echo 'native Dawn graphics source list still contains Vulkan' >&2
+            exit 1
+          fi
+
+      - name: Build native Dawn Metal lane
+        timeout-minutes: 40
+        run: cmake --build build/webgpu-macos --target unit_test -j "$(sysctl -n hw.ncpu)"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Test native Dawn Metal surface and rendering
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          ctest --test-dir build/webgpu-macos \
+            -R '^(graphics\.backendParity\.|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels))' \
+            --output-on-failure
+
   macos-release:
     name: macOS (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-release
+      SCCACHE_GHA_RW_MODE: ${{ (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -445,12 +813,19 @@ jobs:
         timeout-minutes: 10
         run: brew install ninja || true
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -462,7 +837,14 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/macosx JOBS="$(sysctl -n hw.ncpu)"
+        run: >-
+          make build/macosx JOBS="$(sysctl -n hw.ncpu)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_ENABLE_ASSERTS=ON"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run macosx release unit tests
         timeout-minutes: 30
@@ -472,7 +854,8 @@ jobs:
 
   ios:
     name: iOS
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.ios == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
@@ -493,6 +876,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -528,7 +912,8 @@ jobs:
 
   ios-release:
     name: iOS (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.ios == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
@@ -549,6 +934,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -584,9 +970,17 @@ jobs:
 
   linux:
     name: Linux
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
+      # Populate shared caches only from long-lived branches; PR-scoped writes
+      # are dead stores after that PR closes and quickly evict reusable entries.
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -624,12 +1018,41 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: |
+          compiler_target="$(g++ -dumpmachine)"
+          compiler_version="$(g++ -dumpfullversion -dumpversion)"
+          cmake_version="$(cmake --version | head -n 1 | awk '{print $3}')"
+          echo "id=gcc-$compiler_target-$compiler_version-cmake-$cmake_version" >> "$GITHUB_OUTPUT"
+
+      - name: Restore linux third-party cache
+        id: third-party-cache
+        timeout-minutes: 15
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: build/third-party-binary/linux-debug
+          key: third-party-v1-ubuntu-24.04-${{ runner.arch }}-linux-debug-${{ steps.third-party-toolchain.outputs.id }}-${{ hashFiles('cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/patch_third_party.cmake', 'cmake/patches/**', 'cmake/write_third_party_version.cmake') }}
+
+      - name: Verify restored linux third-party cache
+        if: steps.third-party-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/linux-debug linux Release
+
       - name: Install Vulkan SDK
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe)
@@ -640,7 +1063,33 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux-debug JOBS="$(nproc)" CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=ON
+        run: |
+          tp_args=""
+          if [ "${{ steps.third-party-cache.outputs.cache-hit }}" = "true" ]; then
+            tp_args="-DEVENGINE_THIRD_PARTY_BINARY_DIR=build/third-party-binary/linux-debug"
+          fi
+          make build/linux-debug JOBS="$(nproc)" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
+              -DEVENGINE_COMPILER_CACHE=SCCACHE $tp_args"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Verify built linux third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/linux-debug linux Release
+
+      - name: Save linux third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: build/third-party-binary/linux-debug
+          key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run linux unit tests
         timeout-minutes: 30
@@ -681,9 +1130,15 @@ jobs:
 
   linux-release:
     name: Linux (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-release
+      SCCACHE_GHA_RW_MODE: ${{ (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -721,12 +1176,19 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe)
@@ -737,7 +1199,14 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux JOBS="$(nproc)"
+        run: >-
+          make build/linux JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_ENABLE_ASSERTS=ON"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run linux release unit tests
         timeout-minutes: 30
@@ -747,15 +1216,22 @@ jobs:
 
   linux-asan:
     name: Linux (ASan+UBSan)
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.asan == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # The build and test steps have independent bounded guards. Leave
+    # enough job-level budget for both plus toolchain setup and cache reporting.
+    timeout-minutes: 120
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
       # the sanitizer job's value is UAF/OOB/UB, not leaks.
       ASAN_OPTIONS: "detect_leaks=0:halt_on_error=1"
       UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-asan
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -790,12 +1266,19 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe)
@@ -803,13 +1286,25 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux debug (ASan+UBSan)
-        timeout-minutes: 40
+        # A cold full-profile sanitizer build now takes just over 40 minutes
+        # after the asset pipeline modules and tests were added.
+        timeout-minutes: 55
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux-asan JOBS="$(nproc)"
+        run: >-
+          make build/linux-asan JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run linux unit tests (ASan+UBSan)
-        timeout-minutes: 30
+        # The process-isolated 3513-case suite reached 3444/3513 at the old
+        # 60-minute limit without a sanitizer finding. Keep a bounded guard
+        # while allowing the measured hosted-runner overhead to finish.
+        timeout-minutes: 70
         env:
           ALSOFT_DRIVERS: "null"
         run: |
@@ -819,9 +1314,15 @@ jobs:
     name: Linux (Coverage)
     # Coverage is a trend signal rather than a per-PR gate; run weekly and on
     # demand so it does not double CI minutes for every push.
-    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    needs: [source-quality]
+    if: ${{ needs.source-quality.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-coverage
+      SCCACHE_GHA_RW_MODE: ${{ (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -855,12 +1356,19 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb gcovr
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe)
@@ -871,10 +1379,17 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux-coverage JOBS="$(nproc)"
+        run: >-
+          make build/linux-coverage JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run linux unit tests (coverage)
-        timeout-minutes: 30
+        timeout-minutes: 40
         env:
           ALSOFT_DRIVERS: "null"
         run: |
@@ -905,6 +1420,8 @@ jobs:
 
   linux-fuzz:
     name: Linux (zeroerr fuzz)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.fuzz == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -915,6 +1432,10 @@ jobs:
       UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
       EVENGINE_FUZZ_RUNS: ${{ github.event_name == 'schedule' && '50000' || '2000' }}
       EVENGINE_FUZZ_SEED: "1"
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-fuzz
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -929,9 +1450,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends clang ninja-build
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Build zeroerr JSON fuzz harness
         timeout-minutes: 5
-        run: make build/linux-fuzz JOBS="$(nproc)"
+        run: >-
+          make build/linux-fuzz JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Fuzz shared JSON parser
         timeout-minutes: 5
@@ -951,8 +1485,13 @@ jobs:
 
   webgpu:
     name: WebGPU (WASM)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.webgpu == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    # Do not add sccache via EM_COMPILER_WRAPPER here: emsdk's Clang commands
+    # carry -Xclang flags that sccache v0.16 treats as non-cacheable, adding
+    # wrapper overhead without storing any of the engine's object files.
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -989,10 +1528,22 @@ jobs:
           python3 -m pip install --user cmake==3.29.6
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: Restore Emscripten SDK cache
+        id: emsdk-cache
+        timeout-minutes: 5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: $HOME/emsdk
+          key: emsdk-${{ runner.os }}-${{ runner.arch }}-latest
+
       - name: Install Emscripten SDK
         timeout-minutes: 30
         run: |
-          git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
+          if [ "${{ steps.emsdk-cache.outputs.cache-hit }}" = "true" ]; then
+            echo "Using cached Emscripten SDK"
+          else
+            git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
+          fi
           "$HOME/emsdk/emsdk" install latest
           "$HOME/emsdk/emsdk" activate latest
 
@@ -1016,3 +1567,38 @@ jobs:
           test -f build/webgpu-web/src/engine/eve.html
           test -f build/webgpu-web/src/engine/eve.wasm
           ls -lh build/webgpu-web/src/engine/eve.*
+
+      - name: Capture browser WebGPU frame
+        timeout-minutes: 10
+        run: |
+          python3 -m pip install --quiet pillow
+          cd build/webgpu-web/src/engine
+          python3 -m http.server 8090 >webgpu-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          google-chrome --headless=new --no-sandbox --disable-gpu-sandbox \
+            --enable-unsafe-webgpu --enable-features=Vulkan \
+            --use-vulkan=swiftshader --window-size=800,600 \
+            --timeout=20000 --screenshot=webgpu-browser.png \
+            http://127.0.0.1:8090/eve.html
+          python3 "$GITHUB_WORKSPACE/scripts/validate_render_frame.py" webgpu-browser.png
+
+      - name: Upload browser WebGPU frame
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: webgpu-browser-frame
+          path: |
+            build/webgpu-web/src/engine/webgpu-browser.png
+            build/webgpu-web/src/engine/webgpu-http.log
+          if-no-files-found: warn
+
+      - name: Save Emscripten SDK cache
+        # Only refresh on the default branch so per-PR runs restore (free) but
+        # never rewrite the cache, keeping churn/eviction of hot caches low.
+        if: ${{ steps.emsdk-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/dev' }}
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: $HOME/emsdk
+          key: ${{ steps.emsdk-cache.outputs.cache-primary-key }}

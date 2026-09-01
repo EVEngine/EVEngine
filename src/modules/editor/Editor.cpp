@@ -2,25 +2,32 @@
 
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
+#include "editor/ActionTimelineScriptBindings.h"
 #include "editor/Brush.h"
+#include "editor/EditorAutomationProvider.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorHistory.h"
 #include "editor/EditorInspector.h"
 #include "editor/EditorSession.h"
+#include "editor/EditorTargetCoordinator.h"
 #include "editor/EditorToolbar.h"
-#include "editor/EditorValueJson.h"
 #include "editor/EditorVolumeTarget.h"
 #include "editor/EditorWorkspace.h"
 #include "editor/FieldBrushTool.h"
 #include "editor/FieldTargets.h"
 #include "editor/GizmoManager.h"
+#include "editor/ReflectionProbeVisualizer.h"
 #include "editor/ScriptEditorTool.h"
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
 #include "editor/VolumeBrushTool.h"
+#include "material_editing/MaterialEditingCommands.h"
+#include "procgen_graphics_editing/HeightmapMesh.h"
+#include "scene_editing/SceneEditingCommands.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/ReflectionProbeCapture.h"
 #ifdef EVENGINE_HAS_PROCGEN
 #include "procgen/heightmap/Heightmap.h"
 #endif
@@ -30,6 +37,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
@@ -66,27 +74,6 @@ const char* transactionStateName(TransactionState state) {
         case TransactionState::Failed: return "failed";
     }
     return "failed";
-}
-
-EditorValue diagnosticsValue(const std::vector<EditorDiagnostic>& diagnostics) {
-    EditorValue::Array values;
-    for (const EditorDiagnostic& diagnostic : diagnostics) {
-        EditorValue::Object value;
-        value["rule"]     = EditorValue(diagnostic.rule.value());
-        value["severity"] = EditorValue(static_cast<std::int64_t>(diagnostic.severity));
-        value["message"]  = EditorValue(diagnostic.message);
-        values.emplace_back(std::move(value));
-    }
-    return EditorValue(std::move(values));
-}
-
-EditorValue resultValue(EditorStatus status, const std::vector<EditorDiagnostic>& diagnostics) {
-    EditorValue::Object result;
-    result["status"] = EditorValue(statusName(status));
-    result["accepted"] =
-        EditorValue(status == EditorStatus::Applied || status == EditorStatus::Pending || status == EditorStatus::NoOp);
-    result["diagnostics"] = diagnosticsValue(diagnostics);
-    return EditorValue(std::move(result));
 }
 
 bool squirrelToEditorValue(HSQUIRRELVM vm, SQInteger index, EditorValue& out, size_t depth = 0) {
@@ -225,7 +212,7 @@ template <class T>
 ssq::Table resultTable(HSQUIRRELVM vm, const EditorResult<T>& result) {
     ssq::Table out(vm);
     out.set("status", std::string(statusName(result.status)));
-    out.set("accepted", result.accepted());
+    out.set("accepted", result.isAccepted());
     out.set("diagnostics", diagnosticArray(vm, result.diagnostics));
     return out;
 }
@@ -291,274 +278,43 @@ bool registerScriptCommand(Editor* editor, const std::string& id, const std::str
                 return EditorResult<TransactionReceipt>::applied(std::move(receipt));
             },
             true)
-        .accepted();
+        .isAccepted();
 }
 
 }  // namespace
 
-#ifdef EVENGINE_HAS_PROCGEN
-namespace {
-
-#ifdef EVENGINE_HAS_PROCGEN
-struct HeightmapArrays {
-    std::vector<float>    pos;
-    std::vector<float>    nrm;
-    std::vector<float>    uv;
-    std::vector<uint32_t> idx;
-};
-
-/** Terrain mesh: two triangles per cell, 6 vertices per quad. When
- *  smoothNormals is set, vertex normals come from the height-field gradient
- *  (continuous bowls); otherwise each triangle is flat-shaded. */
-void buildHeightmapArrays(const eve::procgen::Heightmap& hm, float cell, float hScale, HeightmapArrays& out,
-                          bool smoothNormals) {
-    out.pos.clear();
-    out.nrm.clear();
-    out.uv.clear();
-    out.idx.clear();
-    const int w = hm.getWidth();
-    const int h = hm.getHeight();
-    if (w < 2 || h < 2) return;
-    const float uw = float(w - 1);
-    const float uh = float(h - 1);
-
-    // Per-grid-vertex normals from central differences of the height field.
-    std::vector<float> smoothNrm;
-    if (smoothNormals) {
-        smoothNrm.resize(size_t(w) * size_t(h) * 3);
-        auto hs = [&](int x, int z) {
-            x = std::clamp(x, 0, w - 1);
-            z = std::clamp(z, 0, h - 1);
-            return hm.height(x, z);
-        };
-        for (int z = 0; z < h; ++z) {
-            for (int x = 0; x < w; ++x) {
-                const float dhdx = (hs(x + 1, z) - hs(x - 1, z)) * 0.5f * hScale / cell;
-                const float dhdz = (hs(x, z + 1) - hs(x, z - 1)) * 0.5f * hScale / cell;
-                float       nx   = -dhdx;
-                float       ny   = 1.f;
-                float       nz   = -dhdz;
-                const float len  = std::sqrt(nx * nx + ny * ny + nz * nz);
-                if (len > 1e-8f) {
-                    nx /= len;
-                    ny /= len;
-                    nz /= len;
-                }
-                float* n = &smoothNrm[(size_t(z) * w + x) * 3];
-                n[0]     = nx;
-                n[1]     = ny;
-                n[2]     = nz;
-            }
-        }
-
-        // Smooth terrain can share the heightmap's grid vertices. Positions,
-        // normals and UVs change while sculpting; the indexed topology does not.
-        out.pos.reserve(size_t(w) * size_t(h) * 3u);
-        out.nrm.reserve(size_t(w) * size_t(h) * 3u);
-        out.uv.reserve(size_t(w) * size_t(h) * 2u);
-        out.idx.reserve(size_t(w - 1) * size_t(h - 1) * 6u);
-        for (int z = 0; z < h; ++z) {
-            for (int x = 0; x < w; ++x) {
-                out.pos.insert(out.pos.end(), {float(x) * cell, hm.height(x, z) * hScale, float(z) * cell});
-                const float* n = &smoothNrm[(size_t(z) * size_t(w) + size_t(x)) * 3u];
-                out.nrm.insert(out.nrm.end(), {n[0], n[1], n[2]});
-                out.uv.insert(out.uv.end(), {float(x) / uw, float(z) / uh});
-            }
-        }
-        for (int z = 0; z < h - 1; ++z) {
-            for (int x = 0; x < w - 1; ++x) {
-                const uint32_t i00 = uint32_t(z * w + x);
-                const uint32_t i10 = i00 + 1u;
-                const uint32_t i01 = i00 + uint32_t(w);
-                const uint32_t i11 = i01 + 1u;
-                out.idx.insert(out.idx.end(), {i00, i01, i10, i10, i01, i11});
-            }
-        }
-        return;
-    }
-
-    auto addTri = [&](float ax, float az, float ay, float bx, float bz, float by, float cx, float cz, float cy) {
-        const float    p0x = ax * cell, p0y = ay * hScale, p0z = az * cell;
-        const float    p1x = bx * cell, p1y = by * hScale, p1z = bz * cell;
-        const float    p2x = cx * cell, p2y = cy * hScale, p2z = cz * cell;
-        const uint32_t base = uint32_t(out.pos.size() / 3);
-        out.pos.insert(out.pos.end(), {p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z});
-        if (smoothNormals) {
-            const float* n0 = &smoothNrm[(size_t(int(az)) * w + int(ax)) * 3];
-            const float* n1 = &smoothNrm[(size_t(int(bz)) * w + int(bx)) * 3];
-            const float* n2 = &smoothNrm[(size_t(int(cz)) * w + int(cx)) * 3];
-            out.nrm.insert(out.nrm.end(), {n0[0], n0[1], n0[2], n1[0], n1[1], n1[2], n2[0], n2[1], n2[2]});
-        } else {
-            const float e1x = p1x - p0x, e1y = p1y - p0y, e1z = p1z - p0z;
-            const float e2x = p2x - p0x, e2y = p2y - p0y, e2z = p2z - p0z;
-            float       nx  = e1y * e2z - e1z * e2y;
-            float       ny  = e1z * e2x - e1x * e2z;
-            float       nz  = e1x * e2y - e1y * e2x;
-            const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
-            if (len > 1e-8f) {
-                nx /= len;
-                ny /= len;
-                nz /= len;
-            }
-            out.nrm.insert(out.nrm.end(), {nx, ny, nz, nx, ny, nz, nx, ny, nz});
-        }
-        out.uv.insert(out.uv.end(), {ax / uw, az / uh, bx / uw, bz / uh, cx / uw, cz / uh});
-        out.idx.insert(out.idx.end(), {base, base + 1, base + 2});
-    };
-
-    for (int y = 0; y < h - 1; ++y) {
-        for (int x = 0; x < w - 1; ++x) {
-            const float h00 = hm.height(x, y);
-            const float h10 = hm.height(x + 1, y);
-            const float h01 = hm.height(x, y + 1);
-            const float h11 = hm.height(x + 1, y + 1);
-            // Grid is XZ; y in the function is the XZ "row" axis.
-            // Counter-clockwise when viewed from above (+Y).  Besides matching
-            // the renderer's front face, this keeps the flat-shaded cross
-            // product pointing upward instead of into the terrain.
-            addTri(float(x), float(y), h00, float(x), float(y + 1), h01, float(x + 1), float(y), h10);
-            addTri(float(x + 1), float(y), h10, float(x), float(y + 1), h01, float(x + 1), float(y + 1), h11);
-        }
-    }
-}
-#endif
-
-}  // namespace
-#endif
-
-class EditorAutomationProvider final : public eve::IEditorAutomation {
-public:
-    explicit EditorAutomationProvider(EditorCommandService* commands) : commands_(commands) {
-        session_.setCommandService(commands_);
-        session_.setSessionId(SessionId("editor.mcp"));
-    }
-
-    std::string invoke(const std::string& operation, const std::string& requestJson) override {
-        refreshProfile();
-        EditorResult<EditorValue> parsed = editorValueFromJson(requestJson.empty() ? "{}" : requestJson);
-        if (!parsed.accepted() || !parsed.value || parsed.value->type() != EditorValue::Type::Object)
-            return errorJson(EditorStatus::Rejected, "editor.automation.invalid-json", "Request must be a JSON object");
-        const auto& request = *parsed.value->getIf<EditorValue::Object>();
-        if (operation == "commands") return commandsJson();
-        if (operation == "plan") {
-            const std::string       command = stringField(request, "command");
-            std::optional<Revision> expected;
-            if (const auto* value = integerField(request, "expectedRevision")) expected = static_cast<Revision>(*value);
-            auto result          = session_.retainPlan(CommandId(command), valueField(request, "payload"),
-                                                       CommandSource::Automation, expected);
-            lastDiagnostics_     = result.diagnostics;
-            EditorValue response = resultValue(result.status, result.diagnostics);
-            if (result.value) (*response.getIf<EditorValue::Object>())["planId"] = EditorValue(result.value->value());
-            return editorValueToJson(response);
-        }
-        if (operation == "commit") {
-            auto result =
-                session_.executeRetainedPlan(PlanId(stringField(request, "planId")), CommandSource::Automation);
-            lastDiagnostics_     = result.diagnostics;
-            EditorValue response = resultValue(result.status, result.diagnostics);
-            if (result.value) {
-                auto* object                = response.getIf<EditorValue::Object>();
-                (*object)["transactionId"]  = EditorValue(result.value->id.value());
-                (*object)["state"]          = EditorValue(transactionStateName(result.value->state));
-                (*object)["beforeRevision"] = EditorValue(static_cast<std::int64_t>(result.value->beforeRevision));
-                (*object)["afterRevision"]  = EditorValue(static_cast<std::int64_t>(result.value->afterRevision));
-            }
-            return editorValueToJson(response);
-        }
-        if (operation == "execute") {
-            auto result = session_.executeCommandReceipt(CommandId(stringField(request, "command")),
-                                                         valueField(request, "payload"), CommandSource::Automation);
-            lastDiagnostics_     = result.diagnostics;
-            EditorValue response = resultValue(result.status, result.diagnostics);
-            if (result.value) {
-                auto* object                = response.getIf<EditorValue::Object>();
-                (*object)["transactionId"]  = EditorValue(result.value->id.value());
-                (*object)["state"]          = EditorValue(transactionStateName(result.value->state));
-                (*object)["beforeRevision"] = EditorValue(static_cast<std::int64_t>(result.value->beforeRevision));
-                (*object)["afterRevision"]  = EditorValue(static_cast<std::int64_t>(result.value->afterRevision));
-            }
-            return editorValueToJson(response);
-        }
-        if (operation == "cancel") {
-            auto result      = session_.cancelRetainedPlan(PlanId(stringField(request, "planId")));
-            lastDiagnostics_ = result.diagnostics;
-            return editorValueToJson(resultValue(result.status, result.diagnostics));
-        }
-        if (operation == "undo" || operation == "redo") {
-            const bool  changed = operation == "undo" ? session_.transactions().undo() : session_.transactions().redo();
-            EditorValue response = resultValue(changed ? EditorStatus::Applied : EditorStatus::NoOp, {});
-            (*response.getIf<EditorValue::Object>())["changed"] = EditorValue(changed);
-            return editorValueToJson(response);
-        }
-        if (operation == "diagnostics") {
-            EditorValue response = resultValue(EditorStatus::Applied, lastDiagnostics_);
-            return editorValueToJson(response);
-        }
-        return errorJson(EditorStatus::Unsupported, "editor.automation.unsupported-operation",
-                         "Unsupported editor automation operation: " + operation);
-    }
-
-private:
-    void refreshProfile() {
-        HostProfile profile = HostProfile::automation();
-        if (commands_)
-            for (const CommandDescriptor& command : commands_->commands(HostProfile::developer()))
-                if (command.automationAllowed && profile.hasFeatures(command.requiredFeatures))
-                    profile.allowCommand(command.id);
-        session_.setHostProfile(std::move(profile));
-    }
-
-    std::string commandsJson() {
-        EditorValue::Array descriptors;
-        for (const CommandDescriptor& command : session_.availableCommands()) {
-            EditorValue::Object descriptor;
-            descriptor["id"]          = EditorValue(command.id.value());
-            descriptor["displayName"] = EditorValue(command.displayName);
-            descriptor["category"]    = EditorValue(command.category);
-            descriptor["owner"]       = EditorValue(command.ownerModule);
-            descriptor["planned"]     = EditorValue(command.createsTransaction);
-            descriptors.emplace_back(std::move(descriptor));
-        }
-        EditorValue response                                 = resultValue(EditorStatus::Applied, {});
-        (*response.getIf<EditorValue::Object>())["commands"] = EditorValue(std::move(descriptors));
-        return editorValueToJson(response);
-    }
-
-    static const EditorValue* findField(const EditorValue::Object& request, const char* key) {
-        const auto found = request.find(key);
-        return found == request.end() ? nullptr : &found->second;
-    }
-    static std::string stringField(const EditorValue::Object& request, const char* key) {
-        const EditorValue* value = findField(request, key);
-        const auto*        text  = value ? value->getIf<std::string>() : nullptr;
-        return text ? *text : std::string{};
-    }
-    static const std::int64_t* integerField(const EditorValue::Object& request, const char* key) {
-        const EditorValue* value = findField(request, key);
-        return value ? value->getIf<std::int64_t>() : nullptr;
-    }
-    static EditorValue valueField(const EditorValue::Object& request, const char* key) {
-        const EditorValue* value = findField(request, key);
-        return value ? *value : EditorValue{};
-    }
-    static std::string errorJson(EditorStatus status, const char* rule, std::string message) {
-        return editorValueToJson(resultValue(status, {{RuleId(rule), DiagnosticSeverity::Error, std::move(message)}}));
-    }
-
-    EditorCommandService*         commands_ = nullptr;
-    EditorSession                 session_;
-    std::vector<EditorDiagnostic> lastDiagnostics_;
-};
-
-Editor::Editor() : automation_(std::make_unique<EditorAutomationProvider>(&commandService_)) {
+Editor::Editor()
+    : targets_(std::make_unique<EditorTargetCoordinator>(commandService_)),
+      automation_(std::make_unique<EditorAutomationProvider>(commandService_, *targets_)) {
+    const auto sceneCommands    = eve::scene_editing::registerEditingCommands(*targets_);
+    const auto materialCommands = eve::material_editing::registerEditingCommands(*targets_);
+    if (!sceneCommands.isAccepted() || !materialCommands.isAccepted())
+        throw std::runtime_error("Failed to register built-in domain editing commands");
     eve::cap::provide<eve::IEditorAutomation>(automation_.get());
 }
 
 Editor::~Editor() { eve::cap::revoke<eve::IEditorAutomation>(automation_.get()); }
 
+EditorResult<void> Editor::registerEditingTarget(IEditableTarget& target) { return targets_->registerTarget(target); }
+
+EditorResult<void> Editor::unregisterEditingTarget(const TargetId& target) {
+    auto result = targets_->unregisterTarget(target);
+    if (result.status == EditorStatus::Applied) automation_->targetUnregistered(target);
+    return result;
+}
+
+EditorResult<void> Editor::bindEditingTarget(EditorSession& session, const TargetId& target) {
+    return targets_->bind(session, target);
+}
+
 TransformGizmo* Editor::newGizmo() { return new TransformGizmo(); }
 
 GizmoManager* Editor::newGizmoManager() { return new GizmoManager(); }
+
+ReflectionProbeVisualizer* Editor::newReflectionProbeVisualizer(
+    graphics::ReflectionProbeCapture* probe) {
+    return new ReflectionProbeVisualizer(probe);
+}
 
 TileBuffer* Editor::newTileBuffer(int width, int height) { return new TileBuffer(width, height); }
 
@@ -589,7 +345,7 @@ TileBufferTarget* Editor::newTileBufferTarget(const std::string& id, TileBuffer*
 
 #ifdef EVENGINE_HAS_MAP
 TileLayerTarget* Editor::newTileLayerTarget(const std::string& id, map::TileLayer* layer) {
-    return new TileLayerTarget(id, layer);
+    return eve::map_editing::createTileLayerTarget(id, layer).release();
 }
 #endif
 
@@ -597,110 +353,65 @@ ScriptEditorTool* Editor::newScriptTool(const std::string& id, const std::string
     return new ScriptEditorTool(id, label);
 }
 
-ConstantBrushFalloff* Editor::newConstantBrushFalloff() { return new ConstantBrushFalloff(); }
-LinearBrushFalloff* Editor::newLinearBrushFalloff() { return new LinearBrushFalloff(); }
-SmoothBrushFalloff* Editor::newSmoothBrushFalloff() { return new SmoothBrushFalloff(); }
-CircleBrushKernel* Editor::newCircleBrushKernel() { return new CircleBrushKernel(); }
-BoxBrushKernel* Editor::newBoxBrushKernel() { return new BoxBrushKernel(); }
-PaintIntFieldOperation* Editor::newPaintIntFieldOperation(int value) {
-    return new PaintIntFieldOperation(value);
-}
-AddScalarFieldOperation* Editor::newAddScalarFieldOperation() {
-    return new AddScalarFieldOperation();
-}
-FieldBrushTool* Editor::newFieldBrushTool(const std::string& id, const std::string& label) {
+ConstantBrushFalloff*    Editor::newConstantBrushFalloff() { return new ConstantBrushFalloff(); }
+LinearBrushFalloff*      Editor::newLinearBrushFalloff() { return new LinearBrushFalloff(); }
+SmoothBrushFalloff*      Editor::newSmoothBrushFalloff() { return new SmoothBrushFalloff(); }
+CircleBrushKernel*       Editor::newCircleBrushKernel() { return new CircleBrushKernel(); }
+BoxBrushKernel*          Editor::newBoxBrushKernel() { return new BoxBrushKernel(); }
+PaintIntFieldOperation*  Editor::newPaintIntFieldOperation(int value) { return new PaintIntFieldOperation(value); }
+AddScalarFieldOperation* Editor::newAddScalarFieldOperation() { return new AddScalarFieldOperation(); }
+FieldBrushTool*          Editor::newFieldBrushTool(const std::string& id, const std::string& label) {
     return new FieldBrushTool(id, label, nullptr, nullptr);
 }
 
-SphereVolumeBrushKernel* Editor::newSphereVolumeBrushKernel() {
-    return new SphereVolumeBrushKernel();
-}
-BoxVolumeBrushKernel* Editor::newBoxVolumeBrushKernel() { return new BoxVolumeBrushKernel(); }
-PaintIntVolumeOperation* Editor::newPaintIntVolumeOperation(int value) {
-    return new PaintIntVolumeOperation(value);
-}
-VolumeBrushTool* Editor::newVolumeBrushTool(const std::string& id, const std::string& label) {
+SphereVolumeBrushKernel* Editor::newSphereVolumeBrushKernel() { return new SphereVolumeBrushKernel(); }
+BoxVolumeBrushKernel*    Editor::newBoxVolumeBrushKernel() { return new BoxVolumeBrushKernel(); }
+PaintIntVolumeOperation* Editor::newPaintIntVolumeOperation(int value) { return new PaintIntVolumeOperation(value); }
+VolumeBrushTool*         Editor::newVolumeBrushTool(const std::string& id, const std::string& label) {
     return new VolumeBrushTool(id, label);
 }
 
 #ifdef EVENGINE_HAS_VOXEL
 VoxelWorldTarget* Editor::newVoxelWorldTarget(const std::string& id, voxel::VoxelWorld* world) {
-    return new VoxelWorldTarget(id, world);
+    return eve::voxel_editing::createVoxelWorldTarget(id, world).release();
 }
 #endif
 
 #ifdef EVENGINE_HAS_PROCGEN
 HeightmapTarget* Editor::newHeightmapTarget(const std::string& id, procgen::Heightmap* heightmap) {
-    return new HeightmapTarget(id, heightmap);
+    return eve::procgen_editing::createHeightmapTarget(id, heightmap).release();
 }
 
 int Editor::applyHeightmapBrush(procgen::Heightmap* hm, float centerX, float centerY, float radius, float strength) {
-    if (!hm || radius < 0.f || strength == 0.f) return 0;
-    const int   minX    = std::max(0, int(std::floor(centerX - radius)));
-    const int   maxX    = std::min(hm->getWidth() - 1, int(std::ceil(centerX + radius)));
-    const int   minY    = std::max(0, int(std::floor(centerY - radius)));
-    const int   maxY    = std::min(hm->getHeight() - 1, int(std::ceil(centerY + radius)));
-    const float edge    = radius + 0.5f;
-    int         changed = 0;
-    for (int y = minY; y <= maxY; ++y) {
-        for (int x = minX; x <= maxX; ++x) {
-            const float dx       = float(x) - centerX;
-            const float dy       = float(y) - centerY;
-            const float distance = std::sqrt(dx * dx + dy * dy);
-            if (distance > radius) continue;
-            const float falloff   = 1.f - distance / edge;
-            const float oldHeight = hm->height(x, y);
-            const float newHeight = std::clamp(oldHeight + strength * falloff, 0.f, 1.f);
-            if (newHeight == oldHeight) continue;
-            hm->setHeight(x, y, newHeight);
-            ++changed;
-        }
-    }
-    return changed;
+    auto result = eve::procgen_editing::applyHeightmapBrush(hm, centerX, centerY, radius, strength);
+    return result.value.value_or(0);
 }
 
 graphics::Mesh* Editor::newHeightmapMesh(procgen::Heightmap* hm, float cellSize, float heightScale) {
-    auto* gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
-    if (!gfx || !hm) return nullptr;
-    HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a, false);
-    if (a.idx.empty()) return nullptr;
-    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), a.idx.data(),
-                                  int(a.idx.size()));
+    auto created = eve::procgen_graphics_editing::createHeightmapMesh(hm, cellSize, heightScale, false);
+    return created.value.value_or(nullptr);
 }
 
 bool Editor::updateHeightmapMesh(graphics::Mesh* mesh, graphics::Graphics* gfx, procgen::Heightmap* hm, float cellSize,
                                  float heightScale) {
-    if (!mesh || !gfx || !hm) return false;
-    HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a, false);
-    if (a.idx.empty()) return false;
-    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), nullptr, 0);
+    return eve::procgen_graphics_editing::updateHeightmapMesh(mesh, gfx, hm, cellSize, heightScale, false).isAccepted();
 }
 
 graphics::Mesh* Editor::newHeightmapMeshSmooth(procgen::Heightmap* hm, float cellSize, float heightScale) {
-    auto* gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
-    if (!gfx || !hm) return nullptr;
-    HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a, true);
-    if (a.idx.empty()) return nullptr;
-    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), a.idx.data(),
-                                  int(a.idx.size()));
+    auto created = eve::procgen_graphics_editing::createHeightmapMesh(hm, cellSize, heightScale, true);
+    return created.value.value_or(nullptr);
 }
 
 bool Editor::updateHeightmapMeshSmooth(graphics::Mesh* mesh, graphics::Graphics* gfx, procgen::Heightmap* hm,
                                        float cellSize, float heightScale) {
-    if (!mesh || !gfx || !hm) return false;
-    HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a, true);
-    if (a.idx.empty()) return false;
-    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), nullptr, 0);
+    return eve::procgen_graphics_editing::updateHeightmapMesh(mesh, gfx, hm, cellSize, heightScale, true).isAccepted();
 }
 #endif
 
 void Editor::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Editor::create, false);
     expose(cls);
+    exposeActionTimelineScriptBindings(table, cls);
 
     auto gizmo = table.addClass<TransformGizmo>(
         "TransformGizmo", std::function<TransformGizmo*()>([]() -> TransformGizmo* { return nullptr; }), true);
@@ -762,6 +473,24 @@ void Editor::expose(ssq::Table& table) {
     gizmo.addFunc("getPartDirZ", &TransformGizmo::getPartDirZ);
     gizmo.addFunc("getPartLength", &TransformGizmo::getPartLength);
     gizmo.addFunc("getPartRadius", &TransformGizmo::getPartRadius);
+
+    auto probeVisualizer = table.addClass<ReflectionProbeVisualizer>(
+        "ReflectionProbeVisualizer",
+        std::function<ReflectionProbeVisualizer*()>([]() -> ReflectionProbeVisualizer* {
+            return nullptr;
+        }),
+        true);
+    probeVisualizer.addFunc("setExtents", &ReflectionProbeVisualizer::setExtents);
+    probeVisualizer.addFunc("getLineCount", &ReflectionProbeVisualizer::getLineCount);
+    probeVisualizer.addFunc("getLineStart", &ReflectionProbeVisualizer::getLineStart);
+    probeVisualizer.addFunc("getLineEnd", &ReflectionProbeVisualizer::getLineEnd);
+    probeVisualizer.addFunc("getColorR", &ReflectionProbeVisualizer::getColorR);
+    probeVisualizer.addFunc("getColorG", &ReflectionProbeVisualizer::getColorG);
+    probeVisualizer.addFunc("getColorB", &ReflectionProbeVisualizer::getColorB);
+    probeVisualizer.addFunc("getCenterX", &ReflectionProbeVisualizer::getCenterX);
+    probeVisualizer.addFunc("getCenterY", &ReflectionProbeVisualizer::getCenterY);
+    probeVisualizer.addFunc("getCenterZ", &ReflectionProbeVisualizer::getCenterZ);
+    probeVisualizer.addFunc("getStatusLabel", &ReflectionProbeVisualizer::getStatusLabel);
 
     auto mgr = table.addClass<GizmoManager>(
         "GizmoManager", std::function<GizmoManager*()>([]() -> GizmoManager* { return nullptr; }), true);
@@ -914,18 +643,17 @@ void Editor::expose(ssq::Table& table) {
         "ConstantBrushFalloff",
         std::function<ConstantBrushFalloff*()>([]() -> ConstantBrushFalloff* { return nullptr; }), true);
     auto linearFalloff = table.addClass<LinearBrushFalloff>(
-        "LinearBrushFalloff",
-        std::function<LinearBrushFalloff*()>([]() -> LinearBrushFalloff* { return nullptr; }), true);
+        "LinearBrushFalloff", std::function<LinearBrushFalloff*()>([]() -> LinearBrushFalloff* { return nullptr; }),
+        true);
     auto smoothFalloff = table.addClass<SmoothBrushFalloff>(
-        "SmoothBrushFalloff",
-        std::function<SmoothBrushFalloff*()>([]() -> SmoothBrushFalloff* { return nullptr; }), true);
+        "SmoothBrushFalloff", std::function<SmoothBrushFalloff*()>([]() -> SmoothBrushFalloff* { return nullptr; }),
+        true);
     (void)constantFalloff;
     (void)linearFalloff;
     (void)smoothFalloff;
 
     auto circleKernel = table.addClass<CircleBrushKernel>(
-        "CircleBrushKernel", std::function<CircleBrushKernel*()>([]() -> CircleBrushKernel* { return nullptr; }),
-        true);
+        "CircleBrushKernel", std::function<CircleBrushKernel*()>([]() -> CircleBrushKernel* { return nullptr; }), true);
     circleKernel.addFunc("setConstantFalloff", [](CircleBrushKernel* self, ConstantBrushFalloff* falloff) {
         if (self) self->setFalloff(falloff);
     });
@@ -980,10 +708,9 @@ void Editor::expose(ssq::Table& table) {
     auto sphereVolumeKernel = table.addClass<SphereVolumeBrushKernel>(
         "SphereVolumeBrushKernel",
         std::function<SphereVolumeBrushKernel*()>([]() -> SphereVolumeBrushKernel* { return nullptr; }), true);
-    sphereVolumeKernel.addFunc("setConstantFalloff",
-                               [](SphereVolumeBrushKernel* self, ConstantBrushFalloff* falloff) {
-                                   if (self) self->setFalloff(falloff);
-                               });
+    sphereVolumeKernel.addFunc("setConstantFalloff", [](SphereVolumeBrushKernel* self, ConstantBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
     sphereVolumeKernel.addFunc("setLinearFalloff", [](SphereVolumeBrushKernel* self, LinearBrushFalloff* falloff) {
         if (self) self->setFalloff(falloff);
     });
@@ -1070,13 +797,14 @@ void Editor::expose(ssq::Table& table) {
 #ifdef EVENGINE_HAS_VOXEL
     auto voxelTarget = table.addClass<VoxelWorldTarget>(
         "VoxelWorldTarget", std::function<VoxelWorldTarget*()>([]() -> VoxelWorldTarget* { return nullptr; }), true);
-    voxelTarget.addFunc("getTargetId",
-                        [](VoxelWorldTarget* self) { return self ? self->targetId() : std::string{}; });
+    voxelTarget.addFunc("getTargetId", [](VoxelWorldTarget* self) { return self ? self->targetId() : std::string{}; });
     voxelTarget.addFunc("getRevision", [](VoxelWorldTarget* self) {
         return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
     });
     voxelTarget.addFunc("readInt3", &VoxelWorldTarget::readInt3);
-    voxelTarget.addFunc("writeInt3", &VoxelWorldTarget::writeInt3);
+    voxelTarget.addFunc("writeInt3", [](VoxelWorldTarget* self, int x, int y, int z, int value) {
+        return self && self->writeInt3(x, y, z, value) == editing::FieldWriteStatus::Applied;
+    });
     voxelTarget.addFunc("clearDirtyVolume", &VoxelWorldTarget::clearDirtyVolume);
     voxelTarget.addFunc("getDirtyMinX", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().minX : 0; });
     voxelTarget.addFunc("getDirtyMinY", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().minY : 0; });
@@ -1090,12 +818,10 @@ void Editor::expose(ssq::Table& table) {
         "EditorSession", std::function<EditorSession*()>([]() -> EditorSession* { return nullptr; }), true);
     session.addFunc("addTool", std::function<bool(EditorSession*, ScriptEditorTool*)>(
                                    [](EditorSession* self, ScriptEditorTool* tool) { return self->addTool(tool); }));
-    session.addFunc("addFieldTool", [](EditorSession* self, FieldBrushTool* tool) {
-        return self && self->addTool(tool);
-    });
-    session.addFunc("addVolumeTool", [](EditorSession* self, VolumeBrushTool* tool) {
-        return self && self->addTool(tool);
-    });
+    session.addFunc("addFieldTool",
+                    [](EditorSession* self, FieldBrushTool* tool) { return self && self->addTool(tool); });
+    session.addFunc("addVolumeTool",
+                    [](EditorSession* self, VolumeBrushTool* tool) { return self && self->addTool(tool); });
     session.addFunc("bindTileBufferTarget", [](EditorSession* self, TileBufferTarget* target) {
         if (self) self->bindTarget(target);
     });
@@ -1212,26 +938,25 @@ void Editor::expose(ssq::Table& table) {
                             return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
                                    (response.releasePointer ? 4 : 0);
                         }));
-    session.addFunc(
-        "dispatchPointer3D",
-        std::function<int(EditorSession*, int, int, int, float, float, float, float, float, float, float)>(
-            [](EditorSession* self, int phase, int pointerId, int button, float x, float y, float z, float dx,
-               float dy, float dz, float pressure) {
-                EditorPointerEvent event;
-                event.phase = static_cast<EditorPointerEvent::Phase>(phase);
-                event.pointerId = pointerId;
-                event.button = button;
-                event.x = x;
-                event.y = y;
-                event.z = z;
-                event.deltaX = dx;
-                event.deltaY = dy;
-                event.deltaZ = dz;
-                event.pressure = pressure;
-                const ToolResponse response = self->dispatchPointer(event);
-                return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
-                       (response.releasePointer ? 4 : 0);
-            }));
+    session.addFunc("dispatchPointer3D",
+                    std::function<int(EditorSession*, int, int, int, float, float, float, float, float, float, float)>(
+                        [](EditorSession* self, int phase, int pointerId, int button, float x, float y, float z,
+                           float dx, float dy, float dz, float pressure) {
+                            EditorPointerEvent event;
+                            event.phase                 = static_cast<EditorPointerEvent::Phase>(phase);
+                            event.pointerId             = pointerId;
+                            event.button                = button;
+                            event.x                     = x;
+                            event.y                     = y;
+                            event.z                     = z;
+                            event.deltaX                = dx;
+                            event.deltaY                = dy;
+                            event.deltaZ                = dz;
+                            event.pressure              = pressure;
+                            const ToolResponse response = self->dispatchPointer(event);
+                            return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
+                                   (response.releasePointer ? 4 : 0);
+                        }));
 
     auto workspace = table.addClass<EditorWorkspace>(
         "EditorWorkspace", std::function<EditorWorkspace*()>([]() -> EditorWorkspace* { return nullptr; }), true);
@@ -1291,6 +1016,7 @@ void Editor::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Editor::getName);
     cls.addFunc("newGizmo", &Editor::newGizmo);
     cls.addFunc("newGizmoManager", &Editor::newGizmoManager);
+    cls.addFunc("newReflectionProbeVisualizer", &Editor::newReflectionProbeVisualizer);
     cls.addFunc("newTileBuffer", &Editor::newTileBuffer);
     cls.addFunc("newBrush", &Editor::newBrush);
     cls.addFunc("newToolbar", &Editor::newToolbar);

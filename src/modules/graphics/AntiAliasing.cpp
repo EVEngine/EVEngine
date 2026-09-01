@@ -2,6 +2,7 @@
 
 #include "common/Exception.h"
 #include "graphics/Canvas.h"
+#include "graphics/Exposure.h"
 #include "graphics/Graphics.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
@@ -9,6 +10,8 @@
 #include "graphics/shaders/aa_nfaa_frag_spv.inc"
 #include "graphics/shaders/aa_smaa_frag_spv.inc"
 #include "graphics/shaders/aa_ssaa_frag_spv.inc"
+#include "graphics/shaders/aa_taa_frag_spv.inc"
+#include "graphics/shaders/PostProcessWgsl.h"
 
 #include <algorithm>
 #include <cmath>
@@ -16,6 +19,9 @@
 #include <vector>
 
 #include <glm/vec4.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace eve::graphics {
 namespace {
@@ -24,10 +30,16 @@ std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
     return std::vector<uint32_t>(data, data + count);
 }
 
+Shader *newPostShader(Graphics *gfx, const std::vector<uint32_t> &frag, const char *wgsl) {
+    if (gfx->getBackendName() == "webgpu")
+        return gfx->newShaderFromWgsl({}, std::string(shaders::kPostCommon) + wgsl);
+    return gfx->newShaderFromSpv({}, frag);
+}
+
 Shader *createFxaaShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AntiAliasing: null graphics");
     auto frag = copySpv(aa_fxaa_frag_spv, aa_fxaa_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = newPostShader(gfx, frag, shaders::kFxaa);
     if (!sh || !sh->gpuHandle) throw eve::Exception("AntiAliasing: failed to create FXAA shader");
     sh->declareFloat("texelW");
     sh->declareFloat("texelH");
@@ -47,7 +59,7 @@ Shader *createFxaaShader(Graphics *gfx) {
 Shader *createSmaaShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AntiAliasing: null graphics");
     auto frag = copySpv(aa_smaa_frag_spv, aa_smaa_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = newPostShader(gfx, frag, shaders::kSmaa);
     if (!sh || !sh->gpuHandle) throw eve::Exception("AntiAliasing: failed to create SMAA shader");
     sh->declareFloat("texelW");
     sh->declareFloat("texelH");
@@ -67,7 +79,7 @@ Shader *createSmaaShader(Graphics *gfx) {
 Shader *createSsaaShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AntiAliasing: null graphics");
     auto frag = copySpv(aa_ssaa_frag_spv, aa_ssaa_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = newPostShader(gfx, frag, shaders::kSsaa);
     if (!sh || !sh->gpuHandle) throw eve::Exception("AntiAliasing: failed to create SSAA shader");
     sh->declareFloat("texelW");
     sh->declareFloat("texelH");
@@ -85,7 +97,7 @@ Shader *createSsaaShader(Graphics *gfx) {
 Shader *createNfaaShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AntiAliasing: null graphics");
     auto frag = copySpv(aa_nfaa_frag_spv, aa_nfaa_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = newPostShader(gfx, frag, shaders::kNfaa);
     if (!sh || !sh->gpuHandle) throw eve::Exception("AntiAliasing: failed to create NFAA shader");
     sh->declareFloat("texelW");
     sh->declareFloat("texelH");
@@ -100,6 +112,39 @@ Shader *createNfaaShader(Graphics *gfx) {
     return sh;
 }
 
+Shader *createTaaShader(Graphics *gfx) {
+    if (!gfx) throw eve::Exception("AntiAliasing: null graphics");
+    auto frag = copySpv(aa_taa_frag_spv, aa_taa_frag_spv_count);
+    Shader *sh = newPostShader(gfx, frag, shaders::kTaa);
+    if (!sh || !sh->gpuHandle) throw eve::Exception("AntiAliasing: failed to create TAA shader");
+    sh->declareFloat("texelW");
+    sh->declareFloat("texelH");
+    sh->declareFloat("blendCurrent");
+    sh->declareFloat("clampAmount");
+    sh->declareFloat("historyValid");
+    sh->declareFloat("jitterDeltaX");
+    sh->declareFloat("jitterDeltaY");
+    for (int i = 0; i < 16; ++i) sh->declareFloat("reprojection" + std::to_string(i));
+    sh->declareFloat("temporalNearZ");
+    sh->declareFloat("temporalFarZ");
+    sh->declareFloat("reprojectionValid");
+    sh->declareFloat("motionValid");
+    sh->sendFloat("texelW", 1.f / 256.f);
+    sh->sendFloat("texelH", 1.f / 256.f);
+    sh->sendFloat("blendCurrent", 0.92f);
+    sh->sendFloat("clampAmount", 0.85f);
+    sh->sendFloat("historyValid", 0.f);
+    sh->sendFloat("jitterDeltaX", 0.f);
+    sh->sendFloat("jitterDeltaY", 0.f);
+    for (int i = 0; i < 16; ++i)
+        sh->sendFloat("reprojection" + std::to_string(i), i % 5 == 0 ? 1.f : 0.f);
+    sh->sendFloat("temporalNearZ", 0.1f);
+    sh->sendFloat("temporalFarZ", 100.f);
+    sh->sendFloat("reprojectionValid", 0.f);
+    sh->sendFloat("motionValid", 0.f);
+    return sh;
+}
+
 }  // namespace
 
 AntiAliasing::AntiAliasing(Graphics *gfx) : gfx_(gfx) {
@@ -107,6 +152,7 @@ AntiAliasing::AntiAliasing(Graphics *gfx) : gfx_(gfx) {
     smaa_ = createSmaaShader(gfx);
     ssaa_ = createSsaaShader(gfx);
     nfaa_ = createNfaaShader(gfx);
+    taa_ = createTaaShader(gfx);
     applyQualityDefaults();
 }
 
@@ -128,6 +174,8 @@ void AntiAliasing::applyQualityDefaults() {
         nfaa_->sendFloat("strength", 0.7f);
         nfaa_->sendFloat("power", 1.2f);
         nfaa_->sendFloat("blurScale", 0.85f);
+        taa_->sendFloat("blendCurrent", 0.20f);
+        taa_->sendFloat("clampAmount", 0.7f);
         return;
     }
     if (quality_ == "high") {
@@ -145,6 +193,8 @@ void AntiAliasing::applyQualityDefaults() {
         nfaa_->sendFloat("strength", 1.25f);
         nfaa_->sendFloat("power", 0.85f);
         nfaa_->sendFloat("blurScale", 1.35f);
+        taa_->sendFloat("blendCurrent", 0.08f);
+        taa_->sendFloat("clampAmount", 0.95f);
         return;
     }
     // medium (default / unknown)
@@ -163,6 +213,8 @@ void AntiAliasing::applyQualityDefaults() {
     nfaa_->sendFloat("strength", 1.f);
     nfaa_->sendFloat("power", 1.f);
     nfaa_->sendFloat("blurScale", 1.f);
+    taa_->sendFloat("blendCurrent", 0.12f);
+    taa_->sendFloat("clampAmount", 0.8f);
 }
 
 void AntiAliasing::setQuality(const std::string &quality) {
@@ -174,13 +226,42 @@ void AntiAliasing::setQuality(const std::string &quality) {
 }
 
 void AntiAliasing::setMode(const std::string &mode) {
-    if (mode == "fxaa" || mode == "smaa" || mode == "ssaa" || mode == "nfaa")
-        mode_ = mode;
-    else
-        mode_ = "fxaa";
+    const std::string next =
+        (mode == "fxaa" || mode == "smaa" || mode == "ssaa" || mode == "nfaa" || mode == "taa")
+            ? mode
+            : "fxaa";
+    if (next == "taa" && mode_ != "taa") resetHistory();
+    mode_ = next;
+}
+
+void AntiAliasing::resetHistory() {
+    taaHistoryValid_ = false;
+}
+
+void AntiAliasing::ensureHistoryCanvases(int width, int height) {
+    width = std::max(1, width);
+    height = std::max(1, height);
+    if (!taaHistoryA_ || !taaHistoryB_ || historyW_ != width || historyH_ != height) {
+        taaHistoryA_ = gfx_ ? gfx_->newHDRCanvas(width, height) : nullptr;
+        taaHistoryB_ = gfx_ ? gfx_->newHDRCanvas(width, height) : nullptr;
+        if (!taaHistoryA_ || !taaHistoryB_)
+            throw eve::Exception("AntiAliasing: failed to allocate temporal history canvases");
+        historyRead_ = taaHistoryA_;
+        historyWrite_ = taaHistoryB_;
+        resetHistory();
+    }
+    historyW_ = width;
+    historyH_ = height;
+    if (!historyRead_) historyRead_ = taaHistoryA_;
+    if (!historyWrite_) historyWrite_ = taaHistoryB_;
+}
+
+void AntiAliasing::swapHistoryBuffers() {
+    std::swap(historyRead_, historyWrite_);
 }
 
 Shader *AntiAliasing::shaderForMode() const {
+    if (mode_ == "taa") return taa_;
     if (mode_ == "smaa") return smaa_;
     if (mode_ == "ssaa") return ssaa_;
     if (mode_ == "nfaa") return nfaa_;
@@ -252,8 +333,190 @@ void AntiAliasing::drawFullscreen(Graphics *gfx, Texture *source, Shader *shader
 
 void AntiAliasing::prepareSource(Texture *source) { uploadScreenUniforms(source); }
 
+Canvas *AntiAliasing::beginTemporalFrame(Texture *source, Texture *motion) {
+    if (!source) throw eve::Exception("AntiAliasing.beginTemporalFrame: null source");
+    ensureHistoryCanvases(std::max(1, source->getWidth()), std::max(1, source->getHeight()));
+    if (!historyRead_ || !historyWrite_)
+        throw eve::Exception("AntiAliasing.beginTemporalFrame: history canvases missing");
+    uploadScreenUniforms(source);
+    taa_->sendFloat("historyValid", taaHistoryValid_ ? 1.f : 0.f);
+    const glm::vec2 jitterDelta = (previousJitterNdc_ - temporalJitterNdc_) * 0.5f;
+    taa_->sendFloat("jitterDeltaX", jitterDelta.x);
+    taa_->sendFloat("jitterDeltaY", jitterDelta.y);
+    const glm::mat4 reprojection = previousViewProj_ * glm::inverse(temporalViewProj_);
+    const float *matrixData = glm::value_ptr(reprojection);
+    for (int i = 0; i < 16; ++i)
+        taa_->sendFloat("reprojection" + std::to_string(i), matrixData[i]);
+    taa_->sendFloat("temporalNearZ", temporalNearZ_);
+    taa_->sendFloat("temporalFarZ", temporalFarZ_);
+    taa_->sendFloat("reprojectionValid",
+                    taaHistoryValid_ && temporalViewValid_ ? 1.f : 0.f);
+    taa_->sendFloat("motionValid", motion ? 1.f : 0.f);
+    return historyWrite_;
+}
+
+Texture *AntiAliasing::getTemporalReadTexture() const {
+    return taaHistoryValid_ && historyRead_ ? historyRead_->getTexture() : nullptr;
+}
+
+void AntiAliasing::endTemporalFrame() {
+    taaHistoryValid_ = true;
+    previousJitterNdc_ = temporalJitterNdc_;
+    previousViewProj_ = temporalViewProj_;
+    temporalViewValid_ = true;
+    temporalObjectHistory_ = std::move(temporalObjectPending_);
+    temporalObjectPending_.clear();
+    ++temporalFrameIndex_;
+    swapHistoryBuffers();
+}
+
+glm::vec2 AntiAliasing::prepareTemporalJitter(int width, int height) {
+    auto halton = [](uint32_t index, uint32_t base) {
+        float result = 0.f;
+        float fraction = 1.f / float(base);
+        while (index > 0) {
+            result += fraction * float(index % base);
+            index /= base;
+            fraction /= float(base);
+        }
+        return result;
+    };
+    const uint32_t sample = temporalFrameIndex_ % 8u + 1u;
+    temporalJitterNdc_.x = 2.f * (halton(sample, 2u) - 0.5f) / float(std::max(1, width));
+    temporalJitterNdc_.y = 2.f * (halton(sample, 3u) - 0.5f) / float(std::max(1, height));
+    return temporalJitterNdc_;
+}
+
+void AntiAliasing::setTemporalCamera(const glm::vec3 &eye, const glm::vec3 &target,
+                                     float fovYDeg) {
+    glm::vec3 forward = target - eye;
+    const float forwardLength = glm::length(forward);
+    if (forwardLength > 1e-5f) forward /= forwardLength;
+    if (temporalCameraValid_) {
+        const float positionCut = std::max(1.f, forwardLength * 0.25f);
+        const bool cut = glm::length(eye - temporalEye_) > positionCut ||
+                         glm::dot(forward, temporalForward_) < 0.94f ||
+                         std::fabs(fovYDeg - temporalFovY_) > 5.f;
+        if (cut) {
+            resetHistory();
+            if (gfx_) gfx_->pipelineExposure()->invalidateHistory();
+        }
+    }
+    temporalEye_ = eye;
+    temporalForward_ = forward;
+    temporalFovY_ = fovYDeg;
+    temporalCameraValid_ = true;
+}
+
+void AntiAliasing::invalidateTemporalHistory() {
+    resetHistory();
+    if (gfx_) gfx_->pipelineExposure()->invalidateHistory();
+}
+
+void AntiAliasing::setTemporalViewProjection(const glm::mat4 &viewProjection, float nearZ,
+                                             float farZ) {
+    temporalViewProj_ = viewProjection;
+    temporalNearZ_ = std::max(nearZ, 1e-4f);
+    temporalFarZ_ = std::max(farZ, temporalNearZ_ + 1e-3f);
+}
+
+glm::vec2 AntiAliasing::prepareTemporalObjectMotion(const void *objectKey,
+                                                    const glm::mat4 &model) {
+    if (!objectKey) return glm::vec2(0.f);
+    temporalObjectPending_[objectKey] = model;
+    const auto previous = temporalObjectHistory_.find(objectKey);
+    if (!taaHistoryValid_ || !temporalViewValid_ || previous == temporalObjectHistory_.end())
+        return glm::vec2(0.f);
+    const glm::vec4 origin(0.f, 0.f, 0.f, 1.f);
+    const glm::vec4 staticPrevious = previousViewProj_ * model * origin;
+    const glm::vec4 actualPrevious = previousViewProj_ * previous->second * origin;
+    if (std::fabs(staticPrevious.w) < 1e-6f || std::fabs(actualPrevious.w) < 1e-6f)
+        return glm::vec2(0.f);
+    const glm::vec2 staticUv = glm::vec2(staticPrevious) / staticPrevious.w * 0.5f + 0.5f;
+    const glm::vec2 actualUv = glm::vec2(actualPrevious) / actualPrevious.w * 0.5f + 0.5f;
+    return glm::clamp(actualUv - staticUv, glm::vec2(-1.f), glm::vec2(1.f));
+}
+
+void AntiAliasing::applyTemporal(Graphics *gfx, Texture *source, Texture *motion) {
+    if (!gfx) throw eve::Exception("AntiAliasing.applyTemporal: null graphics");
+    if (!source) throw eve::Exception("AntiAliasing.applyTemporal: null source");
+
+    Canvas *finalCanvas = gfx->getCanvas();
+    const float dw = finalCanvas ? float(finalCanvas->getWidth()) : float(gfx->getWidth());
+    const float dh = finalCanvas ? float(finalCanvas->getHeight()) : float(gfx->getHeight());
+    Canvas *writeTarget = beginTemporalFrame(source, motion);
+    Texture *prevTex = getTemporalReadTexture();
+    Shader *sh = getTaaShader();
+    if (!sh) throw eve::Exception("AntiAliasing.applyTemporal: missing taa shader");
+
+    gfx->setCanvas(writeTarget);
+    gfx->drawTexturedRectShaderDepthMotion(
+        source, prevTex ? prevTex : source, motion ? motion : source, sh, 0.f, 0.f,
+        float(writeTarget->getWidth()), float(writeTarget->getHeight()),
+        glm::vec4(1.f, 1.f, 1.f, 1.f));
+
+    Texture *resolved = writeTarget->getTexture();
+    if (!resolved) throw eve::Exception("AntiAliasing.applyTemporal: resolved texture missing");
+    gfx->setCanvas(finalCanvas);
+    gfx->drawTexturedRectShaderUV(resolved, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                                  glm::vec4(1.f, 1.f, 1.f, 1.f), false,
+                                  BlendMode::Opaque);
+    endTemporalFrame();
+}
+
+Texture *AntiAliasing::resolveTemporal(Graphics *gfx, Texture *source, Texture *motion) {
+    if (!gfx) throw eve::Exception("AntiAliasing.resolveTemporal: null graphics");
+    if (!source) throw eve::Exception("AntiAliasing.resolveTemporal: null source");
+    Canvas *finalCanvas = gfx->getCanvas();
+    Canvas *writeTarget = beginTemporalFrame(source, motion);
+    Texture *previous = getTemporalReadTexture();
+    Shader *shader = getTaaShader();
+    if (!shader) throw eve::Exception("AntiAliasing.resolveTemporal: missing taa shader");
+    gfx->setCanvas(writeTarget);
+    gfx->drawTexturedRectShaderDepthMotion(
+        source, previous ? previous : source, motion ? motion : source, shader, 0.f, 0.f,
+        float(writeTarget->getWidth()), float(writeTarget->getHeight()),
+        glm::vec4(1.f, 1.f, 1.f, 1.f));
+    Texture *resolved = writeTarget->getTexture();
+    if (!resolved) throw eve::Exception("AntiAliasing.resolveTemporal: result missing");
+    gfx->setCanvas(finalCanvas);
+    endTemporalFrame();
+    return resolved;
+}
+
+void AntiAliasing::applyTemporalRect(Graphics *gfx, Texture *source, float x, float y, float width,
+                                     float height, float r, float g, float b, float a) {
+    if (!gfx) throw eve::Exception("AntiAliasing.applyTemporalRect: null graphics");
+    if (!source) throw eve::Exception("AntiAliasing.applyTemporalRect: null source");
+
+    Canvas *finalCanvas = gfx->getCanvas();
+    Canvas *writeTarget = beginTemporalFrame(source);
+    Texture *prevTex = getTemporalReadTexture();
+    Shader *sh = getTaaShader();
+    if (!sh) throw eve::Exception("AntiAliasing.applyTemporal: missing taa shader");
+
+    // Pass 1: merge current + previous to history-write target.
+    gfx->setCanvas(writeTarget);
+    gfx->drawTexturedRectShaderDepthMotion(
+        source, prevTex ? prevTex : source, source, sh, 0.f, 0.f,
+        float(writeTarget->getWidth()), float(writeTarget->getHeight()),
+        glm::vec4(1.f, 1.f, 1.f, 1.f));
+
+    // Pass 2: composite resolved temporal result to the requested final target.
+    Texture *resolved = writeTarget->getTexture();
+    if (!resolved) throw eve::Exception("AntiAliasing.applyTemporal: resolved texture missing");
+    gfx->setCanvas(finalCanvas);
+    gfx->drawTexturedRectShaderUV(resolved, nullptr, x, y, width, height, 0.f, 0.f, 1.f, 1.f,
+                                  glm::vec4(r, g, b, a), false, BlendMode::Opaque);
+
+    endTemporalFrame();
+}
+
 void AntiAliasing::apply(Graphics *gfx, Texture *source) {
-    drawFullscreen(gfx, source, shaderForMode());
+    if (mode_ == "taa")
+        applyTemporal(gfx, source);
+    else
+        drawFullscreen(gfx, source, shaderForMode());
 }
 
 void AntiAliasing::applyTo(Graphics *gfx, Texture *source, Canvas *dest) {

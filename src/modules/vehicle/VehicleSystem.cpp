@@ -1,10 +1,13 @@
 #include "vehicle/VehicleSystem.h"
+#include "vehicle/ContainerAdapters.h"
 
 #include "vehicle/VehicleMobility.h"
+#include "vehicle/VehicleOrderQueueAdapter.h"
 
 #include <algorithm>
 #include <cmath>
 #include <unordered_map>
+#include <utility>
 
 #ifdef EVENGINE_HAS_PHYSICS
 #include "physics/Body.h"
@@ -51,8 +54,9 @@ float angleDelta(float from, float to) {
 
 void finishOrder(VehicleEntity& v) {
     auto orders = v.orders();
-    if (orders->current >= 0 && static_cast<size_t>(orders->current) < orders->queue.size()) {
-        const VehicleOrder& o = orders->queue[orders->current];
+    const VehicleOrder* current = orders->adapter->current();
+    if (current != nullptr) {
+        const VehicleOrder& o = *current;
         VehicleEvent        e;
         e.type      = VehicleEventType::OrderCompleted;
         e.vehicleId = v.identity()->id;
@@ -60,11 +64,12 @@ void finishOrder(VehicleEntity& v) {
         e.orderType = vehicleOrderTypeName(o.type);
         e.x         = o.x;
         e.y         = o.y;
-        pushEvent(e);
-        v.motion()->arrived = true;
-        orders->queue.erase(orders->queue.begin() + orders->current);
+        if (orders->adapter->completeCurrent()) {
+            pushEvent(e);
+            v.motion()->arrived = true;
+        }
     }
-    orders->current = orders->queue.empty() ? -1 : 0;
+    orders->adapter->syncCompatibility(*orders);
 }
 
 float normalizeDeg(float deg) {
@@ -361,6 +366,8 @@ int VehicleSystem::mobilityCount() { return static_cast<int>(mobilityRegistry().
 void VehicleSystem::setEventSink(VehicleEventSink sink) { eventSink() = std::move(sink); }
 
 void VehicleSystem::update(VehicleEntity& v, float dt) {
+    v.orders()->adapter->update(dt);
+    v.orders()->adapter->syncCompatibility(*v.orders());
     processOrders(v, dt);
     const VehicleDefinition* def      = v.definition()->def;
     IVehicleMobility*        mobility = def != nullptr ? findMobility(def->mobility) : nullptr;
@@ -369,7 +376,8 @@ void VehicleSystem::update(VehicleEntity& v, float dt) {
 
 void VehicleSystem::processOrders(VehicleEntity& v, float dt) {
     auto orders = v.orders();
-    if (orders->current < 0 || static_cast<size_t>(orders->current) >= orders->queue.size()) {
+    const VehicleOrder* current = orders->adapter->current();
+    if (current == nullptr) {
         return;  // 无命令时保留手动/座位输入
     }
 
@@ -382,7 +390,7 @@ void VehicleSystem::processOrders(VehicleEntity& v, float dt) {
     in->aimYaw   = 0.f;
     in->aimPitch = 0.f;
 
-    const VehicleOrder& o = orders->queue[orders->current];
+    const VehicleOrder& o = *current;
     switch (o.type) {
         case VehicleOrderType::Move:
         case VehicleOrderType::AttackMove: {
@@ -417,31 +425,30 @@ void VehicleSystem::processOrders(VehicleEntity& v, float dt) {
     }
 }
 
-void VehicleSystem::pushOrder(VehicleEntity& v, const VehicleOrder& order) {
+eve::Result<void> VehicleSystem::pushOrder(VehicleEntity& v, const VehicleOrder& order) {
     auto orders = v.orders();
-    if (order.type == VehicleOrderType::Move || order.type == VehicleOrderType::AttackMove ||
-        order.type == VehicleOrderType::Stop || order.type == VehicleOrderType::Hold) {
-        orders->queue.clear();
-        orders->current = -1;
+    const bool replaces = order.type == VehicleOrderType::Move || order.type == VehicleOrderType::AttackMove ||
+                          order.type == VehicleOrderType::Stop || order.type == VehicleOrderType::Hold;
+    auto queued = replaces ? orders->adapter->replace(order) : orders->adapter->append(order);
+    if (!queued.ok()) return eve::Result<void>::failure(queued.status());
+    const std::string id = std::move(queued).takeValue();
+    if (id.empty()) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "vehicle order adapter returned an empty id", "orders"));
     }
-    orders->queue.push_back(order);
-    if (orders->current < 0) orders->current = 0;
+    orders->adapter->syncCompatibility(*orders);
     v.motion()->arrived = false;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 void VehicleSystem::clearOrders(VehicleEntity& v) {
-    v.orders()->queue.clear();
-    v.orders()->current = -1;
+    auto orders = v.orders();
+    orders->adapter->clear();
+    orders->adapter->syncCompatibility(*orders);
     v.motion()->arrived = false;
 }
 
-const VehicleOrder* VehicleSystem::currentOrder(VehicleEntity& v) {
-    auto orders = v.orders();
-    if (orders->current < 0 || static_cast<size_t>(orders->current) >= orders->queue.size()) {
-        return nullptr;
-    }
-    return &orders->queue[orders->current];
-}
+const VehicleOrder* VehicleSystem::currentOrder(VehicleEntity& v) { return v.orders()->adapter->current(); }
 
 float VehicleSystem::steerToward(VehicleEntity& v, float targetHeadingDeg) {
     const float delta = angleDelta(v.motion()->heading, targetHeadingDeg);
@@ -470,26 +477,15 @@ const PlayerControl* VehicleSystem::playerControls(int playerId) {
 }
 
 bool VehicleSystem::enterSeat(VehicleEntity& v, int seatIndex, int playerId) {
-    auto seats = v.seats();
-    if (seatIndex < 0 || static_cast<size_t>(seatIndex) >= seats->list.size()) return false;
-    VehicleEntity::SeatSlot& s = seats->list[static_cast<size_t>(seatIndex)];
-    if (s.occupied) return false;
-    // 同一玩家不能同时占两个座位
-    for (VehicleEntity::SeatSlot& other : seats->list) {
-        if (other.occupied && other.occupant == playerId) return false;
-    }
-    s.occupant = playerId;
-    s.occupied = true;
-    return true;
+    VehicleSeatContainerAdapter adapter(eve::container::ContainerId("vehicle:seat:" + v.identity()->id), &v);
+    auto                        entered = adapter.enter(eve::container::SlotIndex(seatIndex), playerId);
+    return entered.ok();
 }
 
 bool VehicleSystem::exitSeat(VehicleEntity& v, int seatIndex) {
-    auto seats = v.seats();
-    if (seatIndex < 0 || static_cast<size_t>(seatIndex) >= seats->list.size()) return false;
-    VehicleEntity::SeatSlot& s = seats->list[static_cast<size_t>(seatIndex)];
-    s.occupied                 = false;
-    s.occupant                 = 0;
-    return true;
+    VehicleSeatContainerAdapter adapter(eve::container::ContainerId("vehicle:seat:" + v.identity()->id), &v);
+    auto                        exited = adapter.exit(eve::container::SlotIndex(seatIndex));
+    return exited.ok();
 }
 
 int VehicleSystem::findSeatByPlayer(VehicleEntity& v, int playerId) {

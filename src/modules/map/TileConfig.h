@@ -1,7 +1,8 @@
 #pragma once
 
-#include "map/TileLayer.h"
+#include "common/Result.h"
 #include "map/MapObject.h"
+#include "map/TileLayer.h"
 
 #include <string>
 #include <vector>
@@ -11,6 +12,15 @@ class JsonDocument;
 }
 
 namespace eve::map {
+
+/** @brief Transactional RPG Maker MV/MZ import receipt. */
+struct RpgMakerImportReceipt {
+    std::vector<TileLayer *> layers;
+    TileLayer               *navigationLayer = nullptr;
+    TileLayer               *shadowLayer     = nullptr;
+    std::string              sourceEngine;
+    int                      tilesetId = 0;
+};
 
 /**
  * @brief Apply map/layer JSON onto an existing TileLayer (Config + Tiles + Tileset + Draw).
@@ -49,5 +59,17 @@ std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObj
 /** @brief Parse map JSON text (no filesystem). Same semantics as loadMapFile. */
 std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObject> *objects,
                                      std::string *error = nullptr);
+
+/**
+ * @brief Imports RPG Maker MV/MZ MapXXX.json plus Tilesets.json without modifying the project.
+ * @ownership Returned layer entities are owned by the ECS world, as with loadMapFile.
+ * @thread Main-thread affine and non-reentrant.
+ */
+[[nodiscard]] eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const std::string &mapPath,
+                                                                   const std::string &tilesetsPath,
+                                                                   const std::string &sourceEngine = "RPG Maker MV/MZ");
+
+/** @brief Decodes one MV/MZ tile id into normal or quarter-tile atlas projections. */
+[[nodiscard]] TileLayer::Tileset::Visual decodeRpgMakerTileVisual(int tileId);
 
 }  // namespace eve::map

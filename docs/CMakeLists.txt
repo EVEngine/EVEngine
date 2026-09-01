@@ -13,7 +13,7 @@ endif()
 
 if(NOT DEFINED EVENGINE_MAJOR_VERSION)
     set(EVENGINE_MAJOR_VERSION "0")
-    set(EVENGINE_MINOR_VERSION "3")
+    set(EVENGINE_MINOR_VERSION "4")
     set(EVENGINE_PATCH_VERSION "0")
 endif()
 
@@ -53,14 +53,21 @@ file(MAKE_DIRECTORY
     "${_doc_pages_dir}/docs/usr/modules"
     "${_doc_pages_dir}/docs/dev")
 
-# User guide root: EVEngine 用户指南 -> module handbook / trimming / conventions.
+# User guide root: EVEngine 用户指南 -> language tutorial / module handbook /
+# trimming / conventions.
 file(READ "${DOC_TOP_DIR}/usr/README.md" _doc_usr_readme ENCODING UTF-8)
 file(WRITE "${_doc_pages_dir}/docs/usr/README.md"
     "\\page usr_guide EVEngine 用户指南\n\n"
+    "\\subpage usr_evescript\n\n"
     "\\subpage usr_modules\n\n"
     "\\subpage usr_trimming\n\n"
     "\\subpage usr_conventions\n\n"
     "${_doc_usr_readme}")
+
+# EveScript language and migration tutorial.
+file(READ "${DOC_TOP_DIR}/usr/EVESCRIPT.md" _doc_evescript ENCODING UTF-8)
+file(WRITE "${_doc_pages_dir}/docs/usr/EVESCRIPT.md"
+    "\\page usr_evescript EveScript 完整教程\n\n${_doc_evescript}")
 
 # Module handbook: groups the five category pages (defined in docs/dox/).
 file(READ "${DOC_TOP_DIR}/usr/MODULES.md" _doc_modules ENCODING UTF-8)
@@ -88,6 +95,7 @@ set(_doc_module_pages
     "audio.md|mod_audio|音频播放模块"
     "building.md|mod_building|建筑放置模块"
     "cardgame.md|mod_cardgame|卡牌游戏工具模块"
+    "climbing.md|mod_climbing|攀爬与跑酷模块"
     "data.md|mod_data|数据模块"
     "daynight.md|mod_daynight|昼夜循环模块"
     "demo.md|mod_demo|内置演示模块"
@@ -110,6 +118,10 @@ set(_doc_module_pages
     "mouse.md|mod_mouse|鼠标模块"
     "network.md|mod_network|网络模块"
     "particles.md|mod_particles|粒子模块"
+    "pixelworld.md|mod_pixelworld|像素物质世界模块"
+    "pixelworld_replay.md|mod_pixelworld_replay|PixelWorld 确定性重放模块"
+    "pixelworld_streaming.md|mod_pixelworld_streaming|PixelWorld 兴趣区 Streaming 模块"
+    "pixelworld_editor.md|mod_pixelworld_editor|PixelWorld Catalog 编辑器模块"
     "physics.md|mod_physics|物理模块（Box2D + Box3D + 布料 + 流体）"
     "plugins.md|mod_plugins|原生插件模块"
     "procgen.md|mod_procgen|程序化生成模块"
@@ -149,7 +161,7 @@ endforeach()
 set(_doc_sidebar_groups
     "usr_env|运行环境与输入|mod_window,mod_event,mod_rx,mod_timer,mod_system,mod_keyboard,mod_mouse,mod_touch,mod_joystick"
     "usr_assets|资源与 I/O|mod_filesystem,mod_data,mod_image,mod_font,mod_i18n,mod_sound,mod_audio,mod_model3d,mod_network"
-    "usr_gameplay|游戏玩法|mod_entity,mod_physics,mod_map,mod_particles,mod_animation,mod_rpg,mod_inventory,mod_cardgame,mod_building,mod_procgen"
+    "usr_gameplay|游戏玩法|mod_entity,mod_physics,mod_map,mod_particles,mod_animation,mod_climbing,mod_rpg,mod_inventory,mod_cardgame,mod_building,mod_procgen"
     "usr_scene|表现与场景|mod_graphics,mod_voxel,mod_spritestack,mod_daynight,mod_weather,mod_ui,mod_scene"
     "usr_advanced|高级能力|mod_math,mod_spatial,mod_editor,mod_ik,mod_gpgpu,mod_tensor,mod_thread,mod_plugins,mod_demo")
 

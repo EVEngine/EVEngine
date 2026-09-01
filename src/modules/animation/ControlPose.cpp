@@ -1,6 +1,7 @@
 #include "animation/ControlPose.h"
 
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimationTime.h"
 #include "common/Exception.h"
 
 #include <algorithm>
@@ -201,7 +202,7 @@ void ControlPose::writePoseFromState() {
     }
 }
 
-void ControlPose::update(float dt) {
+void ControlPose::updateUnchecked(float dt) {
     if (dt <= 0.f || !hasTarget_) return;
 
     // Refresh targets from stored target_ (weights / integrator may have changed).
@@ -297,6 +298,24 @@ void ControlPose::update(float dt) {
         }
     }
     writePoseFromState();
+}
+
+eve::Result<void> ControlPose::advance(const eve::SimulationStep &step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "ControlPose");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    updateUnchecked(std::move(seconds).takeValue());
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void ControlPose::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "ControlPose");
+    if (!step) {
+        step.ignore("legacy ControlPose update");
+        return;
+    }
+    advance(std::move(step).takeValue()).ignore("legacy ControlPose update");
 }
 
 }  // namespace eve::animation

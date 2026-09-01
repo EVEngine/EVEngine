@@ -6,10 +6,12 @@
 #include "filesystem/Filesystem.h"
 #include "filesystem/File.h"
 #include "filesystem/FileData.h"
+#include "filesystem/FileWatch.h"
 
 #include <chrono>
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -186,6 +188,27 @@ TEST_CASE("filesystem.writeReadAppendRemove") {
         threw = true;
     }
     CHECK(threw);
+}
+
+TEST_CASE("filesystem.atomicTextReplacePreservesContract") {
+    useIdentity("ev_ut_fs_atomic_text");
+    auto* f = fs();
+    const std::string name = "slot1.sav";
+    REQUIRE(f->writeTextAtomic(name, "version=1").ok());
+    CHECK_EQ(f->readText(name), std::string("version=1"));
+    REQUIRE(f->writeTextAtomic(name, "version=2\n角色=勇者").ok());
+    CHECK_EQ(f->readText(name), std::string("version=2\n角色=勇者"));
+
+    auto rejected = f->writeTextAtomic("../outside.sav", "invalid");
+    CHECK(!rejected.ok());
+    CHECK_EQ(f->readText(name), std::string("version=2\n角色=勇者"));
+
+    bool sawTemporary = false;
+    for (const auto& item : f->getDirectoryItems("")) {
+        if (item.find("slot1.sav.tmp.") != std::string::npos) sawTemporary = true;
+    }
+    CHECK(!sawTemporary);
+    CHECK(f->remove(name));
 }
 
 TEST_CASE("filesystem.setSourceSecondCallFails") {
@@ -431,6 +454,47 @@ TEST_CASE("filesystem.watch.fileModified") {
     CHECK(f->unwatch(name));
     CHECK_EQ(f->getWatchCount(), 0);
     f->remove(name);
+}
+
+TEST_CASE("filesystem.watch.coalescesOverlappingRegistrations") {
+    const char *name = "ut_watch_coalesce.txt";
+    const auto  dir = std::filesystem::temp_directory_path() / "ev_ut_fs_watch_coalesce";
+    std::filesystem::remove_all(dir);
+    REQUIRE(std::filesystem::create_directories(dir));
+    {
+        std::ofstream out(dir / name, std::ios::binary | std::ios::trunc);
+        REQUIRE(out.good());
+        out.write("v1", 2);
+    }
+
+    eve::filesystem::FileWatch watch;
+    REQUIRE(watch.add(dir.string(), "", "."));
+    REQUIRE(watch.add(dir.string(), name, name));
+    CHECK_EQ(watch.count(), 2);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+    eve::filesystem::FileWatch::Event event;
+    while (watch.poll(event)) {
+    }
+
+    {
+        std::ofstream out(dir / name, std::ios::binary | std::ios::trunc);
+        REQUIRE(out.good());
+        out.write("v2-changed", 10);
+        out.flush();
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+    int matchingEvents = 0;
+    while (watch.poll(event)) {
+        if (event.realPath.find(name) != std::string::npos) {
+            ++matchingEvents;
+            CHECK_EQ(event.path, std::string(name));
+        }
+    }
+    CHECK_EQ(matchingEvents, 1);
+    watch.clear();
+    std::filesystem::remove_all(dir);
 }
 
 TEST_CASE("filesystem.watch.unwatchAll") {

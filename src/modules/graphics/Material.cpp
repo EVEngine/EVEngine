@@ -4,7 +4,49 @@
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 
+#include <cmath>
+
 namespace eve::graphics {
+
+namespace {
+eve::Diagnostic invalidMaterial(std::string message) {
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message));
+}
+}  // namespace
+
+eve::Result<void> Material::setVirtualTexture(Texture *albedoAtlas, Texture *normalAtlas,
+                                              Texture *pageTable, int pageCountX, int pageCountY,
+                                              int atlasSlotsX, int atlasSlotsY,
+                                              float borderFraction) {
+    if (!albedoAtlas || !normalAtlas || !pageTable)
+        return eve::Result<void>::failure(
+            invalidMaterial("virtual texture requires albedo, normal, and page-table textures"));
+    if (pageCountX <= 0 || pageCountY <= 0 || atlasSlotsX <= 0 || atlasSlotsY <= 0)
+        return eve::Result<void>::failure(
+            invalidMaterial("virtual texture page and atlas dimensions must be positive"));
+    if (!std::isfinite(borderFraction) || borderFraction < 0.f || borderFraction >= 0.5f)
+        return eve::Result<void>::failure(
+            invalidMaterial("virtual texture border fraction must be in [0, 0.5)"));
+    albedo_ = albedoAtlas;
+    normal_ = normalAtlas;
+    height_ = pageTable;
+    virtualPageCountX_ = pageCountX;
+    virtualPageCountY_ = pageCountY;
+    virtualAtlasSlotsX_ = atlasSlotsX;
+    virtualAtlasSlotsY_ = atlasSlotsY;
+    virtualBorderFraction_ = borderFraction;
+    virtualTextureEnabled_ = true;
+    return eve::Result<void>::success();
+}
+
+void Material::clearVirtualTexture() {
+    virtualTextureEnabled_ = false;
+    virtualPageCountX_ = 0;
+    virtualPageCountY_ = 0;
+    virtualAtlasSlotsX_ = 0;
+    virtualAtlasSlotsY_ = 0;
+    virtualBorderFraction_ = 0.f;
+}
 
 void Material::setShadingModel(const std::string &model) {
     if (model == "unlit" || model == "hair" || model == "custom" || model == "pbr") {
@@ -128,6 +170,9 @@ void Material::bind(Graphics &gfx) const {
     gfx.setMesh3DTexCellBomb(texBombScale_, texBombStrength_, texBombRot_);
     gfx.setMesh3DNormalTexture(normal_);
     gfx.setMesh3DHeightTexture(height_);
+    gfx.setMesh3DVirtualTexture(virtualTextureEnabled_, virtualPageCountX_, virtualPageCountY_,
+                                virtualAtlasSlotsX_, virtualAtlasSlotsY_,
+                                virtualBorderFraction_);
     gfx.setMesh3DParallax(parallaxScale_, parallaxMinLayers_, parallaxMaxLayers_);
     gfx.setMesh3DShadowReceive(receiveShadow_);
 

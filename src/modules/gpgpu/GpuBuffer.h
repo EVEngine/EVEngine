@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/GpuResidentBufferView.h"
+
 #include <cstdint>
 #include <string>
 
@@ -37,6 +39,13 @@ public:
 
     virtual void uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset = 0) = 0;
     virtual void downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset = 0) const = 0;
+
+    /**
+     * @brief Return a transient non-owning native view for same-device rendering.
+     * Unsupported/test buffers return an Unknown view. The buffer owns the handle
+     * and must outlive every frame command that consumes the returned view.
+     */
+    virtual GpuResidentBufferView residentView() const { return {}; }
 };
 
 }  // namespace eve::gpgpu

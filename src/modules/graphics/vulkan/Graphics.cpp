@@ -23,6 +23,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <functional>
+#include <future>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -30,10 +32,13 @@
 #include <unistd.h>
 #endif
 
+#include "common/BootWarmup.h"
+#include "common/CrashLog.h"
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/GraphicsCapabilities.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
@@ -51,19 +56,225 @@
 
 namespace eve::graphics::vulkan {
 
+namespace {
+
+bool wantVulkanValidation() {
+#if defined(EVENGINE_IOS)
+    return false;
+#else
+    const char *vkVal = std::getenv("EVENGINE_VULKAN_VALIDATION");
+    return vkVal && vkVal[0] != '\0' && vkVal[0] != '0';
+#endif
+}
+
+void disableImplicitLayersIfSafe() {
+    if (wantVulkanValidation()) return;
+    if (const char *existing = std::getenv("VK_LOADER_LAYERS_DISABLE")) {
+        if (existing[0] != '\0') return;
+    }
+    if (const char *layers = std::getenv("VK_INSTANCE_LAYERS")) {
+        if (layers[0] != '\0') return;
+    }
+#if defined(_WIN32)
+    _putenv_s("VK_LOADER_LAYERS_DISABLE", "~implicit~");
+#else
+    setenv("VK_LOADER_LAYERS_DISABLE", "~implicit~", 0);
+#endif
+}
+
+bool extensionAvailable(const std::vector<vk::ExtensionProperties> &props, const char *name) {
+    for (const auto &p : props) {
+        if (std::strcmp(p.extensionName, name) == 0) return true;
+    }
+    return false;
+}
+
+void addIfAvailable(std::vector<const char *> &exts, const std::vector<vk::ExtensionProperties> &props,
+                    const char *name) {
+    if (extensionAvailable(props, name)) exts.push_back(name);
+}
+
+std::vector<const char *> collectFastInstanceExtensions(const std::vector<vk::ExtensionProperties> &props,
+                                                        vk::InstanceCreateFlags *flagsOut) {
+    std::vector<const char *> exts;
+    addIfAvailable(exts, props, "VK_KHR_surface");
+#if defined(_WIN32)
+    addIfAvailable(exts, props, "VK_KHR_win32_surface");
+#elif defined(__ANDROID__)
+    addIfAvailable(exts, props, "VK_KHR_android_surface");
+#elif defined(__APPLE__)
+    addIfAvailable(exts, props, "VK_EXT_metal_surface");
+    if (extensionAvailable(props, "VK_KHR_portability_enumeration")) {
+        exts.push_back("VK_KHR_portability_enumeration");
+        if (flagsOut) *flagsOut |= vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
+    }
+#else
+    addIfAvailable(exts, props, "VK_KHR_xcb_surface");
+    addIfAvailable(exts, props, "VK_KHR_xlib_surface");
+    addIfAvailable(exts, props, "VK_KHR_wayland_surface");
+#endif
+    return exts;
+}
+
+void initVulkanDispatcher() {
+#if defined(EVENGINE_MACOSX)
+    if (PFN_vkGetInstanceProcAddr sdlGpa =
+            reinterpret_cast<PFN_vkGetInstanceProcAddr>(SDL_Vulkan_GetVkGetInstanceProcAddr())) {
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(sdlGpa);
+        vkb::InstanceBuilder::loaded = true;
+        return;
+    }
+#endif
+    if (!vkb::InstanceBuilder::loaded) {
+        vkb::InstanceBuilder::loadDefault();
+        vkb::InstanceBuilder::loaded = true;
+    }
+}
+
+vkb::Instance createInstanceFast() {
+    initVulkanDispatcher();
+    disableImplicitLayersIfSafe();
+    // Enumerate instance extensions only. vk-bootstrap's SystemInfo::query() also
+    // walks every implicit layer (and each layer's extensions), which is the
+    // bulk of "instance + surface" on a Windows SDK install.
+    const auto props = vk::enumerateInstanceExtensionProperties();
+    vk::InstanceCreateFlags flags{};
+    const auto exts = collectFastInstanceExtensions(props, &flags);
+
+    if (wantVulkanValidation()) {
+        vkb::InstanceBuilder builder;
+        builder.require_api_version(1, 0);
+        builder.request_validation_layers();
+        builder.use_default_debug_messenger();
+        for (auto *e : exts) builder.enable_extension(e);
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+        builder.set_headless(true);
+        builder.add_flags(flags);
+#endif
+        std::printf("EVEngine: Vulkan validation layers enabled (EVENGINE_VULKAN_VALIDATION)\n");
+        return builder.build();
+    }
+
+    vk::ApplicationInfo app{};
+    app.pApplicationName = "EVEngine";
+    app.pEngineName = "EVEngine";
+    app.apiVersion = VK_MAKE_VERSION(1, 0, 0);
+
+    vk::InstanceCreateInfo ci{};
+    ci.flags = flags;
+    ci.pApplicationInfo = &app;
+    ci.enabledExtensionCount = static_cast<uint32_t>(exts.size());
+    ci.ppEnabledExtensionNames = exts.data();
+
+    vkb::Instance inst;
+    inst.instance = vk::createInstance(ci);
+    VULKAN_HPP_DEFAULT_DISPATCHER.init(inst.instance);
+    return inst;
+}
+
+struct InstanceWarmup {
+    std::mutex mu;
+    std::future<vkb::Instance> future;
+    bool started = false;
+    bool consumed = false;
+};
+
+InstanceWarmup &instanceWarmup() {
+    static InstanceWarmup state;
+    return state;
+}
+
+void startVulkanInstanceWarmupImpl() {
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+    // MoltenVK / SDL loader affinity is main-thread on Apple.
+    return;
+#else
+    auto &w = instanceWarmup();
+    std::lock_guard<std::mutex> lock(w.mu);
+    if (w.started) return;
+    w.started = true;
+    w.future = std::async(std::launch::async, [] {
+        StartupStage stage("  vulkan: instance (warmup thread)");
+        return createInstanceFast();
+    });
+#endif
+}
+
+vkb::Instance consumeWarmedInstance() {
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+    StartupStage stage("  vulkan: instance");
+    return createInstanceFast();
+#else
+    startVulkanInstanceWarmupImpl();
+    std::future<vkb::Instance> fut;
+    {
+        auto &w = instanceWarmup();
+        std::lock_guard<std::mutex> lock(w.mu);
+        if (w.consumed) {
+            throw Exception("Vulkan instance warmup already consumed");
+        }
+        w.consumed = true;
+        fut = std::move(w.future);
+    }
+    StartupStage waitStage("  vulkan: wait instance warmup");
+    return fut.get();
+#endif
+}
+
+void discardWarmedInstance() noexcept {
+#if !defined(EVENGINE_MACOSX) && !defined(EVENGINE_IOS)
+    std::future<vkb::Instance> fut;
+    {
+        auto &w = instanceWarmup();
+        std::lock_guard<std::mutex> lock(w.mu);
+        if (!w.started || w.consumed) return;
+        w.consumed = true;
+        fut = std::move(w.future);
+    }
+    try {
+        vkb::Instance warmed = fut.get();
+        if (static_cast<VkInstance>(warmed.instance) != VK_NULL_HANDLE) warmed.destroy();
+    } catch (const std::exception &e) {
+        std::fprintf(stderr, "[vulkan] instance warmup cleanup failed: %s\n", e.what());
+    } catch (...) {
+        std::fprintf(stderr, "[vulkan] instance warmup cleanup failed with an unknown error\n");
+    }
+#endif
+}
+
+struct RegisterVulkanWarmup {
+    RegisterVulkanWarmup() {
+        eve::boot::registerVulkanInstanceWarmup(&startVulkanInstanceWarmupImpl);
+    }
+} gRegisterVulkanWarmup;
+
+}  // namespace
+
 // --- Backend lifecycle and frame orchestration --------------------------------
 
 std::string Graphics::getBackendName() const { return "vulkan"; }
 
+Graphics::Graphics() { eve::boot::startVulkanInstanceWarmup(); }
+
 Graphics::~Graphics() {
-    if (!initialized) return;
+    detachGraphicsArtifactProvider(this);
+    if (!initialized) {
+        // Construction starts instance warmup before callers decide whether to
+        // initialize graphics. Join it before the Vulkan loader can be unloaded.
+        discardWarmedInstance();
+        if (static_cast<VkInstance>(inst.instance) != VK_NULL_HANDLE) inst.destroy();
+        return;
+    }
     device->waitIdle();
+    if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
+    gpuQueryPool_ = nullptr;
     // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them
     // first so their destructors do not see freed shader pointers.
     pipelineAA_.reset();
     pipelineAO_.reset();
     pipelineGI_.reset();
     renderControl_.reset();
+    destroyGpuParticleResources();
     ownedCanvases.clear();
     ownedMeshes.clear();
     ownedGpuMeshes.clear();
@@ -76,8 +287,14 @@ Graphics::~Graphics() {
     for (auto &g : ownedGpuShaders) {
         if (g->swapchainPipeline) device->destroyPipeline(g->swapchainPipeline);
         if (g->offscreenPipeline) device->destroyPipeline(g->offscreenPipeline);
+        if (g->swapchainOpaquePipeline) device->destroyPipeline(g->swapchainOpaquePipeline);
+        if (g->offscreenOpaquePipeline) device->destroyPipeline(g->offscreenOpaquePipeline);
         if (g->mesh3dPipeline) device->destroyPipeline(g->mesh3dPipeline);
         if (g->mesh3dXrayPipeline) device->destroyPipeline(g->mesh3dXrayPipeline);
+        if (g->mesh3dOffscreenPipeline)
+            device->destroyPipeline(g->mesh3dOffscreenPipeline);
+        if (g->mesh3dHdrOffscreenPipeline)
+            device->destroyPipeline(g->mesh3dHdrOffscreenPipeline);
         // pipelineLayout is shared; do not destroy per-shader
     }
     ownedGpuShaders.clear();
@@ -94,10 +311,14 @@ Graphics::~Graphics() {
     if (premultipliedTexPipeline) device->destroyPipeline(premultipliedTexPipeline);
     if (multiplyTexPipeline) device->destroyPipeline(multiplyTexPipeline);
     if (opaqueTexPipeline) device->destroyPipeline(opaqueTexPipeline);
+    if (particleDistortionPipeline) device->destroyPipeline(particleDistortionPipeline);
+    if (sceneTonemapPipeline) device->destroyPipeline(sceneTonemapPipeline);
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
     if (shaderPipelineLayout) device->destroyPipelineLayout(shaderPipelineLayout);
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
     if (mesh3dTransparentPipeline) device->destroyPipeline(mesh3dTransparentPipeline);
+    for (auto pipeline : mesh3dSurfacePipelines)
+        if (pipeline) device->destroyPipeline(pipeline);
     destroyOffscreen3DResources();
     if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
     if (mesh3dShaderPipelineLayout) device->destroyPipelineLayout(mesh3dShaderPipelineLayout);
@@ -145,6 +366,10 @@ Graphics::~Graphics() {
     if (offscreenMultiplyTexPipeline) device->destroyPipeline(offscreenMultiplyTexPipeline);
     if (offscreenOpaqueTexPipeline) device->destroyPipeline(offscreenOpaqueTexPipeline);
     if (offscreenRenderPass) device->destroyRenderPass(offscreenRenderPass);
+    if (hdrOffscreenTexPipeline) device->destroyPipeline(hdrOffscreenTexPipeline);
+    if (hdrOffscreenOpaqueTexPipeline)
+        device->destroyPipeline(hdrOffscreenOpaqueTexPipeline);
+    if (hdrOffscreenRenderPass) device->destroyRenderPass(hdrOffscreenRenderPass);
     texSetLayoutUnique.reset();
     if (descriptorPool) device->destroyDescriptorPool(descriptorPool);
     if (uploadPool) device->destroyCommandPool(uploadPool);
@@ -154,60 +379,18 @@ Graphics::~Graphics() {
 
 void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames, void *nativeWindow,
                                        vk::SurfaceKHR *surfaceOut) {
-#if defined(EVENGINE_MACOSX)
-    // Build the instance through the SAME Vulkan loader SDL loaded (the one
-    // bundled by the SDK). vk-bootstrap would otherwise dlopen its own copy
-    // (vulkan.hpp DynamicLoader or dlsym in load order) and
-    // SDL_Vulkan_CreateSurface then cannot resolve the surface functions on
-    // the vkb-created instance (its cached vkGetInstanceProcAddr belongs to a
-    // different loader -> "extensions are not enabled").
-    if (PFN_vkGetInstanceProcAddr sdlGpa =
-            reinterpret_cast<PFN_vkGetInstanceProcAddr>(SDL_Vulkan_GetVkGetInstanceProcAddr())) {
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(sdlGpa);
-        vkb::InstanceBuilder::loaded = true;
-    }
-#endif
-    vkb::InstanceBuilder builder;
-    builder.require_api_version(1, 0);
-#if !defined(EVENGINE_IOS)
-    // Khronos validation on every draw / descriptor update is typically 5–20×
-    // slower. Opt in with EVENGINE_VULKAN_VALIDATION=1 (any value except "0").
-    const char *vkVal = std::getenv("EVENGINE_VULKAN_VALIDATION");
-    const bool wantValidation = vkVal && vkVal[0] != '\0' && vkVal[0] != '0';
-    if (wantValidation) {
-        builder.request_validation_layers();
-        builder.use_default_debug_messenger();
-        std::printf("EVEngine: Vulkan validation layers enabled (EVENGINE_VULKAN_VALIDATION)\n");
-    }
-#endif
-    for (auto *extName : extNames) builder.enable_extension(extName);
-    // No window / no surface: create a truly headless instance so the device
-    // selector does not demand a presentable queue family or a VkSurfaceKHR.
-    if (nativeWindow == nullptr) builder.set_headless(true);
-#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
-    // SDL already supplies surface extensions; avoid duplicating them via
-    // InstanceBuilder's non-headless window path, and enable MoltenVK portability.
-    builder.set_headless(true);
-    // Portability enumeration comes from the Khronos loader. iOS links MoltenVK
-    // directly, so the extension is absent there and asking for it aborts
-    // instance creation.
-    if (vkb::SystemInfo::query().is_extension_available(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)) {
-        builder.enable_extension(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-        builder.add_flags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR);
-    }
-#endif
-    {
-        StartupStage stage("  vulkan: instance + surface");
-        inst = builder.build();
+    (void)extNames;
+    if (static_cast<VkInstance>(inst.instance) == VK_NULL_HANDLE)
+        inst = consumeWarmedInstance();
 
-        if (nativeWindow != nullptr && surfaceOut != nullptr) {
-            auto *window = static_cast<SDL_Window *>(nativeWindow);
-            VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
-            if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
-                throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
-            surface = rawSurface;
-            *surfaceOut = rawSurface;
-        }
+    if (nativeWindow != nullptr && surfaceOut != nullptr) {
+        StartupStage stage("  vulkan: surface");
+        auto *window = static_cast<SDL_Window *>(nativeWindow);
+        VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
+        if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
+            throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
+        surface = rawSurface;
+        *surfaceOut = rawSurface;
     }
 
     {
@@ -227,6 +410,33 @@ void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames
         selector.add_required_extension("VK_KHR_portability_subset");
 #endif
         auto phys = selector.select();
+        {
+            // Record the GPU identity into the crash/error log before any Vulkan
+            // work, so a device/driver crash can be tied to the exact GPU+driver.
+            const auto &pp = phys.properties;
+            const char *vendor = "unknown";
+            switch (pp.vendorID) {
+                case 0x10DE: vendor = "NVIDIA"; break;
+                case 0x1002: vendor = "AMD"; break;
+                case 0x8086: vendor = "Intel"; break;
+                case 0x13B5: vendor = "ARM"; break;
+                case 0x5143: vendor = "Qualcomm"; break;
+                default: break;
+            }
+            char vendorHex[16], deviceHex[16], driverHex[16];
+            std::snprintf(vendorHex, sizeof(vendorHex), "%04X", pp.vendorID);
+            std::snprintf(deviceHex, sizeof(deviceHex), "%04X", pp.deviceID);
+            std::snprintf(driverHex, sizeof(driverHex), "%08X", pp.driverVersion);
+            const uint32_t maj = VK_API_VERSION_MAJOR(pp.apiVersion);
+            const uint32_t min = VK_API_VERSION_MINOR(pp.apiVersion);
+            const uint32_t pat = VK_API_VERSION_PATCH(pp.apiVersion);
+            eve::recordLogEvent(
+                "info",
+                std::string("gpu: ") + vendor + " '" + std::string(pp.deviceName.data()) +
+                    "' vendorId=0x" + vendorHex + " deviceId=0x" + deviceHex + " api=" +
+                    std::to_string(maj) + "." + std::to_string(min) + "." + std::to_string(pat) +
+                    " driver=0x" + driverHex + (nativeWindow ? "" : " [headless]"));
+        }
         {
             const vk::PhysicalDeviceFeatures supported = phys->getFeatures();
             if (supported.samplerAnisotropy) {
@@ -270,6 +480,10 @@ void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames
         deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
+        eve::recordLogEvent("info",
+            "gpu: logical device created (gpuDriven=" +
+            std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+            ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
     }
 }
 
@@ -325,9 +539,6 @@ void Graphics::initHeadless(int width, int height) {
         createVoxelRectPipeline();
     }
 
-    // Must be set before createShadowResources(): it clears the shadow cascade
-    // layers by calling beginShadowPass()/endShadowPass(), and beginShadowPass()
-    // asserts `initialized` is already true.
     initialized = true;
     {
         StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
@@ -344,9 +555,11 @@ void Graphics::initHeadless(int width, int height) {
         StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
         initGpuDrivenResources();
     }
+    eve::recordLogEvent("info", "gfx: graphics initialized (headless)");
 }
 
 void Graphics::initWithWindow(void *nativeWindow) {
+    eve::cap::provide<eve::service::IGpuTimer>(this);
     StartupStage initStage("graphics: initWithWindow (total)");
     if (initialized) {
         // Window module may destroy/recreate the SDL window (tests, setWindowSettings).
@@ -390,6 +603,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
     {
         StartupStage stage("  vulkan: swapchain + solid pipelines");
         createSwapchainAndPipeline();
+        eve::recordLogEvent("info", "gfx: swapchain + solid pipelines created");
     }
     {
         StartupStage stage("  vulkan: textured/lit2d pipelines");
@@ -407,9 +621,6 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: voxel pipeline");
         createVoxelRectPipeline();
     }
-    // Must be set before createShadowResources(): it clears the shadow cascade
-    // layers by calling beginShadowPass()/endShadowPass(), and beginShadowPass()
-    // asserts `initialized` is already true.
     initialized = true;
     {
         StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
@@ -426,6 +637,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
         initGpuDrivenResources();
     }
+    eve::recordLogEvent("info", "gfx: graphics initialized (window)");
 }
 
 void Graphics::onNativeWindowDestroyed() {
@@ -562,6 +774,11 @@ Graphics::GBufferSlot *Graphics::currentGBufferSlot() {
     return &gbufferSlots[currentFrameSlot() % gbufferSlots.size()];
 }
 
+Texture* Graphics::getSceneLinearDepthTexture() {
+    auto* slot = currentGBufferSlot();
+    return slot && gbufferPending ? &slot->depthColorTex : nullptr;
+}
+
 Graphics::DecalSlot *Graphics::currentDecalSlot() {
     if (decalSlots.empty()) return nullptr;
     return &decalSlots[currentFrameSlot() % decalSlots.size()];
@@ -633,7 +850,10 @@ bool Graphics::beginPresentCommandBuffer() {
     for (int attempt = 0; attempt < 3; ++attempt) {
         if (!rebuildSwapchainIfNeeded()) return false;
         presentRecording = presentModel.begin();
-        if (presentRecording) return true;
+        if (presentRecording) {
+            writeGpuTimestampBegin();
+            return true;
+        }
         // Acquire failed without beginning the CB (see Present::begin). Rebuild once.
         if (presentModel.needs_recreate) {
             presentModel.needs_recreate = false;
@@ -745,5 +965,51 @@ void Graphics::present() {
 void Graphics::draw(eve::graphics::Graphics *, const glm::mat4 &) const {}
 void Graphics::draw(Canvas *, const glm::mat4 &) const {}
 
+// ---- GPU frame timing ------------------------------------------------------
+
+void Graphics::initGpuTiming() {
+    if (gpuQueryPool_) return;
+    try {
+        timestampPeriod_ = device.physical_device.properties.limits.timestampPeriod;
+        vk::QueryPoolCreateInfo ci;
+        ci.queryType = vk::QueryType::eTimestamp;
+        ci.queryCount = 2;
+        gpuQueryPool_ = device->createQueryPool(ci);
+        gpuTimingReady_ = true;
+    } catch (...) {
+        gpuTimingReady_ = false;
+        gpuQueryPool_ = nullptr;
+    }
+}
+
+void Graphics::writeGpuTimestampBegin() {
+    if (!gpuTimingReady_ || !presentRecording) return;
+    vk::CommandBuffer cb = presentRecording.commandBuffer();
+    cb.resetQueryPool(gpuQueryPool_, 0, 2);
+    cb.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe, gpuQueryPool_, 0);
+}
+
+void Graphics::writeGpuTimestampEnd() {
+    if (!gpuTimingReady_ || !presentRecording) return;
+    vk::CommandBuffer cb = presentRecording.commandBuffer();
+    cb.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe, gpuQueryPool_, 1);
+}
+
+void Graphics::readGpuFrameTiming() {
+    if (!gpuTimingReady_ || !gpuQueryPool_) return;
+    // drawFrame() waits on the in-flight fence, so results are valid here.
+    std::array<uint64_t, 2> ts{};
+    const auto r = device->getQueryPoolResults(
+        gpuQueryPool_, 0, 2, sizeof(ts), ts.data(), sizeof(uint64_t),
+        vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
+    if (r == vk::Result::eSuccess && ts[1] > ts[0])
+        gpuFrameMs_ = float(double(ts[1] - ts[0]) * double(timestampPeriod_) / 1'000'000.0);
+    else
+        gpuFrameMs_ = 0.f;
+}
+
+bool Graphics::gpuTimingAvailable() const { return gpuTimingReady_ && gpuFrameMs_ > 0.f; }
+
+float Graphics::gpuFrameMs() const { return gpuFrameMs_; }
 
 }  // namespace eve::graphics::vulkan

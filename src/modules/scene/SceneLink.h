@@ -33,7 +33,7 @@ struct LinkOps {
 
     /**
      * Target -> node, before world propagation, for links whose target is
-     * authoritative (syncMode 1). Null when the kind cannot drive a node.
+     * authoritative when syncMode is 1. Null when the kind cannot drive a node.
      */
     void (*pullWorld)(SceneNode& node, void* target) = nullptr;
 

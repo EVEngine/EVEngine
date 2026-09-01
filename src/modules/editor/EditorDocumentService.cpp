@@ -46,7 +46,7 @@ EditorResult<DocumentSnapshot> DocumentService::open(DocumentKey key, std::strin
     document.snapshot.resourceUri       = std::move(resourceUri);
     document.snapshot.state             = DocumentState::Ready;
     EditorResult<StoredDocument> stored = store_->read(document.snapshot.resourceUri);
-    if (stored.accepted() && stored.value) {
+    if (stored.isAccepted() && stored.value) {
         document.content                  = stored.value->content;
         document.snapshot.revision.disk   = stored.value->revision;
         document.snapshot.revision.edit   = stored.value->revision;
@@ -101,7 +101,7 @@ EditorResult<DocumentSnapshot> DocumentService::executeSave(const SaveTicket& ti
         store_->compareAndSwap(document->second.snapshot.resourceUri, ticket.expectedDiskRevision,
                                ticket.expectedContentHash, pending->second.content);
     pendingSaves_.erase(pending);
-    if (!stored.accepted() || !stored.value) {
+    if (!stored.isAccepted() || !stored.value) {
         document->second.snapshot.state =
             stored.status == EditorStatus::Conflict ? DocumentState::Conflict : DocumentState::Failed;
         document->second.snapshot.diagnostics = stored.diagnostics;
@@ -143,6 +143,66 @@ std::vector<DocumentSnapshot> DocumentService::documents() const {
     std::sort(result.begin(), result.end(),
               [](const DocumentSnapshot& left, const DocumentSnapshot& right) { return left.id < right.id; });
     return result;
+}
+
+EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const DocumentId& document) {
+    auto found = open_.find(document);
+    if (found == open_.end()) return error(EditorStatus::NotFound, "editor.document.not-open", "Document is not open");
+
+    EditorResult<StoredDocument> stored = store_->read(found->second.snapshot.resourceUri);
+    if (!stored.isAccepted() || !stored.value) {
+        const bool expectedMissing = stored.status == EditorStatus::NotFound &&
+                                     found->second.snapshot.revision.disk == 0 &&
+                                     found->second.snapshot.diskContentHash.empty();
+        if (expectedMissing) return EditorResult<DocumentSnapshot>::applied(found->second.snapshot);
+        found->second.snapshot.state = stored.status == EditorStatus::NotFound ||
+                                               stored.status == EditorStatus::Conflict
+                                           ? DocumentState::Conflict
+                                           : DocumentState::Failed;
+        found->second.snapshot.diagnostics = stored.diagnostics;
+        if (found->second.snapshot.diagnostics.empty())
+            found->second.snapshot.diagnostics.push_back(
+                {RuleId("editor.document.external-missing"), DiagnosticSeverity::Error,
+                 "Persisted document was removed externally"});
+        EditorResult<DocumentSnapshot> result;
+        result.status      = found->second.snapshot.state == DocumentState::Conflict ? EditorStatus::Conflict
+                                                                                     : stored.status;
+        result.value       = found->second.snapshot;
+        result.diagnostics = found->second.snapshot.diagnostics;
+        return result;
+    }
+
+    const bool changed = stored.value->revision != found->second.snapshot.revision.disk ||
+                         stored.value->contentHash != found->second.snapshot.diskContentHash;
+    if (!changed) {
+        if (found->second.snapshot.state == DocumentState::Conflict) {
+            found->second.snapshot.state = DocumentState::Ready;
+            found->second.snapshot.diagnostics.clear();
+        }
+        return EditorResult<DocumentSnapshot>::applied(found->second.snapshot);
+    }
+    if (found->second.snapshot.dirty()) {
+        found->second.snapshot.state = DocumentState::Conflict;
+        found->second.snapshot.diagnostics = {
+            {RuleId("editor.document.external-conflict"), DiagnosticSeverity::Error,
+             "Document changed on disk while the session has unsaved edits"}};
+        EditorResult<DocumentSnapshot> result;
+        result.status      = EditorStatus::Conflict;
+        result.value       = found->second.snapshot;
+        result.diagnostics = found->second.snapshot.diagnostics;
+        return result;
+    }
+
+    found->second.content = stored.value->content;
+    const Revision synchronizedEdit =
+        std::max(found->second.snapshot.revision.edit + 1, stored.value->revision);
+    found->second.snapshot.revision.edit   = synchronizedEdit;
+    found->second.snapshot.revision.saved  = synchronizedEdit;
+    found->second.snapshot.revision.disk   = stored.value->revision;
+    found->second.snapshot.diskContentHash = stored.value->contentHash;
+    found->second.snapshot.state           = DocumentState::Ready;
+    found->second.snapshot.diagnostics.clear();
+    return EditorResult<DocumentSnapshot>::applied(found->second.snapshot);
 }
 
 EditorResult<void> DocumentService::close(const DocumentId& document) {

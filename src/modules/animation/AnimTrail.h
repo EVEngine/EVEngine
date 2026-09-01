@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Time.h"
+
 #include <string>
 #include <vector>
 
@@ -21,7 +23,7 @@ class AnimPose;
  * Typical frame:
  *   pose.computeWorld(sk);
  *   trail.sampleBone(pose, tipBone);  // or addPoint(x, y)
- *   trail.update(dt);
+ *   trail.advance(step);
  *   // eve_render:
  *   trail.draw(gfx);
  *
@@ -92,7 +94,9 @@ public:
 
     void clear();
 
-    /** @brief Age samples by dt; drop expired (when duration > 0). */
+    /** @brief Age samples by one scheduler-owned deterministic step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+    /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void update(float dt);
 
     int   getPointCount() const { return static_cast<int>(points_.size()); }
@@ -139,6 +143,10 @@ private:
     float drawOffsetY_ = 0.f;
 
     std::vector<Point> points_;
+    eve::SimulationTick lastTick_    = eve::SimulationTick::zero();
+    bool                hasLastTick_ = false;
+
+    void updateUnchecked(float dt);
 };
 
 }  // namespace eve::animation

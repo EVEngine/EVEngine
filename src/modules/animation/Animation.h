@@ -1,7 +1,8 @@
 #pragma once
 
-#include "common/Module.h"
 #include "animation/Tween.h"
+#include "common/Module.h"
+#include "common/Time.h"
 
 #include <string>
 #include <memory>
@@ -50,7 +51,9 @@ class SpineAnim;
  * procedural drivers + motion trails + per-frame pump.
  * Script: `anim <- eve.Animation();`
  *
- * Tweens / SpriteAnim / SpineAnim can be advanced via `anim.update(dt)`.
+ * Tweens / SpriteAnim / SpineAnim can be advanced via the scheduler-owned
+ * `anim.advance(SimulationStep)` API. The `update(float)` method remains a
+ * compatibility facade and explicitly consumes the checked Result.
  * Relative property changes use `Tween::setDelta` / `setDeltaAngle`.
  *
  * 2D: `SpriteSheet` + `SpriteClip` + `SpriteAnim`; Spine region subset via
@@ -136,14 +139,35 @@ public:
     ControlPose *newControlPose(AnimSkeleton *skeleton);
 
     /**
-     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact `.eva`
-     * fixtures (see AnimImporter).
+     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact
+     * `*.anim.txt` test fixtures (see AnimImporter).
      */
     AnimSkeleton *newSkeletonFromModel(eve::model3d::ModelData *model);
     AnimClip     *newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
                                    int animIndex = 0);
-    AnimSkeleton *newSkeletonFromEvaFile(const std::string &path);
-    AnimClip     *newClipFromEvaFile(const std::string &path);
+    /**
+     * @brief Load a skeleton from an internal `*.anim.txt` test fixture.
+     * @param path Filesystem path read synchronously during this call.
+     * @return Newly allocated skeleton owned by the caller; never null on success.
+     * @ownership Owned; the caller must delete the returned skeleton.
+     * @lifetime Independent of this Animation module after construction.
+     * @throws Exception when the fixture is missing, malformed, or unsupported.
+     * @thread Main-thread animation API; no internal synchronization.
+     * @reentrancy Does not invoke user callbacks.
+     */
+    AnimSkeleton *newSkeletonFromAnimationFixtureText(const std::string &path);
+    /**
+     * @brief Load an animation clip from an internal `*.anim.txt` test fixture.
+     * @param path Filesystem path read synchronously during this call.
+     * @return Newly allocated clip owned by the caller; never null on success.
+     * @ownership Owned; the caller must delete the returned clip.
+     * @lifetime Independent of this Animation module after construction; registered hot-reload
+     *           tracking remains valid until the clip is destroyed.
+     * @throws Exception when the fixture is missing, malformed, or unsupported.
+     * @thread Main-thread animation API; no internal synchronization.
+     * @reentrancy Does not invoke user callbacks while loading.
+     */
+    AnimClip *newClipFromAnimationFixtureText(const std::string &path);
 
     /**
      * @brief CPU linear-blend skin binding for a skinned mesh on ModelData.
@@ -171,6 +195,12 @@ public:
     AnimTrail *newTrail(int capacity = 64);
 
     /** @brief Advance all registered tweens, sprite anims, and spine anims. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+
+    /** @brief Last scheduler tick consumed by the checked module pump. */
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+
+    /** @brief Legacy seconds facade; invalid input is explicitly consumed and ignored. */
     void update(float dt);
 
     int getTweenCount() const { return static_cast<int>(tweens_.size()); }
@@ -199,6 +229,8 @@ private:
     std::vector<Tween *>      tweens_;
     std::vector<SpriteAnim *> spriteAnims_;
     std::vector<SpineAnim *>  spineAnims_;
+    eve::SimulationTick       lastTick_    = eve::SimulationTick::zero();
+    bool                      hasLastTick_ = false;
 };
 
 }  // namespace eve::animation

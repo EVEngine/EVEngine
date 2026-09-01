@@ -147,6 +147,25 @@ TEST_CASE("vehicle.orders.stopDecelerates") {
     CHECK_EQ(mod.orderCount(v), 1);
 }
 
+TEST_CASE("vehicle.orders.adapterPreservesDomainCommandsAndReplaceSemantics") {
+    Vehicle mod;
+    mod.registerVehiclesFromJson(kVehicleDefs);
+    VehicleEntity* v = mod.newVehicle("apc", 0.f, 0.f, 0.f);
+    REQUIRE(v != nullptr);
+
+    mod.moveTo(v, 100.f, 0.f);
+    mod.attack(v, 200.f, 0.f, 7);
+    CHECK_EQ(mod.orderCount(v), 2);
+    REQUIRE(v->orders()->current == 0);
+    CHECK_EQ(v->orders()->queue[0].type, VehicleOrderType::Move);
+    CHECK_EQ(v->orders()->queue[1].type, VehicleOrderType::Attack);
+
+    mod.moveTo(v, 300.f, 0.f);
+    CHECK_EQ(mod.orderCount(v), 1);
+    REQUIRE(v->orders()->current == 0);
+    CHECK_EQ(v->orders()->queue[0].type, VehicleOrderType::Move);
+}
+
 TEST_CASE("vehicle.orders.attackAimsMount") {
     weaponMod()->registerWeaponsFromJson(kWeaponDefs);
     Vehicle mod;

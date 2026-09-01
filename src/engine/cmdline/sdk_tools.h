@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Result.h"
+
 #include <string>
 #include <vector>
 
@@ -83,12 +85,19 @@ bool isAndroidSdkInstalled(const std::string& root);
  * @brief 下载并安装 EVEngine 官方 <platform> SDK（zip 内 eve-sdk/<platform>/，
  * 从 GitHub Release 按当前 eve 版本挑选），校验 SHA256 后落位到
  * <eveSdkInstallRoot()>/<platform>。
+ * @param p 要安装的目标平台。
+ * @return 成功时为空结果；下载、校验、解压或安装失败时返回结构化诊断。
+ * @ownership 安装过程只在内部拥有临时文件；失败不会发布半安装的 SDK。
+ * @thread 调用线程；该操作同步执行，不可并发调用同一安装根目录。
  */
-int installEveSdk(Platform p);
+[[nodiscard]] eve::Result<void> installEveSdk(Platform p);
 
-/** @brief 自动下载并安装 Android 工具链：EVEngine 官方 android SDK +
- * cmdline-tools / platform-tools / build-tools / platform + JDK 17 + Gradle，
- * 返回退出码。 */
-int installAndroidSdk();
+/**
+ * @brief 自动下载并安装 Android 工具链：EVEngine 官方 android SDK +
+ * cmdline-tools / platform-tools / build-tools / platform + JDK 17 + Gradle。
+ * @return 成功时为空结果；外部命令、网络、文件或格式失败时返回结构化诊断。
+ * @thread 调用线程；该操作同步执行，不可并发调用同一安装根目录。
+ */
+[[nodiscard]] eve::Result<void> installAndroidSdk();
 
 }  // namespace eve::cmd::sdk

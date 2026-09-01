@@ -20,25 +20,25 @@
 // ============================================================================
 
 // `snow` is the module slot bound by load.nut; `sf` is our SnowField instance.
-if (!("sf" in getroottable())) sf <- null;
-if (!("terrainHm" in getroottable())) terrainHm <- null;
-if (!("combinedHm" in getroottable())) combinedHm <- null;
-if (!("terrainMesh" in getroottable())) terrainMesh <- null;
-if (!("terrainEnt" in getroottable())) terrainEnt <- null;
-if (!("terrainTexA" in getroottable())) terrainTexA <- null;
-if (!("terrainTexN" in getroottable())) terrainTexN <- null;
-if (!("terrainTexH" in getroottable())) terrainTexH <- null;
-if (!("walker" in getroottable())) walker <- null;
-if (!("sun" in getroottable())) sun <- null;
-if (!("cam" in getroottable())) cam <- null;
-if (!("camAngle" in getroottable())) camAngle <- 0.0;
-if (!("walkDemo" in getroottable())) walkDemo <- false;
-if (!("snowfallOn" in getroottable())) snowfallOn <- false;
-if (!("parallaxOn" in getroottable())) parallaxOn <- true;
-if (!("walkAngle" in getroottable())) walkAngle <- 0.0;
-if (!("stepTimer" in getroottable())) stepTimer <- 0.0;
-if (!("rebuildTimer" in getroottable())) rebuildTimer <- 0.0;
-if (!("helpPrinted" in getroottable())) helpPrinted <- false;
+persist sf = null
+persist terrainHm = null
+persist combinedHm = null
+persist terrainMesh = null
+persist terrainEnt = null
+persist terrainTexA = null
+persist terrainTexN = null
+persist terrainTexH = null
+persist walker = null
+persist sun = null
+persist cam = null
+persist camAngle = 0.0
+persist walkDemo = false
+persist snowfallOn = false
+persist parallaxOn = true
+persist walkAngle = 0.0
+persist stepTimer = 0.0
+persist rebuildTimer = 0.0
+persist helpPrinted = false
 
 const W = 96;            // heightmap cells
 const H = 96;
@@ -54,16 +54,22 @@ function surfaceHeight(wx, wz) {
 }
 
 function regenTerrain() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return;
+    local p = paramsResult.value;
     p.setSize(W, H);
     p.setSeed(20260822);
     p.setFloat("frequency", 1.0 / 24.0);
     p.setInt("octaves", 5);
-    local generated = procgen.generateHeightmap(p);
-    if (generated != null) {
-        terrainHm = generated;
+    local generatedResult = procgen.generateHeightmap(p);
+    if (generatedResult.ok) {
+        terrainHm = generatedResult.value;
     } else {
-        if (terrainHm == null) terrainHm = procgen.newHeightmap(W, H);
+        if (terrainHm == null) {
+            local fallbackResult = procgen.newHeightmap(W, H);
+            if (!fallbackResult.ok) return;
+            terrainHm = fallbackResult.value;
+        }
         for (local z = 0; z < H; z++) {
             for (local x = 0; x < W; x++) {
                 terrainHm.setHeight(x, z,
@@ -77,7 +83,11 @@ function regenTerrain() {
         sf = snow.newField(W, H);
         sf.fill(0.85);
     }
-    if (combinedHm == null) combinedHm = procgen.newHeightmap(W, H);
+    if (combinedHm == null) {
+        local combinedResult = procgen.newHeightmap(W, H);
+        if (!combinedResult.ok) return;
+        combinedHm = combinedResult.value;
+    }
 
     if (terrainMesh == null) {
         snow.applyToHeightmap(sf, terrainHm, combinedHm, SNOW_SCALE);

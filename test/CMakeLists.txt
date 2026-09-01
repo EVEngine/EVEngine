@@ -1,235 +1,25 @@
 enable_testing()
 
-file(GLOB all_test_cpp
-  ECS.cpp
-  capability.cpp
-  data.cpp
-  decal.cpp
-  decal_script.cpp
-  crowd.cpp
-  crowd_script.cpp
-  resource.cpp
-  state_value.cpp
-  json.cpp
-  filesystem.cpp
-  filesystem_cpp.cpp
-  fluids.cpp
-  fluids_surface.cpp
-  graphic.cpp
-  graphics_font.cpp
-  graphics_headless.cpp
-  medialoader_model_link.cpp
-  model.cpp
-  mouse.cpp
-  mouse_cpp.cpp
-  image_script.cpp
-  joystick_script.cpp
-  keyboard_cpp.cpp
-  joystick_cpp.cpp
-  touch.cpp
-  network.cpp
-  plugins.cpp
-  database.cpp
-  RenderSystem.cpp
-  RenderSystem3D.cpp
-  render_graph.cpp
-  Quad.cpp
-  TextureCellBomb.cpp
-  ParallaxMap.cpp
-  Lighting2D.cpp
-  ClusteredLighting.cpp
-  IBL.cpp
-  Shadow3D.cpp
-  MaterialRenderControl.cpp
-  ClassicScenes.cpp
-  RenderImageAudit.cpp
-  RenderSceneEffects.cpp
-  Volumetric.cpp
-  atmosphere_volume.cpp
-  TextureSampler.cpp
-  AmbientOcclusion.cpp
-  Outline.cpp
-  AntiAliasing.cpp
-  GlobalIllumination.cpp
-  UISystem.cpp
-  UIBuilder.cpp
-  UIMoveRepro.cpp
-  UIPhaseB.cpp
-  UIPhaseAdv.cpp
-  UIEditorKit.cpp
-  UIOverlaySmoke.cpp
-  ui_texture_bridge.cpp
-  Inspector.cpp
-  DatabasePanel.cpp
-  EditorShell.cpp
-  ScenePanel.cpp
-  scene.cpp
-  sceneloader.cpp
-  service_mocks.cpp
-  particles.cpp
-  particles_attach_skin.cpp
-  particles_dynamic_bones.cpp
-  particles_attach_more.cpp
-  particles_attach_extra.cpp
-  map.cpp
-  map_path.cpp
-  map_fov.cpp
-  rpg.cpp
-  rpg_simulation.cpp
-  rpg_reload.cpp
-  hex_level_simulation.cpp
-  hex_level_data.cpp
-  inventory.cpp
-  building.cpp
-  buildingfx.cpp
-  camera.cpp
-  card.cpp
-  card_reload.cpp
-  composable_gameplay.cpp
-  i18n.cpp
-  i18n_script.cpp
-  avatar.cpp
-  dialogue.cpp
-  dialogue_conversation.cpp
-  dialogue_persistence.cpp
-  dialogue_text.cpp
-  dialogue_hot_reload.cpp
-  dialogue_authoring.cpp
-    dialogue_compiler.cpp
-    dialogue_importers.cpp
-    dialogue_localization.cpp
-    dialogue_toolchain.cpp
-  dialogue_ux.cpp
-  dialogue_voice.cpp
-  dialogue_proc.cpp
-  dialogue_proc_script.cpp
-  physics_cloth.cpp
-  procgen.cpp
-  procgen_schema_script.cpp
-  procgen_pointset.cpp
-  urban_generator.cpp
-  housegen.cpp
-  housegen_render.cpp
-  procgen_simulation.cpp
-  roguelike_generator.cpp
-  stylize.cpp
-  snow.cpp
-  Xray.cpp
-  voxel.cpp
-  voxel_render.cpp
-  virtualgeometry_builder.cpp
-  virtualgeometry_gpu.cpp
-  gpgpu.cpp
-  gpu_driven.cpp
-  indirect_builder.cpp
-  box2d.cpp
-  box3d.cpp
-  binding_selfcheck.cpp
-  softbody.cpp
-  softbody_gpu.cpp
-  hotreload.cpp
-  remotesync.cpp
-  shader.cpp
-  hair.cpp
-  grass.cpp
-  spritestack.cpp
-  daynight.cpp
-  weather.cpp
-  weapon.cpp
-  vehicle.cpp
-  simplesquirrel.cpp
-  ScriptECS.cpp
-  sound.cpp
-  model3d.cpp
-  audio.cpp
-  font.cpp
-  thread.cpp
-  async.cpp
-  window.cpp
-  window_cpp.cpp
-  image.cpp
-  event.cpp
-  economy.cpp
-  attributes.cpp
-  decision.cpp
-  authority.cpp
-  definitions.cpp
-  effects.cpp
-  eventstream.cpp
-  orders.cpp
-  policyregistry.cpp
-  production.cpp
-  sensing.cpp
-  schema.cpp
-  social.cpp
-  statepatch.cpp
-  steering.cpp
-  tags.cpp
-  transaction.cpp
-  rx.cpp
-  runtime.cpp
-  timer.cpp
-  timer_cpp.cpp
-  system.cpp
-  math.cpp
-  spatial.cpp
-  grid.cpp
-  editor.cpp
-  editor_automation_v2.cpp
-  editor_core_v2.cpp
-  editor_disk_asset_catalog_v2.cpp
-  editor_disk_document_v2.cpp
-  editor_document_asset_v2.cpp
-  editor_extension_v2.cpp
-  editor_graph_material_v2.cpp
-  editor_persistence_v2.cpp
-  editor_property_v2.cpp
-  editor_runtime_manifest_v2.cpp
-  editor_scene_target_v2.cpp
-  editor_script_v2.cpp
-  editor_field_tool_script.cpp
-  editor_tilemap_target_script.cpp
-  editor_voxel_target_script.cpp
-  editor_selection_v2.cpp
-  editor_workspace.cpp
-  editor_task_diagnostic_v2.cpp
-  editor_transaction_v2.cpp
-  editor_value_json_v2.cpp
-  ik.cpp
-  animation.cpp
-  animation_clip_editing.cpp
-  animation_retarget_compression.cpp
-  animation_batch_lod.cpp
-  animation_constraints_sync.cpp
-  animation_mixamo.cpp
-  animation_skinned.cpp
-  animation_lattice.cpp
-  animation_sprite_spine.cpp
-  animation_reload.cpp
-  tensor.cpp
-  tensor_llm.cpp
-  tensor_quant.cpp
-  callgraph.cpp
-  renderflow.cpp
-  resource_lifetime.cpp
-  debugger.cpp
-  debugger_audit.cpp
-  ReflectScript.cpp
-  reload_script.cpp
-  dap.cpp
-  mcp.cpp
-  mcp_hot_reload.cpp
-  console.cpp
-  cmdline.cpp
-  main.cpp
-)
+# Compile-fail fixtures for critical non-Result return values. This target is
+# intentionally independent of unit_test and never triggers a full engine
+# build by itself; CI also runs the same script in the fast structural job.
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+add_custom_target(nodiscard_compile_check
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
+          --source-dir ${CMAKE_SOURCE_DIR}
+  USES_TERMINAL)
+add_test(NAME common.nodiscard_compile_diagnostics
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
+          --source-dir ${CMAKE_SOURCE_DIR})
+set_tests_properties(common.nodiscard_compile_diagnostics PROPERTIES LABELS "quality")
+add_test(NAME cmake.third_party_patch_idempotence
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/test_patch_third_party.py)
+set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "quality;cmake")
 
-# Auto-discover newly added test files (CONFIGURE_DEPENDS re-globs at build
-# time), so a new test/*.cpp is picked up without editing this list. demo.cpp
-# stays gated on EVENGINE_BUILD_DEMO below.
-file(GLOB _eve_extra_test_cpp CONFIGURE_DEPENDS *.cpp)
-list(REMOVE_ITEM _eve_extra_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
-list(APPEND all_test_cpp ${_eve_extra_test_cpp})
+# Test sources are discovered like engine/module sources. CONFIGURE_DEPENDS makes
+# Ninja/CMake reconfigure when a top-level test/*.cpp file is added or removed.
+file(GLOB all_test_cpp CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND all_test_cpp demo.cpp)
@@ -240,10 +30,19 @@ endif()
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
   foreach(_eve_devtool_test IN ITEMS
-      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp mcp.cpp console.cpp)
+      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp agent_development_session.cpp mcp.cpp console.cpp runtime_error_sink.cpp scenario_recorder.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")
+endif()
+
+# These tests intentionally exercise Vulkan implementation details rather than
+# the backend-neutral graphics API, so they cannot be linked into a WebGPU test
+# binary. Backend parity coverage lives in graphics_backend_parity.cpp.
+if(BUILD_PLATFORM STREQUAL "webgpu")
+  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp)
+    list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_vulkan_test}$")
+  endforeach()
 endif()
 
 file(GLOB all_test_scripts
@@ -262,6 +61,7 @@ file(GLOB all_test_scripts
   timer.nut
   decal.nut
   crowd.nut
+  profiler.nut
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_SOURCE_DIR}/cmake/integrate.cmake"
@@ -337,47 +137,12 @@ endif()
 # Platform system libraries, shared with the host binary
 # (see cmake/system_libraries.cmake).
 eve_append_system_libraries(SystemLibraries)
-
-# Windows lib names must match local + CI third-party install (md/mdd postfixes).
-# FreeType uses its own Debug postfix "d" (freetyped) and Release "md" (freetypemd).
-if(WIN32)
-  if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd lz4mdd Box2Dmdd box3dd
-      vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd freetyped)
-  else()
-    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstaticmd lz4md Box2Dmd box3dmd
-      vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md freetypemd)
-  endif()
-else()
-  if(APPLE)
-    set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4 Box2D box3d
-      vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal freetype)
-  else()
-    set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4 Box2D box3d
-      vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal freetype)
-  endif()
-endif()
-
-if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
-  set(ThirdParty ${ThirdParty} simplesquirrel_staticmdd sqstdlib_staticmdd squirrel_staticmdd SDL2d
-    PocoDataSQLitemdd PocoDatamdd PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
-    ${SystemLibraries})
-else()
-  if(WIN32)
-    set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2md
-      PocoDataSQLitemd PocoDatamd PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
-      ${SystemLibraries})
-  elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-    # Same unprefixed static names as the engine Android build; SDL2 stays shared.
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-      PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
-      ${SystemLibraries})
-  else()
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2
-      PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
-      ${SystemLibraries})
-  endif()
-endif()
+ # Keep the test runner's link closure identical to the host's manifest-derived
+ # closure. The previous hand-written list linked codecs, OpenAL, Box2D and
+ # PocoData even when a profile had removed their modules, making profile tests
+ # falsely depend on the full third-party aggregate.
+eve_thirdparty_libs(_eve_test_tp_libs ${EVE_THIRDPARTY_GROUPS})
+set(ThirdParty ${_eve_test_tp_libs} ${SystemLibraries})
 
 set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
 
@@ -395,7 +160,7 @@ if(EVENGINE_PLATFORM_LIB)
 endif()
 
 if(EVENGINE_ANDROID_TEST_APP)
-  target_link_libraries(main ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+  target_link_libraries(main ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
   # Source/binary roots are resolved at runtime: the Android test runner chdirs to
   # the unpacked asset root before running, so "." means "repo root on device".
   target_compile_definitions(main PRIVATE
@@ -415,7 +180,7 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_SOURCE_DIR="."
     EVENGINE_IOS_TEST_APP=1)
 else()
-  target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+  target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
   if(WIN32)
     # Crash-backtrace support (backward-cpp / DbgHelp) so unit_test prints a
     # symbolized stack trace on unhandled exceptions (see test/main.cpp).

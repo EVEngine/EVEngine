@@ -22,6 +22,9 @@ namespace eve {
  * GPU System：eve.ShaderSystem + gpgpu::ShaderSystem / EcsGpu.h。 */
 void exposeECS(ssq::Table& table);
 
+/** @brief Resets per-VM script injection bookkeeping before a new VM is exposed. */
+void prepareEcsScriptInjection();
+
 /** @brief 在 ModuleManager::expose 之后调用；保证 eve.Component 等不被其它模块覆盖。 */
 void exposeECSToVM(ssq::VM& vm);
 
@@ -40,5 +43,14 @@ void registerCppEntityView(size_t typeHash, CppEntityViewFn fn);
  */
 using PostEcsHook = std::function<void(ssq::Table& table)>;
 void registerPostEcsHook(PostEcsHook fn);
+
+/**
+ * @brief Run post-ECS hooks that were registered after `exposeECS` already ran.
+ *
+ * Native module classes bind on first script access. A module may therefore
+ * register a hook (or depend on Entity already existing) after the initial
+ * `exposeECS` call; this flushes those pending hooks onto the live `eve` table.
+ */
+void flushPostEcsHooks(ssq::Table& table);
 
 }  // namespace eve

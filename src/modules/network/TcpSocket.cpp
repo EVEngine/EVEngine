@@ -205,6 +205,7 @@ void TcpSocket::flushSend() {
             break;
         }
     }
+    if (off > 0 && net_) net_->recordSent(off);
 
     if (failed && net_) {
         NetCompletion c;

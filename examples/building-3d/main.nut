@@ -10,17 +10,17 @@
 // 运行： make run/<platform>-debug GAME=examples/building-3d
 // ============================================================================
 
-if (!("bld" in getroottable())) bld <- null;
-if (!("fx" in getroottable())) fx <- null;
-if (!("world" in getroottable())) world <- null;
-if (!("session" in getroottable())) session <- null;
-if (!("cam" in getroottable())) cam <- null;
-if (!("ground" in getroottable())) ground <- null;
-if (!("palette" in getroottable())) palette <- [];
-if (!("paletteIndex" in getroottable())) paletteIndex <- 0;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("prevMouse" in getroottable())) prevMouse <- { left = false, right = false };
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
+persist bld = null
+persist fx = null
+persist world = null
+persist session = null
+persist cam = null
+persist ground = null
+persist palette = []
+persist paletteIndex = 0
+persist prevKeys = {}
+persist prevMouse = { left = false, right = false }
+persist uiBuilt = false
 
 const GRID_W = 16;
 const GRID_H = 16;
@@ -179,14 +179,14 @@ eve_update = function(dt) {
         session.setMode("place");
         local id = session.execute();
         if (id <= 0)
-            print("放置失败: " + session.getReason() + "\n");
+            print("failed to place: " + session.getReason() + "\n");
     }
     if (mousePressed(2)) {
         session.setMode("remove");
         local id = session.execute();
         session.setMode("place");
         if (id <= 0)
-            print("此处无建筑\n");
+            print("no building here.\n");
     }
     fx.sync(world);
     fx.updateGhost(world, session.getGhost());

@@ -33,7 +33,7 @@ class Texture;
 class Water {
 public:
     explicit Water(Graphics *gfx);
-    ~Water() = default;
+    ~Water();
 
     Water(const Water &) = delete;
     Water &operator=(const Water &) = delete;
@@ -83,9 +83,10 @@ public:
 
     /**
      * @brief Optional screen-space reflection overlay. When enabled, the shader
-     * samples the SSR pass result (bound via the renderable's height-texture
-     * slot, binding 6) at the fragment's screen UV and blends it over the env
-     * cubemap reflection. Call setViewport before drawing so screen UVs map.
+     * samples the temporally resolved SSR-chain result (bound through mesh
+     * binding 6) at the fragment's screen UV and blends it over the environment
+     * cubemap backup. The drawable viewport is inferred when setViewport was
+     * not called. SSR must also be enabled on RenderControl.
      */
     void setScreenSpaceReflection(bool enabled, float strength = 0.85f);
     bool getScreenSpaceReflection() const { return ssrEnabled_; }
@@ -102,6 +103,15 @@ public:
     /** @brief Draw the water plane (uses default mesh3d camera / lighting state). */
     void draw();
 
+    /** @brief Enable or disable inclusion in reflection-probe captures. */
+    void setReflectionCaptureEnabled(bool enabled) { reflectionCaptureEnabled_ = enabled; }
+    /** @brief Return whether this water surface is included in reflection-probe captures. */
+    bool getReflectionCaptureEnabled() const { return reflectionCaptureEnabled_; }
+    /** @brief Set the reflection-capture visibility layer mask. */
+    void setReflectionCaptureMask(uint32_t mask) { reflectionCaptureMask_ = mask; }
+    /** @brief Return the reflection-capture visibility layer mask. */
+    uint32_t getReflectionCaptureMask() const { return reflectionCaptureMask_; }
+
     Shader *getShader() const { return shader_; }
     Mesh *getMesh() const { return mesh_; }
 
@@ -110,6 +120,8 @@ public:
     static std::string paramName(int index);
 
 private:
+    void drawReflectionCapture();
+
     Graphics *gfx_ = nullptr;
     Shader *shader_ = nullptr;
     Mesh *mesh_ = nullptr;
@@ -130,6 +142,9 @@ private:
     float ssrStrength_ = 0.85f;
     float viewportW_ = 0.f;
     float viewportH_ = 0.f;
+    uint64_t captureDrawerToken_ = 0;
+    uint32_t reflectionCaptureMask_ = 0xffffffffu;
+    bool reflectionCaptureEnabled_ = true;
 };
 
 /** @brief Create the embedded water fragment shader (owned by Graphics). */

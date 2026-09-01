@@ -133,8 +133,8 @@ std::string AnimImporter::getAnimationName(const aiScene *scene, int animIndex) 
     return a->mName.length ? a->mName.C_Str() : std::string("anim") + std::to_string(animIndex);
 }
 
-std::string AnimImporter::exportEva(const AnimSkeleton *skeleton, const AnimClip *clip) {
-    if (!skeleton || !clip) throw Exception("AnimImporter.exportEva: null argument");
+std::string AnimImporter::exportAnimationFixtureText(const AnimSkeleton *skeleton, const AnimClip *clip) {
+    if (!skeleton || !clip) throw Exception("AnimImporter.exportAnimationFixtureText: null argument");
     std::ostringstream out;
     out << "EVA 1\n";
     out << "skeleton " << skeleton->getBoneCount() << "\n";
@@ -152,6 +152,8 @@ std::string AnimImporter::exportEva(const AnimSkeleton *skeleton, const AnimClip
     out << "duration " << clip->getDuration() << "\n";
     out << "loop " << (clip->getLoop() ? 1 : 0) << "\n";
     out << "rate " << clip->getSampleRate() << "\n";
+    for (int i = 0; i < clip->getSyncMarkerCount(); ++i)
+        out << "sync " << clip->getSyncMarkerTime(i) << " " << clip->getSyncMarkerName(i) << "\n";
     for (int b = 0; b < skeleton->getBoneCount(); ++b) {
         const int np = clip->getPositionKeyCount(b);
         const int nr = clip->getRotationKeyCount(b);
@@ -176,9 +178,9 @@ std::string AnimImporter::exportEva(const AnimSkeleton *skeleton, const AnimClip
     return out.str();
 }
 
-void AnimImporter::importEva(const std::string &text, AnimSkeleton **skeletonOut,
-                             AnimClip **clipOut) {
-    if (!skeletonOut || !clipOut) throw Exception("AnimImporter.importEva: null out");
+void AnimImporter::importAnimationFixtureText(const std::string &text, AnimSkeleton **skeletonOut,
+                                              AnimClip **clipOut) {
+    if (!skeletonOut || !clipOut) throw Exception("AnimImporter.importAnimationFixtureText: null out");
     *skeletonOut = nullptr;
     *clipOut     = nullptr;
 
@@ -198,7 +200,7 @@ void AnimImporter::importEva(const std::string &text, AnimSkeleton **skeletonOut
             if (tag == "EVA") {
                 int ver = 0;
                 ls >> ver;
-                if (ver != 1) throw Exception("AnimImporter.importEva: unsupported version");
+                if (ver != 1) throw Exception("AnimImporter.importAnimationFixtureText: unsupported version");
             } else if (tag == "skeleton") {
                 // informational
             } else if (tag == "bone") {
@@ -207,10 +209,10 @@ void AnimImporter::importEva(const std::string &text, AnimSkeleton **skeletonOut
                 ls >> idx >> parent;
                 std::getline(ls, name);
                 name = trim(name);
-                if (name.empty()) throw Exception("AnimImporter.importEva: empty bone name");
+                if (name.empty()) throw Exception("AnimImporter.importAnimationFixtureText: empty bone name");
                 const int id = skeleton->addBone(name, parent);
                 if (id != idx) {
-                    throw Exception("AnimImporter.importEva: bone index mismatch");
+                    throw Exception("AnimImporter.importAnimationFixtureText: bone index mismatch");
                 }
             } else if (tag == "bind") {
                 int idx = -1;
@@ -225,22 +227,30 @@ void AnimImporter::importEva(const std::string &text, AnimSkeleton **skeletonOut
                 name = trim(name);
                 clip = new AnimClip(name.empty() ? "clip" : name);
             } else if (tag == "duration") {
-                if (!clip) throw Exception("AnimImporter.importEva: duration before clip");
+                if (!clip) throw Exception("AnimImporter.importAnimationFixtureText: duration before clip");
                 float d = 0.f;
                 ls >> d;
                 clip->setDuration(d);
             } else if (tag == "loop") {
-                if (!clip) throw Exception("AnimImporter.importEva: loop before clip");
+                if (!clip) throw Exception("AnimImporter.importAnimationFixtureText: loop before clip");
                 int v = 1;
                 ls >> v;
                 clip->setLoop(v != 0);
             } else if (tag == "rate") {
-                if (!clip) throw Exception("AnimImporter.importEva: rate before clip");
+                if (!clip) throw Exception("AnimImporter.importAnimationFixtureText: rate before clip");
                 float r = 30.f;
                 ls >> r;
                 clip->setSampleRate(r);
+            } else if (tag == "sync") {
+                if (!clip) throw Exception("AnimImporter.importAnimationFixtureText: sync marker before clip");
+                float t = 0.f;
+                std::string name;
+                ls >> t;
+                std::getline(ls, name);
+                name = trim(name);
+                clip->addSyncMarker(t, name);
             } else if (tag == "track") {
-                if (!clip) throw Exception("AnimImporter.importEva: track before clip");
+                if (!clip) throw Exception("AnimImporter.importAnimationFixtureText: track before clip");
                 int np = 0, nr = 0, ns = 0;
                 ls >> curBone >> np >> nr >> ns;
                 (void)np;
@@ -262,7 +272,7 @@ void AnimImporter::importEva(const std::string &text, AnimSkeleton **skeletonOut
                 break;
             }
         }
-        if (!clip) throw Exception("AnimImporter.importEva: missing clip");
+        if (!clip) throw Exception("AnimImporter.importAnimationFixtureText: missing clip");
         *skeletonOut = skeleton;
         *clipOut     = clip;
     } catch (...) {
@@ -272,13 +282,13 @@ void AnimImporter::importEva(const std::string &text, AnimSkeleton **skeletonOut
     }
 }
 
-void AnimImporter::importEvaFile(const std::string &path, AnimSkeleton **skeletonOut,
-                                 AnimClip **clipOut) {
+void AnimImporter::importAnimationFixtureTextFile(const std::string &path, AnimSkeleton **skeletonOut,
+                                                  AnimClip **clipOut) {
     std::ifstream in(path);
-    if (!in) throw Exception("AnimImporter.importEvaFile: cannot open %s", path.c_str());
+    if (!in) throw Exception("AnimImporter.importAnimationFixtureTextFile: cannot open %s", path.c_str());
     std::ostringstream ss;
     ss << in.rdbuf();
-    importEva(ss.str(), skeletonOut, clipOut);
+    importAnimationFixtureText(ss.str(), skeletonOut, clipOut);
 }
 
 }  // namespace eve::animation

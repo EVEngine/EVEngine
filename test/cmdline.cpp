@@ -83,6 +83,11 @@ void writeFile(const std::filesystem::path& p, const std::string& content) {
     ofs << content;
 }
 
+std::string readTextFile(const std::filesystem::path& p) {
+    std::ifstream in(p, std::ios::binary);
+    return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
+}
+
 // Reads the ZIP central directory (EOCD -> central entries) and returns the
 // entry names in archive order. Returns {} when the file is not a valid ZIP.
 std::vector<std::string> zipEntryNames(const std::filesystem::path& p) {
@@ -306,7 +311,8 @@ TEST_CASE("cmdline.helpListsSubcommands") {
     const int      rc = runCli({"eve", "--help"});
     CHECK(rc == 0);
     CHECK(cap.out().find("Subcommands:") != std::string::npos);
-    for (const char* sub : {"run", "create", "zip", "package", "dev", "doc", "clean", "test", "build", "get", "mcp"})
+    for (const char* sub : {"run", "create", "zip", "package", "dev", "doc", "clean", "test", "build", "get", "mcp",
+                            "language-server"})
         CHECK(cap.out().find(sub) != std::string::npos);
 }
 
@@ -335,6 +341,12 @@ TEST_CASE("cmdline.createScaffoldsGame") {
     }
     REQUIRE(std::filesystem::is_regular_file(dir / "mygame" / "config.nut"));
     REQUIRE(std::filesystem::is_regular_file(dir / "mygame" / "main.nut"));
+    const std::string config = readTextFile(dir / "mygame" / "config.nut");
+    const std::string main   = readTextFile(dir / "mygame" / "main.nut");
+    CHECK(config.find("modules = [\"gfx\"]") != std::string::npos);
+    CHECK(main.find("persist boxX: float = 0.0") != std::string::npos);
+    CHECK(main.find("eve_update = function(dt: float)") != std::string::npos);
+    CHECK(main.find("getroottable") == std::string::npos);
 
     // A second run must not clobber existing files.
     {
@@ -679,6 +691,43 @@ TEST_CASE("cmdline.getAndroidChecksumMismatchFails") {
     std::filesystem::remove_all(installRoot, ec);
 }
 
+TEST_CASE("cmdline.getAndroidEmptyReleaseResponseReturnsStructuredError") {
+    // A successful HTTP/file transfer may still contain zero bytes (for
+    // example, a truncated mirror response).  The installer must reject that
+    // response before ZIP parsing and expose a diagnostic through the C++ API.
+    const std::string tag     = eve::cmd::sdk::sdkVersionTag();
+    const auto        rel     = tempDir("eve_ut_cmdline_release_empty");
+    const auto        zipPath = rel / ("eve-sdk-android-" + tag + ".zip");
+    writeFile(zipPath, std::string{});
+    writeFile(rel / "SHA256SUMS", "");
+    const auto installRoot = tempDir("eve_ut_cmdline_eve_sdk_install_empty");
+
+    ScopedEnv baseEnv("EVE_SDK_BASE_URL", fileUrl(rel));
+    ScopedEnv tagEnv("EVE_SDK_TAG", tag);
+    ScopedEnv rootEnv("EVE_SDK_INSTALL_ROOT", installRoot.string());
+
+    {
+        CaptureStreams cap;
+        auto           result = eve::cmd::sdk::installEveSdk(eve::cmd::sdk::Platform::Android);
+        REQUIRE(!result.ok());
+        CHECK(result.code() == eve::StatusCode::Failed);
+        const auto* diagnostic = result.error();
+        REQUIRE(diagnostic != nullptr);
+        CHECK(diagnostic->code() == eve::DiagnosticCode::Failed);
+        CHECK(diagnostic->path().find("eve-sdk-android-" + tag + ".zip") != std::string::npos);
+    }
+
+    // The CLI projection must also fail cleanly, without publishing an SDK.
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "get", "android"});
+    REQUIRE(rc == 3);
+    CHECK(cap.all().find("empty or unreadable response") != std::string::npos);
+    std::error_code ec;
+    CHECK(!std::filesystem::exists(installRoot / "android", ec));
+    std::filesystem::remove_all(rel, ec);
+    std::filesystem::remove_all(installRoot, ec);
+}
+
 TEST_CASE("cmdline.buildAndroidUsesGetInstalledSdk") {
     // `eve get android` 安装的 SDK 应能被 build 自动发现（无 --sdk / EVENGINE_SDK）。
     const auto installRoot = tempDir("eve_ut_cmdline_eve_sdk_use");
@@ -796,6 +845,45 @@ TEST_CASE("cmdline.packageUsesTargetSdkRuntimeAndBundledDlls") {
     std::filesystem::remove_all(winOut, ec);
     std::filesystem::remove_all(linSdk, ec);
     std::filesystem::remove_all(linOut, ec);
+}
+
+TEST_CASE("cmdline.packageRejectsInvalidScriptDependencyGraphs") {
+    const auto sdk = tempDir("eve_ut_cmdline_pkg_scan_sdk");
+    writeFile(sdk / "share" / "eve" / "TARGET_PLATFORM", "linux\n");
+    writeFile(sdk / "bin" / "eve", "linux runtime");
+
+    const auto missing = tempDir("eve_ut_cmdline_pkg_scan_missing");
+    writeFile(missing / "main.nut", "import { value } from \"./missing.nut\"\n");
+    const auto missingOut = tempDir("eve_ut_cmdline_pkg_scan_missing_out");
+    {
+        CaptureStreams cap;
+        const int      rc = runCli(
+            {"eve", "package", missing.string(), "--sdk", sdk.string(), "-o", missingOut.string()});
+        CHECK_EQ(rc, 5);
+        CHECK(cap.all().find("is missing from package") != std::string::npos);
+        std::error_code ec;
+        CHECK(!std::filesystem::exists(missingOut / "game.eve", ec));
+    }
+
+    const auto cyclic = tempDir("eve_ut_cmdline_pkg_scan_cycle");
+    writeFile(cyclic / "main.nut", "import { a } from \"./a.nut\"\n");
+    writeFile(cyclic / "a.nut", "import { b } from \"./b.nut\"\nexport const a = b\n");
+    writeFile(cyclic / "b.nut", "import { a } from \"./a.nut\"\nexport const b = a\n");
+    const auto cyclicOut = tempDir("eve_ut_cmdline_pkg_scan_cycle_out");
+    {
+        CaptureStreams cap;
+        const int      rc = runCli(
+            {"eve", "package", cyclic.string(), "--sdk", sdk.string(), "-o", cyclicOut.string()});
+        CHECK_EQ(rc, 5);
+        CHECK(cap.all().find("cyclic script import in package") != std::string::npos);
+    }
+
+    std::error_code ec;
+    std::filesystem::remove_all(sdk, ec);
+    std::filesystem::remove_all(missing, ec);
+    std::filesystem::remove_all(missingOut, ec);
+    std::filesystem::remove_all(cyclic, ec);
+    std::filesystem::remove_all(cyclicOut, ec);
 }
 
 TEST_CASE("cmdline.getUnsupportedPlatformFails") {

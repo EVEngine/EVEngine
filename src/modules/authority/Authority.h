@@ -1,14 +1,22 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/Snapshot.h"
+#include "common/SquirrelOwnership.h"
 
 #include <cstdint>
 #include <deque>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eve::authority {
+
+/** @brief Handle domain for module-owned authority stores. */
+struct AuthorityStoreHandleTag {};
+/** @brief Generation- and module-epoch-qualified authority store reference. */
+using AuthorityStoreHandleRef = eve::script::RuntimeHandleRef<AuthorityStoreHandleTag>;
 
 /** @brief Whether an authority rule grants or denies a capability. */
 enum class RuleEffect { Grant, Deny };
@@ -54,6 +62,12 @@ struct Event {
 /** @brief Generic, deterministic capability authority store. */
 class Store {
 public:
+    /**
+     * @brief Creates an authority store with an optional persistent identity.
+     * @param instanceId Identity carried by new SnapshotEnvelope values; nil is a valid legacy identity.
+     */
+    explicit Store(eve::PersistentId instanceId = {});
+
     /** @brief Adds a grant rule and returns its stable ID, or an empty string for invalid input. */
     std::string grant(const std::string& actor, const std::string& scope, const std::string& capability,
                       const std::string& source, int priority = 0, double duration = 0.0);
@@ -93,10 +107,47 @@ public:
     void clearEvents();
     /** @brief Exports persistent state as deterministic compact JSON. */
     std::string snapshotJson() const;
-    /** @brief Transactionally restores a snapshot produced by snapshotJson(). */
-    bool restoreJson(const std::string& json);
-    /** @brief Returns the latest restore error. */
-    const std::string& lastError() const;
+    /**
+     * @brief Transactionally restores a snapshot produced by snapshotJson().
+     * @param json Snapshot JSON to parse and validate.
+     * @return Success, or a structured parse/invariant diagnostic; failure
+     *         leaves every observable store field unchanged.
+     * @thread Call on the store's owning simulation thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
+
+    /**
+     * @brief Captures this store in the common versioned snapshot envelope.
+     * @param hashProvider Explicit content-digest provider; it is never defaulted silently.
+     * @return A sealed snapshot, or a structured serialization/hash failure.
+     */
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
+
+    /**
+     * @brief Restores a verified or migratable snapshot transactionally.
+     * @param snapshot Source envelope. Its schema must be `authority:store`.
+     * @param hashProvider Explicit provider used to verify and reseal the payload.
+     * @return Success, or a failure leaving all store state unchanged.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
+                                                    const eve::SnapshotHashProvider& hashProvider);
+
+    /**
+     * @brief Serializes the common snapshot envelope as canonical JSON.
+     * @param hashProvider Explicit content-digest provider.
+     * @return Canonical envelope JSON or a structured failure.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
+
+    /**
+     * @brief Parses and transactionally restores a common snapshot envelope.
+     * @param json Canonical snapshot envelope JSON.
+     * @param hashProvider Explicit provider used to verify contentHash.
+     * @return Success, or a failure leaving all store state unchanged.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
+                                                        const eve::SnapshotHashProvider& hashProvider);
 
 private:
     std::string add(RuleEffect effect, const std::string& actor, const std::string& scope,
@@ -106,10 +157,12 @@ private:
     uint64_t                 nextId_       = 1;
     uint64_t                 nextOrder_    = 1;
     uint64_t                 nextSequence_ = 1;
+    eve::PersistentId        instanceId_;
+    eve::Revision            revision_;
+    eve::SimulationTick      tick_;
     std::deque<Rule>         rules_;
     std::deque<Event>        events_;
     std::vector<const Rule*> query_;
-    std::string              lastError_;
 };
 
 /** @brief Returns the stable lowercase name of a rule effect. */
@@ -124,11 +177,21 @@ public:
     Authority()           = default;
     ~Authority() override = default;
 
-    /** @brief Allocates a module-owned authority store. */
-    static Store* newStore();
+    /**
+     * @brief Allocates an authority store and returns its ownership reference.
+     * @return A generation-qualified reference; the current Authority module owns the store.
+     * @remarks The reference becomes stale after release, module unload, or reload.
+     */
+    [[nodiscard]] static eve::Result<AuthorityStoreHandleRef> newStore();
+    /** @brief Resolves a live store as a non-owning observation. */
+    [[nodiscard]] static eve::script::Borrowed<Store> resolve(AuthorityStoreHandleRef reference) noexcept;
+    /** @brief Releases a module-owned store. */
+    [[nodiscard]] static eve::Result<void> release(AuthorityStoreHandleRef reference);
+    /** @brief Reports whether a store reference is stale for the current module. */
+    [[nodiscard]] static bool isStale(AuthorityStoreHandleRef reference) noexcept;
 
 private:
-    std::vector<std::unique_ptr<Store>> stores_;
+    eve::script::RuntimeObjectRegistry<Store, AuthorityStoreHandleTag> stores_;
 };
 
 }  // namespace eve::authority

@@ -5,13 +5,15 @@
  * 设计文档：docs/dev/通用载具系统设计.md
  */
 
+#include "common/BorrowedRef.h"
 #include "common/ECS.h"
 #include "common/Module.h"
+#include "common/Result.h"
+#include "definitions/Definitions.h"
 #include "vehicle/VehicleMobility.h"
 #include "vehicle/VehicleTypes.h"
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace eve::weapon {
@@ -43,12 +45,27 @@ public:
     std::string getVehicleDefinitionMobility(const std::string& id);
     float       getVehicleDefinitionMaxHealth(const std::string& id);
 
+    /**
+     * @brief Return the canonical common registry for vehicle definitions.
+     * @remarks The returned registry is borrowed, owner-thread affine, and is
+     * the binding point for VehicleDefinitionRuntime adapters.
+     */
+    [[nodiscard]] eve::definitions::DefinitionRegistry& definitionRegistry() noexcept { return definitionRegistry_; }
+
     /** @brief 注册移动模型（C++ 插件/游戏侧扩展点；同名替换）。 */
     static void registerMobility(IVehicleMobility* mobility);
     /** @brief 已注册移动模型数量（内置 kinematic 起步）。 */
     static int getMobilityCount();
 
-    /** @brief 工厂：按模板创建载具并挂载武器挂点（ECS 表持有，脚本持有句柄）。 */
+    /**
+     * @brief 工厂：按模板创建载具并挂载武器挂点（ECS 表持有，脚本持有句柄）。
+     * @return Borrowed nullable pointer to the ECS-owned vehicle; null means validation or creation failed.
+     * @ownership The ECS world owns the entity; callers must not delete it.
+     * @lifetime Valid until ECS destroys the entity or world; retain its generation handle across frames.
+     * @thread Call on the Vehicle module's owning ECS thread.
+     * @reentrancy Creation does not invoke user callbacks; do not mutate the ECS world re-entrantly while using the
+     * result.
+     */
     VehicleEntity* newVehicle(const std::string& defId, float x, float y, float heading = 0.f,
                               const std::string& faction = "");
 
@@ -102,7 +119,14 @@ public:
     std::string getSeatCameraMode(VehicleEntity* v, int seatIndex);
     bool        isSeatOccupied(VehicleEntity* v, int seatIndex);
     int         getSeatOccupant(VehicleEntity* v, int seatIndex);
-    /** @brief 座位绑定的武器挂点（mountIndex 无效返回 nullptr）。 */
+    /**
+     * @brief 座位绑定的武器挂点（mountIndex 无效返回 nullptr）。
+     * @return Borrowed nullable weapon-mount entity owned by the ECS world.
+     * @ownership The weapon module/ECS owns the mount; Vehicle never transfers or deletes it.
+     * @lifetime Valid until mount or world destruction; a stored cross-frame reference must be a generation handle.
+     * @thread Call on the Vehicle module's owning ECS thread.
+     * @reentrancy The query invokes no callbacks; do not retain the pointer across seat or ECS mutation.
+     */
     eve::weapon::WeaponMountEntity* getSeatMount(VehicleEntity* v, int seatIndex);
     bool                            enterSeat(VehicleEntity* v, int seatIndex, int playerId);
     bool                            exitSeat(VehicleEntity* v, int seatIndex);
@@ -112,7 +136,14 @@ public:
     void setPlayerControls(int playerId, float throttle, float steer, float brake, bool fire, float aimYaw,
                            float aimPitch);
 
-    /** @brief 挂点查询（返回 weapon 模块的挂点实体）。 */
+    /**
+     * @brief 挂点查询（返回 weapon 模块的挂点实体）。
+     * @return Borrowed nullable weapon-mount entity owned by the ECS world.
+     * @ownership The weapon module/ECS owns the mount; Vehicle never transfers or deletes it.
+     * @lifetime Valid until mount or world destruction; use its generation handle across frames.
+     * @thread Call on the Vehicle module's owning ECS thread.
+     * @reentrancy The query invokes no callbacks; do not retain the pointer across mutation.
+     */
     int                             getMountCount(VehicleEntity* v);
     eve::weapon::WeaponMountEntity* getMount(VehicleEntity* v, int index);
 
@@ -132,9 +163,19 @@ public:
 private:
     void                     autoAim(VehicleEntity& v);
     void                     updateSeats(VehicleEntity& v);
-    const VehicleDefinition* findDef(const std::string& id) const;
+    /**
+     * @brief Finds a registered vehicle definition for one synchronous operation.
+     * @return An owning typed snapshot parsed from the canonical registry entry.
+     * @ownership The returned value owns its typed fields; DefinitionRegistry owns the canonical
+     *            persistent JSON separately.
+     * @lifetime Independent of subsequent lookups or registry mutation; callers may move or retain
+     *           the snapshot according to normal value semantics.
+     * @thread Call on the Vehicle module's owning thread.
+     * @reentrancy Does not invoke callbacks and is invalid across re-entrant registry mutation.
+     */
+    [[nodiscard]] eve::Result<VehicleDefinition> findDef(const std::string& id) const;
 
-    std::unordered_map<std::string, VehicleDefinition> defs_;
+    eve::definitions::DefinitionRegistry               definitionRegistry_;
     std::vector<ecs::EntityHandle>                     vehicles_;
     std::vector<VehicleEvent>                          events_;
     int                                                nextInstance_ = 1;

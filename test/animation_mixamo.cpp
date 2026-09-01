@@ -66,17 +66,17 @@ struct MixamoClips {
     std::unique_ptr<AnimClip>     jump;
 };
 
-MixamoClips loadMixamoEva() {
+MixamoClips loadMixamoAnimationFixtures() {
     MixamoClips out;
     AnimSkeleton *sk = nullptr;
     AnimClip *idle   = nullptr;
-    AnimImporter::importEvaFile(assetPath("Idle.eva"), &sk, &idle);
+    AnimImporter::importAnimationFixtureTextFile(assetPath("Idle.anim.txt"), &sk, &idle);
     out.skeleton.reset(sk);
     out.idle.reset(idle);
 
     AnimSkeleton *sk2 = nullptr;
     AnimClip *run     = nullptr;
-    AnimImporter::importEvaFile(assetPath("SlowRun.eva"), &sk2, &run);
+    AnimImporter::importAnimationFixtureTextFile(assetPath("SlowRun.anim.txt"), &sk2, &run);
     delete sk2;
     out.run.reset(run);
     // Mixamo Slow Run is in-place; bake forward root motion on hips for MM.
@@ -87,7 +87,7 @@ MixamoClips loadMixamoEva() {
 
     AnimSkeleton *sk3 = nullptr;
     AnimClip *jump    = nullptr;
-    AnimImporter::importEvaFile(assetPath("Jumping.eva"), &sk3, &jump);
+    AnimImporter::importAnimationFixtureTextFile(assetPath("Jumping.anim.txt"), &sk3, &jump);
     delete sk3;
     out.jump.reset(jump);
     out.jump->setLoop(false);
@@ -96,14 +96,14 @@ MixamoClips loadMixamoEva() {
 
 }  // namespace
 
-TEST_CASE("animation.mixamo.evaFixturesPresent") {
-    CHECK(fileExists(assetPath("Idle.eva")));
-    CHECK(fileExists(assetPath("SlowRun.eva")));
-    CHECK(fileExists(assetPath("Jumping.eva")));
+TEST_CASE("animation.mixamo.anim.txtFixturesPresent") {
+    CHECK(fileExists(assetPath("Idle.anim.txt")));
+    CHECK(fileExists(assetPath("SlowRun.anim.txt")));
+    CHECK(fileExists(assetPath("Jumping.anim.txt")));
 }
 
 TEST_CASE("animation.mixamo.importSkeletonAndSample") {
-    auto pack = loadMixamoEva();
+    auto pack = loadMixamoAnimationFixtures();
     CHECK(pack.skeleton->getBoneCount() == 70);
     CHECK(pack.skeleton->findBone("mixamorig:Hips") == 1);
     CHECK(pack.skeleton->findBone("mixamorig:LeftFoot") >= 0);
@@ -121,7 +121,7 @@ TEST_CASE("animation.mixamo.importSkeletonAndSample") {
 }
 
 TEST_CASE("animation.mixamo.stateMachine.idleRunJump") {
-    auto pack = loadMixamoEva();
+    auto pack = loadMixamoAnimationFixtures();
     std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
     sm->addState("Idle", pack.idle.get());
     sm->addState("Run", pack.run.get());
@@ -161,7 +161,7 @@ TEST_CASE("animation.mixamo.stateMachine.idleRunJump") {
 }
 
 TEST_CASE("animation.mixamo.motionMatching.prefersRunWhenFast") {
-    auto pack = loadMixamoEva();
+    auto pack = loadMixamoAnimationFixtures();
     const int hips = pack.skeleton->findBone("mixamorig:Hips");
     const int lFoot = pack.skeleton->findBone("mixamorig:LeftFoot");
     const int rFoot = pack.skeleton->findBone("mixamorig:RightFoot");
@@ -203,7 +203,7 @@ TEST_CASE("animation.mixamo.motionMatching.prefersRunWhenFast") {
 }
 
 TEST_CASE("animation.mixamo.playerCrossFadeIdleToRun") {
-    auto pack = loadMixamoEva();
+    auto pack = loadMixamoAnimationFixtures();
     std::unique_ptr<AnimPlayer> player(new AnimPlayer(pack.skeleton.get()));
     player->play(pack.idle.get());
     player->update(0.2f);
@@ -217,7 +217,7 @@ TEST_CASE("animation.mixamo.playerCrossFadeIdleToRun") {
 }
 
 TEST_CASE("animation.mixamo.stateMachine.runJumpIdleCycle") {
-    auto pack = loadMixamoEva();
+    auto pack = loadMixamoAnimationFixtures();
     std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
     sm->addState("Idle", pack.idle.get());
     sm->addState("Run", pack.run.get());
@@ -262,7 +262,7 @@ TEST_CASE("animation.mixamo.stateMachine.runJumpIdleCycle") {
 }
 
 TEST_CASE("animation.mixamo.stateMachine.boolArmedGate") {
-    auto pack = loadMixamoEva();
+    auto pack = loadMixamoAnimationFixtures();
     std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
     sm->addState("Idle", pack.idle.get());
     sm->addState("Run", pack.run.get());
@@ -283,7 +283,7 @@ TEST_CASE("animation.mixamo.stateMachine.boolArmedGate") {
 }
 
 TEST_CASE("animation.mixamo.motionMatching.stableWithIgnoreRadius") {
-    auto pack = loadMixamoEva();
+    auto pack = loadMixamoAnimationFixtures();
     const int hips = pack.skeleton->findBone("mixamorig:Hips");
     REQUIRE(hips >= 0);
 
@@ -320,13 +320,13 @@ TEST_CASE("animation.mixamo.motionMatching.stableWithIgnoreRadius") {
     CHECK_EQ(mm->getMatchedClipIndex(), 1);
 }
 
-TEST_CASE("animation.mixamo.evaExportRoundTripPreservesHips") {
-    auto pack = loadMixamoEva();
-    const std::string text = AnimImporter::exportEva(pack.skeleton.get(), pack.idle.get());
+TEST_CASE("animation.mixamo.anim.txtExportRoundTripPreservesHips") {
+    auto pack = loadMixamoAnimationFixtures();
+    const std::string text = AnimImporter::exportAnimationFixtureText(pack.skeleton.get(), pack.idle.get());
 
     AnimSkeleton *sk = nullptr;
     AnimClip *clip   = nullptr;
-    AnimImporter::importEva(text, &sk, &clip);
+    AnimImporter::importAnimationFixtureText(text, &sk, &clip);
     std::unique_ptr<AnimSkeleton> skOwned(sk);
     std::unique_ptr<AnimClip> clipOwned(clip);
 
@@ -344,9 +344,9 @@ TEST_CASE("animation.mixamo.evaExportRoundTripPreservesHips") {
 
 TEST_CASE("animation.mixamo.moduleEvaFactories") {
     auto *anim = Animation::create();
-    std::unique_ptr<AnimSkeleton> sk(anim->newSkeletonFromEvaFile(assetPath("Idle.eva")));
-    std::unique_ptr<AnimClip> idle(anim->newClipFromEvaFile(assetPath("Idle.eva")));
-    std::unique_ptr<AnimClip> run(anim->newClipFromEvaFile(assetPath("SlowRun.eva")));
+    std::unique_ptr<AnimSkeleton> sk(anim->newSkeletonFromAnimationFixtureText(assetPath("Idle.anim.txt")));
+    std::unique_ptr<AnimClip> idle(anim->newClipFromAnimationFixtureText(assetPath("Idle.anim.txt")));
+    std::unique_ptr<AnimClip> run(anim->newClipFromAnimationFixtureText(assetPath("SlowRun.anim.txt")));
     CHECK(sk->getBoneCount() == 70);
     CHECK(idle->getDuration() > 1.f);
 
@@ -388,7 +388,7 @@ static void drawBoneSegment(eve::graphics::Graphics *gfx, float x0, float y0, fl
 }
 
 TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
-    auto pack = loadMixamoEva();
+    auto pack = loadMixamoAnimationFixtures();
     std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
     sm->addState("Idle", pack.idle.get());
     sm->addState("Run", pack.run.get());

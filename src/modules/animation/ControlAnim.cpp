@@ -1,5 +1,6 @@
 #include "animation/ControlAnim.h"
 
+#include "animation/AnimationTime.h"
 #include "common/Exception.h"
 
 #include <algorithm>
@@ -129,7 +130,7 @@ std::string ControlAnim::getPropertyName(int index) const {
     return order_[static_cast<size_t>(index)];
 }
 
-void ControlAnim::update(float dt) {
+void ControlAnim::updateUnchecked(float dt) {
     if (dt <= 0.f) return;
     const float omega = hzToOmega(frequencyHz_);
 
@@ -156,6 +157,24 @@ void ControlAnim::update(float dt) {
                 break;
         }
     }
+}
+
+eve::Result<void> ControlAnim::advance(const eve::SimulationStep &step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "ControlAnim");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    updateUnchecked(std::move(seconds).takeValue());
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void ControlAnim::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "ControlAnim");
+    if (!step) {
+        step.ignore("legacy ControlAnim update");
+        return;
+    }
+    advance(std::move(step).takeValue()).ignore("legacy ControlAnim update");
 }
 
 }  // namespace eve::animation

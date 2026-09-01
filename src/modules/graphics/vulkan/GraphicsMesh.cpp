@@ -244,6 +244,18 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     return raw;
 }
 
+std::optional<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh *mesh) const {
+    if (!mesh || !mesh->gpuHandle) return std::nullopt;
+    const auto *gpu = static_cast<const GpuMesh *>(mesh->gpuHandle);
+    const auto  owned =
+        std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
+                     [gpu](const std::unique_ptr<GpuMesh> &candidate) { return candidate.get() == gpu; });
+    if (owned == ownedGpuMeshes.end()) return std::nullopt;
+    return eve::graphics::MeshBackendDescriptor{gpu->vertexCount, gpu->indexCount,
+                                                static_cast<std::uint32_t>(sizeof(MeshVertex)),
+                                                gpu->indexType == vk::IndexType::eUint16 ? 2u : 4u};
+}
+
 bool Graphics::bakeMeshMorph(Mesh *mesh) {
     if (!mesh || !mesh->gpuHandle || !mesh->hasMorphData() || !mesh->isMorphDirty()) return false;
     if (!initialized) return false;
@@ -284,8 +296,11 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
                                   const float *uvST, int vertexCount, const uint32_t *indices,
                                   int indexCount) {
     if (!initialized || !mesh || !mesh->gpuHandle) return false;
-    if (!posXYZ || vertexCount <= 0) return false;
+    if (!posXYZ || vertexCount <= 0 || indexCount < 0) return false;
     if (indexCount > 0 && (indexCount % 3 != 0 || !indices)) return false;
+    for (int i = 0; i < indexCount; ++i) {
+        if (indices[i] >= uint32_t(vertexCount)) return false;
+    }
 
     std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
     for (int i = 0; i < vertexCount; ++i) {
@@ -415,12 +430,7 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     std::vector<uint32_t> indices;
     indices.reserve(size_t(slices) * size_t(stacks) * 6u);
 
-    // Quads between consecutive rows. Winding must be consistent for outward
-    // faces (object-space CCW; mesh pipelines use Clockwise frontFace after the
-    // Vulkan Y flip in perspectiveVulkanRH_ZO). Use the same winding that
-    // closed the south pole in-game: rowA[x], rowB[x], rowA[x+1] /
-    // rowA[x+1], rowB[x], rowB[x+1] — derived from ring→next with
-    // (i0,i2,i1)+(i1,i2,i3) which equals (lon,lat)->(lon,lat+1)->(lon+1,lat).
+    // Quads between consecutive rows use outward object-space CCW winding.
     for (int y = 0; y < stacks; ++y) {
         const uint32_t row0 = uint32_t(y * stride);
         const uint32_t row1 = uint32_t((y + 1) * stride);
@@ -429,13 +439,12 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
             const uint32_t i1 = row0 + uint32_t(x + 1);
             const uint32_t i2 = row1 + uint32_t(x);
             const uint32_t i3 = row1 + uint32_t(x + 1);
-            // Outward for RH Y-up (verified against south-cap fix): i0,i2,i1 + i1,i2,i3
             indices.push_back(i0);
-            indices.push_back(i2);
-            indices.push_back(i1);
             indices.push_back(i1);
             indices.push_back(i2);
+            indices.push_back(i1);
             indices.push_back(i3);
+            indices.push_back(i2);
         }
     }
 
@@ -502,11 +511,11 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
             const uint32_t i2 = row1 + uint32_t(x);
             const uint32_t i3 = row1 + uint32_t(x + 1);
             indices.push_back(i0);
-            indices.push_back(i2);
-            indices.push_back(i1);
             indices.push_back(i1);
             indices.push_back(i2);
+            indices.push_back(i1);
             indices.push_back(i3);
+            indices.push_back(i2);
         }
     }
 
@@ -525,8 +534,8 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
         }
         for (int x = 0; x < slices; ++x) {
             indices.push_back(topCenter);
-            indices.push_back(topRing + uint32_t(x));
             indices.push_back(topRing + uint32_t(x + 1));
+            indices.push_back(topRing + uint32_t(x));
         }
 
         // Bottom cap (y = -1, normal -Y).
@@ -542,10 +551,9 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
                      0.5f + 0.5f * sz);
         }
         for (int x = 0; x < slices; ++x) {
-            // CW when viewed from below so outward (-Y) faces are CCW from outside.
             indices.push_back(botCenter);
-            indices.push_back(botRing + uint32_t(x + 1));
             indices.push_back(botRing + uint32_t(x));
+            indices.push_back(botRing + uint32_t(x + 1));
         }
     }
 
@@ -571,6 +579,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMesh: null mesh");
     if (!swapchainPassOpen && !offscreen3DPassOpen)
         throw Exception("drawMesh: call begin3DFrame first");
+    createMesh3DPipeline();
     if (!mesh3dPipeline) throw Exception("drawMesh: mesh3d pipeline missing");
 
     if (shader) {
@@ -662,6 +671,19 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.parallax =
             glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers,
                       mesh3dAlphaCutoff);
+        ubo.virtualTexture = mesh3dVirtualTexture;
+        ubo.virtualAtlas = mesh3dVirtualAtlas;
+        ubo.envProbeCenter = glm::vec4(mesh3dEnvProbeCenter, 1.f);
+        ubo.envProbeExtent = glm::vec4(mesh3dEnvProbeExtent, 0.f);
+        for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
+            if (i >= mesh3dReflectionProbes.count) continue;
+            const auto &probe = mesh3dReflectionProbes.probes[i];
+            if (!probe.cubemap || !probe.cubemap->gpuHandle ||
+                !static_cast<GpuTexture *>(probe.cubemap->gpuHandle)->isCube)
+                continue;
+            ubo.reflectionProbeCenter[i] = glm::vec4(probe.center, probe.intensity);
+            ubo.reflectionProbeExtent[i] = glm::vec4(probe.extent, probe.blendDistance);
+        }
 
         auto &cfslots = currentMesh3dClusteredFrameSlots();
         if (cfslots.drawIndex >= cfslots.capacity) {
@@ -711,6 +733,17 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.parallax =
         glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers,
                   mesh3dAlphaCutoff);
+    ubo.virtualTexture = mesh3dVirtualTexture;
+    ubo.virtualAtlas = mesh3dVirtualAtlas;
+    for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
+        if (i >= mesh3dReflectionProbes.count) continue;
+        const auto &probe = mesh3dReflectionProbes.probes[i];
+        if (!probe.cubemap || !probe.cubemap->gpuHandle ||
+            !static_cast<GpuTexture *>(probe.cubemap->gpuHandle)->isCube)
+            continue;
+        ubo.reflectionProbeCenter[i] = glm::vec4(probe.center, probe.intensity);
+        ubo.reflectionProbeExtent[i] = glm::vec4(probe.extent, probe.blendDistance);
+    }
     if (mesh->hasGpuSkinning()) {
         const int paletteCount = std::min(mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
         ubo.skinInfo.x         = static_cast<float>(paletteCount);
@@ -759,11 +792,13 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     const uint32_t dynOffsets[2] = {uboOffset, shadowOffset};
 
     if (shader) {
-        if (offscreen3DPassOpen)
-            throw Exception("drawMeshShader: custom mesh shader in offscreen 3D pass is unsupported");
         auto *gs = static_cast<GpuShader *>(shader->gpuHandle);
-        vk::Pipeline activePipeline = gs->mesh3dPipeline;
-        if (shader->isXray()) {
+        vk::Pipeline activePipeline = offscreen3DPassOpen
+                                          ? (offscreen3DHDRActive
+                                                 ? gs->mesh3dHdrOffscreenPipeline
+                                                 : gs->mesh3dOffscreenPipeline)
+                                          : gs->mesh3dPipeline;
+        if (shader->isXray() && !offscreen3DPassOpen) {
             // X-ray silhouette pass: depth test/write off + alpha blend so the
             // occluded part paints over the building. The pipeline is created
             // with the shader (see newMeshShaderFromSpv); do not compile it
@@ -781,12 +816,16 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          Shader::kPushConstantBytes, shader->pushConstantData());
     } else {
-        const vk::Pipeline pipe =
-            offscreen3DPassOpen
-                ? offscreen3DMeshPipeline
-                : (mesh3dSurfaceMode == SurfaceMode::Transparent
-                       ? mesh3dTransparentPipeline
-                       : mesh3dPipeline);
+        const bool transparent = mesh3dSurfaceMode == SurfaceMode::Transparent;
+        const BlendMode blend = transparent ? mesh3dSurfaceBlend : BlendMode::Opaque;
+        const bool depthWrite = !transparent || mesh3dSurfaceDepthWrite;
+        const size_t pipelineIndex =
+            mesh3dPipelineIndex(blend, depthWrite, mesh3dSurfaceDoubleSided);
+        const vk::Pipeline pipe = offscreen3DPassOpen
+                                      ? (offscreen3DHDRActive
+                                             ? hdrOffscreen3DSurfacePipelines[pipelineIndex]
+                                             : offscreen3DSurfacePipelines[pipelineIndex])
+                                      : mesh3dSurfacePipelines[pipelineIndex];
         if (pipe != lastMesh3dPipeline) {
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
             lastMesh3dPipeline = pipe;

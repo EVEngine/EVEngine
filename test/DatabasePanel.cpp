@@ -25,9 +25,7 @@ class CharacterData {
 }
 )SQ";
 
-UINode* nodeById(UIHost* host, const std::string& id) {
-    return host ? host->findById(id) : nullptr;
-}
+eve::OptionalRef<UINode> nodeById(UIHost& host, const std::string& id) { return host.findById(id); }
 
 }  // namespace
 
@@ -39,24 +37,29 @@ TEST_CASE("database.registryCreatesRegistersAndLists") {
     ObjectRegistry& registry = ObjectRegistry::instance();
     registry.clearAll();
 
-    const uint64_t first = registry.create("CharacterData");
-    REQUIRE_NE(first, uint64_t(0));
+    CHECK_EQ(static_cast<int>(registry.unregister(ObjectHandle::invalid()).code()),
+             static_cast<int>(eve::StatusCode::Rejected));
+
+    auto firstResult = registry.create("CharacterData");
+    REQUIRE(firstResult.ok());
+    const ObjectHandle first = firstResult.value();
     CHECK_EQ(registry.count("CharacterData"), size_t(1));
 
     ssq::Object hero = runtime.createInstance("CharacterData");
-    const uint64_t second = registry.registerObject("CharacterData", hero);
-    REQUIRE_NE(second, uint64_t(0));
+    auto        secondResult = registry.registerObject("CharacterData", hero);
+    REQUIRE(secondResult.ok());
+    const ObjectHandle second = secondResult.value();
     CHECK_EQ(registry.count("CharacterData"), size_t(2));
 
     const std::vector<ObjectEntry> entries = registry.entries("CharacterData");
     REQUIRE_EQ(entries.size(), size_t(2));
-    CHECK_EQ(entries[0].id, first);
-    CHECK_EQ(entries[1].id, second);
+    CHECK_EQ(entries[0].handle, first);
+    CHECK_EQ(entries[1].handle, second);
     CHECK(!entries[1].label.empty());
 
-    CHECK(registry.unregister(first));
+    CHECK(registry.unregister(first).ok());
     CHECK_EQ(registry.count("CharacterData"), size_t(1));
-    CHECK(!registry.unregister(first));  // already removed
+    CHECK(!registry.unregister(first).ok());  // already removed
 
     registry.clearAll();
     CHECK_EQ(registry.count("CharacterData"), size_t(0));
@@ -70,39 +73,43 @@ TEST_CASE("database.panelBuildsGridAndBindsCells") {
 
     DatabasePanel panel;
     panel.open();
-    REQUIRE(panel.host() != nullptr);
+    REQUIRE(UIHost::resolve(panel.host()).has_value());
     CHECK(panel.selectClass("CharacterData"));
-    const uint64_t id = panel.createInstance();
-    REQUIRE_NE(id, uint64_t(0));
+    auto idResult = panel.createInstance();
+    REQUIRE(idResult.ok());
+    const ObjectHandle id = idResult.value();
     CHECK_EQ(panel.selectedClass(), std::string("CharacterData"));
 
-    UIHost* host = panel.host();
+    auto resolvedHost = UIHost::resolve(panel.host());
+    REQUIRE(resolvedHost.has_value());
+    UIHost& host = resolvedHost->get();
     // Header cells for reflected members.
-    REQUIRE(nodeById(host, "db_hdr_name") != nullptr);
-    REQUIRE(nodeById(host, "db_hdr_hp") != nullptr);
-    REQUIRE(nodeById(host, "db_hdr_alive") != nullptr);
-    REQUIRE(nodeById(host, "db_hdr_job") != nullptr);
+    REQUIRE(nodeById(host, "db_hdr_name").has_value());
+    REQUIRE(nodeById(host, "db_hdr_hp").has_value());
+    REQUIRE(nodeById(host, "db_hdr_alive").has_value());
+    REQUIRE(nodeById(host, "db_hdr_job").has_value());
     // Row cells + delete button.
-    const std::string row = "db_row_" + std::to_string(id);
-    REQUIRE(nodeById(host, row) != nullptr);
-    UINode* nameCell = nodeById(host, "cell_" + std::to_string(id) + "_name");
-    REQUIRE(nameCell != nullptr);
-    CHECK_EQ(nameCell->valueText, std::string("Hero"));
-    REQUIRE(nodeById(host, "cell_" + std::to_string(id) + "_alive") != nullptr);
-    REQUIRE(nodeById(host, "db_del_" + std::to_string(id)) != nullptr);
+    const std::string row = "db_row_" + std::to_string(id.packed());
+    REQUIRE(nodeById(host, row).has_value());
+    auto nameCell = nodeById(host, "cell_" + std::to_string(id.packed()) + "_name");
+    REQUIRE(nameCell.has_value());
+    CHECK_EQ(nameCell->get().valueText, std::string("Hero"));
+    REQUIRE(nodeById(host, "cell_" + std::to_string(id.packed()) + "_alive").has_value());
+    REQUIRE(nodeById(host, "db_del_" + std::to_string(id.packed())).has_value());
 
     // View → model: typing into a cell writes back to the live instance.
     const ObjectEntry* entry = ObjectRegistry::instance().entry(id);
     REQUIRE(entry != nullptr);
-    auto tree = host->tree();
-    REQUIRE_GE(nameCell->handlerText, 1u);
-    tree->textHandlers[size_t(nameCell->handlerText - 1)]("Axe");
+    auto tree = host.tree();
+    REQUIRE_GE(nameCell->get().handlerText, 1u);
+    tree->textHandlers[size_t(nameCell->get().handlerText - 1)]("Axe");
     CHECK_EQ(runtime.readProperty(entry->object, "name").asString(),
              std::string("Axe"));
 
-    UINode* aliveCell = nodeById(host, "cell_" + std::to_string(id) + "_alive");
-    REQUIRE_GE(aliveCell->handlerToggle, 1u);
-    tree->toggleHandlers[size_t(aliveCell->handlerToggle - 1)](false);
+    auto aliveCell = nodeById(host, "cell_" + std::to_string(id.packed()) + "_alive");
+    REQUIRE(aliveCell.has_value());
+    REQUIRE_GE(aliveCell->get().handlerToggle, 1u);
+    tree->toggleHandlers[size_t(aliveCell->get().handlerToggle - 1)](false);
     CHECK(!runtime.readProperty(entry->object, "alive").asBool());
 
     // Model → view: external change is pulled into the grid by sync().
@@ -111,12 +118,38 @@ TEST_CASE("database.panelBuildsGridAndBindsCells") {
     value.floating = 250.0;
     CHECK(runtime.writeProperty(entry->object, "hp", value));
     panel.sync();
-    CHECK_EQ(nodeById(host, "cell_" + std::to_string(id) + "_hp")->valueText,
-             std::string("250"));
+    auto hpCell = nodeById(host, "cell_" + std::to_string(id.packed()) + "_hp");
+    REQUIRE(hpCell.has_value());
+    CHECK_EQ(hpCell->get().valueText, std::string("250"));
 
     // Deleting the row removes it from the grid.
-    CHECK(panel.unregister(id));
-    CHECK(nodeById(host, row) == nullptr);
+    CHECK(panel.unregister(id).ok());
+    CHECK(!nodeById(host, row).has_value());
 
     panel.close();
+}
+
+TEST_CASE("database.registryHandlesRejectStaleAndReuseSlots") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.initialize();
+    runtime.runSource(kDatabaseScript, "database_handles.nut");
+
+    ObjectRegistry& registry = ObjectRegistry::instance();
+    registry.clearAll();
+
+    auto firstResult = registry.create("CharacterData");
+    REQUIRE(firstResult.ok());
+    const ObjectHandle first = firstResult.value();
+    REQUIRE(registry.unregister(first).ok());
+    CHECK(registry.isStale(first));
+    CHECK(registry.entry(first) == nullptr);
+
+    auto secondResult = registry.create("CharacterData");
+    REQUIRE(secondResult.ok());
+    const ObjectHandle second = secondResult.value();
+    CHECK_EQ(second.index(), first.index());
+    CHECK_EQ(second.generation(), first.generation() + 1u);
+    CHECK(registry.entry(first) == nullptr);
+    CHECK_EQ(static_cast<int>(registry.unregister(first).code()), static_cast<int>(eve::StatusCode::Rejected));
+    CHECK_EQ(static_cast<int>(registry.unregister(second).code()), static_cast<int>(eve::StatusCode::Applied));
 }

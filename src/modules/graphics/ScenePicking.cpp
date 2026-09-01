@@ -42,9 +42,9 @@ std::vector<std::string> Scene::collectFrustumIdsAt(const std::string &hostName,
     const glm::vec3 target(d->targetX, d->targetY, d->targetZ);
     const glm::vec3 up(d->upX, d->upY, d->upZ);
     const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-    const glm::mat4 projM =
-        graphics::perspectiveVulkanRH_ZO(glm::radians(d->fovYDeg), viewW / viewH,
-                                         d->nearZ, d->farZ);
+    const glm::mat4 projM = graphics::cameraProjectionVulkanRH_ZO(
+        d->orthographic, glm::radians(d->fovYDeg), d->orthoHeight,
+        viewW / viewH, d->nearZ, d->farZ);
     const glm::mat4 clip = projM * viewM;
     const glm::mat4 invClip = glm::inverse(clip);
 

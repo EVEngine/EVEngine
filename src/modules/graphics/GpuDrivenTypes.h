@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/GpuResidentBufferView.h"
+
 #include <cstdint>
 #include <glm/glm.hpp>
 
@@ -17,6 +19,40 @@ namespace eve::graphics {
 constexpr uint32_t kInvalidGpuDrivenSlot = 0xFFFFFFFFu;
 constexpr uint32_t kMaxGpuDrivenTextures = 1024;  // sampler2D array slots (desktop limit)
 constexpr uint32_t kMaxGpuDrivenCubemaps = 64;    // samplerCube array slots
+
+using eve::GpuResidentBackend;
+using eve::GpuResidentBufferView;
+using eve::kGpuResidentStorageOffsetAlignment;
+
+/** @brief One contiguous mesh/material bucket in a sorted resident instance buffer. */
+struct GpuResidentInstanceBucket {
+    uint32_t firstInstance = 0;
+    uint32_t instanceCount = 0;
+    uint32_t meshId        = kInvalidGpuDrivenSlot;
+    uint32_t materialId    = kInvalidGpuDrivenSlot;
+};
+
+/**
+ * @brief Direct-render description for a GPU-authored array of GpuInstance records.
+ * @ownership buckets and buffer are borrowed for this call; the native buffer remains
+ * caller-owned through the frame fence as required by GpuResidentBufferView.
+ */
+struct GpuResidentInstanceBatch {
+    GpuResidentBufferView            buffer;
+    const GpuResidentInstanceBucket *buckets       = nullptr;
+    uint32_t                         bucketCount   = 0;
+    uint32_t                         instanceCount = 0;
+};
+
+/** @brief Structured result for direct resident-instance submission. */
+enum class GpuResidentSubmitStatus : uint8_t {
+    Submitted,
+    Unsupported,
+    InvalidArgument,
+    BackendMismatch,
+    ResourceUnavailable,
+    CapacityExceeded,
+};
 
 /// @brief GPU mesh table record (std430). Mirrors GLSL GpuMeshRecord.
 struct GpuMeshRecord {
@@ -57,8 +93,11 @@ struct GpuInstance {
     uint32_t materialId = kInvalidGpuDrivenSlot;  // -> GpuMaterialRecord table
     uint32_t flags = 0;                           // bit0 castShadow, bit1 receiveShadow, bit2 castOcclusion
     uint32_t lodGroupId = kInvalidGpuDrivenSlot;  // stage 2
+    glm::uvec4 reflectionProbeSlots{kInvalidGpuDrivenSlot, kInvalidGpuDrivenSlot, 0u, 0u};
+    glm::vec4 reflectionProbeCenter[2]{};  // xyz = center, w = intensity
+    glm::vec4 reflectionProbeExtent[2]{};  // xyz = extent, w = blend distance
 };
-static_assert(sizeof(GpuInstance) == 80, "GpuInstance must be 80B (std430)");
+static_assert(sizeof(GpuInstance) == 160, "GpuInstance must be 160B (std430)");
 
 /// @brief Indirect draw command; layout identical to VkDrawIndexedIndirectCommand.
 struct GpuIndirectCommand {

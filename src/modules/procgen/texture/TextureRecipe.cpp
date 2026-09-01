@@ -30,12 +30,12 @@ bool TextureRecipeRegistry::has(const std::string &id) const {
     return recipes_.find(id) != recipes_.end();
 }
 
-image::ImageData *TextureRecipeRegistry::generate(const std::string &id, const Params &params,
-                                                  std::string &error) const {
+std::unique_ptr<image::ImageData> TextureRecipeRegistry::generate(const std::string &id, const Params &params,
+                                                                  std::string &error) const {
     auto it = recipes_.find(id);
     if (it == recipes_.end()) {
         error = "unknown texture recipe: " + id;
-        return nullptr;
+        return {};
     }
     return it->second.fn(params, error);
 }
@@ -145,9 +145,9 @@ void paintHeightToImage(image::ImageData &img, const std::vector<float> &height,
     }
 }
 
-image::ImageData *heightToNormalImage(const std::vector<float> &height, int w, int h,
-                                      float strength, bool seamless) {
-    auto *img    = new image::ImageData(w, h, "RGBA8");
+std::unique_ptr<image::ImageData> heightToNormalImage(const std::vector<float> &height, int w, int h, float strength,
+                                                      bool seamless) {
+    auto  img    = std::make_unique<image::ImageData>(w, h, "RGBA8");
     auto *pixels = static_cast<uint8_t *>(img->getData());
     auto  sample = [&](int x, int y) -> float {
         if (seamless) {

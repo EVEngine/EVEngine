@@ -35,10 +35,28 @@ TEST_CASE("editor.v2.strong_ids_and_values") {
     root["visible"]  = true;
     const EditorValue value(std::move(root));
     CHECK_EQ(static_cast<int>(value.type()), static_cast<int>(EditorValue::Type::Object));
-    CHECK(value.withinLimits(4, 16, 128));
-    CHECK(!value.withinLimits(1, 16, 128));
-    CHECK(!value.withinLimits(4, 2, 128));
-    CHECK(!value.withinLimits(4, 16, 4));
+    CHECK(value.isWithinLimits(4, 16, 128));
+    CHECK(!value.isWithinLimits(1, 16, 128));
+    CHECK(!value.isWithinLimits(4, 2, 128));
+    CHECK(!value.isWithinLimits(4, 16, 4));
+}
+
+TEST_CASE("editor.v2.idsUseCommonUuidAdapterWithLegacyParse") {
+    const auto legacy = CommandId::parse("scene.object.create");
+    REQUIRE(legacy.has_value());
+    CHECK(!legacy->isCanonicalUuid());
+    CHECK_EQ(legacy->value(), std::string("scene.object.create"));
+
+    const auto projected = canonicalUuid(*legacy);
+    const auto canonical = CommandId::fromUuid(projected);
+    CHECK(canonical.isCanonicalUuid());
+    CHECK_EQ(canonical.uuid(), projected);
+    CHECK_EQ(canonical.canonicalFormat(), projected.format());
+
+    const auto parsed = CommandId::parse("01020304-0506-0708-090a-0b0c0d0e0f10");
+    REQUIRE(parsed.has_value());
+    CHECK(parsed->isCanonicalUuid());
+    CHECK_EQ(parsed->value(), std::string("01020304-0506-0708-090a-0b0c0d0e0f10"));
 }
 
 TEST_CASE("editor.v2.host_profile_is_an_execution_boundary") {
@@ -70,7 +88,7 @@ TEST_CASE("editor.v2.command_registry_filters_and_executes") {
         ++calls;
         return EditorResult<EditorValue>::applied(payload);
     });
-    CHECK(registered.accepted());
+    CHECK(registered.isAccepted());
     CHECK_EQ(service.revision(), static_cast<uint64_t>(1));
 
     auto duplicate = service.registerCommand(descriptor, [](const CommandContext&, const EditorValue&) {
@@ -87,7 +105,7 @@ TEST_CASE("editor.v2.command_registry_filters_and_executes") {
 
     runtime.allowCommand(descriptor.id);
     auto executed = service.execute(descriptor.id, context, EditorValue("New Name"));
-    CHECK(executed.accepted());
+    CHECK(executed.isAccepted());
     CHECK_EQ(calls, 1);
     CHECK(executed.value.has_value());
     CHECK_EQ(*executed.value->getIf<std::string>(), std::string("New Name"));
@@ -109,7 +127,7 @@ TEST_CASE("editor.v2.command_registry_gates_automation_and_exceptions") {
                                    throw std::runtime_error("boom");
                                    return EditorResult<EditorValue>::applied(EditorValue{});
                                })
-              .accepted());
+              .isAccepted());
 
     HostProfile    developer = HostProfile::developer();
     CommandContext context;
@@ -150,7 +168,7 @@ TEST_CASE("editor.v2.session_wraps_command_in_legacy_transaction") {
                                                                   "Tile edit could not be applied");
                       return EditorResult<EditorValue>::applied(payload);
                   })
-              .accepted());
+              .isAccepted());
 
     EditorSession session;
     HostProfile   runtime = HostProfile::runtimeBuilder();
@@ -160,7 +178,7 @@ TEST_CASE("editor.v2.session_wraps_command_in_legacy_transaction") {
     session.bindTarget(&target);
 
     auto result = session.executeCommand(descriptor.id, EditorValue(7));
-    CHECK(result.accepted());
+    CHECK(result.isAccepted());
     CHECK_EQ(buffer.getGid(0, 0), 7);
     CHECK(session.transactions().canUndo());
     CHECK(session.transactions().undo());

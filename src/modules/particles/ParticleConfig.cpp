@@ -148,13 +148,16 @@ bool readGradientArray(Poco::JSON::Array::Ptr arr, ParticleGradient &gradient) {
     return any;
 }
 
-void tryLoadTexture(ParticleEmitter *emitter, const std::string &path) {
+void tryLoadTexture(ParticleEmitter* emitter, const std::string& path, bool normalMap = false) {
     if (path.empty()) return;
     auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!gfx) return;
     try {
         graphics::Texture *tex = gfx->newTextureFromFile(path);
-        emitter->setTexture(tex);
+        if (normalMap)
+            emitter->setNormalTexture(tex);
+        else
+            emitter->setTexture(tex);
         if (auto *hot = eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload"))
             hot->bind(path, "texture");
     } catch (...) {
@@ -193,6 +196,9 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
 
     if (obj->has("emissionRate"))
         emitter->setEmissionRate(asFloat(obj->get("emissionRate"), emitter->getEmissionRate()));
+    if (obj->has("emissionRateOverDistance"))
+        emitter->setEmissionRateOverDistance(
+            asFloat(obj->get("emissionRateOverDistance"), emitter->getEmissionRateOverDistance()));
 
     float lifeMin = emitter->getParticleLifetimeMin();
     float lifeMax = emitter->getParticleLifetimeMax();
@@ -207,6 +213,21 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
 
     if (obj->has("emitterLife"))
         emitter->setEmitterLifetime(asFloat(obj->get("emitterLife"), emitter->getEmitterLifetime()));
+    if (obj->has("looping"))
+        emitter->setLooping(asBool(obj->get("looping"), emitter->getLooping()));
+    if (obj->has("playbackSpeed"))
+        emitter->setPlaybackSpeed(asFloat(obj->get("playbackSpeed"), emitter->getPlaybackSpeed()));
+    if (obj->has("fixedTimeStep")) {
+        const float step = asFloat(obj->get("fixedTimeStep"), emitter->getFixedTimeStep());
+        const int maxSteps = obj->has("maxSubSteps")
+                                 ? int(asFloat(obj->get("maxSubSteps"), 8.f))
+                                 : emitter->config()->maxSubSteps;
+        emitter->setFixedTimeStep(step, maxSteps);
+    }
+    if (obj->has("randomSeed"))
+        emitter->setRandomSeed(int(asFloat(obj->get("randomSeed"), 0.f)));
+    if (obj->has("autoRandomSeed"))
+        emitter->setAutoRandomSeed(asBool(obj->get("autoRandomSeed"), true));
 
     if (obj->has("direction"))
         emitter->setDirection(asFloat(obj->get("direction"), emitter->getDirection()));
@@ -385,12 +406,91 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
     } else if (obj->has("stretch")) {
         emitter->setRenderMode("stretched", asFloat(obj->get("stretch"), 1.f));
     }
+    if (obj->has("renderAxis")) emitter->setRenderAxis(asFloat(obj->get("renderAxis"), 0.f));
+    if (obj->has("ribbon")) {
+        try {
+            auto ribbon = obj->getObject("ribbon");
+            if (ribbon) {
+                const float width = ribbon->has("width") ? asFloat(ribbon->get("width"), 1.f) : 1.f;
+                const float minSegment =
+                    ribbon->has("minSegmentLength") ? asFloat(ribbon->get("minSegmentLength"), 1.f) : 1.f;
+                emitter->setRibbon(width, minSegment);
+            }
+        } catch (...) {
+        }
+    }
+    if (obj->has("sortMode")) emitter->setSortMode(asString(obj->get("sortMode")));
+    if (obj->has("materialMode")) emitter->setMaterialMode(asString(obj->get("materialMode")));
+    if (obj->has("material")) {
+        try {
+            auto material = obj->getObject("material");
+            if (material) {
+                if (material->has("mode")) emitter->setMaterialMode(asString(material->get("mode")));
+                if (material->has("distortionStrength"))
+                    emitter->setDistortionStrength(asFloat(material->get("distortionStrength"), 8.f));
+                if (material->has("normalTexture")) {
+                    const std::string path                 = asString(material->get("normalTexture"));
+                    emitter->resource()->normalTexturePath = path;
+                    tryLoadTexture(emitter, path, true);
+                }
+            }
+        } catch (...) {
+        }
+    }
+    if (obj->has("parameters")) {
+        try {
+            auto parameters = obj->getObject("parameters");
+            if (parameters) {
+                for (const auto& entry : *parameters)
+                    emitter->setFloatParameter(entry.first, asFloat(entry.second, 0.f));
+            }
+        } catch (...) {
+        }
+    }
+    if (obj->has("parameterBindings")) {
+        try {
+            auto bindings = obj->getArray("parameterBindings");
+            if (bindings) {
+                emitter->clearFloatParameterBindings();
+                for (size_t i = 0; i < bindings->size(); ++i) {
+                    if (!bindings->isObject(int(i))) continue;
+                    auto binding = bindings->getObject(int(i));
+                    if (!binding) continue;
+                    emitter->bindFloatParameter(asString(binding->get("parameter")), asString(binding->get("target")),
+                                                binding->has("scale") ? asFloat(binding->get("scale"), 1.f) : 1.f,
+                                                binding->has("offset") ? asFloat(binding->get("offset"), 0.f) : 0.f);
+                }
+            }
+        } catch (...) {
+        }
+    }
+    if (obj->has("softParticles")) {
+        try {
+            auto soft = obj->getObject("softParticles");
+            if (soft) {
+                const bool  enabled = soft->has("enabled") ? asBool(soft->get("enabled"), true) : true;
+                const float depth   = soft->has("depth") ? asFloat(soft->get("depth"), 0.5f) : 0.5f;
+                const float fade    = soft->has("fadeDistance") ? asFloat(soft->get("fadeDistance"), 0.05f) : 0.05f;
+                emitter->setSoftParticles(enabled, depth, fade);
+            }
+        } catch (...) {
+        }
+    }
     if (obj->has("overflowMode"))
         emitter->setOverflowMode(asString(obj->get("overflowMode")));
     if (obj->has("maxDeltaTime"))
         emitter->setMaxDeltaTime(asFloat(obj->get("maxDeltaTime"), 0.f));
     if (obj->has("gpuSimulation"))
         emitter->setGpuSimulation(asBool(obj->get("gpuSimulation"), false));
+    if (obj->has("priority"))
+        emitter->setPriority(int(asFloat(obj->get("priority"), 0.f)));
+    if (obj->has("minimumQuality"))
+        emitter->setMinimumQuality(int(asFloat(obj->get("minimumQuality"), 0.f)));
+    if (obj->has("cullingMode")) emitter->setCullingMode(asString(obj->get("cullingMode")));
+    if (obj->has("cullDistance"))
+        emitter->setCullDistance(asFloat(obj->get("cullDistance"), 0.f));
+    if (obj->has("maxSpawnPerFrame"))
+        emitter->setMaxSpawnPerFrame(int(asFloat(obj->get("maxSpawnPerFrame"), 0.f)));
 
     if (obj->has("forceFields")) {
         try {

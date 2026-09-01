@@ -227,6 +227,41 @@ public:
         return out;
     }
 
+    eve::Result<eve::Renderable3DInfo> inspectRenderable3D(
+        std::uint32_t entityId, std::uint32_t generation) override {
+        ecs::EntityHandle handle{ecs::current(), std::type_index(typeid(Renderable3D)),
+                                 entityId, generation};
+        auto* renderable = dynamic_cast<Renderable3D*>(ecs::try_get(handle));
+        if (!renderable)
+            return eve::Result<eve::Renderable3DInfo>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::StaleHandle,
+                "Renderable3D handle is missing or stale", "entity"));
+        auto transform = renderable->transform();
+        auto renderer = renderable->meshRenderer();
+        eve::Renderable3DInfo info;
+        info.entityId = renderable->id;
+        info.generation = renderable->generation;
+        info.x = transform->x;
+        info.y = transform->y;
+        info.z = transform->z;
+        info.tintR = renderer->r;
+        info.tintG = renderer->g;
+        info.tintB = renderer->b;
+        info.tintA = renderer->a;
+        info.metallic = renderer->metallic;
+        info.roughness = renderer->roughness;
+        info.parallaxScale = renderer->parallaxScale;
+        info.visible = renderer->visible;
+        info.receiveLight = renderer->receiveLight;
+        info.castShadow = renderer->castShadow;
+        info.receiveShadow = renderer->receiveShadow;
+        info.hasPackedMaterial = renderer->material != nullptr;
+        info.hasTexture = renderer->texture != nullptr || renderer->normalTexture != nullptr ||
+                          renderer->heightTexture != nullptr;
+        info.hasShader = renderer->shader != nullptr;
+        return eve::Result<eve::Renderable3DInfo>::success(std::move(info));
+    }
+
     std::string visibleEntitiesJson(float fovYDeg, bool *ok) override {
         return visibleAt(nullptr, nullptr, fovYDeg, ok);
     }
@@ -254,8 +289,9 @@ public:
         if (outHeight) *outHeight = vh;
         if (vw <= 0 || vh <= 0) return "{\"error\":\"empty viewport\"}";
         const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-        const glm::mat4 projM = perspectiveVulkanRH_ZO(degToRad(d->fovYDeg), float(vw) / float(vh),
-                                                       d->nearZ, d->farZ);
+        const glm::mat4 projM = cameraProjectionVulkanRH_ZO(
+            d->orthographic, degToRad(d->fovYDeg), d->orthoHeight,
+            float(vw) / float(vh), d->nearZ, d->farZ);
         const glm::mat4 viewProj = projM * viewM;
 
         std::vector<Graphics::EntityIdDraw> draws;
@@ -324,8 +360,9 @@ public:
             return false;
         }
         const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-        const glm::mat4 projM = perspectiveVulkanRH_ZO(degToRad(d->fovYDeg), float(vw) / float(vh),
-                                                       d->nearZ, d->farZ);
+        const glm::mat4 projM = cameraProjectionVulkanRH_ZO(
+            d->orthographic, degToRad(d->fovYDeg), d->orthoHeight,
+            float(vw) / float(vh), d->nearZ, d->farZ);
         const glm::mat4 viewProj = projM * viewM;
         std::vector<Graphics::EntityIdDraw> draws;
         int id = 1;

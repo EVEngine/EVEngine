@@ -10,6 +10,8 @@
 
 namespace eve::procgen {
 
+PbrTextureSet::~PbrTextureSet() { destroy(); }
+
 void PbrTextureSet::destroy() {
     delete albedo;
     delete normal;
@@ -41,12 +43,12 @@ bool PbrRecipeRegistry::has(const std::string &id) const {
     return recipes_.find(id) != recipes_.end();
 }
 
-PbrTextureSet *PbrRecipeRegistry::generate(const std::string &id, const Params &params,
-                                           std::string &error) const {
+std::unique_ptr<PbrTextureSet> PbrRecipeRegistry::generate(const std::string &id, const Params &params,
+                                                           std::string &error) const {
     auto it = recipes_.find(id);
     if (it == recipes_.end()) {
         error = "unknown pbr recipe: " + id;
-        return nullptr;
+        return {};
     }
     return it->second.fn(params, error);
 }
@@ -91,8 +93,8 @@ void PbrRecipeRegistry::registerPbrBuiltins() {
     builtinsRegistered_ = true;
 }
 
-image::ImageData *grayscaleImage(const std::vector<float> &values, int w, int h) {
-    auto *img    = new image::ImageData(w, h, "RGBA8");
+std::unique_ptr<image::ImageData> grayscaleImage(const std::vector<float> &values, int w, int h) {
+    auto  img    = std::make_unique<image::ImageData>(w, h, "RGBA8");
     auto *pixels = static_cast<uint8_t *>(img->getData());
     for (int i = 0; i < w * h && i < int(values.size()); ++i) {
         const uint8_t v = uint8_t(std::lround(std::clamp(values[size_t(i)], 0.f, 1.f) * 255.f));
@@ -103,12 +105,11 @@ image::ImageData *grayscaleImage(const std::vector<float> &values, int w, int h)
     return img;
 }
 
-PbrTextureSet *generatePbrSet(const TextureRecipeDef &def, const Params &params,
-                              std::string &error) {
+std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def, const Params &params, std::string &error) {
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
-        return nullptr;
+        return {};
     }
 
     // Recipe defaults, then per-call overrides.
@@ -125,10 +126,10 @@ PbrTextureSet *generatePbrSet(const TextureRecipeDef &def, const Params &params,
     const int w = ctx.width;
     const int h = ctx.height;
 
-    auto *set = new PbrTextureSet();
+    auto set    = std::make_unique<PbrTextureSet>();
     set->albedo = new image::ImageData(w, h, "RGBA8");
     paintHeightToImage(*set->albedo, height, w, h, def.albedo, ctx.colors, ctx.pixelSize);
-    set->normal = heightToNormalImage(height, w, h, pbr.normalStrength, ctx.seamless);
+    set->normal = heightToNormalImage(height, w, h, pbr.normalStrength, ctx.seamless).release();
 
     std::vector<float> rough(size_t(w * h));
     std::vector<float> heightMap(size_t(w * h));
@@ -162,10 +163,10 @@ PbrTextureSet *generatePbrSet(const TextureRecipeDef &def, const Params &params,
             ao[i] = std::clamp(1.f - pbr.aoStrength * std::max(0.f, local - hh), 0.f, 1.f);
         }
     }
-    set->roughness = grayscaleImage(rough, w, h);
-    set->metallic  = grayscaleImage(std::vector<float>(size_t(w * h), pbr.metallic), w, h);
-    set->height    = grayscaleImage(heightMap, w, h);
-    set->ao        = grayscaleImage(ao, w, h);
+    set->roughness = grayscaleImage(rough, w, h).release();
+    set->metallic  = grayscaleImage(std::vector<float>(size_t(w * h), pbr.metallic), w, h).release();
+    set->height    = grayscaleImage(heightMap, w, h).release();
+    set->ao        = grayscaleImage(ao, w, h).release();
     return set;
 }
 

@@ -179,6 +179,38 @@ TEST_CASE("dialogueConversation.asyncCommand") {
     std::string error;
     CHECK(runner.start(&asset, StateValue::object(), &error));
     CHECK(runner.isBlocked());
-    CHECK(runner.resumeCommand(StateValue::string("finished"), &error));
+    auto resumed = runner.resumeCommand(StateValue::string("finished"));
+    REQUIRE(resumed.ok());
     CHECK(!runner.isActive());
+}
+
+TEST_CASE("dialogueConversation.mutationsExposeStableDiagnostics") {
+    ConversationAsset asset;
+    asset.id    = "scene.mutations";
+    asset.entry = "choice";
+    ConversationAsset::Node choice;
+    choice.id   = "choice";
+    choice.kind = ConversationAsset::Node::Kind::Choice;
+    choice.routes.emplace_back("yes", "end");
+    ConversationAsset::Node end;
+    end.id      = "end";
+    end.kind    = ConversationAsset::Node::Kind::End;
+    asset.nodes = {choice, end};
+
+    ConversationRunner runner;
+    std::string        error;
+    REQUIRE(runner.start(&asset, StateValue::object(), &error));
+    auto missing = runner.selectRouteForTransaction("missing");
+    REQUIRE(!missing.ok());
+    CHECK_EQ(static_cast<int>(missing.error()->code()), static_cast<int>(eve::DiagnosticCode::DialogueRouteNotFound));
+    CHECK(runner.currentNodeId() == "choice");
+
+    auto selected = runner.selectRouteForTransaction("yes");
+    REQUIRE(selected.ok());
+    CHECK(!runner.isActive());
+
+    auto notCommand = runner.resumeCommand(eve::Value("ignored"));
+    REQUIRE(!notCommand.ok());
+    CHECK_EQ(static_cast<int>(notCommand.error()->code()),
+             static_cast<int>(eve::DiagnosticCode::DialogueNotWaitingForCommand));
 }

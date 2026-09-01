@@ -8,7 +8,7 @@ const CAT_PLAYER_ATTACK = 16;
 const CAT_PICKUP = 32;
 const CAT_HAZARD = 64;
 
-if (!("game" in getroottable())) game <- null;
+persist game = null
 
 function absf(v) { return v < 0.0 ? -v : v; }
 

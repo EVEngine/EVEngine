@@ -2,13 +2,18 @@
 #include "scripts.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
+#include "common/ScriptCompiler.h"
+#include "common/ScriptModule.h"
 #include "common/config.h"
 #include "common/ECS.h"
+#include "common/BootWarmup.h"
+#include "common/CrashLog.h"
+#include "common/StartupTiming.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/physfs/FileApi.h"
 #include "graphics/Light.h"
 #include "graphics/RenderSystem3D.h"
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
 #endif
@@ -23,7 +28,7 @@
 #include <vector>
 #include <filesystem>
 
-#if defined(EVENGINE_WEBGPU)
+#if defined(__EMSCRIPTEN__)
 #include <emscripten.h>
 #include <squirrel.h>
 
@@ -128,12 +133,12 @@ const char* playgroundEval(const char* source) {
     const std::string wrapped = std::string("return (") + source + ");";
     const char* evalSource = wrapped.c_str();
     SQInteger evalLen = static_cast<SQInteger>(wrapped.size());
-    bool compileOk =
-        SQ_SUCCEEDED(sq_compilebuffer(vm, evalSource, evalLen, _SC("playground_eval"), SQTrue));
+    bool compileOk = SQ_SUCCEEDED(eve::script::ScriptCompiler::compileBuffer(
+        vm, evalSource, evalLen, _SC("playground_eval"), SQTrue));
     if (!compileOk) {
         sq_settop(vm, top);
-        compileOk = SQ_SUCCEEDED(sq_compilebuffer(vm, source, std::strlen(source),
-                                                  _SC("playground_eval"), SQTrue));
+        compileOk = SQ_SUCCEEDED(eve::script::ScriptCompiler::compileBuffer(
+            vm, source, static_cast<SQInteger>(std::strlen(source)), _SC("playground_eval"), SQTrue));
     }
     if (!compileOk) {
         const SQChar* msg = nullptr;
@@ -289,7 +294,7 @@ EMSCRIPTEN_KEEPALIVE void eve_playground_reset() { playgroundResetScene(); }
 #if defined(EVENGINE_ANDROID)
 #include <android/log.h>
 #define EVE_ANDROID_LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "EVEngine", __VA_ARGS__)
-#elif defined(EVENGINE_IOS) || defined(EVENGINE_WEBGPU)
+#elif defined(EVENGINE_IOS) || defined(__EMSCRIPTEN__)
 #include <cstdio>
 #define EVE_ANDROID_LOGE(...) do { fprintf(stderr, "EVEngine: "); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while (0)
 #else
@@ -354,11 +359,15 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
                  std::string devServer) {
     std::fprintf(stderr, "[startup] Run() begins at process clock %.1f ms\n",
                  (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
+    // Overlap VkInstance creation with VM/script boot: the loader+ICD init is
+    // typically 100ms+ and does not need a window.
+    eve::boot::startVulkanInstanceWarmup();
     try {
         // Resolve the game directory. A packaged game ships a game.eve archive next to
         // the executable; we mount it into memory and run without extracting to disk.
         std::string gameDir = path;
         std::string archivePath;
+        eve::recordLogEvent("info", "eve run starting: " + (gameDir.empty() ? std::string(".") : gameDir));
 
         {
             std::error_code ec;
@@ -421,11 +430,14 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         }
 
         Runtime runtime(2048, ssq::Libs::ALL);
-        runtime.initialize();
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+        {
+            StartupStage stage("runtime: ModuleManager::expose");
+            runtime.initialize();
+        }
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
         if (debug) {
             auto& dt = eve::dev::DevTool::instance();
-            dt.attach(runtime.vm(), /*sampleLocals=*/true);
+            dt.attach(runtime, /*sampleLocals=*/true);
             dt.exposeScriptApi(runtime.vm());
             if (dapPort > 0) {
                 const int bound = dt.startDap(static_cast<uint16_t>(dapPort));
@@ -464,6 +476,18 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             ssq::Table eve = runtime.table("eve");
             eve.set("demoScript", std::string(demo_content ? demo_content : ""));
             eve.set("asyncScript", std::string(async_content ? async_content : ""));
+            // Route script-side milestones into the same crash/error log
+            // (eve.log) so a crash shows how far the boot sequence got.
+            eve.addFunc("log", [](const std::string& level, const std::string& msg) {
+                eve::recordLogEvent(level, msg);
+            });
+            eve.addFunc("reloadScriptModule", [&runtime](const std::string& path) {
+                std::string canonical;
+                std::string error;
+                if (!eve::script::ScriptModuleResolver::canonicalize({"game:/main.nut", path}, canonical, error))
+                    throw std::runtime_error(error);
+                return !runtime.scriptModules().reloadAffected(canonical).empty();
+            });
             // Scene-director authoring kit (src/scripts/scene_director.nut). Host
             // games load it via `compilestring(eve.sceneDirectorScript)()`; the
             // MCP tools auto-install it on demand.
@@ -471,7 +495,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             eve.set("devServerArg", devServer);
             const char* bench = std::getenv("EVE_BOOT_BENCH");
             eve.set("bootBench", bench && bench[0] != '\0' && bench[0] != '0');
-#if defined(EVENGINE_WEBGPU)
+#if defined(__EMSCRIPTEN__)
             // The browser has no blocking loop; load.nut defines eve_frame and
             // returns, and emscripten_set_main_loop drives it below.
             eve.set("hostDrivesFrames", true);
@@ -485,6 +509,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         {
             ssq::Table eve = runtime.table("eve");
             eve.set("moduleList", runtime.root().find("eve_modules"));
+            eve.set("moduleContract", runtime.root().find("eve_module_contract"));
         }
         // Name the embedded root so DAP stack frames map to load.nut (not "buffer").
         // Route file/dofile/loadfile through PhysFS so a packaged game (mounted in
@@ -493,7 +518,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         std::fprintf(stderr, "[startup] load.nut begins at process clock %.1f ms\n",
                      (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
         runtime.runSource(root, "load.nut");
-#if defined(EVENGINE_WEBGPU)
+#if defined(__EMSCRIPTEN__)
         // Instead of a blocking while(running) Squirrel loop (which the browser
         // never composites), drive the global eve_frame() function from an
         // Emscripten requestAnimationFrame main loop. simulateInfiniteLoop=1
@@ -506,31 +531,34 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         EM_ASM({ if (window.eveEngineReady) window.eveEngineReady(); });
         emscripten_set_main_loop(&webgpuFrameTick, 0, /*simulateInfiniteLoop=*/1);
 #endif
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
         if (debug) eve::dev::DevTool::instance().detach();
 #endif
         return 0;
     } catch (const std::exception& e) {
+        std::string what = e.what() ? e.what() : "unknown exception";
+        eve::recordLogEvent("error", "Run failed: " + what);
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
         if (debug) {
             auto& dt = eve::dev::DevTool::instance();
-            // The runtime error hook already reported uncaught script errors
-            // (including the break-on-error pause); do not slice/report twice.
-            const auto* scriptError = dynamic_cast<const eve::ScriptException*>(&e);
+            // The VM error hook and the Runtime error-handler sink (wired in
+            // DevTool::attach(Runtime&)) already slice script errors; only
+            // synthesize a report when none was produced (e.g. a native
+            // std::exception with no script involvement).
             std::string report = dt.lastReport();
-            if (!(scriptError && scriptError->reported()) || report.empty())
-                report = dt.notifyError(e.what());
+            if (report.empty()) report = dt.notifyError(what);
             cerr << report << endl;
             dt.detach();
         } else {
-            cerr << "Run failed: " << e.what() << endl;
+            cerr << "Run failed: " << what << endl;
         }
 #else
-        cerr << "Run failed: " << e.what() << endl;
+        cerr << "Run failed: " << what << endl;
 #endif
-        EVE_ANDROID_LOGE("Run failed: %s", e.what());
+        EVE_ANDROID_LOGE("Run failed: %s", what.c_str());
         return 3;
     } catch (...) {
+        eve::recordLogEvent("error", "Run failed: unknown exception");
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
         if (debug) {
             const std::string report =

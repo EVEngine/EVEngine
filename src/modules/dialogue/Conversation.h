@@ -1,6 +1,8 @@
 #pragma once
 
+#include "common/Result.h"
 #include "common/StateValue.h"
+#include "dialogue/DialogueState.h"
 
 #include <functional>
 #include <string>
@@ -9,6 +11,30 @@
 #include <vector>
 
 namespace eve::dialogue {
+
+/**
+ * @brief One outgoing edge in a conversation graph.
+ *
+ * `first` and `second` retain the legacy label/expression and destination
+ * layout. A non-null `condition` is evaluated by the shared decision system;
+ * it is not interpreted by a dialogue-local condition language.
+ */
+struct ConversationRoute {
+    std::string first;
+    std::string second;
+    eve::Value  condition;
+    /** @brief Optional money/reputation charge committed before entering the target. */
+    PaymentSpec payment;
+    /** @brief Optional authoritative mutations committed with this route. */
+    std::vector<eve::StateMutation> stateMutations;
+
+    /** @brief Construct an unconditional or legacy-expression route. */
+    ConversationRoute(std::string label = {}, std::string target = {}, eve::Value routeCondition = {})
+        : first(std::move(label)), second(std::move(target)), condition(std::move(routeCondition)) {}
+};
+
+/** @brief Short spelling used by authoring and gameplay integration code. */
+using Route = ConversationRoute;
 
 /** @brief Immutable, parameterized conversation definition. */
 struct ConversationAsset {
@@ -28,7 +54,12 @@ struct ConversationAsset {
         std::string target;
         std::string returnNode;
         StateValue arguments = StateValue::object();
-        std::vector<std::pair<std::string, std::string>> routes;
+        std::vector<ConversationRoute> routes;
+        CommandRequestKind             commandKind = CommandRequestKind::Operation;
+        /** @brief Optional money/reputation charge for a command node. */
+        PaymentSpec payment;
+        /** @brief Optional authoritative mutations committed with a command. */
+        std::vector<eve::StateMutation> stateMutations;
     };
 
     std::string id;
@@ -64,6 +95,8 @@ public:
     };
     using CommandHandler =
         std::function<CommandResult(const StateValue&, const StateValue&, const StateValue&)>;
+    using ConditionEvaluator       = std::function<eve::decision::ConditionResult(const eve::Value&)>;
+    using CommandRequestDispatcher = std::function<CommandResponse(const CommandRequest&)>;
     using EventSink = std::function<void(const Event&)>;
 
     /** @brief Start an asset with serializable parameter bindings. */
@@ -74,8 +107,30 @@ public:
     bool advance(std::string* error = nullptr);
     /** @brief Select a route on the current choice node. */
     bool select(const std::string& routeId, std::string* error = nullptr);
-    /** @brief Resume an asynchronous command node with its serialized result. */
-    bool resumeCommand(StateValue result, std::string* error = nullptr);
+    /**
+     * @brief Select a route from an already prepared Dialogue transaction.
+     * @param routeId Stable route identifier on the current choice node.
+     * @return Applied on success, or a stable diagnostic without changing the
+     *         runner cursor when selection cannot be completed.
+     * @remarks This low-level path is reserved for the DialogueFlow transaction
+     *          participant. It runs on the runner's owner thread and does not
+     *          retain routeId or invoke callbacks while holding a lock.
+     */
+    [[nodiscard]] eve::Result<void> selectRouteForTransaction(const std::string& routeId);
+    /**
+     * @brief Resume an asynchronous command node with its serialized result.
+     * @param result Owned result value; it is copied or moved into runner locals.
+     * @return Applied on success, or a stable diagnostic while preserving the
+     *         suspended runner state on failure.
+     */
+    [[nodiscard]] eve::Result<void> resumeCommand(StateValue result);
+    /**
+     * @brief Resume an asynchronous request command with a canonical result.
+     * @param result Owned canonical result value converted to dialogue state.
+     * @return Applied on success, or a stable diagnostic while preserving the
+     *         suspended runner state on failure.
+     */
+    [[nodiscard]] eve::Result<void> resumeCommand(eve::Value result);
     /** @brief Stop and clear the active instance. */
     void stop();
     /** @brief Capture the complete cursor, locals, bindings, and call stack. */
@@ -87,9 +142,28 @@ public:
     void setExpressionEvaluator(ExpressionEvaluator evaluator) {
         expressionEvaluator_ = std::move(evaluator);
     }
+    /** @brief Evaluate structured route conditions through decision::Condition. */
+    void setConditionEvaluator(ConditionEvaluator evaluator) { conditionEvaluator_ = std::move(evaluator); }
     /** @brief Register a cross-module command without introducing module includes. */
     void registerCommand(const std::string& name, CommandHandler handler);
     void unregisterCommand(const std::string& name);
+    /** @brief Register a request-only command owned by an operation/gameplay domain. */
+    void registerCommandRequest(const std::string& name, CommandRequestHandler handler);
+    /** @brief Remove a request-only command handler. */
+    void unregisterCommandRequest(const std::string& name);
+    /**
+     * @brief Install one cross-module dispatcher used when no name-specific request handler exists.
+     *
+     * The dispatcher is retained as a callable and runs synchronously on the
+     * runner's thread. It must not retain the request or re-enter this runner.
+     * DialogueFlow uses this hook to configure operation and gameplay-action
+     * handlers once for its whole facade.
+     */
+    void setCommandRequestDispatcher(CommandRequestDispatcher dispatcher) {
+        commandRequestDispatcher_ = std::move(dispatcher);
+    }
+    /** @brief Remove the facade-level request dispatcher. */
+    void clearCommandRequestDispatcher() { commandRequestDispatcher_ = {}; }
     void setEventSink(EventSink sink) { eventSink_ = std::move(sink); }
 
     bool isActive() const { return asset_ != nullptr; }
@@ -100,6 +174,26 @@ public:
     const StateValue& bindings() const { return bindings_; }
     const StateValue& locals() const { return locals_; }
     StateValue& locals() { return locals_; }
+    /**
+     * @brief Return the last structured condition explanation, if evaluated.
+     * @return A nullable borrowed pointer into this runner's cached result.
+     * @ownership Borrowed; the runner owns the optional result.
+     * @lifetime Valid until the next condition evaluation, stop, or runner
+     *           destruction.
+     * @thread Affine to the runner's owner thread.
+     */
+    const eve::decision::ConditionResult* lastConditionResult() const {
+        return lastConditionResult_ ? &*lastConditionResult_ : nullptr;
+    }
+    /**
+     * @brief Return the last request emitted by a command node, if any.
+     * @return A nullable borrowed pointer into this runner's cached request.
+     * @ownership Borrowed; the runner owns the optional request.
+     * @lifetime Valid until another request is emitted, stop, or runner
+     *           destruction.
+     * @thread Affine to the runner's owner thread.
+     */
+    const CommandRequest* lastCommandRequest() const { return lastCommandRequest_ ? &*lastCommandRequest_ : nullptr; }
 
 private:
     struct Frame {
@@ -111,7 +205,7 @@ private:
 
     bool fail(std::string* error, const std::string& message) const;
     bool enter(const std::string& nodeId, std::string* error);
-    std::string evaluateRoute(const ConversationAsset::Node& node, std::string* error) const;
+    std::string evaluateRoute(const ConversationAsset::Node& node, std::string* error);
     void emit(Event::Kind kind, const ConversationAsset::Node* node = nullptr,
               const std::string& name = {}) const;
 
@@ -123,9 +217,14 @@ private:
     std::vector<Frame> callStack_;
     AssetResolver assetResolver_;
     ExpressionEvaluator expressionEvaluator_;
+    ConditionEvaluator                                     conditionEvaluator_;
     std::unordered_map<std::string, CommandHandler> commandHandlers_;
+    std::unordered_map<std::string, CommandRequestHandler> commandRequestHandlers_;
+    CommandRequestDispatcher                               commandRequestDispatcher_;
     EventSink eventSink_;
     bool waitingCommand_ = false;
+    std::optional<eve::decision::ConditionResult>          lastConditionResult_;
+    std::optional<CommandRequest>                          lastCommandRequest_;
 };
 
 }  // namespace eve::dialogue
