@@ -35,6 +35,7 @@ namespace {
 
 const char* statusName(EditorStatus status) {
     switch (status) {
+        case EditorStatus::Ok: return "ok";
         case EditorStatus::Applied: return "applied";
         case EditorStatus::Pending: return "pending";
         case EditorStatus::NoOp: return "no-op";
