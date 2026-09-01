@@ -27,6 +27,24 @@ namespace eve::graphics::vulkan {
 
 class OffscreenCanvas;
 
+#if defined(VKB_ENABLE_VMA)
+/** @brief Owns the backend VMA allocator; destroyed after all Graphics resources. */
+class VmaAllocatorOwner {
+public:
+    VmaAllocatorOwner() = default;
+    ~VmaAllocatorOwner();
+    VmaAllocatorOwner(const VmaAllocatorOwner &) = delete;
+    VmaAllocatorOwner &operator=(const VmaAllocatorOwner &) = delete;
+
+    /** @brief Create the allocator for an already-created Vulkan device. */
+    void create(const vkb::Instance &instance, const vkb::PhysicalDevice &physicalDevice,
+                vkb::Device &device);
+
+private:
+    VmaAllocator allocator_ = VK_NULL_HANDLE;
+};
+#endif
+
 struct ColorVertex {
     glm::vec2 pos;
     glm::vec4 color;
@@ -818,6 +836,11 @@ private:
     vk::SurfaceKHR surface;
 
     vkb::Instance inst;
+#if defined(VKB_ENABLE_VMA)
+    // Declared before Device and all GPU resources so reverse member
+    // destruction keeps the allocator alive until every buffer is gone.
+    VmaAllocatorOwner vmaAllocatorOwner_;
+#endif
     vkb::Device device;
     vkb::Swapchain swapchain;
     vkb::BuiltRenderPass renderpass;

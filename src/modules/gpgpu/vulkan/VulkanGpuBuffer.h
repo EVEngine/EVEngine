@@ -31,6 +31,9 @@ public:
     vkb::Device *device_ = nullptr;
     vk::Buffer buffer_{};
     vk::DeviceMemory memory_{};
+#if defined(VKB_ENABLE_VMA)
+    VmaAllocation vmaAllocation_ = VK_NULL_HANDLE;
+#endif
     vk::DeviceSize size_ = 0;
     std::string usage_ = "storage";
     bool hostVisible_ = false;

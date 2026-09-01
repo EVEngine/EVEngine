@@ -91,6 +91,9 @@ GpuBuffer *vulkanNewBuffer(int byteSize, const std::string &usage) {
     vkb::GenericBuffer tmp(device, flags, b->size_, mem);
     b->buffer_ = tmp.buffer;
     b->memory_ = tmp.memory;
+#if defined(VKB_ENABLE_VMA)
+    b->vmaAllocation_ = tmp.vma_allocation;
+#endif
     tmp.detach();
     return b;
 }

@@ -117,11 +117,11 @@ void OffscreenCanvas::readAllPixels(std::vector<uint8_t> &outRgba) {
                             });
 
     outRgba.resize(size_t(byteSize));
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     // Vulkan FB row 0 is NDC -Y (top). Batcher maps logical y=0 → NDC -1, so
     // logical top-left matches FB top-left — copy as-is into Y-down buffer.
     std::memcpy(outRgba.data(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
 }
 
@@ -147,9 +147,9 @@ void OffscreenCanvas::readAllHDRPixels(std::vector<uint8_t> &outRgba16f) {
                             });
 
     outRgba16f.resize(size_t(byteSize));
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     std::memcpy(outRgba16f.data(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
 }
 

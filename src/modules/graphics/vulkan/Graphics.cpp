@@ -55,6 +55,25 @@ namespace eve::graphics::vulkan {
 
 // --- Backend lifecycle and frame orchestration --------------------------------
 
+#if defined(VKB_ENABLE_VMA)
+VmaAllocatorOwner::~VmaAllocatorOwner() {
+    if (allocator_) vmaDestroyAllocator(allocator_);
+}
+
+void VmaAllocatorOwner::create(const vkb::Instance &instance,
+                               const vkb::PhysicalDevice &physicalDevice,
+                               vkb::Device &device) {
+    VmaAllocatorCreateInfo createInfo{};
+    createInfo.instance = static_cast<VkInstance>(instance.instance);
+    createInfo.physicalDevice = static_cast<VkPhysicalDevice>(physicalDevice.instance);
+    createInfo.device = static_cast<VkDevice>(device.instance);
+    createInfo.vulkanApiVersion = physicalDevice.properties.apiVersion;
+    const VkResult result = vmaCreateAllocator(&createInfo, &allocator_);
+    if (result != VK_SUCCESS) throw Exception("vmaCreateAllocator failed: %d", int(result));
+    device.attachVmaAllocator(allocator_);
+}
+#endif
+
 std::string Graphics::getBackendName() const { return "vulkan"; }
 
 Graphics::~Graphics() {
@@ -316,10 +335,18 @@ void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
         deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
+#if defined(VKB_ENABLE_VMA)
+        vmaAllocatorOwner_.create(inst, phys, device);
+#endif
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
         eve::recordLogEvent("info",
             "gpu: logical device created (gpuDriven=" +
             std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+#if defined(VKB_ENABLE_VMA)
+            ", allocator=VMA" +
+#else
+            ", allocator=native" +
+#endif
             ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
     }
 }
