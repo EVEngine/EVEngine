@@ -1,3 +1,4 @@
+#include "common/Module.h"
 #include "common/Runtime.h"
 
 #include "zeroerr/assert.h"
@@ -24,7 +25,8 @@ std::string loadStartupThroughModuleValidation() {
 }
 
 void configureRuntime(Runtime& runtime) {
-    runtime.runSource("eve <- { moduleList = [] }\n", "config-test-bootstrap.nut");
+    ModuleManager::expose(runtime);
+    runtime.runSource("eve.moduleList <- []\n", "config-test-bootstrap.nut");
     runtime.runSource(loadStartupThroughModuleValidation(), "load.nut");
 }
 

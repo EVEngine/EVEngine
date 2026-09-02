@@ -1,10 +1,10 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "editor/LevelDocument.h"
-#include "editor/LevelFormat.h"
+#include "level_editing/LevelDocument.h"
+#include "level_editing/LevelFormat.h"
 
-using namespace eve::editor;
+using namespace eve::level_editing;
 
 TEST_CASE("editor.level.document_and_formats") {
     LevelDocument level(4, 3, 16.f, 24.f);

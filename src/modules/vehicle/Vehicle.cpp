@@ -5,6 +5,7 @@
 #include "vehicle/VehicleDefinitionRuntime.h"
 #include "vehicle/VehicleOrderQueueAdapter.h"
 #include "vehicle/VehicleSystem.h"
+#include "vehicle/VehiclePhysics.h"
 #include "weapon/Weapon.h"
 
 #include <squirrel.h>
@@ -12,14 +13,6 @@
 
 #include <algorithm>
 #include <cmath>
-
-#ifdef EVENGINE_HAS_PHYSICS
-#include "physics/Body.h"
-#include "physics/Body3D.h"
-#include "physics/Shape3D.h"
-#include "physics/World.h"
-#include "physics/World3D.h"
-#endif
 
 namespace eve::vehicle {
 
@@ -42,8 +35,8 @@ void destroyHandles(std::vector<ecs::EntityHandle>& hs) {
 }
 
 template <typename T>
-void registerCppEntityClassForScript() {
-    eve::registerCppEntityView(typeid(T*).hash_code(), [](ssq::Array& out) {
+void registerCppEntityClassForScript(const ssq::Class& cls) {
+    eve::registerCppEntityView(cls, [](ssq::Array& out) {
         HSQUIRRELVM vm = out.getHandle();
         sq_pushobject(vm, out.getRaw());
         ecs::Table* table = ecs::current();
@@ -525,76 +518,15 @@ void Vehicle::setInput(VehicleEntity* v, float throttle, float steer, float brak
 }
 
 bool Vehicle::attachPhysics2D(VehicleEntity* v, eve::physics::World* world) {
-#ifdef EVENGINE_HAS_PHYSICS
-    if (v == nullptr || world == nullptr) return false;
-    detachPhysics(v);
-    const VehicleDefinition* def = v->definition()->def;
-    if (def == nullptr) return false;
-    auto mo = v->motion();
-
-    eve::physics::Body* b = world->newBody("dynamic", mo->x, mo->y);
-    if (b == nullptr) return false;
-    b->newCircleFixture(def->radius, 1.f, 0.6f, 0.f);
-    b->setAngle(mo->heading * kPi / 180.f);
-    v->physicsBody()->body2d = b;
-    v->physicsBody()->space  = "2d";
-    return true;
-#else
-    (void)v;
-    (void)world;
-    return false;
-#endif
+    return VehiclePhysics::attach2D(v, world) == VehiclePhysicsStatus::Applied;
 }
 
 bool Vehicle::attachPhysics3D(VehicleEntity* v, eve::physics::World3D* world, float heightY) {
-#ifdef EVENGINE_HAS_PHYSICS
-    if (v == nullptr || world == nullptr) return false;
-    detachPhysics(v);
-    const VehicleDefinition* def = v->definition()->def;
-    if (def == nullptr) return false;
-    auto mo = v->motion();
-
-    eve::physics::Body3D* b = world->newBody("dynamic", mo->x, heightY, mo->y);
-    if (b == nullptr) return false;
-    eve::physics::Shape3D* shape = b->newBoxShape(def->radius, 0.35f, def->radius, 1.f, 0.8f, 0.f);
-    // 类别位 2 = 车体；悬架射线掩码排除该位，避免射到自己的底盘
-    if (shape != nullptr) shape->setFilterBits(2, ~uint64_t{0});
-    const float rad = mo->heading * kPi / 180.f;
-    b->setRotation(0.f, std::sin(rad * 0.5f), 0.f, std::cos(rad * 0.5f));
-    b->setAwake(true);
-
-    v->physicsBody()->body3d = b;
-    v->physicsBody()->space  = "3d";
-    v->suspension()->wheels.assign(def->suspension.wheels.size(), {});
-    return true;
-#else
-    (void)v;
-    (void)world;
-    (void)heightY;
-    return false;
-#endif
+    return VehiclePhysics::attach3D(v, world, heightY) == VehiclePhysicsStatus::Applied;
 }
 
 bool Vehicle::detachPhysics(VehicleEntity* v) {
-    if (v == nullptr) return false;
-#ifdef EVENGINE_HAS_PHYSICS
-    auto pb  = v->physicsBody();
-    bool had = false;
-    if (pb->body2d != nullptr) {
-        pb->body2d->destroy();
-        had = true;
-    }
-    if (pb->body3d != nullptr) {
-        pb->body3d->destroy();
-        had = true;
-    }
-    pb->body2d = nullptr;
-    pb->body3d = nullptr;
-    pb->space.clear();
-    return had;
-#else
-    return false;
-#endif
+    return VehiclePhysics::detach(v) == VehiclePhysicsStatus::Applied;
 }
 
 bool Vehicle::hasPhysics(VehicleEntity* v) {
@@ -606,16 +538,7 @@ std::string Vehicle::getPhysicsSpace(VehicleEntity* v) {
     return v == nullptr ? std::string{} : v->physicsBody()->space;
 }
 
-float Vehicle::getHeight(VehicleEntity* v) {
-#ifdef EVENGINE_HAS_PHYSICS
-    if (v != nullptr && v->physicsBody()->body3d != nullptr) {
-        return v->physicsBody()->body3d->getY();
-    }
-#else
-    (void)v;
-#endif
-    return 0.f;
-}
+float Vehicle::getHeight(VehicleEntity* v) { return VehiclePhysics::height(v); }
 
 // ---------------------------------------------------------------------------
 // 挂点
@@ -760,10 +683,9 @@ void Vehicle::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Vehicle::create, false);
     expose(cls);
 
-    registerCppEntityClassForScript<VehicleEntity>();
-
     auto vCls = table.addClass<VehicleEntity>(
         "VehicleEntity", std::function<VehicleEntity*()>([]() -> VehicleEntity* { return nullptr; }), false);
+    registerCppEntityClassForScript<VehicleEntity>(vCls);
     vCls.addFunc("getId", [](VehicleEntity* v) -> std::string { return v ? v->identity()->id : std::string{}; });
     vCls.addFunc("getDefId", [](VehicleEntity* v) -> std::string { return v ? v->identity()->defId : std::string{}; });
     vCls.addFunc("getFaction",
@@ -841,10 +763,8 @@ void Vehicle::expose(ssq::Class& cls) {
     cls.addFunc("hasPhysics", &Vehicle::hasPhysics);
     cls.addFunc("getPhysicsSpace", &Vehicle::getPhysicsSpace);
     cls.addFunc("getHeight", &Vehicle::getHeight);
-#ifdef EVENGINE_HAS_PHYSICS
     cls.addFunc("attachPhysics2D", &Vehicle::attachPhysics2D);
     cls.addFunc("attachPhysics3D", &Vehicle::attachPhysics3D);
-#endif
     cls.addFunc("getMountCount", &Vehicle::getMountCount);
     cls.addFunc("getMount", &Vehicle::getMount);
     cls.addFunc("update", &Vehicle::update);

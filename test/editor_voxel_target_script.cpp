@@ -10,9 +10,10 @@ TEST_CASE("editor.script.composes_voxel_target_volume_tool_and_transaction") {
     eve::ModuleManager::expose(vm);
     vm.run(vm.compileSource(R"(
         editor <- eve.Editor();
+        voxelTargets <- eve.VoxelWorldTargetModule();
         voxel <- eve.Voxel();
         world <- voxel.newWorld();
-        target <- editor.newVoxelWorldTarget("world.voxels", world);
+        target <- voxelTargets.create("world.voxels", world);
         falloff <- editor.newConstantBrushFalloff();
         kernel <- editor.newSphereVolumeBrushKernel();
         kernel.setConstantFalloff(falloff);
@@ -23,7 +24,7 @@ TEST_CASE("editor.script.composes_voxel_target_volume_tool_and_transaction") {
         tool.setRadius(0.5);
         session <- editor.newSession();
         added <- session.addVolumeTool(tool);
-        session.bindVoxelWorldTarget(target);
+        voxelTargets.bind(session, target);
         activated <- session.activateTool("voxel.paint");
         beforeRevision <- world.getRevision();
         down <- session.dispatchPointer3D(0, 4, 0, 3.0, 5.0, -2.0, 0.0, 0.0, 0.0, 1.0);

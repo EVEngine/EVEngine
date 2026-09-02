@@ -774,6 +774,11 @@ void Graphics::bindVgFrameBindless(vk::DescriptorSet bindless, size_t slot) {
 }
 
 uint32_t Graphics::gpuDrivenVgUpload(const GpuVgAssetUpload &asset) {
+    // The compacted cluster command stream needs an indirect-count draw. Keep
+    // ordinary GPU-driven meshes available on devices without that optional
+    // Vulkan 1.2 feature, but reject VG explicitly instead of accepting an
+    // asset that can never be rasterized.
+    if (!gpuDrivenCaps_.drawIndirectCount) return kInvalidBindlessSlot;
     if (!asset.positions || asset.vertexCount <= 0 || !asset.triangles ||
         asset.triangleCount <= 0 || !asset.clusters || asset.clusterCount <= 0)
         return kInvalidBindlessSlot;
@@ -782,7 +787,7 @@ uint32_t Graphics::gpuDrivenVgUpload(const GpuVgAssetUpload &asset) {
 
     const uint32_t assetId = vgAssetCount_;
     const uint32_t vertBase = vgVertexCount_;   // global vertex index base
-    const uint32_t triBase = vgTriangleCount_;  // global triangle (u32) base
+    const uint32_t triBase = vgTriangleCount_;  // global index-stream base
     const uint32_t clusterBase = vgClusterCount_;
     const uint32_t needClusters = clusterBase + uint32_t(asset.clusterCount);
     const uint32_t needVerts = uint32_t(vertBase + uint32_t(asset.vertexCount)) * 3;
@@ -815,7 +820,10 @@ uint32_t Graphics::gpuDrivenVgUpload(const GpuVgAssetUpload &asset) {
     {
         auto *dst = static_cast<GpuVgCluster *>(clMap) + vgClusterCount_;
         for (int i = 0; i < asset.clusterCount; ++i) {
-            dst[i].u1[0] += triBase;  // triStart -> global triangle stream
+            // Cluster triStart is a triangle ordinal; vgTriangleCount_ tracks
+            // uint32 indices. The vertex/resolve shaders multiply triStart by
+            // three, so convert the index offset before rebasing the cluster.
+            dst[i].u1[0] += triBase / 3u;
         }
     }
     auto *cla = static_cast<uint32_t *>(claMap);
@@ -1910,6 +1918,29 @@ void Graphics::recordVgCull() {
     const size_t slot = currentFrameSlot() % kAsyncResourceCopies;
     vgLastVisible_ = uint32_t(slot);
 
+    // Uploads and per-frame instance/material projections are written through
+    // host-visible mappings. Make those writes available before the compute
+    // cull and the following vertex/fragment fetches; validation layers can
+    // otherwise hide this race by perturbing submission timing.
+    {
+        std::array<vk::BufferMemoryBarrier, 6> barriers{};
+        const vk::Buffer buffers[] = {
+            vgGpu_.positions.buffer, vgGpu_.triangles.buffer, vgGpu_.clusters.buffer,
+            vgGpu_.clusterAssets.buffer, vgGpu_.assetMaterials.buffer, vgGpu_.assetModels.buffer,
+        };
+        for (size_t i = 0; i < barriers.size(); ++i) {
+            barriers[i].buffer = buffers[i];
+            barriers[i].size = VK_WHOLE_SIZE;
+            barriers[i].srcAccessMask = vk::AccessFlagBits::eHostWrite;
+            barriers[i].dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        }
+        cb.pipelineBarrier(vk::PipelineStageFlagBits::eHost,
+                           vk::PipelineStageFlagBits::eComputeShader |
+                               vk::PipelineStageFlagBits::eVertexShader |
+                               vk::PipelineStageFlagBits::eFragmentShader,
+                           {}, 0, nullptr, uint32_t(barriers.size()), barriers.data(), 0, nullptr);
+    }
+
     // Reset this slot's visible counter (the slot's fence was waited at frame
     // begin, so the previous use of this slot's buffers has completed).
     {
@@ -1949,8 +1980,6 @@ void Graphics::drawVgClusters(vk::CommandBuffer cb) {
     if (!gbufferVgVisPipeline || vgAssetCount_ == 0 || vgClusterCount_ == 0) return;
     const vk::DescriptorSet bindless = bindlessSetForFrame();
     if (!bindless || !mesh3dGpuDrivenPipelineLayout) return;
-    if (!gpuDrivenCaps_.drawIndirectCount) return;
-
     const size_t slot = currentFrameSlot() % kAsyncResourceCopies;
     const vk::DeviceSize slotInd = vk::DeviceSize(kMaxVgClusters) * sizeof(glm::uvec4);
     const vk::DeviceSize slotVis = (vk::DeviceSize(kMaxVgClusters) + 1) * sizeof(uint32_t);

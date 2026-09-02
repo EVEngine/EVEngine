@@ -343,13 +343,13 @@ function handleClick(id) {
 
 function eve_init() {
     gfx.setBackgroundColor(0.02, 0.03, 0.08, 1.0);
-    ui.setScale(1.35);
     fs.setIdentity("tidal-frequency", true); fs.setupWriteDirectory();
     gal.bg = gfx.newTextureFromFile("assets/station_twilight.png");
     gal.radioBg = gfx.newTextureFromFile("assets/lighthouse_radio.png");
     gal.dawnBg = gfx.newTextureFromFile("assets/seawall_dawn.png");
     gal.linTex = gfx.newTextureFromFile("assets/lin.png");
     gal.zhouTex = gfx.newTextureFromFile("assets/zhou.png");
+    ui.setScale(1.35);
     gal.lin = makeAvatar(gal.linTex, "left"); gal.zhou = makeAvatar(gal.zhouTex, "right");
     // With typing time plus this reading pause, a complete AUTO route runs
     // about ten minutes (69 displayed lines, excluding title/choice time).

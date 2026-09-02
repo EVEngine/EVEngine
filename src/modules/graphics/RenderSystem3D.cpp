@@ -1,19 +1,20 @@
 #include "graphics/RenderSystem3D.h"
-#include "graphics/DepthPyramid.h"
 #include "common/RenderTrace.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/ClusteredLight.h"
-#include "graphics/Graphics.h"
+#include "graphics/DepthPyramid.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
+#include "graphics/PrimitiveScene.h"
 #include "graphics/RenderControl.h"
-#include "graphics/Shader.h"
 #include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
 
@@ -1037,7 +1038,26 @@ void RenderSystem3D::render(Graphics &gfx) {
     gfx.begin3DFrame();
     if (!gfx.had3DThisFrame()) return;
 
-    if (!haveManager) return;
+    auto drawPersistentPrimitives = [&]() {
+        if (cams.empty()) return;
+        const CameraView &camera = cams.front();
+        SceneDrawContext  context;
+        context.view           = camera.view;
+        context.projection     = camera.proj;
+        context.cameraPosition = camera.eye;
+        context.viewportSize   = glm::ivec2(gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth(),
+                                          gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
+        context.nearPlane = camera.data->nearZ;
+        context.farPlane  = camera.data->farZ;
+        PrimitiveSceneCanvas3D canvas(context);
+        gfx.getPrimitiveScene()->render(canvas);
+        if (!canvas.commands().empty() || !canvas.triangles().empty()) gfx.drawPrimitiveScene(canvas);
+    };
+
+    if (!haveManager) {
+        drawPersistentPrimitives();
+        return;
+    }
 
     // Replay the items collected above: opaque first, hair back-to-front.
     std::vector<const CulledItem *> opaque;
@@ -1293,6 +1313,8 @@ void RenderSystem3D::render(Graphics &gfx) {
                 drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
         }
     }
+
+    drawPersistentPrimitives();
 
     const bool doAO = rc->isEnabled("ao");
     const bool doRTGI = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");

@@ -1,6 +1,7 @@
 #include "devtools/McpServer.hpp"
 
 #include "common/EditorAutomation.h"
+#include "common/GameplayControlJson.h"
 #include "common/ScriptError.h"
 #include "devtools/Immortal.hpp"
 
@@ -698,6 +699,19 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     auto& dap = DebugAdapter::instance();
 
     if (name == "eve_status") return engineStatusJson(mcp);
+
+    if (name == "eve_gameplay") {
+        if (!args || !args->has("request")) return "error: missing request";
+        std::string request;
+        try {
+            request = mcpStringify(args->get("request"));
+        } catch (const std::exception& error) {
+            return std::string("error: invalid request: ") + error.what();
+        }
+        auto response = eve::executeGameplayControlJson(request);
+        return response ? std::move(response).takeValue()
+                        : std::string("error: ") + response.status().describe();
+    }
 
     if (name.rfind("eve_pixelworld_", 0) == 0) {
         auto* provider = mcpPixelWorld();
@@ -1634,7 +1648,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.3.0\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.4.0\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. eve_host_* tools create JSON-defined editor "
         "windows bound to Squirrel ViewModels (MVVM) for AI-crafted terrain/material/event editors.\"}";
     return makeResult(idJson, resultJson);
@@ -1645,6 +1659,8 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"tools\":["
         "{\"name\":\"eve_status\",\"description\":\"Runtime + debugger + MCP/DAP status JSON.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay through the versioned shared control protocol.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":[\"request\"]}},"
         "{\"name\":\"eve_pixelworld_worlds\",\"description\":\"List live PixelWorld simulations and status.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_pixelworld_catalog_builtin\",\"description\":\"Return the canonical versioned built-in material/reaction Catalog document.\","
@@ -2091,9 +2107,9 @@ std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr 
     } else if (name == "test_scenario") {
         text =
             "Design a short automated test against the live EVEngine session:\n"
-            "1) eve_pause then eve_snapshot_capture as baseline.\n"
-            "2) Mutate or advance with eve_step_frame / eve_run_script.\n"
-            "3) Assert with eve_eval / eve_watch_list.\n"
+            "1) eve_gameplay op=domains, then observe and actions for the target gameplay instance.\n"
+            "2) Submit player-equivalent commands and advance deterministic ticks with eve_gameplay.\n"
+            "3) Read gameplay events and assert resulting revision/state; use eve_eval only for non-gameplay state.\n"
             "4) eve_snapshot_restore to reset; record notes via eve_ai_note.";
     } else if (name == "ai_game_review") {
         text =

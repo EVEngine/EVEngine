@@ -25,7 +25,7 @@ EditorResult<std::vector<AssetRecord>> publishEvaAssetProjection(
     MemoryAssetDatabase& database, const asset::EvaManifest& manifest, std::string archiveUri,
     std::string importerId) {
     if (archiveUri.empty() || importerId.empty())
-        return EditorResult<std::vector<AssetRecord>>::error(
+        return eve::editing::failed<std::vector<AssetRecord>>(
             EditorStatus::Rejected, RuleId("editor.asset.eva-projection.invalid-source"),
             "Eva projection requires an archive URI and importer identity");
     std::vector<AssetPublication> publications;

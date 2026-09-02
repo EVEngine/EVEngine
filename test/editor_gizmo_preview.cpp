@@ -19,7 +19,7 @@ SelectionSnapshot selection(const char* target) {
 void set(IPropertyProvider& provider, IDomainOperationTarget& target,
          const SelectionSnapshot& selected, const char* path, EditorValue value) {
     auto operation = provider.makeSet(selected, PropertyPath(path), value, PropertySetMode::Absolute);
-    REQUIRE(operation.value); CHECK(target.applyDomainOperation(*operation.value).isAccepted());
+    REQUIRE(operation.ok()); CHECK(target.applyDomainOperation(operation.value()).ok());
 }
 }
 
@@ -37,7 +37,7 @@ TEST_CASE("editor.gizmo.builds_physics_audio_and_light_overlays") {
     set(joint, joint, selection("hinge"), "body.a", "body-a");
     set(joint, joint, selection("hinge"), "body.b", "body-b");
     auto jointGizmo = builder.joint(joint, [](const std::string& body) {
-        return EditorResult<std::array<double, 3>>::applied(
+        return eve::editing::applied<std::array<double, 3>>(
             body == "body-a" ? std::array<double, 3>{0.0, 0.0, 0.0}
                              : std::array<double, 3>{2.0, 0.0, 0.0});
     });

@@ -10,9 +10,10 @@ TEST_CASE("editor.script.composes_live_tile_layer_target_with_field_tool") {
     eve::ModuleManager::expose(vm);
     vm.run(vm.compileSource(R"(
         editor <- eve.Editor();
+        tileTargets <- eve.TileLayerTargetModule();
         map <- eve.Map();
         layer <- map.newLayer(8, 8, 16.0, 16.0);
-        target <- editor.newTileLayerTarget("ground", layer);
+        target <- tileTargets.create("ground", layer);
         falloff <- editor.newConstantBrushFalloff();
         kernel <- editor.newBoxBrushKernel();
         kernel.setConstantFalloff(falloff);
@@ -23,7 +24,7 @@ TEST_CASE("editor.script.composes_live_tile_layer_target_with_field_tool") {
         tool.setRadius(0.5);
         session <- editor.newSession();
         added <- session.addFieldTool(tool);
-        session.bindTileLayerTarget(target);
+        tileTargets.bind(session, target);
         activated <- session.activateTool("tile.paint");
         beforeRevision <- target.getRevision();
         session.dispatchPointer(0, 1, 0, 3.0, 4.0, 0.0, 0.0, 1.0);

@@ -11,57 +11,57 @@ namespace eve::map_editing {
 
 /** @brief Stable map layer descriptor used by outliner presenters. */
 struct MapLayerRecord {
-    StableId id;
+    StableId    id;
     std::string name;
-    std::string kind = "tile";
-    bool visible = true;
-    bool locked = false;
-    double opacity = 1.0;
-    int order = 0;
+    std::string kind    = "tile";
+    bool        visible = true;
+    bool        locked  = false;
+    double      opacity = 1.0;
+    int         order   = 0;
 };
 
 /** @brief Stable editable control point in a road or path spline. */
 struct MapSplinePointRecord {
     StableId id;
-    double x = 0.0;
-    double y = 0.0;
-    double z = 0.0;
-    double width = 4.0;
+    double   x     = 0.0;
+    double   y     = 0.0;
+    double   z     = 0.0;
+    double   width = 4.0;
 };
 
 /** @brief Road spline authoring record independent from rendering/mesh generation. */
 struct MapRoadRecord {
-    StableId id;
-    StableId layer;
-    std::string name;
-    std::string materialAsset;
-    bool closed = false;
+    StableId                          id;
+    StableId                          layer;
+    std::string                       name;
+    std::string                       materialAsset;
+    bool                              closed = false;
     std::vector<MapSplinePointRecord> points;
 };
 
 /** @brief Stable object placement stored on an object layer. */
 struct MapPlacementRecord {
-    StableId id;
-    StableId layer;
+    StableId    id;
+    StableId    layer;
     std::string asset;
-    double x = 0.0;
-    double y = 0.0;
-    double z = 0.0;
-    double rotationX = 0.0;
-    double rotationY = 0.0;
-    double rotationZ = 0.0;
-    double scaleX = 1.0;
-    double scaleY = 1.0;
-    double scaleZ = 1.0;
+    double      x         = 0.0;
+    double      y         = 0.0;
+    double      z         = 0.0;
+    double      rotationX = 0.0;
+    double      rotationY = 0.0;
+    double      rotationZ = 0.0;
+    double      scaleX    = 1.0;
+    double      scaleY    = 1.0;
+    double      scaleZ    = 1.0;
 };
 
 /** @brief Deterministic renderer-neutral road strip preview. */
 struct MapRoadPreviewResult {
-    EditorStatus status = EditorStatus::Failed;
-    Revision documentRevision = 0;
-    StableId road;
-    double centerlineLength = 0.0;
-    EditorValue mesh;
+    EditorStatus                  status           = EditorStatus::Failed;
+    Revision                      documentRevision = 0;
+    StableId                      road;
+    double                        centerlineLength = 0.0;
+    EditorValue                   mesh;
     std::vector<EditorDiagnostic> diagnostics;
 };
 
@@ -70,8 +70,8 @@ class IMapRoadMeshSink {
 public:
     virtual ~IMapRoadMeshSink() = default;
     /** @brief Atomically publish or replace one generated road mesh. */
-    virtual EditorResult<void> publishRoad(const std::string& document, const StableId& road,
-                                           Revision revision, const EditorValue& mesh) = 0;
+    virtual EditorResult<void> publishRoad(const std::string& document, const StableId& road, Revision revision,
+                                           const EditorValue& mesh) = 0;
     /** @brief Remove a previously published road mesh. */
     virtual EditorResult<void> removeRoad(const std::string& document, const StableId& road) = 0;
 };
@@ -80,16 +80,16 @@ public:
 struct MapObjectImportRecord {
     std::string sourceId;
     std::string asset;
-    double x = 0.0, y = 0.0, z = 0.0;
-    double rotationX = 0.0, rotationY = 0.0, rotationZ = 0.0;
-    double scaleX = 1.0, scaleY = 1.0, scaleZ = 1.0;
+    double      x = 0.0, y = 0.0, z = 0.0;
+    double      rotationX = 0.0, rotationY = 0.0, rotationZ = 0.0;
+    double      scaleX = 1.0, scaleY = 1.0, scaleZ = 1.0;
 };
 
 /** @brief Side-effect-free batch import plan for map object placements. */
 struct MapObjectImportPlan {
-    EditorStatus status = EditorStatus::Failed;
-    Revision documentRevision = 0;
-    std::vector<DomainOperation> operations;
+    EditorStatus                  status           = EditorStatus::Failed;
+    Revision                      documentRevision = 0;
+    std::vector<DomainOperation>  operations;
     std::vector<EditorDiagnostic> diagnostics;
 };
 
@@ -128,28 +128,28 @@ class MapDocumentTarget final : public virtual IEditableTarget,
                                 public IMapStructureEditTarget {
 public:
     explicit MapDocumentTarget(std::string id);
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
+    std::uint64_t    revision() const override { return revision_; }
+    EditRegion       dirtyRegion() const override { return dirty_; }
+    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
-    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
-    void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
+     * Valid until this target is destroyed or mutated. */
+    void*              queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(
-        std::unique_ptr<IDomainOperationTarget> candidate) override;
+    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
-    std::vector<MapLayerRecord> mapLayers() const override;
-    std::vector<MapRoadRecord> mapRoads() const override;
+    std::vector<MapLayerRecord>     mapLayers() const override;
+    std::vector<MapRoadRecord>      mapRoads() const override;
     std::vector<MapPlacementRecord> mapPlacements() const override;
-    EditorResult<DomainOperation> makeCreateLayer(const MapLayerRecord& layer) const override;
-    EditorResult<DomainOperation> makeDeleteLayer(const StableId& layer) const override;
-    EditorResult<DomainOperation> makeSetLayer(const MapLayerRecord& layer) const override;
-    EditorResult<DomainOperation> makeSetRoad(const MapRoadRecord& road) const override;
-    EditorResult<DomainOperation> makeDeleteRoad(const StableId& road) const override;
-    EditorResult<DomainOperation> makeSetPlacement(const MapPlacementRecord& placement) const override;
-    EditorResult<DomainOperation> makeDeletePlacement(const StableId& placement) const override;
+    EditorResult<DomainOperation>   makeCreateLayer(const MapLayerRecord& layer) const override;
+    EditorResult<DomainOperation>   makeDeleteLayer(const StableId& layer) const override;
+    EditorResult<DomainOperation>   makeSetLayer(const MapLayerRecord& layer) const override;
+    EditorResult<DomainOperation>   makeSetRoad(const MapRoadRecord& road) const override;
+    EditorResult<DomainOperation>   makeDeleteRoad(const StableId& road) const override;
+    EditorResult<DomainOperation>   makeSetPlacement(const MapPlacementRecord& placement) const override;
+    EditorResult<DomainOperation>   makeDeletePlacement(const StableId& placement) const override;
 
     /** @brief Validate layers, spline geometry and placement references. */
     std::vector<EditorDiagnostic> validate() const;
@@ -161,11 +161,11 @@ public:
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
-    std::string id_;
-    unsigned long long revision_ = 1;
-    EditRegion dirty_;
-    std::map<StableId, MapLayerRecord> layers_;
-    std::map<StableId, MapRoadRecord> roads_;
+    std::string                            id_;
+    unsigned long long                     revision_ = 1;
+    EditRegion                             dirty_;
+    std::map<StableId, MapLayerRecord>     layers_;
+    std::map<StableId, MapRoadRecord>      roads_;
     std::map<StableId, MapPlacementRecord> placements_;
 };
 
@@ -173,9 +173,8 @@ private:
 class MapRoadMeshPublisher {
 public:
     /** @brief Generate and publish one road mesh to the supplied host sink. */
-    EditorResult<void> publish(const MapDocumentTarget& document, const StableId& road,
-                               Revision expectedRevision, IMapRoadMeshSink& sink,
-                               int triangleBudget = 10000) const;
+    EditorResult<void> publish(const MapDocumentTarget& document, const StableId& road, Revision expectedRevision,
+                               IMapRoadMeshSink& sink, int triangleBudget = 10000) const;
 };
 
 /** @brief Converts external object records into one atomic placement transaction plan. */
@@ -183,8 +182,7 @@ class MapObjectImporter {
 public:
     /** @brief Plan stable-id placement creation without mutating the map document. */
     MapObjectImportPlan plan(const MapDocumentTarget& document, const StableId& layer,
-                             const std::vector<MapObjectImportRecord>& records,
-                             const std::string& idPrefix) const;
+                             const std::vector<MapObjectImportRecord>& records, const std::string& idPrefix) const;
 };
 
 }  // namespace eve::map_editing

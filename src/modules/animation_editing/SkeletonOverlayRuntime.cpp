@@ -14,9 +14,9 @@ editing::GizmoSnapshot AnimationSkeletonOverlayAdapter::build(
         editing::GizmoSnapshot result;
         result.target = std::move(target);
         result.targetRevision = revision;
-        result.diagnostics.push_back(
-            {RuleId("editor.skeleton.runtime-input"), DiagnosticSeverity::Error,
-             "Animation skeleton and matching pose are required"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.skeleton.runtime-input"),
+            DiagnosticSeverity::Error, "Animation skeleton and matching pose are required"));
         return result;
     }
     pose->computeWorld(skeleton);

@@ -45,6 +45,17 @@ if(BUILD_PLATFORM STREQUAL "webgpu")
   endforeach()
 endif()
 
+# Tests that include a sibling module's headers are compiled only when that
+# module is in the profile. Presence is a CMake source list, not EVENGINE_HAS_*.
+eve_module_enabled(map _eve_test_has_map)
+if(NOT _eve_test_has_map)
+  list(FILTER all_test_cpp EXCLUDE REGEX "/editor_map.cpp$")
+endif()
+eve_module_enabled(physics _eve_test_has_physics)
+if(NOT _eve_test_has_physics)
+  list(FILTER all_test_cpp EXCLUDE REGEX "/vehicle_physics.cpp$")
+endif()
+
 file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
@@ -242,7 +253,12 @@ endif()
 option(EVENGINE_DOWNLOAD_SPINE_MODELS
   "Download Spine demo models (spineboy, hero, dragon) for spine animation tests" ON)
 set(_eve_spine_script "${CMAKE_SOURCE_DIR}/scripts/download_spine_models.py")
-find_program(EVENGINE_PYTHON NAMES python3 python REQUIRED)
+if(WIN32)
+  unset(EVENGINE_PYTHON CACHE)
+  find_program(EVENGINE_PYTHON NAMES python REQUIRED)
+else()
+  find_program(EVENGINE_PYTHON NAMES python3 python REQUIRED)
+endif()
 add_custom_target(download_spine_models
   COMMAND ${CMAKE_COMMAND} -E env
           "EVENGINE_SPINE_DIR=${CMAKE_SOURCE_DIR}/test/assets/spine"
@@ -265,10 +281,24 @@ endif()
 option(EVENGINE_DOWNLOAD_SKINNED_CHARACTER
   "Download CesiumMan skinned character for skeletal animation tests" ON)
 set(_eve_skinned_script "${CMAKE_SOURCE_DIR}/scripts/download_skinned_character.sh")
+if(WIN32)
+  find_program(EVENGINE_GIT_BASH_EXECUTABLE
+    NAMES bash.exe
+    PATHS
+      "$ENV{ProgramFiles}/Git/bin"
+      "$ENV{LOCALAPPDATA}/Programs/Git/bin"
+    NO_DEFAULT_PATH)
+  if(NOT EVENGINE_GIT_BASH_EXECUTABLE)
+    message(FATAL_ERROR "Git Bash is required to download the skinned-character test assets")
+  endif()
+  set(_eve_skinned_shell "${EVENGINE_GIT_BASH_EXECUTABLE}")
+else()
+  set(_eve_skinned_shell bash)
+endif()
 add_custom_target(download_skinned_character
   COMMAND ${CMAKE_COMMAND} -E env
           "EVENGINE_SKINNED_DIR=${CMAKE_SOURCE_DIR}/test/assets/skinned"
-          bash "${_eve_skinned_script}"
+          "${_eve_skinned_shell}" -lc "${_eve_skinned_script}"
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
   COMMENT "Downloading skinned character (CesiumMan) for animation tests"
   VERBATIM)
@@ -276,7 +306,7 @@ if(EVENGINE_DOWNLOAD_SKINNED_CHARACTER)
   add_custom_command(TARGET unit_test PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E env
             "EVENGINE_SKINNED_DIR=${CMAKE_SOURCE_DIR}/test/assets/skinned"
-            bash "${_eve_skinned_script}"
+            "${_eve_skinned_shell}" -lc "${_eve_skinned_script}"
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     COMMENT "PRE_BUILD: download skinned character (CesiumMan)"
     VERBATIM)

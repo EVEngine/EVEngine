@@ -7,7 +7,7 @@ namespace eve::voxel_editing {
 
 VoxelWorldTarget::VoxelWorldTarget(std::string id, voxel::VoxelWorld* world)
     : id_(std::move(id)), world_(world) {}
-unsigned long long VoxelWorldTarget::revision() const { return world_ ? world_->getRevision() : 0; }
+std::uint64_t VoxelWorldTarget::revision() const { return world_ ? world_->getRevision() : 0; }
 editing::TargetDescriptor VoxelWorldTarget::describe() const {
     return {editing::TargetId(id_), "voxel-world", revision(), false,
             {editing::IIntVolumeTarget::editingCapabilityId()}};

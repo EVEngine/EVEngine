@@ -2,17 +2,18 @@
 
 #include "common/config.h"
 #include "filesystem/FileData.h"
-#include "graphics/Canvas.h"
 #include "graphics/AlphaMask.h"
+#include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
+#include "graphics/PrimitiveDrawList.h"
 #include "graphics/RenderControl.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/TextureSampler.h"
-#include "image/ImageData.h"
 #include "image/Image.h"
+#include "image/ImageData.h"
 #include "pixelworld/PixelWorld.h"
 #include "pixelworld_graphics/PixelWorldGraphics.h"
 
@@ -21,6 +22,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <glm/ext/matrix_clip_space.hpp>
 #include <memory>
 
 using namespace eve::graphics;
@@ -100,6 +102,54 @@ void writeParityArtifact(const eve::image::ImageData &image, const std::string &
 }
 
 }  // namespace
+
+TEST_CASE("graphics.backendParity.primitive2DAnd3DReadback") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+
+    Canvas *flatTarget = gfx->newCanvas(64, 64);
+    REQUIRE(flatTarget != nullptr);
+    gfx->setCanvas(flatTarget);
+    gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
+    PrimitiveCanvas2D flat;
+    PrimitivePaint    flatPaint;
+    flatPaint.mode         = PaintMode::FillAndStroke;
+    flatPaint.color        = Color(1.f, 0.1f, 0.05f, 1.f);
+    flatPaint.stroke.width = 3.f;
+    flatPaint.stroke.cap   = LineCap::Round;
+    flatPaint.stroke.join  = LineJoin::Round;
+    flat.drawRoundedRect({10.f, 12.f}, {54.f, 50.f}, {8.f, 8.f}, flatPaint);
+    gfx->drawPrimitiveCanvas(flat);
+    gfx->setCanvas();
+    std::unique_ptr<eve::image::ImageData> flatImage(flatTarget->newImageData());
+    REQUIRE(flatImage.get() != nullptr);
+    REQUIRE(pixel(*flatImage, 32, 32)[0] > 160);
+    writeParityArtifact(*flatImage, "primitive_2d_fill_stroke", gfx->getBackendName());
+
+    Canvas *spatialTarget = gfx->newCanvas(64, 64);
+    REQUIRE(spatialTarget != nullptr);
+    SceneDrawContext context;
+    context.viewportSize = {64, 64};
+    context.nearPlane    = 0.1f;
+    context.farPlane     = 10.f;
+    context.projection   = glm::perspectiveRH_ZO(glm::radians(60.f), 1.f, context.nearPlane, context.farPlane);
+    PrimitiveSceneCanvas3D spatial(context);
+    ScenePrimitivePaint    spatialPaint;
+    spatialPaint.mode         = PaintMode::FillAndStroke;
+    spatialPaint.color        = Color(0.05f, 0.9f, 0.2f, 1.f);
+    spatialPaint.stroke.width = 3.f;
+    spatialPaint.depth        = PrimitiveDepthMode::TestOnly;
+    spatial.drawDisk({0.f, 0.f, -2.f}, {0.f, 0.f, 1.f}, 0.55f, spatialPaint, 32);
+    gfx->begin3DFrameToCanvas(spatialTarget);
+    gfx->drawPrimitiveScene(spatial);
+    gfx->end3DFrameToCanvas();
+    std::unique_ptr<eve::image::ImageData> spatialImage(spatialTarget->newImageData());
+    REQUIRE(spatialImage.get() != nullptr);
+    const uint8_t *center = pixel(*spatialImage, 32, 32);
+    REQUIRE(center[1] > 140);
+    REQUIRE(center[1] > center[0] + 60);
+    writeParityArtifact(*spatialImage, "primitive_3d_depth_fill_stroke", gfx->getBackendName());
+}
 
 TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     Graphics *gfx = headlessGraphics();

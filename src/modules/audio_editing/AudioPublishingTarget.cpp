@@ -5,7 +5,7 @@ namespace {
 
 template <class T>
 EditorResult<T> publishingError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 }  // namespace
@@ -19,7 +19,7 @@ EditorResult<void> AudioSourcePublishingTarget::applyDomainOperation(
     if (staging_) return document_.applyDomainOperation(operation);
     auto candidate = cloneDomainState();
     auto applied = candidate->applyDomainOperation(operation);
-    if (!applied.isAccepted()) return applied;
+    if (!applied.ok()) return applied;
     return commitDomainState(std::move(candidate));
 }
 
@@ -41,9 +41,9 @@ EditorResult<void> AudioSourcePublishingTarget::commitDomainState(
                                      "editor.audio.publishing-sink-missing",
                                      "Audio publishing target requires a live runtime sink");
     EditorResult<void> published = sink_->publish(typed->document_);
-    if (!published.isAccepted()) return published;
+    if (!published.ok()) return published;
     document_ = typed->document_;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::audio_editing

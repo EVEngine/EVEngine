@@ -83,6 +83,10 @@ function instantiate_configured_modules() {
     local filtering = ("modules" in config) || ("optionalModules" in config);
     local wanted = {};
     if (filtering) {
+        // Trimmed builds bind modules against the canonical script ECS classes.
+        // Compatibility mode below preserves the historical native-first order.
+        if (eve._ensureScriptECS() < 0)
+            throw "failed to initialize script ECS";
         _mark_slots(wanted, _boot_module_slots);
         if ("modules" in config) {
             if (typeof config.modules != "array")
@@ -94,6 +98,11 @@ function instantiate_configured_modules() {
                 throw "config.optionalModules must be an array of module slot strings";
             _mark_slots(wanted, config.optionalModules);
         }
+    } else {
+        // Compatibility mode historically exposed every native class before
+        // constructing modules. Preserve that shared-type registration order.
+        if (eve._bindAllNativeClasses() < 0)
+            throw "failed to bind native module classes";
     }
     local n = 0;
     foreach (m in eve.moduleList) {

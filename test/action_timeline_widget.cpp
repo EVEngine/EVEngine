@@ -1,4 +1,4 @@
-#include "editor/ActionTimelineWidget.h"
+#include "action_editor/ActionTimelineWidget.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -82,7 +82,7 @@ public:
 eve::editor::ActionTimelineWidget widget(eve::editor::ActionTimelineEditor& editor,
                                          eve::action::ActionNotifyRegistry& registry) {
     eve::editor::ActionTimelineWidget result(editor, registry);
-    REQUIRE(result.setViewport(1120.0f, 24.0f, 120.0f).isAccepted());
+    REQUIRE(result.setViewport(1120.0f, 24.0f, 120.0f).ok());
     return result;
 }
 
@@ -118,16 +118,16 @@ TEST_CASE("actionTimelineWidget.dragPreviewCommitsOnceAndUndoRestores") {
     REQUIRE(registry.ok());
     auto view = widget(editor, registry.value());
 
-    REQUIRE(view.pointerDown(320.0f, 12.0f).isAccepted());
-    REQUIRE(view.pointerMove(520.0f).isAccepted());
+    REQUIRE(view.pointerDown(320.0f, 12.0f).ok());
+    REQUIRE(view.pointerMove(520.0f).ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(20));
-    REQUIRE(view.pointerUp(520.0f).isAccepted());
+    REQUIRE(view.pointerUp(520.0f).ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(40));
-    REQUIRE(editor.undo().isAccepted());
+    REQUIRE(editor.undo().ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(20));
 
-    REQUIRE(view.pointerDown(220.0f, 12.0f).isAccepted());
-    REQUIRE(view.pointerUp(270.0f).isAccepted());
+    REQUIRE(view.pointerDown(220.0f, 12.0f).ok());
+    REQUIRE(view.pointerUp(270.0f).ok());
     CHECK_EQ(editor.target().timeline().tracks[0].states[0].start, eve::Duration::fromNanoseconds(15));
     CHECK_EQ(editor.target().timeline().tracks[0].states[0].end, eve::Duration::fromNanoseconds(30));
 }
@@ -137,19 +137,19 @@ TEST_CASE("actionTimelineWidget.inspectorUsesRegistryAndCanonicalPayload") {
     auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     auto view = widget(editor, registry.value());
-    REQUIRE(editor.selectItem(id("combat-notify:damage")).isAccepted());
+    REQUIRE(editor.selectItem(id("combat-notify:damage")).ok());
 
     EditingInspector inspector;
     inspector.replacements["type"]    = "gameplay:event";
     inspector.replacements["payload"] = R"({"tag":"Combat.Action.Hit"})";
-    REQUIRE(view.inspectSelection(inspector).isAccepted());
+    REQUIRE(view.inspectSelection(inspector).ok());
     const auto& notify = editor.target().timeline().tracks[0].notifies[0];
     CHECK_EQ(notify.type, id("gameplay:event"));
     CHECK(notify.payload.contains("tag"));
 
     inspector.replacements["type"]        = "combat:hitbox-window";
     inspector.scalarReplacements["start"] = 0.00000005f;
-    CHECK(!view.inspectSelection(inspector).isAccepted());
+    CHECK(!view.inspectSelection(inspector).ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].type, id("gameplay:event"));
     CHECK_EQ(editor.target().timeline().tracks[0].notifies[0].time, eve::Duration::fromNanoseconds(20));
 }
@@ -159,16 +159,16 @@ TEST_CASE("actionTimelineWidget.commandsAndShortcutsAreUndoable") {
     auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     auto view = widget(editor, registry.value());
-    REQUIRE(editor.selectItem(id("combat-notify:damage")).isAccepted());
-    REQUIRE(view.handleShortcut("Ctrl+C").isAccepted());
-    REQUIRE(view.seek(720.0f).isAccepted());
-    REQUIRE(view.handleShortcut("Ctrl+V").isAccepted());
+    REQUIRE(editor.selectItem(id("combat-notify:damage")).ok());
+    REQUIRE(view.handleShortcut("Ctrl+C").ok());
+    REQUIRE(view.seek(720.0f).ok());
+    REQUIRE(view.handleShortcut("Ctrl+V").ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 2u);
-    REQUIRE(view.handleShortcut("Delete").isAccepted());
+    REQUIRE(view.handleShortcut("Delete").ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 1u);
-    REQUIRE(view.handleShortcut("Ctrl+Z").isAccepted());
+    REQUIRE(view.handleShortcut("Ctrl+Z").ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 2u);
-    CHECK(!view.handleShortcut("Ctrl+Unknown").isAccepted());
+    CHECK(!view.handleShortcut("Ctrl+Unknown").ok());
 }
 
 TEST_CASE("actionTimelineWidget.insertsRegisteredNotifyShapesAtCursor") {
@@ -176,15 +176,15 @@ TEST_CASE("actionTimelineWidget.insertsRegisteredNotifyShapesAtCursor") {
     auto                              registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     auto view = widget(editor, registry.value());
-    REQUIRE(view.seek(620.0f).isAccepted());
+    REQUIRE(view.seek(620.0f).ok());
     const auto track = id("combat-track:gameplay");
-    REQUIRE(view.addNotifyAtCursor(track, "presentation:vfx", {{"uri", eve::Value("asset://vfx/slash")}}).isAccepted());
+    REQUIRE(view.addNotifyAtCursor(track, "presentation:vfx", {{"uri", eve::Value("asset://vfx/slash")}}).ok());
     REQUIRE(view.addStateAtCursor(track, "input:combo-window", eve::Duration::fromNanoseconds(10),
                                   {{"input", eve::Value("Attack.Heavy")}})
-                .isAccepted());
+                .ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 2u);
     CHECK_EQ(editor.target().timeline().tracks[0].states.size(), 2u);
     CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::Instant).size(), 5u);
     CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::State).size(), 5u);
-    CHECK(!view.addNotifyAtCursor(track, "combat:hitbox-window", {{"hitbox", eve::Value("weapon")}}).isAccepted());
+    CHECK(!view.addNotifyAtCursor(track, "combat:hitbox-window", {{"hitbox", eve::Value("weapon")}}).ok());
 }

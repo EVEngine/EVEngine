@@ -20,9 +20,17 @@ bool IntFieldEditCommand::record(int x, int y, int after) {
 }
 bool IntFieldEditCommand::apply() {
     auto *field = target_ ? target_->query<IIntFieldTarget>() : nullptr;
-    if (!field) return false;
-    for (const auto &change : changes_) (void)field->writeInt(change.x, change.y, change.after);
-    return !changes_.empty();
+    if (!field || changes_.empty()) return false;
+    for (std::size_t i = 0; i < changes_.size(); ++i) {
+        if (field->writeInt(changes_[i].x, changes_[i].y, changes_[i].after) == FieldWriteStatus::Rejected) {
+            while (i > 0) {
+                --i;
+                (void)field->writeInt(changes_[i].x, changes_[i].y, changes_[i].before);
+            }
+            return false;
+        }
+    }
+    return true;
 }
 void IntFieldEditCommand::revert() {
     auto *field = target_ ? target_->query<IIntFieldTarget>() : nullptr;
@@ -66,14 +74,23 @@ bool ScalarFieldEditCommand::record(int x, int y, float after) {
 }
 bool ScalarFieldEditCommand::apply() {
     auto *field = target_ ? target_->query<IScalarFieldTarget>() : nullptr;
-    if (!field) return false;
-    for (const auto &change : changes_) field->writeScalar(change.x, change.y, change.after);
-    return !changes_.empty();
+    if (!field || changes_.empty()) return false;
+    for (std::size_t i = 0; i < changes_.size(); ++i) {
+        if (field->writeScalar(changes_[i].x, changes_[i].y, changes_[i].after) == FieldWriteStatus::Rejected) {
+            while (i > 0) {
+                --i;
+                (void)field->writeScalar(changes_[i].x, changes_[i].y, changes_[i].before);
+            }
+            return false;
+        }
+    }
+    return true;
 }
 void ScalarFieldEditCommand::revert() {
     auto *field = target_ ? target_->query<IScalarFieldTarget>() : nullptr;
     if (!field) return;
-    for (auto it = changes_.rbegin(); it != changes_.rend(); ++it) field->writeScalar(it->x, it->y, it->before);
+    for (auto it = changes_.rbegin(); it != changes_.rend(); ++it)
+        static_cast<void>(field->writeScalar(it->x, it->y, it->before));
 }
 std::unique_ptr<IEditCommand> ScalarFieldEditCommand::clone() const {
     return std::make_unique<ScalarFieldEditCommand>(*this);

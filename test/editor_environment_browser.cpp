@@ -20,24 +20,23 @@ AssetRecord environment(const char* id, const char* uri, const char* layout,
 
 TEST_CASE("editor.environment.browser_pages_and_rejects_stale_generation") {
     MemoryAssetDatabase database;
-    CHECK(database.publish(environment("sky-a", "env/sky-a", "equirectangular", 2048, 1024)).isAccepted());
+    CHECK(database.publish(environment("sky-a", "env/sky-a", "equirectangular", 2048, 1024)).ok());
     const auto generation = database.generation();
     EnvironmentAssetBrowser browser(&database);
     auto page = browser.query("sky", 0, 20, generation);
-    REQUIRE(page.value);
-    CHECK_EQ(page.value->values.size(), 1U);
-    CHECK_EQ(page.value->values.front().layout, std::string("equirectangular"));
-    CHECK(database.publish(environment("sky-b", "env/sky-b", "cubemap", 512, 512, 6)).isAccepted());
-    CHECK_EQ(static_cast<int>(browser.query({}, 0, 20, generation).status),
+    REQUIRE(page.ok());
+    CHECK_EQ(page.value().values.size(), 1U);
+    CHECK_EQ(page.value().values.front().layout, std::string("equirectangular"));
+    CHECK(database.publish(environment("sky-b", "env/sky-b", "cubemap", 512, 512, 6)).ok());
+    CHECK_EQ(static_cast<int>(browser.query({}, 0, 20, generation).code()),
              static_cast<int>(EditorStatus::Conflict));
 }
 
 TEST_CASE("editor.environment.browser_surfaces_invalid_import_metadata") {
     MemoryAssetDatabase database;
-    CHECK(database.publish(environment("broken", "env/broken", "cubemap", 512, 512, 5)).isAccepted());
+    CHECK(database.publish(environment("broken", "env/broken", "cubemap", 512, 512, 5)).ok());
     EnvironmentAssetBrowser browser(&database);
     auto selected = browser.select(AssetGuid("broken"));
-    CHECK_EQ(static_cast<int>(selected.status), static_cast<int>(EditorStatus::Rejected));
-    REQUIRE(selected.value);
-    CHECK(!selected.value->diagnostics.empty());
+    CHECK_EQ(static_cast<int>(selected.code()), static_cast<int>(EditorStatus::Rejected));
+    CHECK(!selected.diagnostics().empty());
 }

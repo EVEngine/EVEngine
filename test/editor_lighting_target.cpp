@@ -21,8 +21,8 @@ SelectionSnapshot selection(const LightingPropertyTargetBase& target) {
 
 void set(LightingPropertyTargetBase& target, const char* path, EditorValue value) {
     auto operation = target.makeSet(selection(target), PropertyPath(path), value, PropertySetMode::Absolute);
-    REQUIRE(operation.value);
-    REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());
+    REQUIRE(operation.ok());
+    REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }
 
 }  // namespace
@@ -40,7 +40,7 @@ TEST_CASE("editor.lighting.light3d_properties_validate_snapshot_and_apply_runtim
     eve::graphics::Light3D* light = eve::graphics::Light3D::createLight();
     REQUIRE(light);
     Light3DRuntimeApplier applier;
-    REQUIRE(applier.apply(document, light).isAccepted());
+    REQUIRE(applier.apply(document, light).ok());
     CHECK_EQ(light->getType(), "dir");
     CHECK_EQ(light->getDirY(), -1.f);
     CHECK_EQ(light->data()->intensity, 4.f);
@@ -49,7 +49,7 @@ TEST_CASE("editor.lighting.light3d_properties_validate_snapshot_and_apply_runtim
 
     const EditorValue snapshot = document.snapshotValue();
     Light3DDocumentTarget restored("restored-light");
-    REQUIRE(restored.loadSnapshot(snapshot).isAccepted());
+    REQUIRE(restored.loadSnapshot(snapshot).ok());
     CHECK_EQ(restored.snapshotValue(), snapshot);
 }
 
@@ -61,7 +61,7 @@ TEST_CASE("editor.lighting.light3d_rejects_zero_direction_before_runtime_mutatio
     REQUIRE(light);
     light->setPosition(9.f, 8.f, 7.f);
     const auto rejected = Light3DRuntimeApplier{}.apply(document, light);
-    CHECK_EQ(static_cast<int>(rejected.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(rejected.code()), static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(light->getX(), 9.f);
 }
 
@@ -74,7 +74,7 @@ TEST_CASE("editor.lighting.environment_applies_daynight_and_weather_modes") {
     set(daynightDocument, "environment.exposure", 1.8);
     eve::daynight::DayNight daynight;
     EnvironmentRuntimeApplier applier;
-    REQUIRE(applier.applyDayNight(daynightDocument, &daynight).isAccepted());
+    REQUIRE(applier.applyDayNight(daynightDocument, &daynight).ok());
     CHECK_EQ(daynight.getTimeOfDay(), 18.5f);
     CHECK_EQ(daynight.getSpeed(), 2.f);
     CHECK_EQ(daynight.getTurbidity(), 6.f);
@@ -87,12 +87,12 @@ TEST_CASE("editor.lighting.environment_applies_daynight_and_weather_modes") {
     set(weatherDocument, "weather.wind-speed", 20.0);
     set(weatherDocument, "weather.lightning", true);
     eve::weather::Weather weather;
-    REQUIRE(applier.applyWeather(weatherDocument, &weather).isAccepted());
+    REQUIRE(applier.applyWeather(weatherDocument, &weather).ok());
     CHECK_EQ(weather.getPreset(), "storm");
     CHECK_EQ(weather.getIntensity(), 0.9f);
     CHECK_EQ(weather.getWindSpeed(), 20.f);
     CHECK(weather.isLightningEnabled());
-    CHECK_EQ(static_cast<int>(applier.applyDayNight(weatherDocument, &daynight).status),
+    CHECK_EQ(static_cast<int>(applier.applyDayNight(weatherDocument, &daynight).code()),
              static_cast<int>(EditorStatus::Rejected));
 }
 
@@ -102,5 +102,5 @@ TEST_CASE("editor.lighting.environment_detects_multiple_environment_owners") {
     set(document, "weather.environment-enabled", true);
     const auto diagnostics = document.validate();
     REQUIRE_EQ(diagnostics.size(), size_t{1});
-    CHECK_EQ(diagnostics.front().rule.value(), "editor.environment.multiple-owners");
+    CHECK_EQ(diagnosticRule(diagnostics.front()).value(), "editor.environment.multiple-owners");
 }

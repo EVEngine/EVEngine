@@ -13,6 +13,7 @@ namespace ssq {
 class Table;
 class VM;
 class Array;
+class Class;
 }  // namespace ssq
 
 namespace eve {
@@ -22,16 +23,19 @@ namespace eve {
  * GPU System：eve.ShaderSystem + gpgpu::ShaderSystem / EcsGpu.h。 */
 void exposeECS(ssq::Table& table);
 
+/** @brief Resets per-VM script injection bookkeeping before a new VM is exposed. */
+void prepareEcsScriptInjection();
+
 /** @brief 在 ModuleManager::expose 之后调用；保证 eve.Component 等不被其它模块覆盖。 */
 void exposeECSToVM(ssq::VM& vm);
 
 /**
  * @brief C++ 实体 → 脚本 eve.view() 桥接。
- * 用 registerCppEntityView(typeid(T*).hash_code(), fn) 登记 T 的收集函数；
+ * 用 registerCppEntityView(cls, fn) 登记脚本类的收集函数；
  * 脚本 eve.view(cls) 沿类链找到登记的 C++ 类型后调用 fn 填充输出数组。
  */
 using CppEntityViewFn = std::function<void(ssq::Array& out)>;
-void registerCppEntityView(size_t typeHash, CppEntityViewFn fn);
+void registerCppEntityView(const ssq::Class& cls, CppEntityViewFn fn);
 
 /**
  * @brief 在脚本 ECS 基类（eve.Component / eve.Entity / eve.System）注入之后执行的回调。

@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.21)
 
+# Keep Windows/Ninja compiler invocations below cmd.exe's command-line limit
+# (long include graphs and per-target flags) by letting Ninja pass flags
+# through response files.
+if(CMAKE_HOST_WIN32 AND CMAKE_GENERATOR MATCHES "Ninja")
+    set(CMAKE_NINJA_FORCE_RESPONSE_FILE ON CACHE BOOL
+        "Use response files for Windows Ninja compile and link commands" FORCE)
+endif()
+
 set(EVENGINE_BUILD_PLATFORM "" CACHE STRING
     "EVEngine target platform override; unlike legacy BUILD_PLATFORM this cannot collide with dependencies")
 
@@ -82,7 +90,7 @@ endif()
 message(STATUS "Compiler cache: ${_eve_compiler_cache_status}")
 
 set(EVENGINE_MAJOR_VERSION "0")
-set(EVENGINE_MINOR_VERSION "3")
+set(EVENGINE_MINOR_VERSION "4")
 set(EVENGINE_PATCH_VERSION "0")
 set(EVENGINE_DEV_VERSION "-dev")
 
@@ -96,6 +104,8 @@ option(EVENGINE_BUILD_PROFILE_CHECKS
 option(EVENGINE_BUILD_PIXELWORLD_BENCHMARK
     "Build the renderer-independent PixelWorld million-cell benchmark" OFF)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
+option(EVENGINE_VULKAN_USE_VMA
+    "Use the bundled Vulkan Memory Allocator for VKBuilder buffers" ON)
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
 set(EVENGINE_PREBUILT_THIRD_PARTY "" CACHE PATH
@@ -639,6 +649,17 @@ function(set_include)
         # pulls in Graphics.h can resolve <vkbuilder.hpp>.
         ${EVENGINE_VKBUILDER_INCLUDE_DIR}
     )
+    if(EVENGINE_VULKAN_USE_VMA AND NOT EVENGINE_WEBGPU AND NOT EMSCRIPTEN)
+        # The Vulkan instance is deliberately created against the 1.0 contract.
+        # Keep VMA on that same contract so Android does not statically import
+        # newer core entry points that its loader only exposes dynamically.
+        target_compile_definitions(eve_engine_includes INTERFACE
+            VKB_ENABLE_VMA=1
+            VMA_VULKAN_VERSION=1000000
+            VMA_STATIC_VULKAN_FUNCTIONS=0
+            VMA_DYNAMIC_VULKAN_FUNCTIONS=1
+        )
+    endif()
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
         # Raw source-checkout headers for medialoader/assimp/DTL. In prebuilt
         # mode (EVENGINE_THIRD_PARTY_BINARY_DIR) these headers come from the

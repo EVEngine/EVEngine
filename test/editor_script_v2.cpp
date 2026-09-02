@@ -36,11 +36,11 @@ TEST_CASE("editor.v2.script_discovers_plans_and_executes_registered_command") {
                       plannerSawScriptSource = request.source == CommandSource::Script;
                       const auto* object     = request.payload.getIf<EditorValue::Object>();
                       if (!object)
-                          return EditorResult<CommandPlan>::error(EditorStatus::Rejected, RuleId("test.script.payload"),
+                          return eve::editing::failed<CommandPlan>(EditorStatus::Rejected, RuleId("test.script.payload"),
                                                                   "Object payload required");
                       const auto amount = object->find("amount");
                       if (amount == object->end() || !amount->second.getIf<int64_t>())
-                          return EditorResult<CommandPlan>::error(EditorStatus::Rejected, RuleId("test.script.amount"),
+                          return eve::editing::failed<CommandPlan>(EditorStatus::Rejected, RuleId("test.script.amount"),
                                                                   "Integer amount required");
                       CommandPlan plan;
                       plan.summary = "Place an attraction from a script-authored request";
@@ -50,7 +50,7 @@ TEST_CASE("editor.v2.script_discovers_plans_and_executes_registered_command") {
                       operation.payload     = request.payload;
                       operation.hasInverse  = true;
                       plan.operations.push_back(std::move(operation));
-                      return EditorResult<CommandPlan>::applied(std::move(plan));
+                      return eve::editing::applied<CommandPlan>(std::move(plan));
                   },
                   [&](const CommandRequest& request, const CommandPlan& plan) {
                       const auto& object = *request.payload.getIf<EditorValue::Object>();
@@ -61,9 +61,9 @@ TEST_CASE("editor.v2.script_discovers_plans_and_executes_registered_command") {
                       receipt.beforeRevision   = plan.baseRevision;
                       receipt.afterRevision    = plan.baseRevision + 1;
                       receipt.authorityReceipt = "local:test.script";
-                      return EditorResult<TransactionReceipt>::applied(std::move(receipt));
+                      return eve::editing::applied<TransactionReceipt>(std::move(receipt));
                   })
-              .isAccepted());
+              .ok());
 
     ssq::VM vm(1024, ssq::Libs::ALL);
     eve::ModuleManager::expose(vm);

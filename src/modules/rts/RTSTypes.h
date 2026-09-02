@@ -1094,6 +1094,10 @@ public:
     struct Selection {
         std::vector<ecs::EntityHandle> units;
         std::vector<ecs::EntityHandle> buildings;
+        /** @brief Control-plane revision incremented after accepted player-semantic commands. */
+        std::uint64_t revision = 0;
+        /** @brief Last deterministic simulation tick published to gameplay observers. */
+        SimulationTick tick = SimulationTick::zero();
     };
     /** @brief Event stream/provider link. */
     struct GameEvent {

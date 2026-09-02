@@ -1,18 +1,20 @@
 #include "graphics/webgpu/Graphics.h"
-#include "graphics/Batcher.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/CubemapPrefilter.h"
-#include "graphics/shaders/ReflectionProbeWgsl.h"
 #include "graphics/GBuffer.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
+#include "graphics/PrimitiveDrawList.h"
+#include "graphics/PrimitiveTessellator.h"
 #include "graphics/RenderControl.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
 #include "graphics/TextureSampler.h"
+#include "graphics/shaders/ReflectionProbeWgsl.h"
 #include "graphics/webgpu/BindGroupLayoutBuilder.h"
 #include "graphics/webgpu/Canvas.h"
 #include "graphics/webgpu/InitFlow.h"
@@ -20,6 +22,7 @@
 #include "graphics/webgpu/wgsl_shaders.h"
 
 #include "common/Exception.h"
+#include "common/Resource.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/FileData.h"
@@ -1142,6 +1145,53 @@ wgpu::RenderPipeline Graphics::getMesh3DPipeline(BlendMode blend, bool depthWrit
     return pipeline;
 }
 
+wgpu::RenderPipeline Graphics::getPrimitive3DPipeline(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull,
+                                                      WGPUTextureFormat format, uint32_t sampleCount) {
+    const uint64_t key = static_cast<uint64_t>(depth) | (static_cast<uint64_t>(blend) << 2u) |
+                         (static_cast<uint64_t>(cull) << 5u) | (static_cast<uint64_t>(uint32_t(format)) << 8u) |
+                         (static_cast<uint64_t>(sampleCount) << 40u);
+    if (auto found = primitive3DPipelines.find(key); found != primitive3DPipelines.end()) return found->second;
+
+    static constexpr const char *kPrimitiveVert = R"wgsl(
+struct VSIn { @location(0) clipPosition: vec4f, @location(1) color: vec4f };
+struct VSOut { @builtin(position) position: vec4f, @location(0) color: vec4f };
+@vertex fn vs_main(input: VSIn) -> VSOut {
+    var output: VSOut;
+    output.position = input.clipPosition;
+    output.color = input.color;
+    return output;
+}
+)wgsl";
+    static constexpr const char *kPrimitiveFrag = R"wgsl(
+@fragment fn fs_main(@location(0) color: vec4f) -> @location(0) vec4f { return color; }
+)wgsl";
+    wgpu::VertexAttribute        attributes[2]{};
+    attributes[0].format         = wgpu::VertexFormat::Float32x4;
+    attributes[0].offset         = offsetof(Primitive3DVertex, clipPosition);
+    attributes[0].shaderLocation = 0;
+    attributes[1].format         = wgpu::VertexFormat::Float32x4;
+    attributes[1].offset         = offsetof(Primitive3DVertex, color);
+    attributes[1].shaderLocation = 1;
+    PipelineBuilder builder;
+    builder.label("eve_primitive3d")
+        .vertexLayout(sizeof(Primitive3DVertex), wgpu::VertexStepMode::Vertex, attributes, 2)
+        .shader(makeWgslModule(device, kPrimitiveVert), "vs_main", makeWgslModule(device, kPrimitiveFrag), "fs_main")
+        .colorTarget(format, blend)
+        .depth(WGPUTextureFormat_Depth32Float,
+               depth == PrimitiveDepthMode::Ignore ? static_cast<wgpu::CompareFunction>(WGPUCompareFunction_Always)
+                                                   : wgpu::CompareFunction::LessEqual,
+               depth == PrimitiveDepthMode::TestAndWrite)
+        .sampleCount(sampleCount)
+        .frontFace(wgpu::FrontFace::CCW)
+        .cull(cull == PrimitiveCullMode::Back
+                  ? wgpu::CullMode::Back
+                  : (cull == PrimitiveCullMode::Front ? wgpu::CullMode::Front
+                                                      : static_cast<wgpu::CullMode>(WGPUCullMode_None)));
+    wgpu::RenderPipeline pipeline = builder.build(device);
+    primitive3DPipelines.emplace(key, pipeline);
+    return pipeline;
+}
+
 void Graphics::createMesh3DClusteredPipeline() {
     mesh3dClusteredSetLayout = makeMesh3DClusteredBindGroupLayout();
     mesh3dClusteredPipelineLayout = makeMesh3DClusteredPipelineLayout();
@@ -2183,21 +2233,62 @@ float Graphics::getMaxAnisotropy() const { return maxSamplerAnisotropy; }
 
 Texture *Graphics::newTextureFromFile(const std::string &filename) {
     if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
+    if (!fileTextureSourceExists(filename))
+        throw Exception("Could not load image file: %s", filename.c_str());
+
     auto it = texturesByPath.find(filename);
-    if (it != texturesByPath.end()) {
-        reloadTextureFromFile(filename);
+    if (it != texturesByPath.end() && it->second) {
+        requestFileImageDecode(filename);
+        if (it->second->hasDeferredFilePixels()) return it->second;
+        auto waited = eve::ResourceManager::getInstance().waitFor(filename);
+        if (!waited.ok()) throw Exception("%s", waited.status().describe().c_str());
+        auto *data = dynamic_cast<image::ImageData *>(&waited.value().get());
+        if (!data ||
+            !updateTexture(it->second, data->getWidth(), data->getHeight(),
+                           static_cast<const uint8_t *>(data->getData())))
+            throw Exception("newTextureFromFile: reload failed '%s'", filename.c_str());
         return it->second;
     }
-    auto *imgMod = image::Image::create();
-    eve::ref<image::ImageData> data(imgMod->newImageDataFromFile(filename));
-    Texture *tex = newTexture(data.get());
-    texturesByPath[filename] = tex;
-    return tex;
+
+    requestFileImageDecode(filename);
+    auto tex = std::make_unique<Texture>();
+    tex->markDeferredFilePixels(this);
+    Texture *raw = tex.get();
+    ownedTextures.push_back(std::move(tex));
+    texturesByPath[filename] = raw;
+    deferredFileTextures_.push_back({filename, raw});
+    return raw;
+}
+
+bool Graphics::uploadDeferredFileTexture(Texture *texture, image::ImageData *data) {
+    if (!texture || !data) return false;
+    if (texture->gpuHandle)
+        return updateTexture(texture, data->getWidth(), data->getHeight(),
+                             static_cast<const uint8_t *>(data->getData()));
+    Texture *fresh = newTexture(data);
+    if (!fresh || !fresh->gpuHandle) return false;
+    texture->gpuHandle = fresh->gpuHandle;
+    texture->width = fresh->width;
+    texture->height = fresh->height;
+    texture->pixelWidth = fresh->pixelWidth;
+    texture->pixelHeight = fresh->pixelHeight;
+    texture->mipmapCount = fresh->mipmapCount;
+    texture->sampler = fresh->sampler;
+    fresh->gpuHandle = nullptr;
+    auto texIt = std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                              [&](const std::unique_ptr<Texture> &t) { return t.get() == fresh; });
+    if (texIt == ownedTextures.end()) return false;
+    (void)texIt->release();
+    ownedTextures.erase(texIt);
+    delete fresh;
+    return true;
 }
 
 bool Graphics::reloadTextureFromFile(const std::string &filename) {
     auto it = texturesByPath.find(filename);
     if (it == texturesByPath.end()) return false;
+
+    ensureFileTexturesReady();
 
     image::ImageData *data = nullptr;
     try {
@@ -2215,7 +2306,24 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
 }
 
 bool Graphics::releaseTexture(Texture *texture) {
-    if (!texture || !texture->gpuHandle) return false;
+    if (!texture) return false;
+    dropDeferredFileTexture(texture);
+    if (!texture->gpuHandle) {
+        auto texIt = std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                                  [&](const std::unique_ptr<Texture> &t) {
+                                      return t.get() == texture;
+                                  });
+        if (texIt == ownedTextures.end()) return false;
+        for (auto it = texturesByPath.begin(); it != texturesByPath.end();) {
+            if (it->second == texture)
+                it = texturesByPath.erase(it);
+            else
+                ++it;
+        }
+        (void)texIt->release();
+        ownedTextures.erase(texIt);
+        return true;
+    }
     // Renderer-owned fallback textures must never be released by callers.
     if (texture->gpuHandle == whiteTexture || texture->gpuHandle == flatNormalTexture ||
         texture->gpuHandle == flatNormalTexture3D ||
@@ -3054,6 +3162,36 @@ void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &co
     noteSolidOverlay(uint32_t(it - solidBatches.begin()));
 }
 
+void Graphics::drawPrimitiveCanvas(const PrimitiveCanvas2D &canvas) {
+    const int  targetWidth  = activeCanvas ? activeCanvas->getWidth() : getWidth();
+    const int  targetHeight = activeCanvas ? activeCanvas->getHeight() : getHeight();
+    const auto triangles    = resolvePrimitiveStrokes2D(canvas, {targetWidth, targetHeight});
+    if (triangles.vertices.empty()) return;
+    auto logicalPoint = [targetWidth, targetHeight](const PrimitiveTriangleVertex &vertex) {
+        const glm::vec2 ndc = glm::vec2(vertex.clipPosition) / vertex.clipPosition.w;
+        return glm::vec2((ndc.x + 1.f) * 0.5f * static_cast<float>(targetWidth),
+                         (ndc.y + 1.f) * 0.5f * static_cast<float>(targetHeight));
+    };
+    for (const ResolvedPrimitiveBatch2D &resolvedBatch : triangles.batches2D) {
+        auto it = std::find_if(solidBatches.begin(), solidBatches.end(),
+                               [&](const SolidBatch &batch) { return batch.blend == resolvedBatch.blend; });
+        if (it == solidBatches.end()) {
+            solidBatches.push_back(SolidBatch{resolvedBatch.blend, Batcher{}});
+            it = solidBatches.end() - 1;
+        }
+        for (std::size_t i = resolvedBatch.firstVertex; i < resolvedBatch.firstVertex + resolvedBatch.vertexCount;
+             i += 3) {
+            it->batch.addTriangle(logicalPoint(triangles.vertices[i]), logicalPoint(triangles.vertices[i + 1]),
+                                  logicalPoint(triangles.vertices[i + 2]), triangles.vertices[i].color,
+                                  triangles.vertices[i + 1].color, triangles.vertices[i + 2].color);
+        }
+        const auto          batchIndex = static_cast<std::uint32_t>(it - solidBatches.begin());
+        const std::uint32_t count      = static_cast<std::uint32_t>(resolvedBatch.vertexCount);
+        const std::uint32_t end        = static_cast<std::uint32_t>(it->batch.vertices().size());
+        overlaySpans.push_back({OverlayKind::Solid, batchIndex, end - count, count});
+    }
+}
+
 void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
                                     const Color &color, BlendMode blend) {
     auto it = std::find_if(solidBatches.begin(), solidBatches.end(),
@@ -3213,6 +3351,7 @@ void Graphics::setLighting2D(const Lighting2DUBO &ubo) {
 
 void Graphics::flush2D(wgpu::RenderPassEncoder pass, int viewW, int viewH,
                        WGPUTextureFormat format) {
+    ensureFileTexturesReady();
     auto spans = std::move(overlaySpans);
     const bool offscreen = uint32_t(format) != uint32_t(surfaceFormat);
 
@@ -3440,6 +3579,7 @@ void Graphics::begin3DFrame() {
     frameHad3D = true;
     sceneColorPassOpen = false;
     mesh3dDraws.clear();
+    primitive3DDraws.clear();
     shadowPassDraws.clear();
     voxelDraws.clear();
     if (surfaceNeedsRecreate.load()) {
@@ -3449,10 +3589,32 @@ void Graphics::begin3DFrame() {
     rebuildSwapchainIfNeeded();
 }
 
+void Graphics::drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) {
+    if (!frame3DStarted) throw Exception("drawPrimitiveScene: call begin3DFrame first");
+    const ResolvedPrimitiveTriangles resolved = resolvePrimitiveStrokes3D(canvas);
+    if (resolved.vertices.empty()) return;
+
+    const std::size_t firstSequence = primitive3DDraws.size();
+    primitive3DDraws.reserve(firstSequence + resolved.batches3D.size());
+    for (const ResolvedPrimitiveBatch3D &batch : resolved.batches3D) {
+        Primitive3DDraw draw;
+        draw.paint        = batch.paint;
+        draw.averageDepth = batch.averageDepth;
+        draw.sequence     = firstSequence + batch.sequence;
+        draw.vertices.reserve(batch.vertexCount);
+        for (std::size_t vertex = batch.firstVertex; vertex < batch.firstVertex + batch.vertexCount; ++vertex)
+            draw.vertices.push_back({resolved.vertices[vertex].clipPosition, resolved.vertices[vertex].color});
+        primitive3DDraws.push_back(std::move(draw));
+    }
+}
+
 void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     if (!canvas) throw Exception("begin3DFrameToCanvas: null canvas");
     if (!device) throw Exception("begin3DFrameToCanvas: device not initialized");
-    active3DCanvas = static_cast<OffscreenCanvas *>(canvas);
+    auto *offscreen = dynamic_cast<OffscreenCanvas *>(canvas);
+    if (!offscreen) throw Exception("begin3DFrameToCanvas: not an offscreen canvas");
+    clearColor     = backgroundColor;
+    active3DCanvas = offscreen;
     begin3DFrame();
 }
 void Graphics::end3DFrameToCanvas() {
@@ -3512,6 +3674,7 @@ void Graphics::end3DFrameToCanvas() {
                 canvas->isHDR() ? WGPUTextureFormat_RGBA16Float
                                 : WGPUTextureFormat_RGBA8Unorm,
                 true);
+    flushPrimitive3D(pass, canvas->isHDR() ? WGPUTextureFormat_RGBA16Float : WGPUTextureFormat_RGBA8Unorm, 1);
     pass.End();
     if (timestampSlot) {
         encoder.ResolveQuerySet(offscreenTimestampQuerySet, 0, 2,
@@ -4203,6 +4366,37 @@ void Graphics::destroyDecalResources() {
 // Flush helpers
 // ---------------------------------------------------------------------------
 
+void Graphics::flushPrimitive3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format, uint32_t sampleCount) {
+    if (primitive3DDraws.empty()) return;
+    std::stable_sort(primitive3DDraws.begin(), primitive3DDraws.end(),
+                     [](const Primitive3DDraw &a, const Primitive3DDraw &b) {
+                         const bool ignoreA = a.paint.depth == PrimitiveDepthMode::Ignore;
+                         const bool ignoreB = b.paint.depth == PrimitiveDepthMode::Ignore;
+                         if (ignoreA != ignoreB) return !ignoreA;
+                         if (a.paint.layer != b.paint.layer) return a.paint.layer < b.paint.layer;
+                         const bool transparentA = a.paint.blend != BlendMode::Opaque || a.paint.color.a < 1.f;
+                         const bool transparentB = b.paint.blend != BlendMode::Opaque || b.paint.color.a < 1.f;
+                         if (transparentA != transparentB) return !transparentA;
+                         if (transparentA && a.averageDepth != b.averageDepth) return a.averageDepth > b.averageDepth;
+                         return a.sequence < b.sequence;
+                     });
+    auto       &arena      = currentVertexArena();
+    std::size_t totalBytes = 0;
+    for (const Primitive3DDraw &draw : primitive3DDraws) totalBytes += draw.vertices.size() * sizeof(Primitive3DVertex);
+    ensureVertexArena(arena, arena.used + totalBytes);
+    for (const Primitive3DDraw &draw : primitive3DDraws) {
+        if (draw.vertices.empty()) continue;
+        const uint64_t bytes  = draw.vertices.size() * sizeof(Primitive3DVertex);
+        const uint64_t offset = arena.alloc(bytes);
+        queue.WriteBuffer(arena.buffer, offset, draw.vertices.data(), bytes);
+        pass.SetPipeline(
+            getPrimitive3DPipeline(draw.paint.depth, draw.paint.blend, draw.paint.cull, format, sampleCount));
+        pass.SetVertexBuffer(0, arena.buffer, offset, bytes);
+        pass.Draw(static_cast<uint32_t>(draw.vertices.size()), 1, 0, 0);
+    }
+    primitive3DDraws.clear();
+}
+
 void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format,
                            bool canvasTarget) {
     if (mesh3dDraws.empty()) return;
@@ -4778,6 +4972,7 @@ struct Graphics::PendingReadback {
 };
 
 void Graphics::present() {
+    ensureFileTexturesReady();
     if (!device || !surface || !swapchainConfigured) return;
     pumpReadback();
     rebuildSwapchainIfNeeded();
@@ -4884,6 +5079,7 @@ void Graphics::present() {
             // sample count which would mismatch the 1x canvas attachment.
             flushMesh3D(pass, WGPUTextureFormat_RGBA8Unorm, /*canvasTarget*/ true);
             flushGpuDrivenDraws(pass, /*canvasTarget*/ true);
+            flushPrimitive3D(pass, WGPUTextureFormat_RGBA8Unorm, 1);
             pass.End();
             oc->clearRequested = false;
             // The script draws the canvas texture explicitly (2D path); it is
@@ -4921,6 +5117,7 @@ void Graphics::present() {
             flushGpuDrivenResolve(pass);
             flushMesh3D(pass, sceneColorFormat);
             flushGpuDrivenDraws(pass, /*canvasTarget*/ false);
+            flushPrimitive3D(pass, sceneColorFormat, slot.sampleCount);
             pass.End();
             lastPresentSlot = currentFrameSlot();
             lastReadbackTex = slot.color;
@@ -5093,7 +5290,7 @@ void Graphics::present() {
                     surfaceFormat);
         }
 
-        if (presentOverlayFn_) {
+        if (presentOverlayFn_ && presentOverlayFn_(presentOverlayUser_, nullptr)) {
             WGPURenderPassEncoder cPass = pass.Get();
             presentOverlayFn_(presentOverlayUser_, &cPass);
         }

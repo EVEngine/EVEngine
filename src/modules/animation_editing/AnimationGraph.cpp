@@ -10,7 +10,7 @@ namespace {
 
 template <class T>
 EditorResult<T> animationError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -21,7 +21,8 @@ const EditorValue* field(const EditorValue& value, const char* key) {
 }
 
 void diagnostic(AnimationGraphCompileResult& result, const char* rule, std::string message) {
-    result.diagnostics.push_back({RuleId(rule), DiagnosticSeverity::Error, std::move(message)});
+    result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+        eve::DiagnosticCode::PreconditionViolation, RuleId(rule), DiagnosticSeverity::Error, std::move(message)));
 }
 
 std::string quote(const std::string& value) {
@@ -43,9 +44,10 @@ GraphConnectionDecision AnimationStateGraphDomain::canConnect(const GraphPinReco
                        to.direction == GraphPinDirection::Input && from.type == "animation.flow" &&
                        to.type == "animation.flow" && from.node != to.node;
     if (!decision.allowed)
-        decision.diagnostics.push_back({RuleId("editor.animation.invalid-connection"),
-                                        DiagnosticSeverity::Error,
-                                        "Animation graph requires flow output-to-input between distinct nodes"});
+        decision.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.animation.invalid-connection"),
+            DiagnosticSeverity::Error,
+            "Animation graph requires flow output-to-input between distinct nodes"));
     return decision;
 }
 
@@ -64,7 +66,7 @@ EditorResult<GraphNodeRecord> AnimationStateGraphDomain::makeStateNode(const Gra
     node.properties = EditorValue(std::move(properties));
     node.pins = {{GraphPinId(id.value() + ".in"), id, "animation.flow", GraphPinDirection::Input},
                  {GraphPinId(id.value() + ".out"), id, "animation.flow", GraphPinDirection::Output}};
-    return EditorResult<GraphNodeRecord>::applied(std::move(node));
+    return eve::editing::applied<GraphNodeRecord>(std::move(node));
 }
 
 EditorResult<GraphNodeRecord> AnimationStateGraphDomain::makeTransitionNode(const GraphNodeId& id) const {
@@ -86,7 +88,7 @@ EditorResult<GraphNodeRecord> AnimationStateGraphDomain::makeTransitionNode(cons
     node.properties = EditorValue(std::move(properties));
     node.pins = {{GraphPinId(id.value() + ".in"), id, "animation.flow", GraphPinDirection::Input},
                  {GraphPinId(id.value() + ".out"), id, "animation.flow", GraphPinDirection::Output}};
-    return EditorResult<GraphNodeRecord>::applied(std::move(node));
+    return eve::editing::applied<GraphNodeRecord>(std::move(node));
 }
 
 AnimationGraphCompileResult AnimationStateGraphDomain::compile(const GraphDocumentData& graph) const {

@@ -77,6 +77,7 @@ private:
     bool                                                         allowAllCommands_ = false;
     size_t                                                       maxPayloadBytes_  = 256 * 1024;
     std::unordered_set<CommandId, StrongEditorIdHash<CommandId>> allowedCommands_;
+    std::unordered_set<CommandId, StrongEditorIdHash<CommandId>> deniedCommands_;
 };
 
 }  // namespace eve::editor

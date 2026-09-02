@@ -9,7 +9,7 @@ namespace eve::map_editing {
 TileLayerTarget::TileLayerTarget(std::string id, map::TileLayer* layer)
     : id_(std::move(id)), layer_(layer) {}
 
-unsigned long long TileLayerTarget::revision() const { return layer_ ? layer_->tiles()->revision : 0; }
+std::uint64_t TileLayerTarget::revision() const { return layer_ ? layer_->tiles()->revision : 0; }
 int TileLayerTarget::width() const { return layer_ ? layer_->getMapWidth() : 0; }
 int TileLayerTarget::height() const { return layer_ ? layer_->getMapHeight() : 0; }
 bool TileLayerTarget::containsCell(int x, int y) const {

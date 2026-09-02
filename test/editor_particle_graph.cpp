@@ -16,13 +16,13 @@ GraphDocumentData particleGraph(ParticleGraphDomain& domain, int bufferSize = 10
     auto collision = domain.makeNode(GraphNodeId("collision"), "collision");
     auto renderer = domain.makeNode(GraphNodeId("renderer"), "renderer");
     auto output = domain.makeNode(GraphNodeId("output"), "output");
-    REQUIRE(emission.value);
-    REQUIRE(motion.value);
-    REQUIRE(collision.value);
-    REQUIRE(renderer.value);
-    REQUIRE(output.value);
-    auto* emissionProperties = emission.value->properties.getIf<EditorValue::Object>();
-    auto* outputProperties = output.value->properties.getIf<EditorValue::Object>();
+    REQUIRE(emission.ok());
+    REQUIRE(motion.ok());
+    REQUIRE(collision.ok());
+    REQUIRE(renderer.ok());
+    REQUIRE(output.ok());
+    auto* emissionProperties = emission.value().properties.getIf<EditorValue::Object>();
+    auto* outputProperties = output.value().properties.getIf<EditorValue::Object>();
     REQUIRE(emissionProperties);
     REQUIRE(outputProperties);
     (*emissionProperties)["rate"] = 100.0;
@@ -30,11 +30,11 @@ GraphDocumentData particleGraph(ParticleGraphDomain& domain, int bufferSize = 10
     (*outputProperties)["bufferSize"] = bufferSize;
 
     GraphDocument graph;
-    REQUIRE(graph.createNode(*emission.value).isAccepted());
-    REQUIRE(graph.createNode(*motion.value).isAccepted());
-    REQUIRE(graph.createNode(*collision.value).isAccepted());
-    REQUIRE(graph.createNode(*renderer.value).isAccepted());
-    REQUIRE(graph.createNode(*output.value).isAccepted());
+    REQUIRE(graph.createNode(emission.value()).ok());
+    REQUIRE(graph.createNode(motion.value()).ok());
+    REQUIRE(graph.createNode(collision.value()).ok());
+    REQUIRE(graph.createNode(renderer.value()).ok());
+    REQUIRE(graph.createNode(output.value()).ok());
     const std::vector<std::pair<const char*, const char*>> links = {
         {"emission.out", "motion.in"}, {"motion.out", "collision.in"},
         {"collision.out", "renderer.in"}, {"renderer.out", "output.in"}};
@@ -45,7 +45,7 @@ GraphDocumentData particleGraph(ParticleGraphDomain& domain, int bufferSize = 10
         REQUIRE(from);
         REQUIRE(to);
         REQUIRE(graph.connect({StableId("edge-" + std::to_string(index++)), from->id, to->id},
-                              domain.canConnect(*from, *to)).isAccepted());
+                              domain.canConnect(*from, *to)).ok());
     }
     return graph.snapshot(domain.domain());
 }

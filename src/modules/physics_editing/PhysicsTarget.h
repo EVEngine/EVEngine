@@ -52,8 +52,8 @@ class PhysicsColliderTarget final : public virtual IEditableTarget,
 public:
     explicit PhysicsColliderTarget(std::string id, int dimensions = 3);
 
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion         dirtyRegion() const override { return dirty_; }
     void               clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor   describe() const override;
@@ -105,8 +105,8 @@ class PhysicsColliderPublishingTarget final : public IDomainOperationTarget, pub
 public:
     /** @brief Create an owned collider document bound to a non-owning runtime sink. */
     PhysicsColliderPublishingTarget(std::string id, int dimensions, IPhysicsColliderRuntimeSink* sink);
-    const std::string& targetId() const override { return document_.targetId(); }
-    unsigned long long revision() const override { return document_.revision(); }
+    TargetId targetId() const override { return TargetId(document_.targetId()); }
+    std::uint64_t revision() const override { return document_.revision(); }
     EditRegion         dirtyRegion() const override { return document_.dirtyRegion(); }
     void               clearDirtyRegion() override { document_.clearDirtyRegion(); }
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
@@ -131,8 +131,8 @@ class PhysicsJointTarget final : public virtual IEditableTarget,
 public:
     explicit PhysicsJointTarget(std::string id);
 
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion         dirtyRegion() const override { return dirty_; }
     void               clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor   describe() const override;

@@ -26,20 +26,16 @@ const T* value(const EditorValue::Object& properties, const char* path) {
 EditorResult<void> AudioSourceRuntimeApplier::apply(const AudioSourceTarget& target,
                                                     audio::Source* source) const {
     if (!source)
-        return EditorResult<void>::error(EditorStatus::Rejected, RuleId("editor.audio.runtime-source"),
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.runtime-source"),
                                          "Live audio source is required");
     const auto diagnostics = target.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics)
-        if (diagnostic.severity == DiagnosticSeverity::Error) {
-            EditorResult<void> failed;
-            failed.status = EditorStatus::Rejected;
-            failed.diagnostics = diagnostics;
-            return failed;
-        }
+        if (diagnostic.severity() == DiagnosticSeverity::Error)
+            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     EditorValue snapshot;
     const auto* values = properties(target, snapshot);
     if (!values)
-        return EditorResult<void>::error(EditorStatus::Failed, RuleId("editor.audio.runtime-properties"),
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.audio.runtime-properties"),
                                          "Audio source properties are unavailable");
     source->setVolume(static_cast<float>(*value<double>(*values, "play.volume")));
     source->setPitch(static_cast<float>(*value<double>(*values, "play.pitch")));
@@ -60,7 +56,7 @@ EditorResult<void> AudioSourceRuntimeApplier::apply(const AudioSourceTarget& tar
     source->setAttenuationDistances(
         static_cast<float>(*value<double>(*values, "spatial.reference-distance")),
         static_cast<float>(*value<double>(*values, "spatial.maximum-distance")));
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorResult<void> AudioSourceRuntimeSink::publish(const AudioSourceTarget& candidate) {

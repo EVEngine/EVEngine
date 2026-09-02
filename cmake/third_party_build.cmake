@@ -154,6 +154,12 @@ function(check_third_party_project name repo)
     set(_eve_tp_cmake_args
         -DCMAKE_BUILD_TYPE=${_eve_tp_build_type}
         -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
+        # Assimp enables ccache by default and installs it as a global rule
+        # launcher for the whole aggregate. On Windows hosted runners that
+        # resolves to Strawberry Perl's ccache, which cannot launch our
+        # msvc-cl.cmd compiler wrapper. EVEngine owns compiler caching at the
+        # parent build, so nested dependencies must not install another layer.
+        -DASSIMP_BUILD_USE_CCACHE=OFF
     )
     # Pass the resolved logical groups into the isolated dependency project.
     # Comma encoding keeps one CMake argument intact across ExternalProject's
@@ -162,6 +168,32 @@ function(check_third_party_project name repo)
     list(APPEND _eve_tp_cmake_args
         -DEVENGINE_THIRD_PARTY_GROUPS=${_eve_tp_groups_arg}
         -DEVENGINE_BUILD_HOST=${EVENGINE_BUILD_HOST})
+    # ExternalProject configures the dependency aggregate in a separate CMake
+    # process, so non-MSVC builds must receive the parent's compiler launcher
+    # explicitly. LIST_SEPARATOR preserves compound launchers such as
+    # `cmake -E env ... sccache` as one child cache value.
+    # The Windows dependency install is cached as one Actions artifact. Do not
+    # also put its objects through sccache: several vendored projects force
+    # /Zi and /Fd, so sccache treats their shared PDB as an output and races
+    # parallel cl.exe processes. The engine build keeps its parent launcher.
+    if(CMAKE_C_COMPILER_LAUNCHER AND NOT MSVC)
+        string(REPLACE ";" "|" _eve_tp_c_launcher
+            "${CMAKE_C_COMPILER_LAUNCHER}")
+        list(APPEND _eve_tp_cmake_args
+            "-DCMAKE_C_COMPILER_LAUNCHER:STRING=${_eve_tp_c_launcher}")
+    endif()
+    if(CMAKE_CXX_COMPILER_LAUNCHER AND NOT MSVC)
+        string(REPLACE ";" "|" _eve_tp_cxx_launcher
+            "${CMAKE_CXX_COMPILER_LAUNCHER}")
+        list(APPEND _eve_tp_cmake_args
+            "-DCMAKE_CXX_COMPILER_LAUNCHER:STRING=${_eve_tp_cxx_launcher}")
+    endif()
+    if(CMAKE_C_COMPILER_LAUNCHER OR CMAKE_CXX_COMPILER_LAUNCHER)
+        # Assimp otherwise finds Strawberry Perl's ccache.exe and installs it
+        # as a global RULE_LAUNCH_COMPILE. That either double-wraps the
+        # supplied launcher or, on MSVC, cannot execute our .cmd wrapper.
+        list(APPEND _eve_tp_cmake_args -DASSIMP_BUILD_USE_CCACHE=OFF)
+    endif()
     # Windows only: force md/mdd before any add_subdirectory so squirrel/OpenAL
     # match the names the engine already links. Do not set these on Apple/Linux.
     if(WIN32)
@@ -216,15 +248,14 @@ function(check_third_party_project name repo)
         # Native dependency builds must use the compiler selected by the parent.
         # Otherwise ExternalProject starts a fresh configure and can silently pick
         # a different system default (for example Clang while Linux CI uses GCC).
-        if(WIN32 AND EVENGINE_COMPILER_CACHE STREQUAL "OFF")
-            # GitHub's Windows image exports ccache as a default launcher.
-            # It cannot spawn a batch-file compiler wrapper, so dependency
-            # builds use the MSVC executable while the parent keeps its
-            # UTF-8 /showIncludes wrapper.
+        if(WIN32)
+            # The dependency project applies /utf-8 to its MSVC targets, so it
+            # does not need the parent's .cmd charset wrapper. Hosted runners
+            # inject ccache into this isolated configure, and ccache cannot
+            # CreateProcess() a batch file; keep its compiler executable-native.
             list(APPEND _eve_tp_cmake_args
                 -DCMAKE_C_COMPILER=cl.exe
-                -DCMAKE_CXX_COMPILER=cl.exe
-            )
+                -DCMAKE_CXX_COMPILER=cl.exe)
         else()
             if(CMAKE_C_COMPILER)
                 list(APPEND _eve_tp_cmake_args -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
@@ -336,6 +367,7 @@ function(check_third_party_project name repo)
             SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
             BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
             CMAKE_GENERATOR "Ninja"
+            LIST_SEPARATOR "|"
             CMAKE_ARGS ${_eve_tp_cmake_args}
             PATCH_COMMAND ${_eve_tp_patch_cmd}
             BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
@@ -348,6 +380,7 @@ function(check_third_party_project name repo)
             GIT_TAG ${EVENGINE_THIRD_PARTY_PIN}
             SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
             BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
+            LIST_SEPARATOR "|"
             CMAKE_ARGS ${_eve_tp_cmake_args}
             PATCH_COMMAND ${_eve_tp_patch_cmd}
             BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}

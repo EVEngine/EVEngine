@@ -8,22 +8,23 @@ namespace eve::animation_editing {
 EditorResult<animation::AnimClip*> AnimationClipRuntimeBuilder::build(
     const AnimationClipDocumentTarget& document, const animation::AnimSkeleton* skeleton) const {
     if (!skeleton)
-        return EditorResult<animation::AnimClip*>::error(EditorStatus::Rejected,
+        return eve::editing::failed<animation::AnimClip*>(EditorStatus::Rejected,
             RuleId("editor.animation.skeleton-required"), "Runtime clip building requires a target skeleton");
     std::vector<std::string> bones;
     for (int index = 0; index < skeleton->getBoneCount(); ++index) bones.push_back(skeleton->getBoneName(index));
     const auto diagnostics = document.validate(bones);
     for (const auto& diagnostic : diagnostics)
-        if (diagnostic.severity == DiagnosticSeverity::Error)
-            return EditorResult<animation::AnimClip*>::error(EditorStatus::Rejected, diagnostic.rule, diagnostic.message);
+        if (diagnostic.severity() == DiagnosticSeverity::Error)
+            return eve::editing::failed<animation::AnimClip*>(EditorStatus::Rejected,
+                eve::editing::diagnosticRule(diagnostic), diagnostic.message());
 
     const auto snapshot = document.snapshotValue();
     const auto* root = snapshot.getIf<EditorValue::Object>();
     const auto* settings = root ? root->at("settings").getIf<EditorValue::Object>() : nullptr;
     if (!settings)
-        return EditorResult<animation::AnimClip*>::error(EditorStatus::Failed,
+        return eve::editing::failed<animation::AnimClip*>(EditorStatus::Failed,
             RuleId("editor.animation.runtime-snapshot"), "Clip settings are unavailable");
-    auto* clip = new animation::AnimClip(document.targetId());
+    auto* clip = new animation::AnimClip(document.targetId().value());
     clip->setDuration(static_cast<float>(*settings->at("duration").getIf<double>()));
     clip->setSampleRate(static_cast<float>(*settings->at("sampleRate").getIf<double>()));
     clip->setLoop(*settings->at("loop").getIf<bool>());
@@ -41,7 +42,7 @@ EditorResult<animation::AnimClip*> AnimationClipRuntimeBuilder::build(
     }
     for (const auto& event : document.events())
         clip->addEvent(static_cast<float>(event.time), event.name, event.payload);
-    return EditorResult<animation::AnimClip*>::applied(clip);
+    return eve::editing::applied<animation::AnimClip*>(clip);
 }
 
 }  // namespace eve::animation_editing

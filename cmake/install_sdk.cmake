@@ -92,6 +92,16 @@ install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
     DESTINATION include/eve/common
 )
 
+# EVEngine's public Assert.h (and therefore Result.h / Module.h) exposes the
+# zeroerr assertion types. Ship that public header dependency so native plugin
+# consumers can compile against the installed SDK without a source checkout.
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/external/zeroerr/include/zeroerr/"
+    DESTINATION include/zeroerr
+    FILES_MATCHING
+        PATTERN "*.h"
+        PATTERN "*.hpp"
+)
+
 # Public module headers: export exactly the modules this build enabled, so the
 # SDK's API surface always matches the target runtime. Single source of truth is
 # cmake/module_manifest.cmake (EVE_ENABLED_MODULES); CORE modules (common /

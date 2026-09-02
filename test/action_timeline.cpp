@@ -1,6 +1,6 @@
 #include "action/Action.h"
 #include "action/ActionTimeline.h"
-#include "editor/ActionTimelineEditor.h"
+#include "action_editor/ActionTimelineEditor.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -99,7 +99,7 @@ TEST_CASE("actionTimelineEditor.editsPreviewAndUndoThroughCanonicalTarget") {
     eve::editor::ActionTimelineEditor editor("asset.combat.light-attack", timelineFixture());
     eve::editor::EditorWorkspace      workspace("combat", "Combat Editor");
     auto                              configured = editor.configureWorkspace(workspace);
-    REQUIRE(configured.isAccepted());
+    REQUIRE(configured.ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
     CHECK_EQ(workspace.getActivePanel(), "action.timeline");
 
@@ -108,30 +108,30 @@ TEST_CASE("actionTimelineEditor.editsPreviewAndUndoThroughCanonicalTarget") {
                                      eve::Duration::fromNanoseconds(40),
                                      {{"uri", "asset://vfx/sword-spark"}}};
     auto                      added = editor.addNotify(id("combat-track:gameplay"), effect);
-    REQUIRE(added.isAccepted());
+    REQUIRE(added.ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 3u);
     CHECK(editor.canUndo());
 
     auto selected = editor.boxSelect(eve::Duration::fromNanoseconds(15), eve::Duration::fromNanoseconds(45));
-    REQUIRE(selected.isAccepted());
-    CHECK_EQ(*selected.value, 3u);
+    REQUIRE(selected.ok());
+    CHECK_EQ(selected.value(), 3u);
     auto copied = editor.copySelection();
-    REQUIRE(copied.isAccepted());
-    CHECK_EQ(*copied.value, 3u);
+    REQUIRE(copied.ok());
+    CHECK_EQ(copied.value(), 3u);
 
     auto undone = editor.undo();
-    REQUIRE(undone.isAccepted());
+    REQUIRE(undone.ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 2u);
     CHECK(editor.canRedo());
     auto redone = editor.redo();
-    REQUIRE(redone.isAccepted());
+    REQUIRE(redone.ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 3u);
 
     auto seek = editor.seek(eve::Duration::zero());
-    REQUIRE(seek.isAccepted());
+    REQUIRE(seek.ok());
     editor.play();
     auto previewed = editor.update(eve::Duration::fromNanoseconds(20));
-    REQUIRE(previewed.isAccepted());
-    CHECK_EQ(*previewed.value, 3u);
+    REQUIRE(previewed.ok());
+    CHECK_EQ(previewed.value(), 3u);
     CHECK_EQ(editor.previewEvents()[2].itemId, id("combat-notify:hit"));
 }

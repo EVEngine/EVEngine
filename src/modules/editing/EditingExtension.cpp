@@ -10,7 +10,7 @@ namespace eve::editing {
 namespace {
 template <class T>
 Result<T> failure(Status status, const char* rule, std::string message) {
-    return Result<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 }  // namespace
 
@@ -35,8 +35,7 @@ ExtensionProviderRegistry::~ExtensionProviderRegistry() {
         impl_->entries.clear();
     }
     for (auto& provider : providers) {
-        auto stopped = provider->beginUnload();
-        (void)stopped;
+        provider->beginUnload().ignore("editing extension registry teardown");
         provider->deactivate();
     }
 }
@@ -53,7 +52,7 @@ Result<ProviderHandle> ExtensionProviderRegistry::registerProvider(
                                            "Extension provider id is already published");
     }
     auto activated = provider->activate();
-    if (!activated.isAccepted())
+    if (!activated.ok())
         return failure<ProviderHandle>(Status::Failed, "editing.extension.activation-failed",
                                        "Extension provider activation failed");
     ProviderHandle handle;
@@ -73,7 +72,7 @@ Result<ProviderHandle> ExtensionProviderRegistry::registerProvider(
         return failure<ProviderHandle>(Status::Conflict, "editing.extension.duplicate-provider",
                                        "Extension provider id was concurrently published");
     }
-    return Result<ProviderHandle>::applied(handle);
+    return eve::editing::applied<ProviderHandle>(handle);
 }
 
 Result<ProviderLease> ExtensionProviderRegistry::acquire(const ProviderHandle& handle) const {
@@ -91,7 +90,7 @@ Result<ProviderLease> ExtensionProviderRegistry::acquire(const ProviderHandle& h
     if (found->second.handle != handle)
         return failure<ProviderLease>(Status::Conflict, "editing.extension.stale-handle",
                                       "Editing extension handle is stale");
-    return Result<ProviderLease>::applied(ProviderLease(handle, found->second.provider));
+    return eve::editing::applied<ProviderLease>(ProviderLease(handle, found->second.provider));
 }
 
 Result<ProviderLease> ExtensionProviderRegistry::acquire(const std::string& id) const {
@@ -100,7 +99,7 @@ Result<ProviderLease> ExtensionProviderRegistry::acquire(const std::string& id) 
     if (found == impl_->entries.end())
         return failure<ProviderLease>(Status::Unsupported, "editing.extension.provider-absent",
                                       "Editing extension provider is not available");
-    return Result<ProviderLease>::applied(ProviderLease(found->second.handle, found->second.provider));
+    return eve::editing::applied<ProviderLease>(ProviderLease(found->second.handle, found->second.provider));
 }
 
 Result<void> ExtensionProviderRegistry::unload(const ProviderHandle& handle) {
@@ -114,7 +113,7 @@ Result<void> ExtensionProviderRegistry::unload(const ProviderHandle& handle) {
         provider = found->second.provider;
     }
     auto stopping = provider->beginUnload();
-    if (!stopping.isAccepted())
+    if (!stopping.ok())
         return failure<void>(Status::Failed, "editing.extension.unload-rejected",
                              "Editing extension refused to stop accepting work");
     {
@@ -126,7 +125,7 @@ Result<void> ExtensionProviderRegistry::unload(const ProviderHandle& handle) {
         impl_->entries.erase(found);
     }
     provider->deactivate();
-    return Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::vector<ExtensionDescriptor> ExtensionProviderRegistry::descriptors() const {
@@ -145,11 +144,11 @@ public:
 
     Result<void> activate() override {
         accepting_.store(true, std::memory_order_release);
-        return Result<void>::applied();
+        return eve::editing::applied<void>();
     }
     Result<void> beginUnload() override {
         accepting_.store(false, std::memory_order_release);
-        return Result<void>::applied();
+        return eve::editing::applied<void>();
     }
     void deactivate() noexcept override { accepting_.store(false, std::memory_order_release); }
     void* query(const CapabilityId& capability) noexcept override {

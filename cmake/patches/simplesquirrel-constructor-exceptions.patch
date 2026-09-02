@@ -8,7 +8,13 @@
  
  namespace ssq {
  #ifndef DOXYGEN_SHOULD_SKIP_THIS
-@@ -60,7 +61,15 @@ namespace ssq {
+@@ -50,4 +51,5 @@ namespace ssq {
+         template<class T, class... Args, size_t... Is>
+         static T* callConstructor(HSQUIRRELVM vm, FuncPtr<T*(Args...)>* funcPtr, index_list<Is...>) {
++            static_cast<void>(vm);
+             return funcPtr->ptr->operator()(detail::pop<Args>(vm, Is + 2)...);
+         }
+@@ -60,7 +62,15 @@ namespace ssq {
              FuncPtr<T*(Args...)>* funcPtr;
              sq_getuserdata(vm, -1, reinterpret_cast<void**>(&funcPtr), nullptr);
  
@@ -26,7 +32,7 @@
 +            sq_setinstanceup(vm, -2 -off, p);
              sq_setreleasehook(vm, -2 -off, &detail::classDestructor<T>);
  
-@@ -78,7 +87,15 @@ namespace ssq {
+@@ -78,7 +88,15 @@ namespace ssq {
              FuncPtr<T*(Args...)>* funcPtr;
              sq_getuserdata(vm, -1, reinterpret_cast<void**>(&funcPtr), nullptr);
  

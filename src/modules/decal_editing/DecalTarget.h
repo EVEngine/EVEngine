@@ -32,8 +32,8 @@ class DecalDocumentTarget final : public virtual IEditableTarget,
                                   public IPropertyProvider {
 public:
     explicit DecalDocumentTarget(std::string id);
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
@@ -103,8 +103,8 @@ class DecalPublishingTarget final : public IDomainOperationTarget,
 public:
     DecalPublishingTarget(std::string id, IDecalRuntimeSink* sink)
         : document_(std::move(id)), sink_(sink) {}
-    const std::string& targetId() const override { return document_.targetId(); }
-    unsigned long long revision() const override { return document_.revision(); }
+    TargetId targetId() const override { return TargetId(document_.targetId()); }
+    std::uint64_t revision() const override { return document_.revision(); }
     EditRegion dirtyRegion() const override { return document_.dirtyRegion(); }
     void clearDirtyRegion() override { document_.clearDirtyRegion(); }
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;

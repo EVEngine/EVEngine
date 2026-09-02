@@ -45,6 +45,9 @@ public:
     vk::DescriptorSet descriptorSet_{};
     vk::Buffer dummyBuffer_{};
     vk::DeviceMemory dummyMemory_{};
+#if defined(VKB_ENABLE_VMA)
+    VmaAllocation dummyVmaAllocation_ = VK_NULL_HANDLE;
+#endif
 
     std::array<GpuBuffer *, kMaxBindings> bindings_{};
     bool descriptorsDirty_ = true;

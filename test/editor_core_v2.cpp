@@ -7,8 +7,8 @@
 #include "editor/EditorIds.h"
 #include "editor/EditorSession.h"
 #include "editor/EditorValue.h"
-#include "editor/FieldTargets.h"
-#include "editor/TileBuffer.h"
+#include "level_editing/FieldTargets.h"
+#include "level_editing/TileBuffer.h"
 
 #include <memory>
 #include <stdexcept>
@@ -17,6 +17,7 @@
 #include <utility>
 
 using namespace eve::editor;
+using namespace eve::level_editing;
 
 static_assert(!std::is_convertible_v<CommandId, ToolId>);
 static_assert(!std::is_convertible_v<TargetId, CommandId>);
@@ -73,6 +74,8 @@ TEST_CASE("editor.v2.host_profile_is_an_execution_boundary") {
     HostProfile developer = HostProfile::developer();
     CHECK(developer.allowsCommand(importAsset));
     CHECK(developer.hasFeatures(HostFeature::SourceAssets | HostFeature::BuildCook));
+    developer.denyCommand(importAsset);
+    CHECK(!developer.allowsCommand(importAsset));
 }
 
 TEST_CASE("editor.v2.command_registry_filters_and_executes") {
@@ -86,29 +89,29 @@ TEST_CASE("editor.v2.command_registry_filters_and_executes") {
     int  calls      = 0;
     auto registered = service.registerCommand(descriptor, [&](const CommandContext&, const EditorValue& payload) {
         ++calls;
-        return EditorResult<EditorValue>::applied(payload);
+        return eve::editing::applied<EditorValue>(payload);
     });
-    CHECK(registered.isAccepted());
+    CHECK(registered.ok());
     CHECK_EQ(service.revision(), static_cast<uint64_t>(1));
 
     auto duplicate = service.registerCommand(descriptor, [](const CommandContext&, const EditorValue&) {
-        return EditorResult<EditorValue>::applied(EditorValue{});
+        return eve::editing::applied<EditorValue>(EditorValue{});
     });
-    CHECK_EQ(static_cast<int>(duplicate.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(duplicate.code()), static_cast<int>(EditorStatus::Rejected));
 
     HostProfile    runtime = HostProfile::runtimeBuilder();
     CommandContext context;
     context.profile = &runtime;
     auto denied     = service.execute(descriptor.id, context, EditorValue("New Name"));
-    CHECK_EQ(static_cast<int>(denied.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(denied.code()), static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(calls, 0);
 
     runtime.allowCommand(descriptor.id);
     auto executed = service.execute(descriptor.id, context, EditorValue("New Name"));
-    CHECK(executed.isAccepted());
+    CHECK(executed.ok());
     CHECK_EQ(calls, 1);
-    CHECK(executed.value.has_value());
-    CHECK_EQ(*executed.value->getIf<std::string>(), std::string("New Name"));
+    CHECK(executed.ok());
+    CHECK_EQ(*executed.value().getIf<std::string>(), std::string("New Name"));
     CHECK_EQ(service.commands(runtime).size(), static_cast<size_t>(1));
 
     CHECK_EQ(service.unregisterOwner("scene"), static_cast<size_t>(1));
@@ -125,22 +128,22 @@ TEST_CASE("editor.v2.command_registry_gates_automation_and_exceptions") {
               .registerCommand(descriptor,
                                [](const CommandContext&, const EditorValue&) {
                                    throw std::runtime_error("boom");
-                                   return EditorResult<EditorValue>::applied(EditorValue{});
+                                   return eve::editing::applied<EditorValue>(EditorValue{});
                                })
-              .isAccepted());
+              .ok());
 
     HostProfile    developer = HostProfile::developer();
     CommandContext context;
     context.profile = &developer;
     context.source  = CommandSource::Automation;
     auto automation = service.execute(descriptor.id, context, {});
-    CHECK_EQ(static_cast<int>(automation.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(automation.code()), static_cast<int>(EditorStatus::Rejected));
 
     context.source = CommandSource::Api;
     auto failure   = service.execute(descriptor.id, context, {});
-    CHECK_EQ(static_cast<int>(failure.status), static_cast<int>(EditorStatus::Failed));
-    CHECK_EQ(failure.diagnostics.size(), static_cast<size_t>(1));
-    CHECK(failure.diagnostics.front().message.find("boom") != std::string::npos);
+    CHECK_EQ(static_cast<int>(failure.code()), static_cast<int>(EditorStatus::Failed));
+    CHECK_EQ(failure.diagnostics().size(), static_cast<size_t>(1));
+    CHECK(failure.diagnostics().front().message().find("boom") != std::string::npos);
 }
 
 TEST_CASE("editor.v2.session_wraps_command_in_legacy_transaction") {
@@ -159,16 +162,16 @@ TEST_CASE("editor.v2.session_wraps_command_in_legacy_transaction") {
                   [](const CommandContext& context, const EditorValue& payload) {
                       auto* after = payload.getIf<int64_t>();
                       if (!context.session || !after)
-                          return EditorResult<EditorValue>::error(EditorStatus::Rejected, RuleId("map.paint.invalid"),
+                          return eve::editing::failed<EditorValue>(EditorStatus::Rejected, RuleId("map.paint.invalid"),
                                                                   "Paint command requires an integer value");
                       auto command = std::make_unique<IntFieldEditCommand>("Paint One Tile", context.session->target());
                       if (!command->record(0, 0, static_cast<int>(*after)) ||
                           !context.session->execute(std::move(command)))
-                          return EditorResult<EditorValue>::error(EditorStatus::Failed, RuleId("map.paint.failed"),
+                          return eve::editing::failed<EditorValue>(EditorStatus::Failed, RuleId("map.paint.failed"),
                                                                   "Tile edit could not be applied");
-                      return EditorResult<EditorValue>::applied(payload);
+                      return eve::editing::applied<EditorValue>(payload);
                   })
-              .isAccepted());
+              .ok());
 
     EditorSession session;
     HostProfile   runtime = HostProfile::runtimeBuilder();
@@ -178,7 +181,7 @@ TEST_CASE("editor.v2.session_wraps_command_in_legacy_transaction") {
     session.bindTarget(&target);
 
     auto result = session.executeCommand(descriptor.id, EditorValue(7));
-    CHECK(result.isAccepted());
+    CHECK(result.ok());
     CHECK_EQ(buffer.getGid(0, 0), 7);
     CHECK(session.transactions().canUndo());
     CHECK(session.transactions().undo());
@@ -186,6 +189,6 @@ TEST_CASE("editor.v2.session_wraps_command_in_legacy_transaction") {
 
     session.setHostProfile(HostProfile::runtimeBuilder());
     auto denied = session.executeCommand(descriptor.id, EditorValue(9));
-    CHECK_EQ(static_cast<int>(denied.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(denied.code()), static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(buffer.getGid(0, 0), 0);
 }

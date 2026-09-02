@@ -5,14 +5,14 @@ namespace eve::graphics::vulkan {
 FrameArena::~FrameArena() {
     // GenericBuffer releases its memory; unmap the persistent mapping first.
     if (mapped_ && device_.instance) {
-        device_->unmapMemory(buf_.memory);
+        buf_.unmap();
     }
     mapped_ = nullptr;
 }
 
 FrameArena &FrameArena::operator=(FrameArena &&o) noexcept {
     if (this != &o) {
-        if (mapped_ && device_.instance) device_->unmapMemory(buf_.memory);
+        if (mapped_ && device_.instance) buf_.unmap();
         mapped_ = o.mapped_;
         o.mapped_ = nullptr;
         device_ = o.device_;
@@ -34,7 +34,7 @@ bool FrameArena::ensure(vkb::Device &device, vk::DeviceSize bytes, vk::BufferUsa
     while (target < bytes) target += grow;  // grow at least by current capacity
     target = std::max<vk::DeviceSize>(target, 1 << 20);
 
-    if (mapped_ && device_.instance) device_->unmapMemory(buf_.memory);
+    if (mapped_ && device_.instance) buf_.unmap();
     mapped_ = nullptr;
     vkb::GenericBuffer next(device, usage, target,
                             vk::MemoryPropertyFlagBits::eHostVisible |
@@ -43,7 +43,7 @@ bool FrameArena::ensure(vkb::Device &device, vk::DeviceSize bytes, vk::BufferUsa
     device_ = device;
     capacity_ = target;
     head_ = 0;
-    mapped_ = device->mapMemory(buf_.memory, 0, capacity_);
+    mapped_ = buf_.map();
     return true;
 }
 

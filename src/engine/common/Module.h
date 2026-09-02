@@ -90,7 +90,9 @@ public:
      *
      * Result helpers and script ECS are bound immediately. Each module's
      * `expose(ssq::Table&)` (class + methods + nested types) runs on the first
-     * script get of that class name, or of a nested class it owns.
+     * script get of that class name, or of a nested class it owns. The default
+     * unfiltered startup path eagerly completes all bindings while preserving
+     * the canonical script ECS object identities.
      */
     static void expose(Runtime& runtime);
     // Compatibility for embedders that still own their ssq::VM directly.
@@ -157,6 +159,9 @@ protected:
     static void exposeVM(ssq::VM& vm);
 
 private:
+    static int ensureScriptEcs();
+    static int exposeAllForCompatibility();
+
     // Keep unordered_map lookup and lazy-creation code out of the two public
     // templates. Every module instantiates only the pointer cast; the container
     // implementation is emitted once in Module.cpp.

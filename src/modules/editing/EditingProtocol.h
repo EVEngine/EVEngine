@@ -12,16 +12,23 @@ using Revision = std::uint64_t;
 enum class HostKind { Developer, RuntimeBuilder, RuntimeAdmin, Automation };
 struct ObjectRefValue {
     TargetId      target;
-    std::string   object;
-    std::uint64_t generation                               = 0;
-    auto          operator<=>(const ObjectRefValue&) const = default;
+    ObjectId      object;
+    std::uint64_t generation = 0;
+    ObjectRefValue()         = default;
+    ObjectRefValue(TargetId targetId, ObjectId objectId, std::uint64_t objectGeneration = 0)
+        : target(std::move(targetId)), object(std::move(objectId)), generation(objectGeneration) {}
+    ObjectRefValue(TargetId targetId, std::string objectId, std::uint64_t objectGeneration = 0)
+        : target(std::move(targetId)), object(ObjectId(std::move(objectId))), generation(objectGeneration) {}
+    auto operator<=>(const ObjectRefValue&) const = default;
 };
 struct ContextSnapshot {
     SessionId                session;
     HostKind                 host = HostKind::Developer;
     TargetId                 target;
     Revision                 targetRevision = 0;
-    std::vector<std::string> selection;
+    /** @brief Monotonic lifetime generation of the bound target instance. */
+    std::uint64_t            targetGeneration = 0;
+    std::vector<ObjectId>    selection;
     std::vector<std::string> inputContexts;
 };
 struct DomainOperation {
@@ -48,6 +55,14 @@ struct CommandPlan {
     CommandId                    command;
     TargetId                     target;
     Revision                     baseRevision = 0;
+    /** @brief Target lifetime generation captured while planning. */
+    std::uint64_t                targetGeneration = 0;
+    /** @brief Command registration generation captured while planning. */
+    std::uint64_t                commandGeneration = 0;
+    /** @brief Immutable payload authorized by this plan. */
+    Value                        plannedPayload;
+    /** @brief Invocation source authorized by this plan. */
+    CommandSource                plannedSource = CommandSource::Api;
     std::vector<DomainOperation> operations;
     Value                        summary;
     std::vector<Diagnostic>      diagnostics;

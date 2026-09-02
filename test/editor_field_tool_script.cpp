@@ -10,10 +10,11 @@ TEST_CASE("editor.script.composes_heightmap_target_field_tool_and_transaction") 
     eve::ModuleManager::expose(vm);
     vm.run(vm.compileSource(R"(
         editor <- eve.Editor();
+        heightmapTargets <- eve.HeightmapTargetModule();
         procgen <- eve.Procgen();
         heightmapResult <- procgen.newHeightmap(8, 8);
         heightmap <- heightmapResult.ok ? heightmapResult.value : null;
-        target <- editor.newHeightmapTarget("terrain", heightmap);
+        target <- heightmapTargets.create("terrain", heightmap);
         falloff <- editor.newSmoothBrushFalloff();
         kernel <- editor.newCircleBrushKernel();
         kernel.setSmoothFalloff(falloff);
@@ -25,7 +26,7 @@ TEST_CASE("editor.script.composes_heightmap_target_field_tool_and_transaction") 
         tool.setStrength(0.25);
         session <- editor.newSession();
         added <- session.addFieldTool(tool);
-        session.bindHeightmapTarget(target);
+        heightmapTargets.bind(session, target);
         activated <- session.activateTool("terrain.raise");
         down <- session.dispatchPointer(0, 1, 0, 3.0, 4.0, 0.0, 0.0, 1.0);
         up <- session.dispatchPointer(2, 1, 0, 3.0, 4.0, 0.0, 0.0, 1.0);

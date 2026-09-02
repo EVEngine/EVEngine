@@ -3,11 +3,13 @@
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
 // dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
-#include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/Canvas.h"
-#include "graphics/Light.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/Light.h"
+#include "graphics/PrimitiveDrawList.h"
+#include "graphics/PrimitiveTessellator.h"
 #include "graphics/RenderControl.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/Graphics.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -192,7 +194,7 @@ void Graphics::ensureReadbackSlots() {
     // rebuilt under waitIdle (rebuildSwapchainIfNeeded / recreate path).
     for (auto &slot : screenReadbackSlots) {
         if (slot.mapped) {
-            device->unmapMemory(slot.staging.memory);
+            slot.staging.unmap();
             slot.mapped = nullptr;
         }
         slot.staging.release();
@@ -281,7 +283,7 @@ void Graphics::syncReadbackCpu() {
 
     auto &slot = screenReadbackSlots[readbackWriteSlot];
     if (!slot.mapped)
-        slot.mapped = device->mapMemory(slot.staging.memory, 0, vk::DeviceSize(bytes));
+        slot.mapped = slot.staging.map();
 
     lastFrameRgba.resize(bytes);
     if (readbackBgra) {
@@ -310,7 +312,7 @@ void Graphics::syncReadbackCpu() {
 void Graphics::destroyReadbackResources() {
     for (auto &slot : screenReadbackSlots) {
         if (slot.mapped) {
-            device->unmapMemory(slot.staging.memory);
+            slot.staging.unmap();
             slot.mapped = nullptr;
         }
         slot.staging.release();
@@ -456,9 +458,9 @@ image::ImageData *Graphics::renderEntityIdMask(
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     std::memcpy(img->getData(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
 
     // 让 RenderControl 的 GBuffer 也指向该槽位（镜像 endGBufferPass），这样
@@ -508,9 +510,9 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     std::memcpy(img->getData(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
     if (attachment == "depth") {
         auto *pixels = static_cast<uint8_t *>(img->getData());
@@ -568,9 +570,9 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     std::memcpy(img->getData(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
     return img;
 }
@@ -698,6 +700,37 @@ void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &co
     }
     it->batch.addRect(x, y, w, h, color);
     noteSolidOverlay(uint32_t(it - solidBatches.begin()));
+}
+
+void Graphics::drawPrimitiveCanvas(const PrimitiveCanvas2D &canvas) {
+    const int  targetWidth  = activeCanvas ? activeCanvas->getWidth() : getWidth();
+    const int  targetHeight = activeCanvas ? activeCanvas->getHeight() : getHeight();
+    const auto triangles    = resolvePrimitiveStrokes2D(canvas, {targetWidth, targetHeight});
+    if (triangles.vertices.empty()) return;
+    auto logicalPoint = [targetWidth, targetHeight](const PrimitiveTriangleVertex &vertex) {
+        const glm::vec2 ndc = glm::vec2(vertex.clipPosition) / vertex.clipPosition.w;
+        return glm::vec2((ndc.x + 1.f) * 0.5f * static_cast<float>(targetWidth),
+                         (ndc.y + 1.f) * 0.5f * static_cast<float>(targetHeight));
+    };
+    auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
+    for (const ResolvedPrimitiveBatch2D &resolvedBatch : triangles.batches2D) {
+        auto it = std::find_if(solidBatches.begin(), solidBatches.end(),
+                               [&](const SolidBatch &batch) { return batch.blend == resolvedBatch.blend; });
+        if (it == solidBatches.end()) {
+            solidBatches.push_back(SolidBatch{resolvedBatch.blend, Batcher{}});
+            it = solidBatches.end() - 1;
+        }
+        for (std::size_t i = resolvedBatch.firstVertex; i < resolvedBatch.firstVertex + resolvedBatch.vertexCount;
+             i += 3) {
+            it->batch.addTriangle(logicalPoint(triangles.vertices[i]), logicalPoint(triangles.vertices[i + 1]),
+                                  logicalPoint(triangles.vertices[i + 2]), triangles.vertices[i].color,
+                                  triangles.vertices[i + 1].color, triangles.vertices[i + 2].color);
+        }
+        const auto          batchIndex = static_cast<std::uint32_t>(it - solidBatches.begin());
+        const std::uint32_t count      = static_cast<std::uint32_t>(resolvedBatch.vertexCount);
+        const std::uint32_t end        = static_cast<std::uint32_t>(it->batch.vertices().size());
+        spans.push_back({OverlayKind::Solid, batchIndex, end - count, count});
+    }
 }
 
 void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
@@ -1277,6 +1310,7 @@ Shader *Graphics::newShaderFromWgsl(const std::string &, const std::string &) {
 }
 
 void Graphics::flushBatch() {
+    ensureFileTexturesReady();
     if (!initialized) return;
     if (isCanvasActive()) {
         auto *oc = dynamic_cast<OffscreenCanvas *>(activeCanvas);

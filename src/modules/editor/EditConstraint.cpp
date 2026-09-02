@@ -27,20 +27,38 @@ bool EditConstraintPipeline::remove(IEditConstraint *constraint) {
 void EditConstraintPipeline::clear() {
     constraints_.clear();
     diagnostics_.clear();
+    structuredDiagnostics_.clear();
     rejected_ = false;
 }
 bool EditConstraintPipeline::evaluate(EditorContext &context, IEditCommand &command) {
+    return evaluateChecked(context, command).ok();
+}
+EditorResult<void> EditConstraintPipeline::evaluateChecked(EditorContext &context, IEditCommand &command) {
     diagnostics_.clear();
+    structuredDiagnostics_.clear();
     rejected_ = false;
+    auto record = [&](DiagnosticSeverity severity, const char *rule, std::string message) {
+        if (message.empty() && severity != DiagnosticSeverity::Error) return;
+        if (message.empty()) message = "Editor command was rejected by a constraint";
+        structuredDiagnostics_.push_back(editing::ruleDiagnostic(
+            severity == DiagnosticSeverity::Error ? eve::DiagnosticCode::PreconditionViolation
+                                                  : eve::DiagnosticCode::None,
+            RuleId(rule), severity, message));
+        diagnostics_.push_back(std::move(message));
+    };
     for (auto *constraint : constraints_) {
         ConstraintResult result = constraint->evaluate(context, command);
-        if (!result.message.empty()) diagnostics_.push_back(std::move(result.message));
         if (result.disposition == ConstraintDisposition::Reject) {
             rejected_ = true;
-            return false;
+            record(DiagnosticSeverity::Error, "editor.command.constraint-rejected", std::move(result.message));
+            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, structuredDiagnostics_));
         }
+        if (result.disposition == ConstraintDisposition::Warning)
+            record(DiagnosticSeverity::Warning, "editor.command.constraint-warning", std::move(result.message));
+        else if (!result.message.empty())
+            record(DiagnosticSeverity::Info, "editor.command.constraint-info", std::move(result.message));
     }
-    return true;
+    return eve::editing::applied<void>(structuredDiagnostics_);
 }
 const std::string &EditConstraintPipeline::diagnostic(int index) const {
     if (index < 0 || index >= diagnosticCount()) throw Exception("EditConstraintPipeline::diagnostic: bad index");

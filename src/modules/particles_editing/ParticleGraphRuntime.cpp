@@ -9,7 +9,7 @@ namespace {
 
 template <class T>
 EditorResult<T> runtimeError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -45,12 +45,8 @@ EditorResult<void> ParticleGraphRuntimeBuilder::apply(const GraphDocumentData& g
                                   "Live particle emitter is required");
     ParticleGraphDomain domain;
     const ParticleGraphCompileResult compiled = domain.compile(graph);
-    if (compiled.status != EditorStatus::Applied) {
-        EditorResult<void> failed;
-        failed.status = compiled.status;
-        failed.diagnostics = compiled.diagnostics;
-        return failed;
-    }
+    if (compiled.status != EditorStatus::Applied)
+        return EditorResult<void>::failure(eve::Status(compiled.status, compiled.diagnostics));
     const EditorValue* emission = field(compiled.configuration, "emission");
     const EditorValue* motion = field(compiled.configuration, "motion");
     const EditorValue* collision = field(compiled.configuration, "collision");
@@ -115,7 +111,7 @@ EditorResult<void> ParticleGraphRuntimeBuilder::apply(const GraphDocumentData& g
     emitter->setMinimumQuality(integer(*output, "minimumQuality"));
     emitter->setMaxSpawnPerFrame(integer(*output, "maxSpawnPerFrame"));
     emitter->setOverflowMode(text(*output, "overflow"));
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::particles_editing

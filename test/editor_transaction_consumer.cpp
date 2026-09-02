@@ -3,8 +3,8 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorTransactionConsumer.h"
-#include "editor/FieldTargets.h"
-#include "editor/TileBuffer.h"
+#include "level_editing/FieldTargets.h"
+#include "level_editing/TileBuffer.h"
 
 #include <array>
 #include <memory>
@@ -104,20 +104,20 @@ public:
     EditorResult<eve::editor::AuthorityPlan> preflight(const TransactionSpec&,
                                                        std::span<const DomainOperation>) override {
         ++preflightCount;
-        return EditorResult<eve::editor::AuthorityPlan>::error(
+        return eve::editing::failed<eve::editor::AuthorityPlan>(
             EditorStatus::Conflict, eve::editor::RuleId("test.preflight.rejected"), "injected preflight rejection");
     }
 
     EditorResult<TransactionReceipt> commit(const eve::editor::AuthorityPlan&) override {
         ++commitCount;
-        return EditorResult<TransactionReceipt>::error(EditorStatus::Failed,
+        return eve::editing::failed<TransactionReceipt>(EditorStatus::Failed,
                                                        eve::editor::RuleId("test.commit.unexpected"),
                                                        "commit must not be called after preflight rejection");
     }
 
     EditorResult<TransactionReceipt> compensate(const TransactionReceipt&) override {
         ++compensateCount;
-        return EditorResult<TransactionReceipt>::error(EditorStatus::Failed,
+        return eve::editing::failed<TransactionReceipt>(EditorStatus::Failed,
                                                        eve::editor::RuleId("test.compensate.unexpected"),
                                                        "compensation must not be called after preflight rejection");
     }
@@ -127,7 +127,7 @@ public:
     int compensateCount = 0;
 };
 
-std::unique_ptr<eve::editor::IntFieldEditCommand> makeTileCommand(eve::editor::TileBufferTarget& target, int value) {
+std::unique_ptr<eve::editor::IntFieldEditCommand> makeTileCommand(eve::level_editing::TileBufferTarget& target, int value) {
     auto command = std::make_unique<eve::editor::IntFieldEditCommand>("set-tile", &target);
     if (!command->record(0, 0, value)) return nullptr;
     return command;
@@ -150,8 +150,8 @@ DomainOperation rejectedOperation() {
 }  // namespace
 
 TEST_CASE("editor.transactionConsumer.commitUndoRedoAndDryRun") {
-    eve::editor::TileBuffer       buffer(1, 1);
-    eve::editor::TileBufferTarget target("tiles", &buffer);
+    eve::level_editing::TileBuffer       buffer(1, 1);
+    eve::level_editing::TileBufferTarget target("tiles", &buffer);
     EditorTransactionConsumer     consumer;
 
     auto begun = consumer.begin(commandSpec("editor.command.1"));
@@ -212,8 +212,8 @@ TEST_CASE("editor.transactionConsumer.authorityPreflightRejectsWithoutCommit") {
 }
 
 TEST_CASE("editor.transactionConsumer.secondParticipantFailureCompensatesEditor") {
-    eve::editor::TileBuffer       buffer(1, 1);
-    eve::editor::TileBufferTarget target("tiles", &buffer);
+    eve::level_editing::TileBuffer       buffer(1, 1);
+    eve::level_editing::TileBufferTarget target("tiles", &buffer);
     EditorTransactionConsumer     consumer;
     REQUIRE(consumer.begin(commandSpec("editor.composed.failure")).ok());
     auto command = makeTileCommand(target, 9);
@@ -268,8 +268,8 @@ TEST_CASE("editor.transactionConsumer.previewMergeFailureDoesNotMutateTarget") {
 }
 
 TEST_CASE("editor.transactionConsumer.explicitDiscardClearsPendingWork") {
-    eve::editor::TileBuffer       buffer(1, 1);
-    eve::editor::TileBufferTarget target("tiles", &buffer);
+    eve::level_editing::TileBuffer       buffer(1, 1);
+    eve::level_editing::TileBufferTarget target("tiles", &buffer);
     EditorTransactionConsumer     consumer;
     REQUIRE(consumer.begin(commandSpec("editor.explicit-discard")).ok());
     auto command = makeTileCommand(target, 4);

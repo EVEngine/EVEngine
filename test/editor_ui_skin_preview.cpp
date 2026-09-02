@@ -1,4 +1,4 @@
-#include "editor/EditorUiSkinPreview.h"
+#include "ui_editor/EditorUiSkinPreview.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -16,15 +16,15 @@ public:
     EditorResult<UiTextureMetadata> texture(const std::string& asset) const override {
         auto found = textures.find(asset);
         if (found == textures.end())
-            return EditorResult<UiTextureMetadata>::error(EditorStatus::NotFound,
+            return eve::editing::failed<UiTextureMetadata>(EditorStatus::NotFound,
                 RuleId("test.ui.texture"), "missing texture");
-        return EditorResult<UiTextureMetadata>::applied(found->second);
+        return eve::editing::applied<UiTextureMetadata>(found->second);
     }
     EditorResult<void> font(const std::string& asset) const override {
         if (!fonts.contains(asset))
-            return EditorResult<void>::error(EditorStatus::NotFound, RuleId("test.ui.font"),
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("test.ui.font"),
                                              "missing font");
-        return EditorResult<void>::applied();
+        return eve::editing::applied<void>();
     }
 };
 }
@@ -33,37 +33,37 @@ TEST_CASE("editor.ui.skin_content_is_reversible_and_snapshot_v2_round_trips") {
     UiDocumentTarget document("hud");
     UiLayoutValue layout; layout.width = 200.0; layout.height = 100.0;
     auto create = document.makeCreate({ObjectId("card"), {}, "image", "Card", layout});
-    REQUIRE(create.value); REQUIRE(document.applyDomainOperation(*create.value).isAccepted());
+    REQUIRE(create.ok()); REQUIRE(document.applyDomainOperation(create.value()).ok());
     UiContentValue content; content.fontAsset = "fonts/ui.ttf"; content.fontSize = 24.0;
     content.textureAsset = "images/card.png"; content.imageFit = "cover";
     content.horizontalAlign = "center"; content.verticalAlign = "end"; content.textR = 0.25;
     auto set = document.makeSetContent(ObjectId("card"), content);
-    REQUIRE(set.value); REQUIRE(document.applyDomainOperation(*set.value).isAccepted());
-    CHECK_EQ(document.widget(ObjectId("card")).value->content.textureAsset,
+    REQUIRE(set.ok()); REQUIRE(document.applyDomainOperation(set.value()).ok());
+    CHECK_EQ(document.widget(ObjectId("card")).value().content.textureAsset,
              std::string("images/card.png"));
-    REQUIRE(set.value->hasInverse);
-    DomainOperation undo = *set.value; undo.payload = set.value->inverse;
-    REQUIRE(document.applyDomainOperation(undo).isAccepted());
-    CHECK(document.widget(ObjectId("card")).value->content.textureAsset.empty());
-    REQUIRE(document.applyDomainOperation(*set.value).isAccepted());
+    REQUIRE(set.value().hasInverse);
+    DomainOperation undo = set.value(); undo.payload = set.value().inverse;
+    REQUIRE(document.applyDomainOperation(undo).ok());
+    CHECK(document.widget(ObjectId("card")).value().content.textureAsset.empty());
+    REQUIRE(document.applyDomainOperation(set.value()).ok());
 
     UiDocumentTarget restored("copy");
-    REQUIRE(restored.loadSnapshot(document.snapshotValue()).isAccepted());
-    CHECK_EQ(restored.widget(ObjectId("card")).value->content.fontSize, 24.0);
+    REQUIRE(restored.loadSnapshot(document.snapshotValue()).ok());
+    CHECK_EQ(restored.widget(ObjectId("card")).value().content.fontSize, 24.0);
 }
 
 TEST_CASE("editor.ui.skin_preview_resolves_assets_crops_cover_and_clips_to_parent") {
     UiDocumentTarget document("hud");
     UiLayoutValue rootLayout; rootLayout.width = 100.0; rootLayout.height = 80.0;
     auto root = document.makeCreate({ObjectId("root"), {}, "panel", "Root", rootLayout});
-    REQUIRE(root.value); REQUIRE(document.applyDomainOperation(*root.value).isAccepted());
+    REQUIRE(root.ok()); REQUIRE(document.applyDomainOperation(root.value()).ok());
     UiLayoutValue childLayout; childLayout.x = 80.0; childLayout.y = 10.0;
     childLayout.width = 60.0; childLayout.height = 40.0;
     auto child = document.makeCreate({ObjectId("hero"), ObjectId("root"), "image", "Hero", childLayout});
-    REQUIRE(child.value); REQUIRE(document.applyDomainOperation(*child.value).isAccepted());
+    REQUIRE(child.ok()); REQUIRE(document.applyDomainOperation(child.value()).ok());
     UiContentValue content; content.textureAsset = "hero.png"; content.imageFit = "cover";
     auto skin = document.makeSetContent(ObjectId("hero"), content);
-    REQUIRE(skin.value); REQUIRE(document.applyDomainOperation(*skin.value).isAccepted());
+    REQUIRE(skin.ok()); REQUIRE(document.applyDomainOperation(skin.value()).ok());
 
     SkinAssets assets; assets.textures["hero.png"] = {200.0, 100.0};
     UiDocumentPreviewService layouts;

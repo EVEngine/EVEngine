@@ -1,6 +1,7 @@
 #include "rpg/RPG.h"
 #include "common/SquirrelBinding.h"
 #include "rpg/Battle.h"
+#include "rpg/BattleControl.h"
 #include "rpg/BattleVictory.h"
 #include "rpg/BattleSystem.h"
 #include "rpg/BattleTactics.h"
@@ -11,6 +12,7 @@
 #include "rpg/GameState.h"
 #include "rpg/LevelSystem.h"
 #include "rpg/Party.h"
+#include "rpg/ProductControl.h"
 #include "rpg/LootSystem.h"
 #include "rpg/Quest.h"
 #include "rpg/QuestReward.h"
@@ -377,6 +379,25 @@ int RPG::registerSkillDamage(const std::string &skillId, const std::string &dama
 void RPG::clearSkillDamage() { BattleSystem::clearSkillDamage(); }
 
 Battle *RPG::newBattle() { return new Battle(); }
+
+Result<std::unique_ptr<BattleControl>> RPG::newBattleControl(Battle *battle, SubjectRef instance) {
+    if (!battle || !instance.isValid())
+        return Result<std::unique_ptr<BattleControl>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "battle control requires a battle and valid instance", "battleControl"));
+    return Result<std::unique_ptr<BattleControl>>::success(
+        std::make_unique<BattleControl>(*battle, instance));
+}
+
+Result<std::unique_ptr<ProductControl>> RPG::newProductControl(
+    SubjectRef instance, GameState *gameState, Tracker *tracker, inventory::Bag *bag) {
+    if (!instance.isValid() || !gameState || !tracker || !bag)
+        return Result<std::unique_ptr<ProductControl>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "product control requires valid identity and participants", "productControl"));
+    return Result<std::unique_ptr<ProductControl>>::success(
+        std::make_unique<ProductControl>(instance, *gameState, *tracker, *bag));
+}
 
 GameState *RPG::newGameState() { return new GameState(); }
 

@@ -15,19 +15,14 @@ EditorResult<PropertyEditIntent> makeIntent(const PropertySchema& schema, const 
                                             bool runtime) {
     auto descriptor = schema.find(path);
     if (!descriptor)
-        return EditorResult<PropertyEditIntent>::error(EditorStatus::NotFound, RuleId("editor.property.not-found"),
+        return eve::editing::failed<PropertyEditIntent>(EditorStatus::NotFound, RuleId("editor.property.not-found"),
                                                        "Property is not present in the schema: " + path.value());
     if (runtime && (!hasPropertyFlag(descriptor->flags, PropertyFlag::Runtime) ||
                     hasPropertyFlag(descriptor->flags, PropertyFlag::EditorOnly)))
-        return EditorResult<PropertyEditIntent>::error(EditorStatus::Rejected, RuleId("editor.property.runtime-hidden"),
+        return eve::editing::failed<PropertyEditIntent>(EditorStatus::Rejected, RuleId("editor.property.runtime-hidden"),
                                                        "Property is unavailable in runtime editing");
     EditorResult<void> validation = validatePropertyValue(*descriptor, value);
-    if (!validation.isAccepted()) {
-        EditorResult<PropertyEditIntent> result;
-        result.status      = validation.status;
-        result.diagnostics = std::move(validation.diagnostics);
-        return result;
-    }
+    if (!validation.ok()) return EditorResult<PropertyEditIntent>::failure(validation.status());
 
     EditorValue::Object payload;
     payload["path"]      = path.value();
@@ -38,7 +33,7 @@ EditorResult<PropertyEditIntent> makeIntent(const PropertySchema& schema, const 
         case PropertySetMode::Relative: payload["mode"] = "relative"; break;
         case PropertySetMode::Reset: payload["mode"] = "reset"; break;
     }
-    return EditorResult<PropertyEditIntent>::applied(
+    return eve::editing::applied<PropertyEditIntent>(
         PropertyEditIntent{CommandId("editor.property.set"), EditorValue(std::move(payload))});
 }
 
@@ -84,7 +79,7 @@ EditorResult<PropertyEditIntent> RuntimePropertyPresenter::editIntent(
     const PropertySchema& schema, const SelectionSnapshot& selection, const PropertyPath& path,
     const EditorValue& value, const HostProfile& profile, PropertySetMode mode) const {
     if (!profile.hasFeatures(HostFeature::RuntimeWorld))
-        return EditorResult<PropertyEditIntent>::error(EditorStatus::Rejected,
+        return eve::editing::failed<PropertyEditIntent>(EditorStatus::Rejected,
                                                        RuleId("editor.property.runtime-feature-denied"),
                                                        "Host profile does not expose runtime world editing");
     return makeIntent(schema, selection, path, value, mode, true);
