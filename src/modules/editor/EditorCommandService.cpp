@@ -14,7 +14,31 @@ constexpr size_t kMaxPayloadElements = 100'000;
 }  // namespace
 
 EditorResult<EditorValue> EditorCommandService::error(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<EditorValue>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<EditorValue>(status, RuleId(rule), std::move(message));
+}
+
+EditorResult<void> EditorCommandService::checkExecutionPolicy(const CommandDescriptor& descriptor,
+                                                             const CommandId&          id, CommandSource source,
+                                                             const EditorValue& payload,
+                                                             const HostProfile& profile) const {
+    if (!profile.allowsCommand(id))
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.command.profile-denied"),
+                                         "Command is unavailable in this host: " + id.value());
+    if (!profile.hasFeatures(descriptor.requiredFeatures))
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.command.feature-denied"),
+                                         "Command requires features unavailable in this host: " + id.value());
+    if (source == CommandSource::Automation && !descriptor.automationAllowed)
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.command.automation-denied"),
+                                         "Command is not available to automation: " + id.value());
+    if (!payload.isWithinLimits(kMaxPayloadDepth, kMaxPayloadElements, profile.maxPayloadBytes()))
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.command.payload-limit"),
+                                         "Command payload exceeds host limits: " + id.value());
+    return eve::editing::applied<void>();
+}
+
+template <class Output>
+EditorResult<Output> denyPolicy(EditorResult<void>&& policy) {
+    return EditorResult<Output>::failure(policy.status());
 }
 
 EditorResult<EditorValue> EditorCommandService::registerCommand(CommandDescriptor    descriptor,
@@ -29,12 +53,12 @@ EditorResult<EditorValue> EditorCommandService::registerCommand(CommandDescripto
         if (!replace || it->descriptor.ownerModule != descriptor.ownerModule)
             return error(EditorStatus::Rejected, "editor.command.duplicate",
                          "Command is already registered: " + descriptor.id.value());
-        *it = {std::move(descriptor), std::move(handler), {}, {}};
+        *it = {std::move(descriptor), std::move(handler), {}, {}, nextRegistrationGeneration_++};
     } else {
-        commands_.push_back({std::move(descriptor), std::move(handler), {}, {}});
+        commands_.push_back({std::move(descriptor), std::move(handler), {}, {}, nextRegistrationGeneration_++});
     }
     ++revision_;
-    return EditorResult<EditorValue>::applied(EditorValue{});
+    return eve::editing::applied<EditorValue>(EditorValue{});
 }
 
 EditorResult<EditorValue> EditorCommandService::registerPlannedCommand(CommandDescriptor         descriptor,
@@ -50,12 +74,14 @@ EditorResult<EditorValue> EditorCommandService::registerPlannedCommand(CommandDe
         if (!replace || it->descriptor.ownerModule != descriptor.ownerModule)
             return error(EditorStatus::Rejected, "editor.command.duplicate",
                          "Command is already registered: " + descriptor.id.value());
-        *it = {std::move(descriptor), {}, std::move(planner), std::move(executor)};
+        *it = {std::move(descriptor), {}, std::move(planner), std::move(executor),
+               nextRegistrationGeneration_++};
     } else {
-        commands_.push_back({std::move(descriptor), {}, std::move(planner), std::move(executor)});
+        commands_.push_back({std::move(descriptor), {}, std::move(planner), std::move(executor),
+                             nextRegistrationGeneration_++});
     }
     ++revision_;
-    return EditorResult<EditorValue>::applied(EditorValue{});
+    return eve::editing::applied<EditorValue>(EditorValue{});
 }
 
 bool EditorCommandService::unregisterCommand(const CommandId& id, const std::string& ownerModule) {
@@ -112,18 +138,9 @@ EditorResult<EditorValue> EditorCommandService::execute(const CommandId& id, con
         return error(EditorStatus::NotFound, "editor.command.not-found", "Command is not registered: " + id.value());
     if (!context.profile)
         return error(EditorStatus::Failed, "editor.command.missing-profile", "Command context has no host profile");
-    if (!context.profile->allowsCommand(id))
-        return error(EditorStatus::Rejected, "editor.command.profile-denied",
-                     "Command is unavailable in this host: " + id.value());
-    if (!context.profile->hasFeatures(it->descriptor.requiredFeatures))
-        return error(EditorStatus::Rejected, "editor.command.feature-denied",
-                     "Command requires features unavailable in this host: " + id.value());
-    if (context.source == CommandSource::Automation && !it->descriptor.automationAllowed)
-        return error(EditorStatus::Rejected, "editor.command.automation-denied",
-                     "Command is not available to automation: " + id.value());
-    if (!payload.isWithinLimits(kMaxPayloadDepth, kMaxPayloadElements, context.profile->maxPayloadBytes()))
-        return error(EditorStatus::Rejected, "editor.command.payload-limit",
-                     "Command payload exceeds host limits: " + id.value());
+    if (auto policy = checkExecutionPolicy(it->descriptor, id, context.source, payload, *context.profile);
+        !policy.ok())
+        return denyPolicy<EditorValue>(std::move(policy));
 
     if (!it->handler)
         return error(EditorStatus::Unsupported, "editor.command.requires-plan",
@@ -141,25 +158,16 @@ EditorResult<EditorValue> EditorCommandService::execute(const CommandId& id, con
 
 EditorResult<CommandPlan> EditorCommandService::plan(const CommandRequest& request, const HostProfile& profile) const {
     auto failure = [](EditorStatus status, const char* rule, std::string message) {
-        return EditorResult<CommandPlan>::error(status, RuleId(rule), std::move(message));
+        return eve::editing::failed<CommandPlan>(status, RuleId(rule), std::move(message));
     };
     auto it = std::find_if(commands_.begin(), commands_.end(),
                            [&](const Registration& entry) { return entry.descriptor.id == request.id; });
     if (it == commands_.end())
         return failure(EditorStatus::NotFound, "editor.command.not-found",
                        "Command is not registered: " + request.id.value());
-    if (!profile.allowsCommand(request.id))
-        return failure(EditorStatus::Rejected, "editor.command.profile-denied",
-                       "Command is unavailable in this host: " + request.id.value());
-    if (!profile.hasFeatures(it->descriptor.requiredFeatures))
-        return failure(EditorStatus::Rejected, "editor.command.feature-denied",
-                       "Command requires features unavailable in this host: " + request.id.value());
-    if (request.source == CommandSource::Automation && !it->descriptor.automationAllowed)
-        return failure(EditorStatus::Rejected, "editor.command.automation-denied",
-                       "Command is not available to automation: " + request.id.value());
-    if (!request.payload.isWithinLimits(kMaxPayloadDepth, kMaxPayloadElements, profile.maxPayloadBytes()))
-        return failure(EditorStatus::Rejected, "editor.command.payload-limit",
-                       "Command payload exceeds host limits: " + request.id.value());
+    if (auto policy = checkExecutionPolicy(it->descriptor, request.id, request.source, request.payload, profile);
+        !policy.ok())
+        return denyPolicy<CommandPlan>(std::move(policy));
     if (request.expectedRevision && *request.expectedRevision != request.context.targetRevision)
         return failure(EditorStatus::Conflict, "editor.command.revision-conflict",
                        "Expected revision does not match the captured context");
@@ -168,12 +176,17 @@ EditorResult<CommandPlan> EditorCommandService::plan(const CommandRequest& reque
                        "Command does not provide a planning handler");
     try {
         EditorResult<CommandPlan> result = it->planner(request);
-        if (result.isAccepted() && result.value) {
-            result.value->command      = request.id;
-            result.value->target       = request.context.target;
-            result.value->baseRevision = request.context.targetRevision;
-            if (result.value->id.empty())
-                result.value->id = PlanId(request.id.value() + ".plan." + std::to_string(++planSequence_));
+        if (result.ok()) {
+            result.value().command      = request.id;
+            result.value().target       = request.context.target;
+            result.value().baseRevision = request.context.targetRevision;
+            if (result.value().targetGeneration == 0)
+                result.value().targetGeneration = request.context.targetGeneration;
+            result.value().commandGeneration = it->generation;
+            result.value().plannedPayload     = request.payload;
+            result.value().plannedSource      = request.source;
+            if (result.value().id.empty())
+                result.value().id = PlanId(request.id.value() + ".plan." + std::to_string(++planSequence_));
         }
         return result;
     } catch (const std::exception& exception) {
@@ -188,7 +201,7 @@ EditorResult<TransactionReceipt> EditorCommandService::executePlan(const Command
                                                                    const CommandPlan&    plan,
                                                                    const HostProfile&    profile) const {
     auto failure = [](EditorStatus status, const char* rule, std::string message) {
-        return EditorResult<TransactionReceipt>::error(status, RuleId(rule), std::move(message));
+        return eve::editing::failed<TransactionReceipt>(status, RuleId(rule), std::move(message));
     };
     if (plan.id.empty() || plan.command != request.id || plan.target != request.context.target)
         return failure(EditorStatus::Rejected, "editor.command.invalid-plan",
@@ -196,14 +209,26 @@ EditorResult<TransactionReceipt> EditorCommandService::executePlan(const Command
     if (plan.baseRevision != request.context.targetRevision)
         return failure(EditorStatus::Conflict, "editor.command.stale-plan",
                        "Plan was produced for another target revision");
+    if (plan.targetGeneration != request.context.targetGeneration)
+        return failure(EditorStatus::Conflict, "editor.command.stale-target-generation",
+                       "Plan was produced for another target lifetime");
+    if (request.expectedRevision && *request.expectedRevision != request.context.targetRevision)
+        return failure(EditorStatus::Conflict, "editor.command.revision-conflict",
+                       "Expected revision does not match the captured context");
     auto it = std::find_if(commands_.begin(), commands_.end(),
                            [&](const Registration& entry) { return entry.descriptor.id == request.id; });
     if (it == commands_.end())
         return failure(EditorStatus::NotFound, "editor.command.not-found",
                        "Command is not registered: " + request.id.value());
-    if (!profile.allowsCommand(request.id) || !profile.hasFeatures(it->descriptor.requiredFeatures))
-        return failure(EditorStatus::Rejected, "editor.command.profile-denied",
-                       "Host profile no longer allows this command");
+    if (plan.commandGeneration != it->generation)
+        return failure(EditorStatus::Conflict, "editor.command.stale-registration",
+                       "Command registration changed after planning");
+    if (auto policy = checkExecutionPolicy(it->descriptor, request.id, request.source, request.payload, profile);
+        !policy.ok())
+        return denyPolicy<TransactionReceipt>(std::move(policy));
+    if (request.payload != plan.plannedPayload || request.source != plan.plannedSource)
+        return failure(EditorStatus::Rejected, "editor.command.plan-input-mismatch",
+                       "Plan payload or source differs from the validated request");
     if (!it->planExecutor)
         return failure(EditorStatus::Unsupported, "editor.command.execution-unsupported",
                        "Command does not provide a plan executor");

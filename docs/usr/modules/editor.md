@@ -55,7 +55,8 @@ for (local i = 0; i < gizmo.getPartCount(); i++) {
 
 ```squirrel
 // 项目组合一个可撤销的高度场工具；C++ 不认识“地形编辑器”窗口。
-local target = editor.newHeightmapTarget("terrain", hm);
+local heightmapTargets = eve.HeightmapTargetModule();
+local target = heightmapTargets.create("terrain", hm);
 local falloff = editor.newSmoothBrushFalloff();
 local kernel = editor.newCircleBrushKernel();
 kernel.setSmoothFalloff(falloff);
@@ -69,7 +70,7 @@ sculpt.setStrength(0.15); // 负值降低地形
 
 local session = editor.newSession();
 session.addFieldTool(sculpt);
-session.bindHeightmapTarget(target);
+heightmapTargets.bind(session, target);
 session.activateTool("terrain-sculpt");
 
 // 视口把鼠标射线换算为高度图坐标；一次 Down..Up 自动合并成一条事务。
@@ -79,13 +80,13 @@ session.undo();
 session.redo();
 
 // HeightmapTarget 直接包装同一个 hm；revision 变化时原地刷新 GPU 网格。
-local mesh = editor.newHeightmapMeshSmooth(hm, 0.5, 3.2);
+local mesh = heightmapTargets.newSmoothMesh(hm, 0.5, 3.2);
 if (target.getRevision() != lastRevision)
-    editor.updateHeightmapMeshSmooth(mesh, gfx, hm, 0.5, 3.2);
+    heightmapTargets.updateSmoothMesh(mesh, gfx, hm, 0.5, 3.2);
 ```
 
 Target、kernel、falloff、operation 与 tool 之间是非拥有关系，项目需把它们保存在持久状态中。
-`applyHeightmapBrush` 仍作为简单脚本的兼容入口，但定制编辑器应使用上面的组件和统一事务栈。
+`heightmapTargets.applyBrush` 是简单脚本的兼容投影；定制编辑器应使用上面的组件和统一事务栈。
 
 ## 接口式工具会话（C++）
 
@@ -114,7 +115,8 @@ session.dispatchPointer(down);        // 自动开启一次可撤销 stroke
 
 ```squirrel
 local layer = eve.Map().newLayer(64, 64, 32, 32);
-local target = editor.newTileLayerTarget("ground", layer);
+local tileLayerTargets = eve.TileLayerTargetModule();
+local target = tileLayerTargets.create("ground", layer);
 local paint = editor.newPaintIntFieldOperation(17);
 local hard = editor.newConstantBrushFalloff();
 local circle = editor.newCircleBrushKernel();
@@ -123,7 +125,7 @@ local tool = editor.newFieldBrushTool("paint-grass", "Paint Grass");
 tool.setCircleKernel(circle);
 tool.setPaintIntOperation(paint);
 session.addFieldTool(tool);
-session.bindTileLayerTarget(target);
+tileLayerTargets.bind(session, target);
 ```
 
 ### 三维稀疏体积
@@ -134,7 +136,8 @@ constraint 与 stroke transaction：
 
 ```squirrel
 local world = eve.Voxel().newWorld();
-local target = editor.newVoxelWorldTarget("terrain.voxels", world);
+local voxelWorldTargets = eve.VoxelWorldTargetModule();
+local target = voxelWorldTargets.create("terrain.voxels", world);
 local hard = editor.newConstantBrushFalloff();
 local sphere = editor.newSphereVolumeBrushKernel();
 sphere.setConstantFalloff(hard);
@@ -144,7 +147,7 @@ tool.setSphereKernel(sphere);
 tool.setPaintIntOperation(paint);
 tool.setRadius(2.5);
 session.addVolumeTool(tool);
-session.bindVoxelWorldTarget(target);
+voxelWorldTargets.bind(session, target);
 session.activateTool("voxel.paint");
 
 // 视口 raycast 决定三维目标坐标，再转发 Down / Move / Up。
@@ -201,7 +204,7 @@ session.dispatchPointer(0, 0, 0, mapX, mapY, 0.0, 0.0, 1.0);
 
 ## 地图笔刷
 
-旧的 `Brush` / `EditorHistory` API 为兼容已有脚本保留。新编辑器优先使用上面的协议式会话；旧 API 适合很小的纯 tile 工具。
+`Brush` / `EditorHistory` 属于 `level_editing` 领域，并由 `eve.levelEditor` 暴露。新编辑器优先使用上面的协议式会话；这些 API 适合很小的纯 tile 工具。
 
 ## 材质文档（C++）
 
@@ -226,7 +229,7 @@ parallax scale 为零。实际 GPU `Texture*` / `Shader*` 的解析和预览场�
 材质图的规范实现位于 `material_editing/MaterialGraph.h`，通用图和后台任务契约分别位于
 `editing/EditingGraph.h`、`editing/EditingTaskService.h`。`MaterialGraphDomain` 负责 typed-pin
 校验和确定性编译；`MaterialEditorService` 只允许成功且 revision 匹配的产物替换预览。
-`editor/EditorGraph.h` 与 `editor/EditorTaskService.h` 仅保留旧 include/namespace 兼容入口。
+`material_editor/EditorGraph.h` 与 `editor/EditorTaskService.h` 仅保留旧 include/namespace 兼容入口。
 
 ## 动画状态图（C++）
 
@@ -253,7 +256,7 @@ Clip resolver 把同一份快照构造成真正的 `animation::AnimStateMachine`
 ## UI 文档（C++）
 
 规范 API 位于 `ui_editing/UiDocument.h`，包含 hierarchy/layout/style/content authoring、版本化
-snapshot、确定性 preview/picking 和可选 `UIHost` publication；`editor/EditorUiDocumentTarget.h`
+snapshot、确定性 preview/picking 和可选 `UIHost` publication；`ui_editor/EditorUiDocumentTarget.h`
 只保留旧 include/namespace 兼容入口。
 
 `UiDocumentTarget` 是 retained UI 的可持久化创作模型。每个 Widget 使用稳定 ID，并保存父级、
@@ -356,7 +359,7 @@ Clip 解码和 Source 创建仍由 audio/sound host 负责；Editor 文档不保
 
 ## Particle Graph（C++）
 
-规范 API 位于 `particles_editing/ParticleGraph.h`；`editor/EditorParticleGraph.h` 仅作为旧 include/namespace
+规范 API 位于 `particles_editing/ParticleGraph.h`；`particles_editor/EditorParticleGraph.h` 仅作为旧 include/namespace
 兼容入口。通用图文档契约位于 `editing/EditingGraph.h`。
 
 `ParticleGraphDomain` 在通用 `GraphDocument` 上定义 `particles.emitter` 领域。模块链从唯一的
@@ -513,8 +516,8 @@ pose、channel、properties、tags、garrison 及其 revision。`PlacementSystem
 新状态。成功恢复同步推进全局 ID allocator，后续正常放置不会重用该 ID。
 
 ```squirrel
-local buf = editor.newTileBuffer(64, 64);
-local brush = editor.newBrush();
+local buf = levelEditor.newTileBuffer(64, 64);
+local brush = levelEditor.newBrush();
 brush.setTool("paint");  // paint | erase | fill | line | rect | stamp
 brush.setTile(3);
 brush.setSize(3);
@@ -556,12 +559,12 @@ ws.select("world", "scene", "level-1", "tree-42", "vegetation.tree", false);
 
 ### 动作时间轴编辑器
 
-`newActionTimelineEditor(targetId, timelineTable)` 把版本化的 `eve.action.timeline`
+`eve.ActionEditorModule().create(targetId, timelineTable)` 把版本化的 `eve.action.timeline`
 资产交给原生动作编辑器。原生对象是时间轴、命中测试、事务、撤销/重做和确定性预览游标的
 唯一事实源；脚本只负责用项目自己的 UI 绘制 `getItem*` 布局并转发指针输入。
 
 ```squirrel
-local created = editor.newActionTimelineEditor("ability.light-attack", timelineAsset);
+local created = eve.ActionEditorModule().create("ability.light-attack", timelineAsset);
 if (!created.ok) throw created.status.summary;
 local actionEditor = created.value; // ownership == "owned"
 
@@ -620,10 +623,10 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 Scene 和 Map 的规范 C++ authoring API 分别位于 `scene_editing/SceneTarget.h`、
 `scene_editing/SceneComponentPayload.h` 与 `map_editing/MapDocument.h`。对应的
-`editor/EditorScene*.h`、`editor/EditorMapDocument.h` 只用于源代码兼容。
+`editor/EditorScene*.h`、`map_editor/EditorMapDocument.h` 只用于源代码兼容。
 
 Animation clip 的规范 authoring API 位于 `animation_editing/AnimationClip.h`；
-`editor/EditorAnimationClip.h` 是兼容入口。
+`animation_editor/EditorAnimationClip.h` 是兼容入口。
 
 音频资源可通过 `AudioAuditionTransport` 做 play/pause/stop/seek 和区间循环试听。
 所有操作都绑定资源 revision；检测到旧 revision 时会立即停止并解绑播放源，避免继续试听
@@ -751,10 +754,13 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 
 ## API 快查
 
-- 模块：`newWorkspace` / `newActionTimelineEditor` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newVolumeBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newSphereVolumeBrushKernel` / `newBoxVolumeBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newPaintIntVolumeOperation` / `newTileBufferTarget` / `newTileLayerTarget` / `newHeightmapTarget` / `newVoxelWorldTarget` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- Editor 核心模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newVolumeBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newSphereVolumeBrushKernel` / `newBoxVolumeBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newPaintIntVolumeOperation` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newToolbar` / `newInspector` / `newDock`
+- Level Editor 模块：`newTileBuffer` / `newBrush` / `newHistory` / `createTarget` / `bind`
+- Action editor adapter：`eve.ActionEditorModule().create`
+- Heightmap Target 模块：`create` / `bind` / `applyBrush` / `newMesh` / `updateMesh` / `newSmoothMesh` / `updateSmoothMesh`
 - Workspace：`getId` / `getTitle` / `setTitle` / `registerPanel` / `removePanel` / `clearPanels` / `movePanel` / `setPanelCapability` / `setPanelContext` / `setPanelVisible` / `setPanelSingleton` / `activatePanel` / `getActivePanel` / `getPanelCount` / `getPanelId` / `getPanelTitle` / `getPanelRegion` / `getPanelCapability` / `getPanelContext` / `getPanelOrder` / `getPanelVisible` / `getPanelSingleton` / `setRegionSize` / `layout` / `getRegionX` / `getRegionY` / `getRegionW` / `getRegionH` / `setMode` / `getMode` / `select` / `clearSelection` / `getSelectionCount` / `getSelectionItem` / `getSelectionType` / `getPrimarySelection` / `getSelectionSequence` / `focus` / `getFocusedSurface` / `getRevision`
 - 动作时间轴：`configureWorkspace` / `setViewport` / `pointerDown` / `pointerMove` / `pointerUp` / `seekX` / `seekSeconds` / `resizeState` / `undo` / `redo` / `update` / `snapshot` / `play` / `pause` / `isPlaying` / `canUndo` / `canRedo` / `isDragging` / `getDuration` / `getPreviewTime` / `getRevision` / `getAnimationUri` / `getTrackCount` / `getTrackId` / `getTrackLabel` / `getTrackKind` / `getTrackMuted` / `getLayoutWidth` / `getLayoutHeight` / `getPlayheadX` / `getItemCount` / `getItemId` / `getItemType` / `getItemState` / `getItemSelected` / `getItemMinX` / `getItemMaxX` / `getItemMinY` / `getItemMaxY` / `getStateStart` / `getStateEnd` / `getEventCount` / `getEventItemId` / `getEventType` / `getEventTime` / `getEventKind`
-- 会话：`addTool` / `addFieldTool` / `addVolumeTool` / `removeTool` / `clearTools` / `bindTileBufferTarget` / `bindTileLayerTarget` / `bindHeightmapTarget` / `bindVoxelWorldTarget` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `dispatchPointer3D` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `canUndo` / `canRedo` / `clearHistory` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`
+- 会话：`addTool` / `addFieldTool` / `addVolumeTool` / `removeTool` / `clearTools` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `dispatchPointer3D` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `canUndo` / `canRedo` / `clearHistory` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`。领域 Target 通过各自模块的 `bind(session, target)` 接入。
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - 字段工具：`setRadius` / `setStrength` / `getRadius` / `getStrength` / `setCircleKernel` / `setBoxKernel` / `setPaintIntOperation` / `setAddScalarOperation`
 - Kernel：`setConstantFalloff` / `setLinearFalloff` / `setSmoothFalloff`
@@ -778,4 +784,4 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 
 ### PR #287 新增绑定
 
-- 反射链、HDR 与探针相关 API：`getCenterX` `getCenterY`/`getCenterZ` `getColorB` `getColorG`/`getColorR` `getLineCount` `getLineEnd`/`getLineStart` `getStatusLabel` `newReflectionProbeVisualizer`/`setExtents`
+- 反射链、HDR 与探针相关 API 位于 `GraphicsEditorModule`：`getCenterX` `getCenterY`/`getCenterZ` `getColorB` `getColorG`/`getColorR` `getLineCount` `getLineEnd`/`getLineStart` `getStatusLabel` `createReflectionProbeVisualizer`/`setExtents`

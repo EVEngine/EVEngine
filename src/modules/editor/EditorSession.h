@@ -15,17 +15,20 @@
 namespace eve::editor {
 
 class AutosaveService;
+class EditorTargetCoordinator;
 
 /**
  * @brief Hosts interchangeable editor tools and routes their lifecycle/input.
  *
  * Tools are non-owning: the caller must keep a registered tool alive until it
- * is removed or the session is destroyed.
+ * is removed or the session is destroyed. All methods are owner-thread only.
+ * Tool callbacks may re-enter the session; lifecycle state is detached before
+ * cancellation or deactivation callbacks are invoked.
  */
 class EditorSession {
 public:
     EditorSession();
-    ~EditorSession();
+    ~EditorSession() noexcept;
 
     EditorSession(const EditorSession&)            = delete;
     EditorSession& operator=(const EditorSession&) = delete;
@@ -63,15 +66,32 @@ public:
     int                  capturedPointerId() const { return capturedPointerId_; }
     EditorContext&       context() { return context_; }
     const EditorContext& context() const { return context_; }
-    /** @brief Bind a non-owning editable target available to every tool callback. */
-    void                    bindTarget(IEditableTarget* target) { context_.target_ = target; }
-    IEditableTarget*        target() const { return context_.target_; }
+    /**
+     * @brief Bind a caller-managed editable target available to every tool callback.
+     * @param target Borrowed target; the caller must clear the binding before destroying it.
+     * @thread Owner-thread only. Tool callbacks are never invoked by this function.
+     */
+    void bindTarget(IEditableTarget& target);
+    /** @brief Compatibility-only nullable pointer facade over bindTarget() and clearTarget(). */
+    void bindTarget(IEditableTarget* target);
+    /** @brief Clear the active target and invalidate retained plans derived from it. */
+    void clearTarget();
+    /** @brief Return the live borrowed target, or null after an explicit or tracked unbind. */
+    IEditableTarget* target() const;
+    /** @brief Return the identity of the current binding without dereferencing the target. */
+    const TargetId&         boundTargetId() const noexcept { return boundTargetId_; }
     EditorTransactions&     transactions() { return transactions_; }
     EditConstraintPipeline& constraints() { return constraints_; }
     /** @brief Validate then execute a command in the active transaction. */
     bool execute(std::unique_ptr<IEditCommand> command);
+    /** @brief Validate and execute a command while preserving constraint and transaction diagnostics. */
+    [[nodiscard]] EditorResult<void> executeChecked(std::unique_ptr<IEditCommand> command);
 
-    /** @brief Bind a non-owning V2 command service. */
+    /** @brief Bind a non-owning V2 command service that must outlive this binding. */
+    void bindCommandService(EditorCommandService& service) { commandService_ = &service; }
+    /** @brief Clear the V2 command service binding. */
+    void clearCommandService() { commandService_ = nullptr; }
+    /** @brief Compatibility-only nullable pointer facade over bindCommandService() and clearCommandService(). */
     void setCommandService(EditorCommandService* service) { commandService_ = service; }
     /** @brief Return the bound V2 command service, or nullptr. */
     EditorCommandService* commandService() const { return commandService_; }
@@ -129,6 +149,10 @@ public:
      * @param autosave Optional draft service; must outlive the session.
      */
     void setDocumentServices(DocumentService* documents, AutosaveService* autosave = nullptr);
+    /** @brief Bind document services; documents must outlive this binding. */
+    void bindDocumentServices(DocumentService& documents, AutosaveService* autosave = nullptr);
+    /** @brief Clear document service bindings and unbind the active document. */
+    void clearDocumentServices();
     /**
      * @brief Select an already-open document for save, autosave and conflict polling.
      * @param document Stable identity already opened by DocumentService.
@@ -145,7 +169,7 @@ public:
      * @param expectedRevision Optional edit revision used to reject stale writers.
      * @return Updated document snapshot or a structured conflict.
      */
-    EditorResult<DocumentSnapshot> editDocument(EditorValue content,
+    EditorResult<DocumentSnapshot> editDocument(EditorValue             content,
                                                 std::optional<Revision> expectedRevision = std::nullopt);
     /** @brief Persist the current active revision through the document CAS store. */
     EditorResult<DocumentSnapshot> saveDocument();
@@ -161,18 +185,33 @@ public:
     Revision lastAutosavedRevision() const { return lastAutosavedRevision_; }
 
 private:
+    friend class EditorTargetCoordinator;
+    void bindTrackedTarget(IEditableTarget& target, std::weak_ptr<void> lifetime, EditorTargetCoordinator& coordinator,
+                           std::uint64_t generation);
+    void invalidateTrackedTarget(EditorTargetCoordinator& coordinator, const TargetId& target,
+                                 std::uint64_t generation);
+    void coordinatorDestroyed(EditorTargetCoordinator& coordinator) noexcept;
+    void releaseTargetBinding();
     void deactivateCurrent();
 
     std::vector<IEditorTool*> tools_;
     IEditorTool*              activeTool_        = nullptr;
     int                       capturedPointerId_ = -1;
     EditorContext             context_;
+    IEditableTarget*          target_ = nullptr;
+    std::weak_ptr<void>       targetLifetime_;
+    bool                      targetLifetimeTracked_ = false;
+    TargetId                  boundTargetId_;
+    std::uint64_t             targetGeneration_           = 0;
+    std::uint64_t             nextDirectTargetGeneration_ = 1;
+    EditorTargetCoordinator*  targetCoordinator_          = nullptr;
     EditorTransactions        transactions_;
     EditConstraintPipeline    constraints_;
     EditorCommandService*     commandService_ = nullptr;
     HostProfile               hostProfile_    = HostProfile::developer();
     SessionId                 sessionId_;
     std::uint64_t             receiptSequence_ = 0;
+    std::uint64_t             toolGeneration_  = 0;
     struct RetainedPlan {
         CommandPlan plan;
         EditorValue payload;
@@ -181,10 +220,10 @@ private:
     DocumentService*          documentService_ = nullptr;
     AutosaveService*          autosaveService_ = nullptr;
     DocumentId                activeDocument_;
-    float                     autosaveInterval_ = 30.f;
-    float                     autosaveElapsed_ = 0.f;
-    float                     externalPollInterval_ = 1.f;
-    float                     externalPollElapsed_ = 0.f;
+    float                     autosaveInterval_      = 30.f;
+    float                     autosaveElapsed_       = 0.f;
+    float                     externalPollInterval_  = 1.f;
+    float                     externalPollElapsed_   = 0.f;
     Revision                  lastAutosavedRevision_ = 0;
 };
 

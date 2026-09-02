@@ -1,4 +1,4 @@
-#include "editor/EditorMaterialPreview.h"
+#include "material_editor/EditorMaterialPreview.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -39,13 +39,13 @@ TEST_CASE("editor.material.preview_uses_immutable_isolated_revisioned_request") 
     settings.customMeshAsset = "asset://meshes/helmet.evm";
     const Revision renderedRevision = material.revision();
     auto task = previews.render(DocumentId("material-doc"), material, settings, renderer);
-    REQUIRE(task.value);
+    REQUIRE(task.ok());
     CHECK_EQ(renderer.calls, 1);
     CHECK(!renderer.last.sceneId.empty());
     CHECK_EQ(renderer.last.documentRevision, renderedRevision);
     CHECK_EQ(renderer.last.settings.customMeshAsset, "asset://meshes/helmet.evm");
     REQUIRE(renderer.last.material.getIf<EditorValue::Object>());
-    REQUIRE(previews.publish(DocumentId("material-doc"), material.revision(), *task.value).isAccepted());
+    REQUIRE(previews.publish(DocumentId("material-doc"), material.revision(), task.value()).ok());
     CHECK_EQ(previews.publishedArtifact(DocumentId("material-doc")), renderer.artifact);
 }
 
@@ -54,20 +54,20 @@ TEST_CASE("editor.material.preview_rejects_stale_or_failed_publication") {
     RecordingPreviewRenderer renderer;
     MaterialPreviewService previews;
     auto task = previews.render(DocumentId("doc"), material, {}, renderer);
-    REQUIRE(task.value);
+    REQUIRE(task.ok());
     auto roughness = material.makeSet(selection(material), PropertyPath("shading.roughness"), 0.8,
                                       PropertySetMode::Absolute);
-    REQUIRE(roughness.value);
-    REQUIRE(material.applyDomainOperation(*roughness.value).isAccepted());
-    CHECK_EQ(static_cast<int>(previews.publish(DocumentId("doc"), material.revision(), *task.value).status),
+    REQUIRE(roughness.ok());
+    REQUIRE(material.applyDomainOperation(roughness.value()).ok());
+    CHECK_EQ(static_cast<int>(previews.publish(DocumentId("doc"), material.revision(), task.value()).code()),
              static_cast<int>(EditorStatus::Conflict));
     CHECK(previews.publishedArtifact(DocumentId("doc")).empty());
 
     renderer.status = EditorStatus::Failed;
     renderer.artifact.clear();
     auto failed = previews.render(DocumentId("doc"), material, {}, renderer);
-    REQUIRE(failed.value);
-    CHECK_EQ(static_cast<int>(previews.publish(DocumentId("doc"), material.revision(), *failed.value).status),
+    REQUIRE(failed.ok());
+    CHECK_EQ(static_cast<int>(previews.publish(DocumentId("doc"), material.revision(), failed.value()).code()),
              static_cast<int>(EditorStatus::Failed));
 }
 
@@ -79,7 +79,7 @@ TEST_CASE("editor.material.preview_validates_scene_settings_before_renderer_call
     settings.geometry = "custom";
     settings.width = 4;
     const auto invalid = previews.render(DocumentId("doc"), material, settings, renderer);
-    CHECK_EQ(static_cast<int>(invalid.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(invalid.code()), static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(renderer.calls, 0);
-    CHECK(invalid.diagnostics.size() >= size_t{2});
+    CHECK(invalid.diagnostics().size() >= size_t{2});
 }

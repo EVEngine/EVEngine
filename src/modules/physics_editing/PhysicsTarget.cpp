@@ -7,7 +7,7 @@ namespace {
 
 template <class T>
 EditorResult<T> physicsError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -65,11 +65,11 @@ EditorResult<void> PhysicsColliderTarget::applyDomainOperation(const DomainOpera
         return physicsError<void>(EditorStatus::Unsupported, "editor.physics.property-unsupported",
                                   "Unknown physics collider property: " + *path);
     auto valid = validateAssignment(*descriptor, *value);
-    if (!valid.isAccepted()) return valid;
+    if (!valid.ok()) return valid;
     values_[*path] = *value;
     ++revision_;
     dirty_.include(0, 0);
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::unique_ptr<IDomainOperationTarget> PhysicsColliderTarget::cloneDomainState() const {
@@ -82,7 +82,7 @@ EditorResult<void> PhysicsColliderTarget::commitDomainState(std::unique_ptr<IDom
         return physicsError<void>(EditorStatus::Conflict, "editor.physics.candidate-mismatch",
                                   "Collider candidate belongs to another target");
     *this = *typed;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 eve::Result<eve::Revision> PhysicsColliderTarget::currentRevision(const SelectionSnapshot& selection) const {
@@ -117,12 +117,7 @@ EditorResult<DomainOperation> PhysicsColliderTarget::makeSet(const SelectionSnap
         return physicsError<DomainOperation>(EditorStatus::Unsupported, "editor.physics.property-unsupported",
                                              "Unknown collider property: " + path.value());
     auto valid = validateAssignment(*descriptor, value);
-    if (!valid.isAccepted()) {
-        EditorResult<DomainOperation> failed;
-        failed.status      = valid.status;
-        failed.diagnostics = std::move(valid.diagnostics);
-        return failed;
-    }
+    if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
     const auto previous = values_.find(path.value());
     auto       payload  = [&](const EditorValue& assigned) {
         EditorValue::Object object;
@@ -138,7 +133,7 @@ EditorResult<DomainOperation> PhysicsColliderTarget::makeSet(const SelectionSnap
     operation.hasInverse = true;
     operation.affectedProperties.push_back(path.value());
     operation.mergeKey = "physics.collider:" + id_ + ":" + path.value();
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> PhysicsColliderTarget::makeReset(const SelectionSnapshot& selection,
@@ -211,7 +206,7 @@ std::map<std::string, EditorValue> PhysicsColliderTarget::defaults() const {
 EditorResult<void> PhysicsColliderTarget::validateAssignment(const PropertyDescriptor& descriptor,
                                                              const EditorValue&        value) const {
     auto result = validatePropertyValue(descriptor, value);
-    if (!result.isAccepted()) return result;
+    if (!result.ok()) return result;
     if (descriptor.path == PropertyPath("shape.size") || descriptor.path == PropertyPath("shape.offset")) {
         const auto*       tuple    = value.getIf<EditorValue::Array>();
         const std::size_t expected = dimensions_ == 2 ? 2 : 3;
@@ -225,7 +220,7 @@ EditorResult<void> PhysicsColliderTarget::validateAssignment(const PropertyDescr
                                           "Physics size components must be positive numbers");
         }
     }
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 bool PhysicsColliderTarget::selectionMatches(const SelectionSnapshot& selection) const {

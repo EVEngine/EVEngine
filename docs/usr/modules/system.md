@@ -1,13 +1,13 @@
 # 系统信息模块
 
-**脚本入口：** `eve.System()`
+**脚本入口：** `eve.HostSystem()`
 
 查询操作系统、CPU、内存、电量、剪贴板和 GPU 信息。
 
 ## 基本用法
 
 ```squirrel
-local sys = eve.System();
+local sys = eve.HostSystem();
 print(sys.getOS() + " / " + sys.getProcessorCount() + " cores\n");
 sys.setClipboardText("EVEngine");
 ```

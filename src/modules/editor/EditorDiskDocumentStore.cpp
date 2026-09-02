@@ -34,7 +34,7 @@ Revision revisionMember(const EditorValue& value, const char* key) {
 }
 
 EditorResult<AutosaveDraft> draftFailure(const char* rule, std::string message) {
-    return EditorResult<AutosaveDraft>::error(EditorStatus::Rejected, RuleId(rule), std::move(message));
+    return eve::editing::failed<AutosaveDraft>(EditorStatus::Rejected, RuleId(rule), std::move(message));
 }
 
 }  // namespace
@@ -78,12 +78,12 @@ EditorResult<StoredDocument> DiskAtomicDocumentStore::read(const std::string& re
                        "Document resource is not persisted: " + resourceUri);
     const std::string         json{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
     EditorResult<EditorValue> parsed = editorValueFromJson(json);
-    if (!parsed.isAccepted() || !parsed.value)
+    if (!parsed.ok() || !parsed.ok())
         return failure(EditorStatus::Failed, "editor.document.invalid-envelope", "Document JSON envelope is invalid");
 
-    const EditorValue* content       = member(*parsed.value, "content");
-    const Revision     revision      = revisionMember(*parsed.value, "revision");
-    const auto*        schema        = member(*parsed.value, "schemaVersion");
+    const EditorValue* content       = member(parsed.value(), "content");
+    const Revision     revision      = revisionMember(parsed.value(), "revision");
+    const auto*        schema        = member(parsed.value(), "schemaVersion");
     const auto*        schemaInteger = schema ? schema->getIf<std::int64_t>() : nullptr;
     if (!content || !schemaInteger || *schemaInteger != 1)
         return failure(EditorStatus::Failed, "editor.document.unsupported-schema",
@@ -93,7 +93,7 @@ EditorResult<StoredDocument> DiskAtomicDocumentStore::read(const std::string& re
     stored.content     = *content;
     stored.revision    = revision;
     stored.contentHash = editorValueContentHash(stored.content);
-    return EditorResult<StoredDocument>::applied(std::move(stored));
+    return eve::editing::applied<StoredDocument>(std::move(stored));
 }
 
 EditorResult<StoredDocument> DiskAtomicDocumentStore::compareAndSwap(const std::string& resourceUri,
@@ -105,9 +105,9 @@ EditorResult<StoredDocument> DiskAtomicDocumentStore::compareAndSwap(const std::
 
     StoredDocument               current;
     EditorResult<StoredDocument> existing = read(resourceUri);
-    if (existing.isAccepted() && existing.value)
-        current = *existing.value;
-    else if (existing.status != EditorStatus::NotFound)
+    if (existing.ok())
+        current = existing.value();
+    else if (existing.code() != EditorStatus::NotFound)
         return existing;
     else
         current.contentHash.clear();
@@ -144,12 +144,12 @@ EditorResult<StoredDocument> DiskAtomicDocumentStore::compareAndSwap(const std::
         std::filesystem::remove(temporary, ec);
         return failure(EditorStatus::Failed, "editor.document.atomic-replace", "Atomic replacement failed");
     }
-    return EditorResult<StoredDocument>::applied(std::move(next));
+    return eve::editing::applied<StoredDocument>(std::move(next));
 }
 
 EditorResult<StoredDocument> DiskAtomicDocumentStore::failure(EditorStatus status, const char* rule,
                                                               std::string message) {
-    return EditorResult<StoredDocument>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<StoredDocument>(status, RuleId(rule), std::move(message));
 }
 
 bool DiskAtomicDocumentStore::replace(const std::filesystem::path& temporary,
@@ -173,16 +173,16 @@ std::string AutosaveService::draftUri(const DocumentId& document) const {
 
 EditorResult<StoredDocument> AutosaveService::writeDraft(const DocumentSnapshot& snapshot, const EditorValue& content) {
     if (!store_ || snapshot.id.empty())
-        return EditorResult<StoredDocument>::error(EditorStatus::Rejected, RuleId("editor.autosave.invalid"),
+        return eve::editing::failed<StoredDocument>(EditorStatus::Rejected, RuleId("editor.autosave.invalid"),
                                                    "Autosave store and document are required");
     const std::string                  uri      = draftUri(snapshot.id);
     Revision                           revision = 0;
     std::string                        hash;
-    const EditorResult<StoredDocument> existing = store_->read(uri);
-    if (existing.isAccepted() && existing.value) {
-        revision = existing.value->revision;
-        hash     = existing.value->contentHash;
-    } else if (existing.status != EditorStatus::NotFound) {
+    EditorResult<StoredDocument> existing = store_->read(uri);
+    if (existing.ok()) {
+        revision = existing.value().revision;
+        hash     = existing.value().contentHash;
+    } else if (existing.code() != EditorStatus::NotFound) {
         return existing;
     }
     EditorValue::Object draft;
@@ -197,13 +197,8 @@ EditorResult<StoredDocument> AutosaveService::writeDraft(const DocumentSnapshot&
 EditorResult<AutosaveDraft> AutosaveService::readDraft(const DocumentId& document) const {
     if (!store_ || document.empty()) return draftFailure("editor.autosave.invalid", "Autosave store is required");
     const EditorResult<StoredDocument> stored = store_->read(draftUri(document));
-    if (!stored.isAccepted() || !stored.value) {
-        EditorResult<AutosaveDraft> result;
-        result.status      = stored.status;
-        result.diagnostics = stored.diagnostics;
-        return result;
-    }
-    const EditorValue& root    = stored.value->content;
+    if (!stored.ok()) return EditorResult<AutosaveDraft>::failure(stored.status());
+    const EditorValue& root    = stored.value().content;
     const EditorValue* content = member(root, "content");
     if (!content || revisionMember(root, "schemaVersion") != 1)
         return draftFailure("editor.autosave.unsupported-schema", "Autosave draft schemaVersion must be 1");
@@ -215,7 +210,7 @@ EditorResult<AutosaveDraft> AutosaveService::readDraft(const DocumentId& documen
     draft.content       = *content;
     if (draft.document != document)
         return draftFailure("editor.autosave.document-mismatch", "Autosave draft belongs to another document");
-    return EditorResult<AutosaveDraft>::applied(std::move(draft));
+    return eve::editing::applied<AutosaveDraft>(std::move(draft));
 }
 
 bool AutosaveService::shouldOfferRecovery(const AutosaveDraft& draft, const DocumentSnapshot& formal) const {

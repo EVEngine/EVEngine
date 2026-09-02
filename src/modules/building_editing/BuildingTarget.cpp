@@ -13,7 +13,7 @@ namespace {
 
 template <class T>
 EditorResult<T> buildingError(EditorStatus status, std::string rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(std::move(rule)), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(std::move(rule)), std::move(message));
 }
 
 EditorValue stringArray(const std::vector<std::string>& values) {
@@ -141,7 +141,7 @@ EditorResult<BuildingInstanceSnapshot> parseInstance(const EditorValue& value) {
                                                            "Garrison member tags must be strings");
         result.garrison.push_back({*id, *type, std::move(tags)});
     }
-    return EditorResult<BuildingInstanceSnapshot>::applied(std::move(result));
+    return eve::editing::applied<BuildingInstanceSnapshot>(std::move(result));
 }
 
 BuildingInstanceSnapshot snapshot(const building::PlacedBuilding& placed) {
@@ -225,7 +225,7 @@ EditorResult<BuildingInstanceSnapshot> BuildingPlacementTarget::instance(int ins
         return buildingError<BuildingInstanceSnapshot>(EditorStatus::NotFound,
                                                        "editor.building.instance-not-found",
                                                        "Placed building instance was not found");
-    return EditorResult<BuildingInstanceSnapshot>::applied(snapshot(found->second));
+    return eve::editing::applied<BuildingInstanceSnapshot>(snapshot(found->second));
 }
 
 int BuildingPlacementTarget::nextAvailableInstanceId() const {
@@ -243,16 +243,18 @@ BuildingPlacementPreview BuildingPlacementTarget::preview(const std::string& bui
     result.worldRevision = revision_;
     if (!world_) {
         result.status = EditorStatus::Rejected;
-        result.diagnostics.push_back({RuleId("editor.building.world-required"), DiagnosticSeverity::Error,
-                                      "Placement world is unavailable"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::PreconditionViolation,
+            RuleId("editor.building.world-required"), DiagnosticSeverity::Error,
+            "Placement world is unavailable"));
         return result;
     }
     building::PlacementSystem::ensureBuiltins();
     const building::BuildingDefinition* definition = building::BuildingRegistry::find(buildingId);
     if (!definition) {
         result.status = EditorStatus::NotFound;
-        result.diagnostics.push_back({RuleId("editor.building.unknown-building"), DiagnosticSeverity::Error,
-                                      "Building definition was not found: " + buildingId});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::NotFound,
+            RuleId("editor.building.unknown-building"), DiagnosticSeverity::Error,
+            "Building definition was not found: " + buildingId));
         return result;
     }
     const building::SnapResult snapped = building::PlacementSystem::snap(*world_, buildingId,
@@ -285,9 +287,9 @@ BuildingPlacementPreview BuildingPlacementTarget::preview(const std::string& bui
         static_cast<float>(result.normalizedRotation), excludeInstanceId, &reason);
     result.status = valid ? EditorStatus::Applied : EditorStatus::Rejected;
     if (!valid)
-        result.diagnostics.push_back({RuleId("editor.building." + (reason.empty() ? "rejected" : reason)),
-                                      DiagnosticSeverity::Error,
-                                      "Building footprint validation rejected placement: " + reason});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::PreconditionViolation,
+            RuleId("editor.building." + (reason.empty() ? "rejected" : reason)), DiagnosticSeverity::Error,
+            "Building footprint validation rejected placement: " + reason));
     return result;
 }
 
@@ -303,16 +305,16 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makePlace(
         return buildingError<DomainOperation>(EditorStatus::Rejected,
                                               "editor.building." + (reason.empty() ? "rejected" : reason),
                                               "Building footprint validation rejected placement: " + reason);
-    return EditorResult<DomainOperation>::applied(instanceOperation(
+    return eve::editing::applied<DomainOperation>(instanceOperation(
         id_, "building.instance.set.v1", "building.instance.delete.v1", placed, placed));
 }
 
 EditorResult<DomainOperation> BuildingPlacementTarget::makeMove(int instanceId, int cellX, int cellY,
                                                                 double rotationDegrees) const {
     auto current = instance(instanceId);
-    if (!current.value) return buildingError<DomainOperation>(current.status, "editor.building.instance-not-found",
+    if (!current.ok()) return buildingError<DomainOperation>(current.code(), "editor.building.instance-not-found",
                                                               "Placed building instance was not found");
-    BuildingInstanceSnapshot desired = *current.value;
+    BuildingInstanceSnapshot desired = current.value();
     desired.cellX = cellX;
     desired.cellY = cellY;
     desired.rotationDegrees = building::PlacementSystem::normalizeRotation(
@@ -329,16 +331,16 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeMove(int instanceId, 
         return buildingError<DomainOperation>(EditorStatus::Rejected,
                                               "editor.building." + (reason.empty() ? "rejected" : reason),
                                               "Building footprint validation rejected move: " + reason);
-    return EditorResult<DomainOperation>::applied(instanceOperation(
-        id_, "building.instance.set.v1", "building.instance.set.v1", desired, *current.value));
+    return eve::editing::applied<DomainOperation>(instanceOperation(
+        id_, "building.instance.set.v1", "building.instance.set.v1", desired, current.value()));
 }
 
 EditorResult<DomainOperation> BuildingPlacementTarget::makeRemove(int instanceId) const {
     auto current = instance(instanceId);
-    if (!current.value) return buildingError<DomainOperation>(current.status, "editor.building.instance-not-found",
+    if (!current.ok()) return buildingError<DomainOperation>(current.code(), "editor.building.instance-not-found",
                                                               "Placed building instance was not found");
-    return EditorResult<DomainOperation>::applied(instanceOperation(
-        id_, "building.instance.delete.v1", "building.instance.set.v1", *current.value, *current.value));
+    return eve::editing::applied<DomainOperation>(instanceOperation(
+        id_, "building.instance.delete.v1", "building.instance.set.v1", current.value(), current.value()));
 }
 
 EditorResult<void> BuildingPlacementTarget::applyDomainOperation(const DomainOperation& operation) {
@@ -349,18 +351,18 @@ EditorResult<void> BuildingPlacementTarget::applyDomainOperation(const DomainOpe
         return buildingError<void>(EditorStatus::Rejected, "editor.building.target-mismatch",
                                    "Building operation targets another world");
     auto parsed = parseInstance(operation.payload);
-    if (!parsed.value)
-        return buildingError<void>(parsed.status, "editor.building.invalid-instance",
+    if (!parsed.ok())
+        return buildingError<void>(parsed.code(), "editor.building.invalid-instance",
                                    "Building operation payload is invalid");
     if (operation.type == "building.instance.delete.v1") {
-        if (!world_->hasBuilding(parsed.value->instanceId))
+        if (!world_->hasBuilding(parsed.value().instanceId))
             return buildingError<void>(EditorStatus::NotFound, "editor.building.instance-not-found",
                                        "Placed building instance was not found");
-        if (!building::PlacementSystem::removeBuilding(world_, parsed.value->instanceId))
+        if (!building::PlacementSystem::removeBuilding(world_, parsed.value().instanceId))
             return buildingError<void>(EditorStatus::Failed, "editor.building.remove-failed",
                                        "PlacementSystem rejected building removal");
     } else if (operation.type == "building.instance.set.v1") {
-        const building::PlacedBuilding desired = runtime(*parsed.value);
+        const building::PlacedBuilding desired = runtime(parsed.value());
         if (!world_->hasBuilding(desired.instanceId)) {
             std::string reason;
             if (building::PlacementSystem::restoreExact(world_, desired, &reason) !=
@@ -392,7 +394,7 @@ EditorResult<void> BuildingPlacementTarget::applyDomainOperation(const DomainOpe
     }
     ++revision_;
     dirty_.include(0, 0);
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorValue BuildingPlacementTarget::snapshotValue() const {

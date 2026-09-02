@@ -345,6 +345,10 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 debug
+        # A PR that changes the third-party patch/cache key must do a full cold
+        # dependency plus engine/test build. Recent windows-2025 runners can
+        # exceed 40 minutes without any compiler failure, so retain a bounded
+        # hang guard while allowing the cold build to finish.
         timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -973,7 +977,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # Full debug build + per-case unit tests + all-example smoke exceeded the
+    # previous 60-minute job cap even though each step stayed within its guard.
+    timeout-minutes: 90
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64

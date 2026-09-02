@@ -11,7 +11,7 @@ namespace {
 
 template <class T>
 EditorResult<T> runtimeError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue::Object* properties(const MaterialDocumentTarget& target,
@@ -31,7 +31,7 @@ const T* value(const EditorValue::Object& properties, const char* path) {
 
 template <class T, class Resolver>
 EditorResult<T*> resolveAsset(const std::string& asset, Resolver&& resolver) {
-    if (asset.empty()) return EditorResult<T*>::applied(nullptr);
+    if (asset.empty()) return eve::editing::applied<T*>(nullptr);
     return resolver(asset);
 }
 
@@ -68,12 +68,8 @@ EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
                                   "Renderable3D handle is missing or stale");
     const auto diagnostics = candidate.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics) {
-        if (diagnostic.severity == DiagnosticSeverity::Error) {
-            EditorResult<void> result;
-            result.status = EditorStatus::Rejected;
-            result.diagnostics = diagnostics;
-            return result;
-        }
+        if (diagnostic.severity() == DiagnosticSeverity::Error)
+            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     }
     EditorValue snapshot;
     const auto* values = properties(candidate, snapshot);
@@ -103,25 +99,15 @@ EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
     for (const auto* result : {static_cast<const EditorResult<graphics::Texture*>*>(&albedo),
                                static_cast<const EditorResult<graphics::Texture*>*>(&normal),
                                static_cast<const EditorResult<graphics::Texture*>*>(&height)}) {
-        if (!result->isAccepted() || !result->value) {
-            EditorResult<void> failed;
-            failed.status = result->status;
-            failed.diagnostics = result->diagnostics;
-            return failed;
-        }
+        if (!result->ok()) return EditorResult<void>::failure(result->status());
     }
-    if (!shader.isAccepted() || !shader.value) {
-        EditorResult<void> failed;
-        failed.status = shader.status;
-        failed.diagnostics = std::move(shader.diagnostics);
-        return failed;
-    }
+    if (!shader.ok()) return EditorResult<void>::failure(shader.status());
 
     const auto& tint = *value<EditorValue::Array>(*values, "shading.tint");
-    renderable->setTexture(*albedo.value);
-    renderable->setNormalTexture(*normal.value);
-    renderable->setHeightTexture(*height.value);
-    renderable->setShader(*shader.value);
+    renderable->setTexture(albedo.value());
+    renderable->setNormalTexture(normal.value());
+    renderable->setHeightTexture(height.value());
+    renderable->setShader(shader.value());
     renderable->setTint(static_cast<float>(number(tint[0])),
                         static_cast<float>(number(tint[1])),
                         static_cast<float>(number(tint[2])),
@@ -132,7 +118,7 @@ EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
     renderable->setReceiveLight(*value<bool>(*values, "lighting.receive"));
     renderable->setCastShadow(*value<bool>(*values, "shadow.cast"));
     renderable->setReceiveShadow(*value<bool>(*values, "shadow.receive"));
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::material_editing

@@ -1,4 +1,4 @@
-#include "editor/AnimationRootMotionPreviewSource.h"
+#include "action_editor/AnimationRootMotionPreviewSource.h"
 
 #include "animation/AnimClip.h"
 #include "animation/AnimClipRegistry.h"

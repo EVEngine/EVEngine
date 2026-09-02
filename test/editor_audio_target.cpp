@@ -1,4 +1,4 @@
-#include "editor/EditorAudioTarget.h"
+#include "audio_editor/EditorAudioTarget.h"
 #include "editor/EditorAuthority.h"
 #include "editor/EditorTransactionService.h"
 
@@ -17,7 +17,7 @@ SelectionSnapshot sourceSelection(const AudioSourceTarget& target) {
     SelectionItem item;
     item.domain = SelectionDomain::Scene;
     item.target = TargetId(target.targetId());
-    item.item = StableId(target.targetId());
+    item.item = StableId(target.targetId().value());
     item.type = "audio.source";
     selection.items.push_back(item);
     selection.primary = item;
@@ -33,13 +33,13 @@ EditorResult<TransactionReceipt> commit(Target& target, LocalTransactionBackend&
     specification.target = TargetId(target.targetId());
     specification.baseRevision = target.revision();
     auto begun = transactions.begin(std::move(specification));
-    if (!begun.isAccepted())
-        return EditorResult<TransactionReceipt>::error(begun.status, RuleId("test.audio.begin"),
+    if (!begun.ok())
+        return eve::editing::failed<TransactionReceipt>(begun.code(), RuleId("test.audio.begin"),
                                                        "Could not begin audio transaction");
     auto appended = transactions.append(operation);
-    if (!appended.isAccepted()) {
+    if (!appended.ok()) {
         [[maybe_unused]] const auto rolledBack = transactions.rollback();
-        return EditorResult<TransactionReceipt>::error(appended.status, RuleId("test.audio.append"),
+        return eve::editing::failed<TransactionReceipt>(appended.code(), RuleId("test.audio.append"),
                                                        "Could not append audio operation");
     }
     return transactions.commit();
@@ -70,17 +70,17 @@ TEST_CASE("editor.audio.source_edits_are_reversible_and_cross_validated") {
              {PropertyPath("play.loop-start"), EditorValue(10.0), "audio.loop-start"},
              {PropertyPath("play.loop-end"), EditorValue(5.0), "audio.loop-end"}}) {
         auto operation = target.makeSet(selection, path, value, PropertySetMode::Absolute);
-        REQUIRE(operation.value);
-        REQUIRE(commit(target, transactions, *operation.value, id).isAccepted());
+        REQUIRE(operation.ok());
+        REQUIRE(commit(target, transactions, operation.value(), id).ok());
     }
     CHECK_EQ(target.validate().size(), static_cast<std::size_t>(1));
-    REQUIRE(transactions.undo().isAccepted());
+    REQUIRE(transactions.undo().ok());
     CHECK(target.validate().empty());
-    REQUIRE(transactions.redo().isAccepted());
+    REQUIRE(transactions.redo().ok());
     CHECK_EQ(target.validate().size(), static_cast<std::size_t>(1));
 
     AudioSourceTarget restored("restored");
-    REQUIRE(restored.loadSnapshot(target.snapshotValue()).isAccepted());
+    REQUIRE(restored.loadSnapshot(target.snapshotValue()).ok());
     CHECK(restored.read(sourceSelection(restored), PropertyPath("clip.asset")).value ==
           EditorValue("asset://audio/river.ogg"));
 
@@ -89,7 +89,7 @@ TEST_CASE("editor.audio.source_edits_are_reversible_and_cross_validated") {
     REQUIRE(unknownRoot != nullptr);
     unknownRoot->at("schemaVersion") = int64_t{2};
     const Revision revisionBeforeRejectedMigration = restored.revision();
-    CHECK_EQ(static_cast<int>(restored.loadSnapshot(unknownVersion).status),
+    CHECK_EQ(static_cast<int>(restored.loadSnapshot(unknownVersion).code()),
              static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(restored.revision(), revisionBeforeRejectedMigration);
     CHECK(restored.read(sourceSelection(restored), PropertyPath("clip.asset")).value ==
@@ -101,33 +101,33 @@ TEST_CASE("editor.audio.mixer_bus_hierarchy_is_cycle_safe_and_reversible") {
     LocalWorldAuthority authority(&mixer);
     LocalTransactionBackend transactions(&authority);
     auto music = mixer.makeCreate({ObjectId("music"), ObjectId("master"), "Music", 0.8});
-    REQUIRE(music.value);
-    REQUIRE(commit(mixer, transactions, *music.value, "audio.bus.music").isAccepted());
+    REQUIRE(music.ok());
+    REQUIRE(commit(mixer, transactions, music.value(), "audio.bus.music").ok());
     auto combat = mixer.makeCreate({ObjectId("combat"), ObjectId("music"), "Combat", 1.0});
-    REQUIRE(combat.value);
-    REQUIRE(commit(mixer, transactions, *combat.value, "audio.bus.combat").isAccepted());
+    REQUIRE(combat.ok());
+    REQUIRE(commit(mixer, transactions, combat.value(), "audio.bus.combat").ok());
     CHECK_EQ(mixer.children(ObjectId("music")).size(), static_cast<std::size_t>(1));
-    CHECK_EQ(static_cast<int>(mixer.makeDelete(ObjectId("music")).status),
+    CHECK_EQ(static_cast<int>(mixer.makeDelete(ObjectId("music")).code()),
              static_cast<int>(EditorStatus::Rejected));
 
-    AudioBusSnapshot changed = *mixer.bus(ObjectId("music")).value;
+    AudioBusSnapshot changed = mixer.bus(ObjectId("music")).value();
     changed.parent = ObjectId("combat");
-    CHECK_EQ(static_cast<int>(mixer.makeReplace(changed).status),
+    CHECK_EQ(static_cast<int>(mixer.makeReplace(changed).code()),
              static_cast<int>(EditorStatus::Rejected));
-    changed = *mixer.bus(ObjectId("combat")).value;
+    changed = mixer.bus(ObjectId("combat")).value();
     changed.volume = 0.5;
     changed.mute = true;
     auto replace = mixer.makeReplace(changed);
-    REQUIRE(replace.value);
-    REQUIRE(commit(mixer, transactions, *replace.value, "audio.bus.settings").isAccepted());
-    CHECK_EQ(mixer.bus(ObjectId("combat")).value->volume, 0.5);
-    CHECK(mixer.bus(ObjectId("combat")).value->mute);
-    REQUIRE(transactions.undo().isAccepted());
-    CHECK_EQ(mixer.bus(ObjectId("combat")).value->volume, 1.0);
-    CHECK(!mixer.bus(ObjectId("combat")).value->mute);
+    REQUIRE(replace.ok());
+    REQUIRE(commit(mixer, transactions, replace.value(), "audio.bus.settings").ok());
+    CHECK_EQ(mixer.bus(ObjectId("combat")).value().volume, 0.5);
+    CHECK(mixer.bus(ObjectId("combat")).value().mute);
+    REQUIRE(transactions.undo().ok());
+    CHECK_EQ(mixer.bus(ObjectId("combat")).value().volume, 1.0);
+    CHECK(!mixer.bus(ObjectId("combat")).value().mute);
     CHECK_EQ(static_cast<int>(mixer.snapshotValue().type()),
              static_cast<int>(EditorValue::Type::Object));
     AudioMixerTarget restored("restored-mixer");
-    REQUIRE(restored.loadSnapshot(mixer.snapshotValue()).isAccepted());
+    REQUIRE(restored.loadSnapshot(mixer.snapshotValue()).ok());
     CHECK_EQ(restored.children(ObjectId("music")).size(), static_cast<std::size_t>(1));
 }

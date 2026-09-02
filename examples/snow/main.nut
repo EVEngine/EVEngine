@@ -40,6 +40,8 @@ persist stepTimer = 0.0
 persist rebuildTimer = 0.0
 persist helpPrinted = false
 
+heightmapTargets <- eve.HeightmapTargetModule()
+
 const W = 96;            // heightmap cells
 const H = 96;
 const CELL = 0.5;        // world units per cell
@@ -91,7 +93,7 @@ function regenTerrain() {
 
     if (terrainMesh == null) {
         snow.applyToHeightmap(sf, terrainHm, combinedHm, SNOW_SCALE);
-        terrainMesh = editor.newHeightmapMeshSmooth(combinedHm, CELL, HSCALE);
+        terrainMesh = heightmapTargets.newSmoothMesh(combinedHm, CELL, HSCALE);
         terrainEnt = eve.Renderable3D();
         terrainEnt.setMesh(terrainMesh);
         terrainEnt.setTint(1.0, 1.0, 1.0, 1.0);
@@ -123,7 +125,7 @@ function regenTerrain() {
 function rebuildTerrain() {
     if (terrainMesh == null) return;
     snow.applyToHeightmap(sf, terrainHm, combinedHm, SNOW_SCALE);
-    editor.updateHeightmapMeshSmooth(terrainMesh, gfx, combinedHm, CELL, HSCALE);
+    heightmapTargets.updateSmoothMesh(terrainMesh, gfx, combinedHm, CELL, HSCALE);
     if (sf.isDirty()) {
         snow.updateTexture(sf, terrainTexA, gfx, "albedo");
         snow.updateTexture(sf, terrainTexN, gfx, "normal");

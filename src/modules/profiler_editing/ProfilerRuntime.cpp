@@ -10,14 +10,15 @@ EditorResult<void> EditorProfilerCollector::collect(const profiler::Profiler& pr
                                                      EditorProfilerModel& model) const {
     auto captured = profiler.captureFrame();
     if (!captured.hasValue()) {
-        EditorResult<void> result;
-        result.status = captured.code() == eve::StatusCode::NotFound ? EditorStatus::NotFound
-                                                                     : EditorStatus::Failed;
-        for (const auto& diagnostic : captured.diagnostics()) {
-            result.diagnostics.push_back({RuleId("editor.profiler.capture"),
-                                          DiagnosticSeverity::Error, diagnostic.message()});
-        }
-        return result;
+        std::vector<EditorDiagnostic> diagnostics;
+        for (const auto& diagnostic : captured.diagnostics())
+            diagnostics.push_back(eve::editing::ruleDiagnostic(
+                diagnostic.code(), RuleId("editor.profiler.capture"),
+                DiagnosticSeverity::Error, diagnostic.message()));
+        const EditorStatus status = captured.code() == eve::StatusCode::NotFound
+                                        ? EditorStatus::NotFound
+                                        : EditorStatus::Failed;
+        return EditorResult<void>::failure(eve::Status(status, std::move(diagnostics)));
     }
     auto runtimeFrame = std::move(captured).takeValue();
     EditorProfilerFrame frame;

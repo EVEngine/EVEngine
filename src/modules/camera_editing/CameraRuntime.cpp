@@ -6,7 +6,7 @@
 
 namespace eve::camera_editing {
 namespace {
-template<class T> EditorResult<T> fail(EditorStatus status,const char* rule,std::string message){return EditorResult<T>::error(status,RuleId(rule),std::move(message));}
+template<class T> EditorResult<T> fail(EditorStatus status,const char* rule,std::string message){return eve::editing::failed<T>(status,RuleId(rule),std::move(message));}
 }
 
 CameraDocumentRuntime::CameraDocumentRuntime() = default;
@@ -16,12 +16,8 @@ EditorResult<void> CameraDocumentRuntime::publish(const CameraDocumentTarget& do
                                                   graphics::Camera3D* camera) {
     const auto diagnostics = document.validate();
     for (const auto& diagnostic : diagnostics)
-        if (diagnostic.severity == DiagnosticSeverity::Error) {
-            EditorResult<void> result;
-            result.status = EditorStatus::Rejected;
-            result.diagnostics = diagnostics;
-            return result;
-        }
+        if (diagnostic.severity() == DiagnosticSeverity::Error)
+            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     auto candidate = std::make_unique<camera::CameraController>();
     candidate->setCamera(camera);
     for (const auto& rig : document.rigs()) {
@@ -55,9 +51,7 @@ EditorResult<void> CameraDocumentRuntime::publish(const CameraDocumentTarget& do
     }
     controller_ = std::move(candidate);
     revision_ = document.revision();
-    EditorResult<void> result = EditorResult<void>::applied();
-    result.diagnostics = diagnostics;
-    return result;
+    return eve::editing::applied<void>(diagnostics);
 }
 
 } // namespace eve::camera_editing

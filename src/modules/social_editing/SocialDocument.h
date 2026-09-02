@@ -1,37 +1,51 @@
 #pragma once
 
-#include "editing/EditingAuthority.h"
 #include "editing/EditableTarget.h"
+#include "editing/EditingAuthority.h"
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-namespace eve::social { class SocialGraph; }
+namespace eve::social {
+class SocialGraph;
+}
 
 namespace eve::social_editing {
-using CapabilityId=editing::CapabilityId; using DiagnosticSeverity=editing::DiagnosticSeverity;
-using DomainOperation=editing::DomainOperation; using EditRegion=editing::EditRegion;
-using EditorDiagnostic=editing::Diagnostic; template<class T>using EditorResult=editing::Result<T>;
-using EditorStatus=editing::Status; using EditorValue=editing::Value;
-using IDomainOperationTarget=editing::IDomainOperationTarget;
-using IDomainOperationTargetStaging=editing::IDomainOperationTargetStaging;
-using IEditableTarget=editing::IEditableTarget; using Revision=editing::Revision;
-using RuleId=editing::RuleId; using StableId=editing::StableId;
-using TargetDescriptor=editing::TargetDescriptor; using TargetId=editing::TargetId;
+using CapabilityId       = editing::CapabilityId;
+using DiagnosticSeverity = editing::DiagnosticSeverity;
+using DomainOperation    = editing::DomainOperation;
+using EditRegion         = editing::EditRegion;
+using EditorDiagnostic   = editing::Diagnostic;
+template <class T>
+using EditorResult                  = editing::Result<T>;
+using EditorStatus                  = editing::Status;
+using EditorValue                   = editing::Value;
+using IDomainOperationTarget        = editing::IDomainOperationTarget;
+using IDomainOperationTargetStaging = editing::IDomainOperationTargetStaging;
+using IEditableTarget               = editing::IEditableTarget;
+using Revision                      = editing::Revision;
+using RuleId                        = editing::RuleId;
+using StableId                      = editing::StableId;
+using TargetDescriptor              = editing::TargetDescriptor;
+using TargetId                      = editing::TargetId;
 
 /** @brief Stable social-graph entity metadata for graph presenters. */
-struct SocialEntityRecord { StableId id; std::string label; std::string category; };
+struct SocialEntityRecord {
+    StableId    id;
+    std::string label;
+    std::string category;
+};
 
 /** @brief Directed ownership, control, assignment or weighted relation edge. */
 struct SocialEdgeRecord {
-    StableId id;
-    StableId source;
-    StableId target;
+    StableId    id;
+    StableId    source;
+    StableId    target;
     std::string kind = "relation";
     std::string type;
-    double weight = 1.0;
+    double      weight = 1.0;
 };
 
 /** @brief UI-neutral revisioned social graph authoring document. */
@@ -41,14 +55,15 @@ class SocialDocumentTarget final : public virtual IEditableTarget,
 public:
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.social-graph"); }
     explicit SocialDocumentTarget(std::string id);
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
+    std::uint64_t    revision() const override { return revision_; }
+    EditRegion       dirtyRegion() const override { return dirty_; }
+    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
-    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
-    void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
+     * Valid until this target is destroyed or mutated. */
+    void*                                   queryCapability(const CapabilityId& capability) override;
+    EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Enumerate entities in stable order. */
@@ -71,9 +86,11 @@ public:
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
-    std::string id_; Revision revision_ = 1; EditRegion dirty_;
+    std::string                            id_;
+    Revision                               revision_ = 1;
+    EditRegion                             dirty_;
     std::map<StableId, SocialEntityRecord> entities_;
-    std::map<StableId, SocialEdgeRecord> edges_;
+    std::map<StableId, SocialEdgeRecord>   edges_;
 };
 
 /** @brief Publishes a complete validated social document to a runtime SocialGraph. */

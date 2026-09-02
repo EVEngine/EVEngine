@@ -1,6 +1,7 @@
 #pragma once
 
 #include "editing/EditableTarget.h"
+#include "procgen_editing/HeightmapBrush.h"
 
 #include <memory>
 #include <string>
@@ -14,8 +15,8 @@ class HeightmapTarget final : public editing::IEditableTarget, public editing::I
 public:
     /** @brief Bind a live heightmap which must outlive this adapter. */
     HeightmapTarget(std::string id, procgen::Heightmap* heightmap);
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    editing::TargetId targetId() const override { return editing::TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     editing::EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     int width() const override;
@@ -45,17 +46,4 @@ private:
  */
 [[nodiscard]] std::unique_ptr<HeightmapTarget> createHeightmapTarget(
     std::string id, procgen::Heightmap* heightmap);
-/**
- * @brief Apply the legacy circular brush through the procgen authoring satellite.
- * @param heightmap Borrowed target heightmap.
- * @param centerX Brush center in cell coordinates.
- * @param centerY Brush center in cell coordinates.
- * @param radius Non-negative radius in cells.
- * @param strength Signed center-height delta.
- * @return Applied with the changed sample count, NoOp when strength is zero, or a validation failure.
- */
-[[nodiscard]] editing::Result<int> applyHeightmapBrush(procgen::Heightmap* heightmap,
-                                                       float centerX, float centerY,
-                                                       float radius, float strength);
-
 }  // namespace eve::procgen_editing

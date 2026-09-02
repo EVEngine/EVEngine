@@ -176,6 +176,8 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
     cluster.u0[3] = bits(1.6f);
     cluster.u1[0] = 0;
     cluster.u1[1] = 1;
+    cluster.u1[3] = 0xFFFFFFFFu;
+    for (uint32_t &child : cluster.u3) child = 0xFFFFFFFFu;
     GpuVgAssetUpload upload{};
     upload.positions = positions;
     upload.vertexCount = 3;
@@ -201,6 +203,7 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
     auto *object = Renderable3D::create();
     object->setMesh(mesh);
     object->setMaterial(material);
+    object->setPosition(0.f, 0.f, 0.f);
 
     // A second copy lies directly behind the first one. It stays inside the
     // frustum but must disappear from the GPU-written indirect commands once
@@ -231,15 +234,12 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
     control->disable("atmosphere");
     control->disable("msaa");
     control->enable("gpuDriven");
-    // The visibility path owns its ID/bary/depth attachments; the legacy
-    // material GBuffer pass is unrelated to this focused VG scene.
-    control->disable("gbuffer");
     control->enable("visResolve");
     captureLuma(gfx);
     REQUIRE(gfx->gpuDrivenResolveWanted());
+#ifdef EVENGINE_WEBGPU
     const Color visible = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     REQUIRE(visible.r > visible.b + 0.05f);
-#ifdef EVENGINE_WEBGPU
     auto *webgpu = dynamic_cast<eve::graphics::webgpu::Graphics *>(gfx);
     REQUIRE(webgpu != nullptr);
     REQUIRE(webgpu->debugGpuDrivenVgDispatchCount() == 2);

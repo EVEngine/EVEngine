@@ -8,7 +8,7 @@ namespace {
 
 template <class T>
 EditorResult<T> localizationError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 std::set<std::string> placeholders(const std::string& text) {
@@ -23,10 +23,11 @@ std::set<std::string> placeholders(const std::string& text) {
     return result;
 }
 
-void issue(LocalizationAnalysis& result, const char* rule, DiagnosticSeverity severity,
-           const std::string& key, const std::string& locale, const std::string& message) {
-    result.diagnostics.push_back({RuleId(rule), severity,
-                                  message + " [key=" + key + ", locale=" + locale + "]"});
+void issue(LocalizationAnalysis& result, const char* rule, DiagnosticSeverity severity, const std::string& key,
+           const std::string& locale, const std::string& message) {
+    result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+        eve::DiagnosticCode::InvalidArgument, RuleId(rule), severity,
+        message + " [key=" + key + ", locale=" + locale + "]"));
     if (severity == DiagnosticSeverity::Error) result.status = EditorStatus::Failed;
 }
 
@@ -39,8 +40,7 @@ const EditorValue* field(const EditorValue& value, const char* key) {
 
 }  // namespace
 
-EditorResult<void> LocalizationDocument::addRow(std::string key, std::string sourceText,
-                                                 std::string context) {
+EditorResult<void> LocalizationDocument::addRow(std::string key, std::string sourceText, std::string context) {
     if (key.empty() || sourceText.empty())
         return localizationError<void>(EditorStatus::Rejected, "editor.localization.invalid-source",
                                        "Localization key and source text are required");
@@ -48,12 +48,12 @@ EditorResult<void> LocalizationDocument::addRow(std::string key, std::string sou
         return localizationError<void>(EditorStatus::Conflict, "editor.localization.duplicate-key",
                                        "Localization key already exists: " + key);
     LocalizationRow row;
-    row.key = key;
-    row.context = std::move(context);
+    row.key        = key;
+    row.context    = std::move(context);
     row.sourceText = std::move(sourceText);
     rows_.emplace(std::move(key), std::move(row));
     ++revision_;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorResult<void> LocalizationDocument::removeRow(const std::string& key) {
@@ -61,11 +61,11 @@ EditorResult<void> LocalizationDocument::removeRow(const std::string& key) {
         return localizationError<void>(EditorStatus::NotFound, "editor.localization.key-not-found",
                                        "Localization key was not found: " + key);
     ++revision_;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorResult<void> LocalizationDocument::setVariant(const std::string& key, std::string locale,
-                                                     LocalizationVariant variant) {
+                                                    LocalizationVariant variant) {
     auto row = rows_.find(key);
     if (row == rows_.end())
         return localizationError<void>(EditorStatus::NotFound, "editor.localization.key-not-found",
@@ -79,7 +79,7 @@ EditorResult<void> LocalizationDocument::setVariant(const std::string& key, std:
                                        "Unknown voice production status: " + variant.voiceStatus);
     row->second.variants[std::move(locale)] = std::move(variant);
     ++revision_;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::vector<LocalizationRow> LocalizationDocument::rows() const {
@@ -93,8 +93,8 @@ std::vector<LocalizationRow> LocalizationDocument::rows() const {
 }
 
 LocalizationAnalysis LocalizationDocument::analyze(const std::vector<std::string>& requiredLocales,
-                                                    bool requireVoice) const {
-    LocalizationAnalysis result;
+                                                   bool                            requireVoice) const {
+    LocalizationAnalysis  result;
     std::set<std::string> uniqueLocales;
     for (const std::string& locale : requiredLocales) {
         if (locale.empty() || !uniqueLocales.insert(locale).second) {
@@ -104,7 +104,7 @@ LocalizationAnalysis LocalizationDocument::analyze(const std::vector<std::string
         }
         LocalizationLocaleCoverage coverage;
         coverage.locale = locale;
-        coverage.total = static_cast<int>(rows_.size());
+        coverage.total  = static_cast<int>(rows_.size());
         for (const auto& [key, row] : rows_) {
             const auto found = row.variants.find(locale);
             if (found == row.variants.end() || found->second.text.empty()) {
@@ -140,55 +140,54 @@ EditorValue LocalizationDocument::snapshotValue() const {
         EditorValue::Object variants;
         for (const auto& [locale, variant] : row.variants)
             variants[locale] = EditorValue::Object{{"text", variant.text},
-                                                    {"voiceAsset", variant.voiceAsset},
-                                                    {"voiceStatus", variant.voiceStatus},
-                                                    {"voiceDuration", variant.voiceDuration}};
-        rows.emplace_back(EditorValue::Object{{"key", key}, {"context", row.context},
-                                              {"sourceText", row.sourceText},
-                                              {"variants", std::move(variants)}});
+                                                   {"voiceAsset", variant.voiceAsset},
+                                                   {"voiceStatus", variant.voiceStatus},
+                                                   {"voiceDuration", variant.voiceDuration}};
+        rows.emplace_back(EditorValue::Object{
+            {"key", key}, {"context", row.context}, {"sourceText", row.sourceText}, {"variants", std::move(variants)}});
     }
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"rows", std::move(rows)}};
 }
 
 EditorResult<void> LocalizationDocument::loadSnapshot(const EditorValue& snapshot) {
-    const auto* schema = field(snapshot, "schemaVersion");
+    const auto* schema    = field(snapshot, "schemaVersion");
     const auto* rowsValue = field(snapshot, "rows");
-    const auto* version = schema ? schema->getIf<int64_t>() : nullptr;
-    const auto* rows = rowsValue ? rowsValue->getIf<EditorValue::Array>() : nullptr;
+    const auto* version   = schema ? schema->getIf<int64_t>() : nullptr;
+    const auto* rows      = rowsValue ? rowsValue->getIf<EditorValue::Array>() : nullptr;
     if (!version || *version != 1 || !rows)
         return localizationError<void>(EditorStatus::Unsupported, "editor.localization.invalid-snapshot",
                                        "Localization snapshot schema is unsupported");
     LocalizationDocument candidate;
     for (const EditorValue& rowValue : *rows) {
-        const auto* keyValue = field(rowValue, "key");
-        const auto* sourceValue = field(rowValue, "sourceText");
-        const auto* contextValue = field(rowValue, "context");
+        const auto* keyValue      = field(rowValue, "key");
+        const auto* sourceValue   = field(rowValue, "sourceText");
+        const auto* contextValue  = field(rowValue, "context");
         const auto* variantsValue = field(rowValue, "variants");
-        const auto* key = keyValue ? keyValue->getIf<std::string>() : nullptr;
-        const auto* source = sourceValue ? sourceValue->getIf<std::string>() : nullptr;
-        const auto* context = contextValue ? contextValue->getIf<std::string>() : nullptr;
-        const auto* variants = variantsValue ? variantsValue->getIf<EditorValue::Object>() : nullptr;
-        if (!key || !source || !context || !variants || !candidate.addRow(*key, *source, *context).isAccepted())
+        const auto* key           = keyValue ? keyValue->getIf<std::string>() : nullptr;
+        const auto* source        = sourceValue ? sourceValue->getIf<std::string>() : nullptr;
+        const auto* context       = contextValue ? contextValue->getIf<std::string>() : nullptr;
+        const auto* variants      = variantsValue ? variantsValue->getIf<EditorValue::Object>() : nullptr;
+        if (!key || !source || !context || !variants || !candidate.addRow(*key, *source, *context).ok())
             return localizationError<void>(EditorStatus::Rejected, "editor.localization.invalid-row",
                                            "Localization snapshot contains an invalid source row");
         for (const auto& [locale, variantValue] : *variants) {
-            const auto* textValue = field(variantValue, "text");
-            const auto* assetValue = field(variantValue, "voiceAsset");
-            const auto* statusValue = field(variantValue, "voiceStatus");
+            const auto* textValue     = field(variantValue, "text");
+            const auto* assetValue    = field(variantValue, "voiceAsset");
+            const auto* statusValue   = field(variantValue, "voiceStatus");
             const auto* durationValue = field(variantValue, "voiceDuration");
-            const auto* text = textValue ? textValue->getIf<std::string>() : nullptr;
-            const auto* asset = assetValue ? assetValue->getIf<std::string>() : nullptr;
-            const auto* status = statusValue ? statusValue->getIf<std::string>() : nullptr;
-            const auto* duration = durationValue ? durationValue->getIf<double>() : nullptr;
+            const auto* text          = textValue ? textValue->getIf<std::string>() : nullptr;
+            const auto* asset         = assetValue ? assetValue->getIf<std::string>() : nullptr;
+            const auto* status        = statusValue ? statusValue->getIf<std::string>() : nullptr;
+            const auto* duration      = durationValue ? durationValue->getIf<double>() : nullptr;
             if (!text || !asset || !status || !duration ||
-                !candidate.setVariant(*key, locale, {*text, *asset, *status, *duration}).isAccepted())
+                !candidate.setVariant(*key, locale, {*text, *asset, *status, *duration}).ok())
                 return localizationError<void>(EditorStatus::Rejected, "editor.localization.invalid-variant",
                                                "Localization snapshot contains an invalid locale variant");
         }
     }
     rows_ = std::move(candidate.rows_);
     ++revision_;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::localization_editing

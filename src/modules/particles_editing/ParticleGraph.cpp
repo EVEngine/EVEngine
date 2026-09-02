@@ -11,11 +11,12 @@ namespace {
 
 template <class T>
 EditorResult<T> particleError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 void error(ParticleGraphCompileResult& result, const char* rule, std::string message) {
-    result.diagnostics.push_back({RuleId(rule), DiagnosticSeverity::Error, std::move(message)});
+    result.diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId(rule),
+                                                              DiagnosticSeverity::Error, std::move(message)));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -85,9 +86,9 @@ GraphConnectionDecision ParticleGraphDomain::canConnect(const GraphPinRecord& fr
                      to.direction == GraphPinDirection::Input && from.type == "particle.flow" &&
                      to.type == "particle.flow" && from.node != to.node;
     if (!result.allowed)
-        result.diagnostics.push_back({RuleId("editor.particles.invalid-connection"),
-                                      DiagnosticSeverity::Error,
-                                      "Particle graph requires flow output-to-input between distinct nodes"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.particles.invalid-connection"),
+            DiagnosticSeverity::Error, "Particle graph requires flow output-to-input between distinct nodes"));
     return result;
 }
 
@@ -106,7 +107,7 @@ EditorResult<GraphNodeRecord> ParticleGraphDomain::makeNode(const GraphNodeId& i
         properties["autoRandomSeed"] = false;
         properties["looping"] = true;
         properties["emitterLife"] = -1.0;
-        return EditorResult<GraphNodeRecord>::applied(node(id, type, std::move(properties), false, true));
+        return eve::editing::applied<GraphNodeRecord>(node(id, type, std::move(properties), false, true));
     }
     if (type == "motion") {
         properties["direction"] = 0.0;
@@ -137,12 +138,12 @@ EditorResult<GraphNodeRecord> ParticleGraphDomain::makeNode(const GraphNodeId& i
         properties["minimumQuality"] = 0;
         properties["maxSpawnPerFrame"] = 0;
         properties["overflow"] = "drop";
-        return EditorResult<GraphNodeRecord>::applied(node(id, type, std::move(properties), true, false));
+        return eve::editing::applied<GraphNodeRecord>(node(id, type, std::move(properties), true, false));
     } else {
         return particleError<GraphNodeRecord>(EditorStatus::Unsupported, "editor.particles.node-type",
                                               "Unknown particle node type: " + type);
     }
-    return EditorResult<GraphNodeRecord>::applied(node(id, type, std::move(properties)));
+    return eve::editing::applied<GraphNodeRecord>(node(id, type, std::move(properties)));
 }
 
 ParticleGraphCompileResult ParticleGraphDomain::compile(const GraphDocumentData& graph) const {
@@ -275,8 +276,9 @@ ParticleGraphPreviewResult ParticleGraphDomain::preview(const GraphDocumentData&
         particleBudget < 1 || spawnBudgetPerFrame < 0) {
         result.status = EditorStatus::Rejected;
         if (compiled.status == EditorStatus::Applied)
-            result.diagnostics.push_back({RuleId("editor.particles.preview-input"), DiagnosticSeverity::Error,
-                                          "Preview time, step, and budgets are invalid"});
+            result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::InvalidArgument, RuleId("editor.particles.preview-input"),
+                DiagnosticSeverity::Error, "Preview time, step, and budgets are invalid"));
         return result;
     }
     const EditorValue* emission = field(compiled.configuration, "emission");
@@ -297,11 +299,14 @@ ParticleGraphPreviewResult ParticleGraphDomain::preview(const GraphDocumentData&
     result.peakLiveParticles = std::min({result.spawnedParticles, bufferSize, particleBudget,
                                          static_cast<int>(std::ceil(rate * maxLifetime))});
     if (result.droppedParticles > 0)
-        result.diagnostics.push_back({RuleId("editor.particles.preview-budget"), DiagnosticSeverity::Warning,
-                                      "Preview dropped spawns because a particle or per-frame budget was exceeded"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.particles.preview-budget"),
+            DiagnosticSeverity::Warning,
+            "Preview dropped spawns because a particle or per-frame budget was exceeded"));
     if (result.peakLiveParticles >= bufferSize && requested > bufferSize)
-        result.diagnostics.push_back({RuleId("editor.particles.preview-buffer"), DiagnosticSeverity::Warning,
-                                      "Preview reaches the emitter buffer capacity"});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.particles.preview-buffer"),
+            DiagnosticSeverity::Warning, "Preview reaches the emitter buffer capacity"));
     result.status = EditorStatus::Applied;
     return result;
 }

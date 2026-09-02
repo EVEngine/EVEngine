@@ -181,30 +181,6 @@ void Avatar::expose(ssq::Table &table) {
         "AvatarInstance",
         std::function<AvatarInstance *()>([]() -> AvatarInstance * { return nullptr; }), true);
 
-    auto sprite = table.addClass<graphics::Renderable2D>(
-        "Renderable2D", std::function<graphics::Renderable2D*()>([]() { return graphics::Renderable2D::create(); }),
-        false);
-    sprite.addFunc("setPosition", &graphics::Renderable2D::setPosition);
-    sprite.addFunc("getX", &graphics::Renderable2D::getX);
-    sprite.addFunc("getY", &graphics::Renderable2D::getY);
-    sprite.addFunc("setRotation", &graphics::Renderable2D::setRotation);
-    sprite.addFunc("getRotation", &graphics::Renderable2D::getRotation);
-    sprite.addFunc("setScale", &graphics::Renderable2D::setScale);
-    sprite.addFunc("setSize", &graphics::Renderable2D::setSize);
-    sprite.addFunc("setColor", &graphics::Renderable2D::setColor);
-    sprite.addFunc("setLayer", &graphics::Renderable2D::setLayer);
-    sprite.addFunc("getLayer", &graphics::Renderable2D::getLayer);
-    sprite.addFunc("setVisible", &graphics::Renderable2D::setVisible);
-    sprite.addFunc("isVisible", &graphics::Renderable2D::getVisible);
-    sprite.addFunc("setTexture", &graphics::Renderable2D::setTexture);
-    sprite.addFunc("setQuad", &graphics::Renderable2D::setQuad);
-    sprite.addFunc("setReceiveLight", &graphics::Renderable2D::setReceiveLight);
-    sprite.addFunc("getReceiveLight", &graphics::Renderable2D::getReceiveLight);
-    sprite.addFunc("setCastOcclusion", &graphics::Renderable2D::setCastOcclusion);
-    sprite.addFunc("getCastOcclusion", &graphics::Renderable2D::getCastOcclusion);
-    sprite.addFunc("setBlendMode", &graphics::Renderable2D::setBlend);
-    sprite.addFunc("getBlendMode", &graphics::Renderable2D::getBlend);
-
     av.addFunc("getKind", &AvatarInstance::getKind);
     av.addFunc("setPosition", &AvatarInstance::setPosition);
     av.addFunc("getX", &AvatarInstance::getX);

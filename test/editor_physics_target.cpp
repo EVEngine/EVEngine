@@ -1,5 +1,5 @@
 #include "editor/EditorAuthority.h"
-#include "editor/EditorPhysicsTarget.h"
+#include "physics_editor/EditorPhysicsTarget.h"
 #include "editor/EditorTransactionService.h"
 
 #include "zeroerr/assert.h"
@@ -15,7 +15,7 @@ SelectionSnapshot colliderSelection(const PhysicsColliderTarget& target) {
     SelectionItem item;
     item.domain = SelectionDomain::Scene;
     item.target = TargetId(target.targetId());
-    item.item = StableId(target.targetId());
+    item.item = StableId(target.targetId().value());
     item.type = target.describe().type;
     selection.items.push_back(item);
     selection.primary = item;
@@ -28,7 +28,7 @@ SelectionSnapshot jointSelection(const PhysicsJointTarget& target) {
     SelectionItem item;
     item.domain = SelectionDomain::Scene;
     item.target = TargetId(target.targetId());
-    item.item = StableId(target.targetId());
+    item.item = StableId(target.targetId().value());
     item.type = target.describe().type;
     selection.items.push_back(item);
     selection.primary = item;
@@ -45,13 +45,13 @@ EditorResult<TransactionReceipt> commitCollider(PhysicsColliderTarget& target,
     specification.target = TargetId(target.targetId());
     specification.baseRevision = target.revision();
     auto begun = transactions.begin(std::move(specification));
-    if (!begun.isAccepted())
-        return EditorResult<TransactionReceipt>::error(begun.status, RuleId("test.physics.begin"),
+    if (!begun.ok())
+        return eve::editing::failed<TransactionReceipt>(begun.code(), RuleId("test.physics.begin"),
                                                        "Could not begin collider transaction");
     auto appended = transactions.append(operation);
-    if (!appended.isAccepted()) {
+    if (!appended.ok()) {
         [[maybe_unused]] const auto rolledBack = transactions.rollback();
-        return EditorResult<TransactionReceipt>::error(appended.status, RuleId("test.physics.append"),
+        return eve::editing::failed<TransactionReceipt>(appended.code(), RuleId("test.physics.append"),
                                                        "Could not append collider operation");
     }
     return transactions.commit();
@@ -82,23 +82,23 @@ TEST_CASE("editor.physics.collider_edits_validate_and_undo") {
 
     auto invalid = target.makeSet(selection, PropertyPath("shape.size"),
                                   EditorValue::Array{1.0, -2.0, 3.0}, PropertySetMode::Absolute);
-    CHECK_EQ(static_cast<int>(invalid.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(invalid.code()), static_cast<int>(EditorStatus::Rejected));
     invalid = target.makeSet(selection, PropertyPath("material.friction"), 1.5,
                              PropertySetMode::Absolute);
-    CHECK_EQ(static_cast<int>(invalid.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(invalid.code()), static_cast<int>(EditorStatus::Rejected));
 
     auto shape = target.makeSet(selection, PropertyPath("shape.kind"), "capsule",
                                 PropertySetMode::Absolute);
-    REQUIRE(shape.isAccepted());
-    REQUIRE(commitCollider(target, transactions, *shape.value, "collider.shape").isAccepted());
+    REQUIRE(shape.ok());
+    REQUIRE(commitCollider(target, transactions, shape.value(), "collider.shape").ok());
     auto radius = target.makeSet(selection, PropertyPath("shape.radius"), 0.75,
                                  PropertySetMode::Absolute);
-    REQUIRE(radius.isAccepted());
-    REQUIRE(commitCollider(target, transactions, *radius.value, "collider.radius").isAccepted());
+    REQUIRE(radius.ok());
+    REQUIRE(commitCollider(target, transactions, radius.value(), "collider.radius").ok());
     CHECK(target.read(selection, PropertyPath("shape.radius")).value == EditorValue(0.75));
-    REQUIRE(transactions.undo().isAccepted());
+    REQUIRE(transactions.undo().ok());
     CHECK(target.read(selection, PropertyPath("shape.radius")).value == EditorValue(0.5));
-    REQUIRE(transactions.redo().isAccepted());
+    REQUIRE(transactions.redo().ok());
     CHECK_EQ(target.validate().size(), static_cast<std::size_t>(1));
 }
 
@@ -107,17 +107,17 @@ TEST_CASE("editor.physics.collider_snapshot_is_versioned_atomic_and_diagnostic")
     const SelectionSnapshot selection = colliderSelection(source);
     auto mesh = source.makeSet(selection, PropertyPath("shape.kind"), "triangle-mesh",
                                PropertySetMode::Absolute);
-    REQUIRE(mesh.value);
-    REQUIRE(source.applyDomainOperation(*mesh.value).isAccepted());
+    REQUIRE(mesh.ok());
+    REQUIRE(source.applyDomainOperation(mesh.value()).ok());
     CHECK_EQ(source.validate().size(), static_cast<std::size_t>(1));
 
     PhysicsColliderTarget restored("restored", 3);
-    REQUIRE(restored.loadSnapshot(source.snapshotValue()).isAccepted());
+    REQUIRE(restored.loadSnapshot(source.snapshotValue()).ok());
     CHECK(restored.read(colliderSelection(restored), PropertyPath("shape.kind")).value ==
           EditorValue("triangle-mesh"));
 
     PhysicsColliderTarget wrongDimension("wrong", 2);
-    CHECK_EQ(static_cast<int>(wrongDimension.loadSnapshot(source.snapshotValue()).status),
+    CHECK_EQ(static_cast<int>(wrongDimension.loadSnapshot(source.snapshotValue()).code()),
              static_cast<int>(EditorStatus::Rejected));
     CHECK(wrongDimension.read(colliderSelection(wrongDimension), PropertyPath("shape.kind")).value ==
           EditorValue("box"));
@@ -127,7 +127,7 @@ TEST_CASE("editor.physics.collider_snapshot_is_versioned_atomic_and_diagnostic")
     REQUIRE(unknownRoot != nullptr);
     unknownRoot->at("schemaVersion") = int64_t{2};
     const Revision revisionBeforeRejectedMigration = restored.revision();
-    CHECK_EQ(static_cast<int>(restored.loadSnapshot(unknownVersion).status),
+    CHECK_EQ(static_cast<int>(restored.loadSnapshot(unknownVersion).code()),
              static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(restored.revision(), revisionBeforeRejectedMigration);
     CHECK(restored.read(colliderSelection(restored), PropertyPath("shape.kind")).value ==
@@ -152,15 +152,15 @@ TEST_CASE("editor.physics.joint_exposes_body_anchor_limit_motor_and_break_author
              {PropertyPath("limit.minimum"), EditorValue(2.0)},
              {PropertyPath("limit.maximum"), EditorValue(1.0)}}) {
         auto operation = target.makeSet(selection, path, value, PropertySetMode::Absolute);
-        REQUIRE(operation.value);
-        REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());
+        REQUIRE(operation.ok());
+        REQUIRE(target.applyDomainOperation(operation.value()).ok());
     }
     CHECK_EQ(target.validate().size(), static_cast<std::size_t>(1));
 
     auto fixLimit = target.makeSet(selection, PropertyPath("limit.maximum"), 3.0,
                                    PropertySetMode::Absolute);
-    REQUIRE(fixLimit.value);
-    REQUIRE(target.applyDomainOperation(*fixLimit.value).isAccepted());
+    REQUIRE(fixLimit.ok());
+    REQUIRE(target.applyDomainOperation(fixLimit.value()).ok());
     CHECK(target.validate().empty());
     CHECK_EQ(static_cast<int>(target.snapshotValue().type()),
              static_cast<int>(EditorValue::Type::Object));

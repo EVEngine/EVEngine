@@ -9,7 +9,7 @@ namespace {
 
 template <class T>
 EditorResult<T> serializationError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -54,7 +54,7 @@ EditorResult<UiLayoutValue> UiDocumentTarget::parseLayout(const EditorValue& val
         *pivotY < 0.0 || *pivotY > 1.0)
         return serializationError<UiLayoutValue>(EditorStatus::Rejected, "editor.ui.invalid-layout",
                                                   "UI layout fields are missing or out of range");
-    return EditorResult<UiLayoutValue>::applied(
+    return eve::editing::applied<UiLayoutValue>(
         {*x, *y, *width, *height, *anchorX, *anchorY, *pivotX, *pivotY});
 }
 
@@ -106,7 +106,7 @@ EditorResult<UiStyleValue> UiDocumentTarget::parseStyle(const EditorValue& value
         !justifies.contains(style.justify))
         return serializationError<UiStyleValue>(EditorStatus::Rejected, "editor.ui.invalid-flex-style",
                                                  "UI flex direction, alignment or justification is invalid");
-    return EditorResult<UiStyleValue>::applied(std::move(style));
+    return eve::editing::applied<UiStyleValue>(std::move(style));
 }
 
 EditorValue UiDocumentTarget::contentValue(const UiContentValue& content) {
@@ -153,7 +153,7 @@ EditorResult<UiContentValue> UiDocumentTarget::parseContent(const EditorValue& v
         !aligns.contains(content.verticalAlign) || !fits.contains(content.imageFit))
         return serializationError<UiContentValue>(EditorStatus::Rejected,
             "editor.ui.invalid-content-range", "UI content size, color, alignment or image fit is invalid");
-    return EditorResult<UiContentValue>::applied(std::move(content));
+    return eve::editing::applied<UiContentValue>(std::move(content));
 }
 
 EditorValue UiDocumentTarget::widgetValue(const UiWidgetSnapshot& widget) {
@@ -194,28 +194,28 @@ EditorResult<UiWidgetSnapshot> UiDocumentTarget::parseWidget(const EditorValue& 
         return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected, "editor.ui.invalid-widget",
                                                      "UI widget fields are missing or invalid");
     auto parsedLayout = parseLayout(*layout);
-    if (!parsedLayout.isAccepted() || !parsedLayout.value)
+    if (!parsedLayout.ok())
         return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected, "editor.ui.invalid-widget-layout",
                                                      "UI widget layout is invalid");
     UiStyleValue parsedStyle;
     if (styleValueEntry) {
         auto style = parseStyle(*styleValueEntry);
-        if (!style.isAccepted() || !style.value)
+        if (!style.ok())
             return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected, "editor.ui.invalid-widget-style",
                                                          "UI widget style is invalid");
-        parsedStyle = std::move(*style.value);
+        parsedStyle = std::move(style).value();
     }
     UiContentValue parsedContent;
     if (contentValueEntry) {
         auto content = parseContent(*contentValueEntry);
-        if (!content.isAccepted() || !content.value)
+        if (!content.ok())
             return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected,
                 "editor.ui.invalid-widget-content", "UI widget content skin is invalid");
-        parsedContent = std::move(*content.value);
+        parsedContent = std::move(content).value();
     }
-    return EditorResult<UiWidgetSnapshot>::applied(
+    return eve::editing::applied<UiWidgetSnapshot>(
         {ObjectId(*id), ObjectId(*parent), *type, *name, *text, *visible, *enabled,
-         *parsedLayout.value, std::move(parsedStyle), std::move(parsedContent)});
+         std::move(parsedLayout).value(), std::move(parsedStyle), std::move(parsedContent)});
 }
 
 EditorValue UiDocumentTarget::snapshotValue() const {
@@ -242,10 +242,11 @@ EditorResult<void> UiDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     std::map<ObjectId, UiWidgetSnapshot> candidate;
     for (const EditorValue& value : *widgets) {
         auto parsed = parseWidget(value);
-        if (!parsed.isAccepted() || !parsed.value)
+        if (!parsed.ok())
             return serializationError<void>(EditorStatus::Rejected, "editor.ui.snapshot-widget",
                                             "UI snapshot contains an invalid widget");
-        if (!candidate.emplace(parsed.value->id, *parsed.value).second)
+        const auto& widget = parsed.value();
+        if (!candidate.emplace(widget.id, widget).second)
             return serializationError<void>(EditorStatus::Conflict, "editor.ui.snapshot-duplicate",
                                             "UI snapshot contains duplicate widget ids");
     }
@@ -258,7 +259,7 @@ EditorResult<void> UiDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     widgets_ = std::move(candidate);
     ++revision_;
     dirty_.clear();
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::ui_editing

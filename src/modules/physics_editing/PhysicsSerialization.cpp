@@ -7,7 +7,7 @@ namespace {
 
 template <class T>
 EditorResult<T> snapshotError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -47,13 +47,13 @@ EditorResult<void> PhysicsColliderTarget::loadSnapshot(const EditorValue& snapsh
             return snapshotError<void>(EditorStatus::Unsupported, "editor.physics.snapshot-property",
                                        "Collider snapshot contains unknown property: " + path);
         auto valid = validateAssignment(*descriptor, value);
-        if (!valid.isAccepted()) return valid;
+        if (!valid.ok()) return valid;
         candidate[path] = value;
     }
     values_ = std::move(candidate);
     ++revision_;
     dirty_.clear();
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::vector<EditorDiagnostic> PhysicsColliderTarget::validate() const {
@@ -72,20 +72,25 @@ std::vector<EditorDiagnostic> PhysicsColliderTarget::validate() const {
     if ((shape == "convex-hull" || shape == "triangle-mesh" || shape == "height-field" || shape == "polygon" ||
          shape == "chain") &&
         text("shape.asset").empty())
-        diagnostics.push_back({RuleId("editor.physics.shape-asset-required"), DiagnosticSeverity::Error,
-                               "Selected collider kind requires a shape asset"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.physics.shape-asset-required"),
+            DiagnosticSeverity::Error, "Selected collider kind requires a shape asset"));
     if ((shape == "sphere" || shape == "circle" || shape == "capsule") && number("shape.radius") <= 0.0)
-        diagnostics.push_back({RuleId("editor.physics.radius-required"), DiagnosticSeverity::Error,
-                               "Round collider requires a positive radius"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.physics.radius-required"),
+            DiagnosticSeverity::Error, "Round collider requires a positive radius"));
     if (shape == "capsule" && number("shape.capsule-height") < 2.0 * number("shape.radius"))
-        diagnostics.push_back({RuleId("editor.physics.capsule-height"), DiagnosticSeverity::Warning,
-                               "Capsule height is smaller than its diameter"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.physics.capsule-height"),
+            DiagnosticSeverity::Warning, "Capsule height is smaller than its diameter"));
     if (text("body.type") == "dynamic" && number("material.density") == 0.0)
-        diagnostics.push_back({RuleId("editor.physics.dynamic-zero-density"), DiagnosticSeverity::Warning,
-                               "Dynamic collider has zero density"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.physics.dynamic-zero-density"),
+            DiagnosticSeverity::Warning, "Dynamic collider has zero density"));
     if ((shape == "triangle-mesh" || shape == "height-field") && text("body.type") != "static")
-        diagnostics.push_back({RuleId("editor.physics.static-complex-shape"), DiagnosticSeverity::Error,
-                               "Triangle-mesh and height-field colliders require a static body"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.physics.static-complex-shape"),
+            DiagnosticSeverity::Error, "Triangle-mesh and height-field colliders require a static body"));
     return diagnostics;
 }
 

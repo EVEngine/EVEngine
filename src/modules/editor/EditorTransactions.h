@@ -10,17 +10,32 @@ namespace eve::editor {
 /** @brief Executes, groups, rolls back and replays arbitrary edit commands. */
 class EditorTransactions {
 public:
-    /** @brief Compatibility facade over EditorTransactionConsumer::beginLegacy. */
+    /** @brief Begin a canonical checked transaction. */
+    [[nodiscard]] eve::Result<TransactionId> beginTransaction(TransactionSpec specification);
+    /** @brief Begin a checked legacy-command transaction with a generated identity. */
+    [[nodiscard]] eve::Result<TransactionId> beginTransaction(std::string label);
+    /** @brief Stage and preview one command without discarding diagnostics. */
+    [[nodiscard]] eve::Result<void> append(std::unique_ptr<IEditCommand> command);
+    /** @brief Commit the active transaction and return its complete record. */
+    [[nodiscard]] eve::Result<EditorTransactionRecord> commitTransaction();
+    /** @brief Discard the active transaction and restore its preview state. */
+    [[nodiscard]] eve::Result<void> rollbackTransaction();
+    /** @brief Compensate the latest committed transaction. */
+    [[nodiscard]] eve::Result<EditorTransactionRecord> undoTransaction();
+    /** @brief Reapply the latest compensated transaction. */
+    [[nodiscard]] eve::Result<EditorTransactionRecord> redoTransaction();
+
+    /** @brief Compatibility-only boolean facade over beginTransaction(label). */
     bool begin(const std::string &name);
-    /** @brief Compatibility preview facade over the structured append API. */
+    /** @brief Compatibility-only boolean facade over append(). */
     bool execute(std::unique_ptr<IEditCommand> command);
-    /** @brief Compatibility projection of a checked commit Result. */
+    /** @brief Compatibility-only boolean projection of commitTransaction(). */
     bool commit();
-    /** @brief Compatibility projection of a checked rollback Result. */
+    /** @brief Compatibility-only boolean projection of rollbackTransaction(). */
     bool rollback();
-    /** @brief Compatibility projection of a checked compensation Result. */
+    /** @brief Compatibility-only boolean projection of undoTransaction(). */
     bool undo();
-    /** @brief Compatibility projection of a checked redo Result. */
+    /** @brief Compatibility-only boolean projection of redoTransaction(). */
     bool redo();
     void clear();
     bool isActive() const { return consumer_.active(); }

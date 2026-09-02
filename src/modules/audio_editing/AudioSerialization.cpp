@@ -8,7 +8,7 @@ namespace {
 
 template <class T>
 EditorResult<T> snapshotError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -45,13 +45,13 @@ EditorResult<void> AudioSourceTarget::loadSnapshot(const EditorValue& snapshot) 
             return snapshotError<void>(EditorStatus::Unsupported, "editor.audio.snapshot-property",
                                        "Audio source snapshot contains unknown property: " + path);
         auto valid = validatePropertyValue(*descriptor, value);
-        if (!valid.isAccepted()) return valid;
+        if (!valid.ok()) return valid;
         candidate[path] = value;
     }
     values_ = std::move(candidate);
     ++revision_;
     dirty_.clear();
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::vector<EditorDiagnostic> AudioSourceTarget::validate() const {
@@ -59,17 +59,21 @@ std::vector<EditorDiagnostic> AudioSourceTarget::validate() const {
     const auto text = [&](const char* path) { return *values_.at(path).getIf<std::string>(); };
     const auto number = [&](const char* path) { return *values_.at(path).getIf<double>(); };
     if (text("clip.asset").empty())
-        diagnostics.push_back({RuleId("editor.audio.clip-required"), DiagnosticSeverity::Error,
-                               "Audio source requires a clip asset"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.audio.clip-required"),
+            DiagnosticSeverity::Error, "Audio source requires a clip asset"));
     if (number("spatial.reference-distance") > number("spatial.maximum-distance"))
-        diagnostics.push_back({RuleId("editor.audio.attenuation-range"), DiagnosticSeverity::Error,
-                               "Reference distance exceeds maximum attenuation distance"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation,
+            RuleId("editor.audio.attenuation-range"), DiagnosticSeverity::Error,
+            "Reference distance exceeds maximum attenuation distance"));
     const bool looping = *values_.at("play.loop").getIf<bool>();
     const double loopStart = number("play.loop-start");
     const double loopEnd = number("play.loop-end");
     if (looping && loopEnd > 0.0 && loopStart >= loopEnd)
-        diagnostics.push_back({RuleId("editor.audio.loop-range"), DiagnosticSeverity::Error,
-                               "Loop start must be earlier than loop end"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.audio.loop-range"),
+            DiagnosticSeverity::Error, "Loop start must be earlier than loop end"));
     const auto& direction = *values_.at("spatial.direction").getIf<EditorValue::Array>();
     double lengthSquared = 0.0;
     for (const EditorValue& component : direction) {
@@ -77,11 +81,14 @@ std::vector<EditorDiagnostic> AudioSourceTarget::validate() const {
         lengthSquared += value * value;
     }
     if (lengthSquared < 1e-12)
-        diagnostics.push_back({RuleId("editor.audio.direction"), DiagnosticSeverity::Warning,
-                               "Directional audio source has a zero direction vector"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.audio.direction"),
+            DiagnosticSeverity::Warning,
+            "Directional audio source has a zero direction vector"));
     if (text("mixer.bus").empty())
-        diagnostics.push_back({RuleId("editor.audio.bus-required"), DiagnosticSeverity::Error,
-                               "Audio source requires a mixer bus route"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.audio.bus-required"),
+            DiagnosticSeverity::Error, "Audio source requires a mixer bus route"));
     return diagnostics;
 }
 

@@ -1,7 +1,7 @@
-#include "editor/EditorMaterialOffscreen.h"
-#include "editor/EditorParticleOffscreen.h"
-#include "editor/EditorUiOffscreen.h"
-#include "editor/EditorSurfaceFluidPreview.h"
+#include "material_editor/EditorMaterialOffscreen.h"
+#include "particles_editor/EditorParticleOffscreen.h"
+#include "ui_editor/EditorUiOffscreen.h"
+#include "fluids_editor/EditorSurfaceFluidPreview.h"
 
 #include "graphics/Canvas.h"
 #include "graphics/ICanvasFactory.h"
@@ -44,8 +44,8 @@ GraphDocumentData particleGraph() {
     eve::particles_editing::ParticleGraphDomain domain;
     GraphDocument document;
     for (const char* type : {"emission", "motion", "collision", "renderer", "output"}) {
-        auto node = domain.makeNode(GraphNodeId(type), type); REQUIRE(node.value);
-        CHECK(document.createNode(*node.value).isAccepted());
+        auto node = domain.makeNode(GraphNodeId(type), type); REQUIRE(node.ok());
+        CHECK(document.createNode(node.value()).ok());
     }
     int sequence = 0;
     for (const auto& [from, to] : std::vector<std::pair<const char*, const char*>>{
@@ -54,7 +54,7 @@ GraphDocumentData particleGraph() {
         const auto* output = document.findPin(GraphPinId(from)); const auto* input = document.findPin(GraphPinId(to));
         REQUIRE(output); REQUIRE(input);
         CHECK(document.connect({StableId("edge-" + std::to_string(sequence++)), output->id, input->id},
-                               domain.canConnect(*output, *input)).isAccepted());
+                               domain.canConnect(*output, *input)).ok());
     }
     return document.snapshot(domain.domain());
 }
@@ -65,10 +65,10 @@ TEST_CASE("editor.material.offscreen_adapter_produces_publishable_artifact") {
     GraphicsOffscreenPreviewService offscreen(token,&backend,&backend);
     int draws=0;
     OffscreenMaterialPreviewRenderer renderer(&offscreen,
-        [&](const MaterialPreviewRenderRequest& request,auto*,auto*) { CHECK(request.material.getIf<EditorValue::Object>() != nullptr);++draws;return EditorResult<void>::applied(); });
+        [&](const MaterialPreviewRenderRequest& request,auto*,auto*) { CHECK(request.material.getIf<EditorValue::Object>() != nullptr);++draws;return eve::editing::applied<void>(); });
     MaterialDocumentTarget material("material"); MaterialPreviewService service;
-    auto task=service.render(DocumentId("doc"),material,{},renderer); REQUIRE(task.value);
-    CHECK_EQ(draws,1); CHECK(service.publish(DocumentId("doc"),material.revision(),*task.value).isAccepted());
+    auto task=service.render(DocumentId("doc"),material,{},renderer); REQUIRE(task.ok());
+    CHECK_EQ(draws,1); CHECK(service.publish(DocumentId("doc"),material.revision(),task.value()).ok());
     CHECK(service.publishedArtifact(DocumentId("doc")).starts_with("preview://"));
 }
 
@@ -76,11 +76,11 @@ TEST_CASE("editor.ui.offscreen_renderer_rasterizes_visible_widget_boxes") {
     Backend backend; auto* token=reinterpret_cast<eve::graphics::Graphics*>(&backend);
     GraphicsOffscreenPreviewService offscreen(token,&backend,&backend);
     UiDocumentTarget document("hud"); UiLayoutValue layout;layout.width=80;layout.height=40;
-    auto create=document.makeCreate({ObjectId("panel"),{},"panel","Panel",layout});REQUIRE(create.value);
-    CHECK(document.applyDomainOperation(*create.value).isAccepted());
+    auto create=document.makeCreate({ObjectId("panel"),{},"panel","Panel",layout});REQUIRE(create.ok());
+    CHECK(document.applyDomainOperation(create.value()).ok());
     UiOffscreenPreviewRenderer renderer(&offscreen,&backend);
-    auto artifact=renderer.render(document,320,200);REQUIRE(artifact.value);
-    CHECK_EQ(backend.rectangles,1);CHECK_EQ(artifact.value->sourceRevision,document.revision());
+    auto artifact=renderer.render(document,320,200);REQUIRE(artifact.ok());
+    CHECK_EQ(backend.rectangles,1);CHECK_EQ(artifact.value().sourceRevision,document.revision());
     CHECK(backend.current==nullptr);
 }
 
@@ -90,11 +90,11 @@ TEST_CASE("editor.particles.offscreen_preview_compiles_and_budget_checks_before_
     ParticleOffscreenPreviewService renderer(&offscreen,
         [&](const eve::particles_editing::ParticleGraphCompileResult& compiled,
             const eve::particles_editing::ParticleGraphPreviewResult& estimate, auto*, auto*) {
-            CHECK_EQ(compiled.documentRevision,estimate.documentRevision);++draws;return EditorResult<void>::applied(); });
+            CHECK_EQ(compiled.documentRevision,estimate.documentRevision);++draws;return eve::editing::applied<void>(); });
     ParticleOffscreenPreviewRequest request;request.previewId=StableId("particles");request.graph=particleGraph();
-    auto artifact=renderer.render(request);REQUIRE(artifact.value);CHECK_EQ(draws,1);
+    auto artifact=renderer.render(request);REQUIRE(artifact.ok());CHECK_EQ(draws,1);
     request.seconds=-1.0;
-    CHECK_EQ(static_cast<int>(renderer.render(request).status),static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(renderer.render(request).code()),static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(draws,1);
 }
 
@@ -108,7 +108,7 @@ public:
                             eve::graphics::Graphics*, eve::graphics::Canvas*) override {
         CHECK_EQ(request.graph.revision, compiled.documentRevision);
         CHECK_EQ(compiled.documentRevision, estimate.documentRevision);
-        ++draws; return EditorResult<void>::applied();
+        ++draws; return eve::editing::applied<void>();
     }
 };
 }
@@ -119,13 +119,13 @@ TEST_CASE("editor.particles.offscreen_preview_dispatches_isolated_presenter_cont
     ParticlePresenter presenter; ParticleOffscreenPreviewService renderer(&offscreen,&presenter);
     ParticleOffscreenPreviewRequest request; request.previewId=StableId("isolated-particles");
     request.graph=particleGraph();
-    auto artifact=renderer.render(request); REQUIRE(artifact.value);
+    auto artifact=renderer.render(request); REQUIRE(artifact.ok());
     CHECK_EQ(presenter.draws,1);
     ParticleEmitterOffscreenPresenter runtime;
     eve::particles_editing::ParticleGraphDomain domain; const auto compiled=domain.compile(request.graph);
     const auto estimate=domain.preview(request.graph,request.seconds,request.fixedStep,request.particleBudget);
     request.graph.revision++;
-    CHECK_EQ(static_cast<int>(runtime.draw(request,compiled,estimate,nullptr,nullptr).status),
+    CHECK_EQ(static_cast<int>(runtime.draw(request,compiled,estimate,nullptr,nullptr).code()),
              static_cast<int>(EditorStatus::Conflict));
 }
 
@@ -135,7 +135,7 @@ public:
     int draws = 0;
     EditorResult<void> draw(const SurfaceFluidPreviewSnapshot& snapshot) override {
         CHECK_EQ(static_cast<int>(snapshot.status), static_cast<int>(EditorStatus::Applied));
-        ++draws; return EditorResult<void>::applied();
+        ++draws; return eve::editing::applied<void>();
     }
 };
 }
@@ -149,10 +149,10 @@ TEST_CASE("editor.surface_fluid.offscreen_preview_replays_before_renderer_dispat
     request.documentRevision=target.revision(); request.seconds=0.1;
     request.positions={{{0.0,0.0,0.0}},{{1.0,0.0,0.0}},{{0.0,0.0,1.0}}};
     request.indices={0,1,2}; request.seeds.push_back({});
-    auto artifact=renderer.render(target,request); REQUIRE(artifact.value);
-    CHECK_EQ(presenter.draws,1); CHECK_EQ(artifact.value->sourceRevision,target.revision());
+    auto artifact=renderer.render(target,request); REQUIRE(artifact.ok());
+    CHECK_EQ(presenter.draws,1); CHECK_EQ(artifact.value().sourceRevision,target.revision());
     request.documentRevision++;
-    CHECK_EQ(static_cast<int>(renderer.render(target,request).status),
+    CHECK_EQ(static_cast<int>(renderer.render(target,request).code()),
              static_cast<int>(EditorStatus::Conflict));
     CHECK_EQ(presenter.draws,1);
 }

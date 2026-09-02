@@ -275,6 +275,19 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   create_module(${EVE_MODULE_${_mod}_LIB} ${_mod})
 endforeach()
 
+# create_module() globs both physics bridge TUs; keep exactly one.
+eve_module_enabled(vehicle _has_vehicle)
+eve_module_enabled(physics _has_physics)
+if(_has_vehicle)
+  get_target_property(_eve_vehicle_srcs EVVehicle SOURCES)
+  if(_has_physics)
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "VehiclePhysicsAbsent\\.cpp$")
+  else()
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehiclePhysics\\.cpp$")
+  endif()
+  set_target_properties(EVVehicle PROPERTIES SOURCES "${_eve_vehicle_srcs}")
+endif()
+
 # Poco's MSVC #pragma comment auto-link names libraries without the md/mdd
 # postfix the third-party build was told to use (PocoFoundationd.lib vs
 # PocoFoundationmdd.lib). OBJECT libraries do not inherit compile definitions

@@ -12,31 +12,29 @@ TEST_CASE("editor.pcgGraph.reflectsNodesAndCompilesPointGraphAsset") {
     PcgPointGraphDomain domain;
     auto input = domain.makeNode(GraphNodeId("input"), "input");
     auto prune = domain.makeNode(GraphNodeId("prune"), "self.prune");
-    REQUIRE(input.isAccepted());
-    REQUIRE(prune.isAccepted());
-    REQUIRE(input.value);
-    REQUIRE(prune.value);
-    CHECK_EQ(input.value->pins.size(), size_t(1));
-    CHECK_EQ(prune.value->pins.size(), size_t(2));
-    const auto* properties = prune.value->properties.getIf<EditorValue::Object>();
+    REQUIRE(input.ok());
+    REQUIRE(prune.ok());
+    CHECK_EQ(input.value().pins.size(), size_t(1));
+    CHECK_EQ(prune.value().pins.size(), size_t(2));
+    const auto* properties = prune.value().properties.getIf<EditorValue::Object>();
     REQUIRE(bool(properties));
     CHECK_EQ(*properties->at("radius").getIf<double>(), 1.0);
 
     GraphDocument graph;
-    CHECK(graph.createNode(*input.value).isAccepted());
-    CHECK(graph.createNode(*prune.value).isAccepted());
+    CHECK(graph.createNode(input.value()).ok());
+    CHECK(graph.createNode(prune.value()).ok());
     EditorValue::Object radiusBinding;
     radiusBinding["node"] = EditorValue("prune");
     radiusBinding["key"]  = EditorValue("radius");
     EditorValue::Object parameters;
     parameters["pruneRadius"] = EditorValue(std::move(radiusBinding));
-    CHECK(graph.setParameters(EditorValue(std::move(parameters))).isAccepted());
+    CHECK(graph.setParameters(EditorValue(std::move(parameters))).ok());
     const GraphPinRecord* from = graph.findPin(GraphPinId("input.out"));
     const GraphPinRecord* to   = graph.findPin(GraphPinId("prune.in0"));
     REQUIRE(bool(from));
     REQUIRE(bool(to));
     CHECK(graph.connect({StableId("edge"), from->id, to->id}, domain.canConnect(*from, *to))
-              .isAccepted());
+              .ok());
 
     const PcgGraphCompileResult compiled = domain.compile(graph.snapshot(domain.domain()));
     CHECK_EQ(static_cast<int>(compiled.status), static_cast<int>(EditorStatus::Applied));
@@ -74,11 +72,11 @@ TEST_CASE("editor.pcgGraph.reflectsNodesAndCompilesPointGraphAsset") {
 TEST_CASE("editor.pcgGraph.rejectsInvalidBlackboardParameterBindings") {
     PcgPointGraphDomain domain;
     auto node = domain.makeNode(GraphNodeId("move"), "transform");
-    REQUIRE(node.value);
+    REQUIRE(node.ok());
     GraphDocument graph;
-    CHECK(graph.createNode(*node.value).isAccepted());
+    CHECK(graph.createNode(node.value()).ok());
     const Revision before = graph.revision();
-    CHECK(!graph.setParameters(EditorValue("not-an-object")).isAccepted());
+    CHECK(!graph.setParameters(EditorValue("not-an-object")).ok());
     CHECK_EQ(graph.revision(), before);
 
     EditorValue::Object binding;
@@ -86,11 +84,11 @@ TEST_CASE("editor.pcgGraph.rejectsInvalidBlackboardParameterBindings") {
     binding["key"]  = EditorValue("missing");
     EditorValue::Object parameters;
     parameters["bad"] = EditorValue(std::move(binding));
-    CHECK(graph.setParameters(EditorValue(std::move(parameters))).isAccepted());
+    CHECK(graph.setParameters(EditorValue(std::move(parameters))).ok());
     const auto compiled = domain.compile(graph.snapshot(domain.domain()));
     CHECK_EQ(static_cast<int>(compiled.status), static_cast<int>(EditorStatus::Failed));
     REQUIRE(!compiled.diagnostics.empty());
-    CHECK_EQ(compiled.diagnostics[0].rule.value(),
+    CHECK_EQ(diagnosticRule(compiled.diagnostics[0]).value(),
              std::string("editor.pcg.invalid-parameter-binding"));
 }
 
@@ -98,11 +96,11 @@ TEST_CASE("editor.pcgGraph.rejectsCyclesAndWrongPinTypes") {
     PcgPointGraphDomain domain;
     auto a = domain.makeNode(GraphNodeId("a"), "jitter");
     auto b = domain.makeNode(GraphNodeId("b"), "self.prune");
-    REQUIRE(a.value);
-    REQUIRE(b.value);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
     GraphDocument graph;
-    CHECK(graph.createNode(*a.value).isAccepted());
-    CHECK(graph.createNode(*b.value).isAccepted());
+    CHECK(graph.createNode(a.value()).ok());
+    CHECK(graph.createNode(b.value()).ok());
     const auto* aOut = graph.findPin(GraphPinId("a.out"));
     const auto* aIn  = graph.findPin(GraphPinId("a.in0"));
     const auto* bOut = graph.findPin(GraphPinId("b.out"));
@@ -112,9 +110,9 @@ TEST_CASE("editor.pcgGraph.rejectsCyclesAndWrongPinTypes") {
     REQUIRE(bool(bOut));
     REQUIRE(bool(bIn));
     CHECK(graph.connect({StableId("ab"), aOut->id, bIn->id}, domain.canConnect(*aOut, *bIn))
-              .isAccepted());
+              .ok());
     CHECK(graph.connect({StableId("ba"), bOut->id, aIn->id}, domain.canConnect(*bOut, *aIn))
-              .isAccepted());
+              .ok());
     const auto compiled = domain.compile(graph.snapshot(domain.domain()));
     CHECK_EQ(static_cast<int>(compiled.status), static_cast<int>(EditorStatus::Failed));
     CHECK(!compiled.diagnostics.empty());
@@ -122,13 +120,13 @@ TEST_CASE("editor.pcgGraph.rejectsCyclesAndWrongPinTypes") {
     GraphPinRecord wrong{GraphPinId("wrong"), GraphNodeId("x"), "float",
                          GraphPinDirection::Output};
     CHECK(!domain.canConnect(wrong, *aIn).allowed);
-    CHECK(!domain.makeNode(GraphNodeId("bad"), "missing").isAccepted());
+    CHECK(!domain.makeNode(GraphNodeId("bad"), "missing").ok());
 }
 
 TEST_CASE("editor.pcgGraph.strictlyValidatesSchemaAndNodeProperties") {
     PcgPointGraphDomain domain;
     auto node = domain.makeNode(GraphNodeId("move"), "transform");
-    REQUIRE(node.value);
+    REQUIRE(node.ok());
 
     GraphDocumentData unsupported;
     unsupported.domain = domain.domain();
@@ -136,44 +134,44 @@ TEST_CASE("editor.pcgGraph.strictlyValidatesSchemaAndNodeProperties") {
     auto result = domain.compile(unsupported);
     CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Unsupported));
     REQUIRE(!result.diagnostics.empty());
-    CHECK_EQ(result.diagnostics[0].rule.value(), std::string("editor.pcg.unsupported-schema"));
+    CHECK_EQ(diagnosticRule(result.diagnostics[0]).value(), std::string("editor.pcg.unsupported-schema"));
 
     GraphDocument graph;
-    CHECK(graph.createNode(*node.value).isAccepted());
-    EditorValue::Object properties = *node.value->properties.getIf<EditorValue::Object>();
+    CHECK(graph.createNode(node.value()).ok());
+    EditorValue::Object properties = *node.value().properties.getIf<EditorValue::Object>();
     properties["x"] = EditorValue("wrong-type");
-    CHECK(graph.setNodeProperties(node.value->id, EditorValue(properties)).isAccepted());
+    CHECK(graph.setNodeProperties(node.value().id, EditorValue(properties)).ok());
     result = domain.compile(graph.snapshot(domain.domain()));
     CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Failed));
     REQUIRE(!result.diagnostics.empty());
-    CHECK_EQ(result.diagnostics[0].rule.value(),
+    CHECK_EQ(diagnosticRule(result.diagnostics[0]).value(),
              std::string("editor.pcg.property-type-mismatch"));
 
     properties["x"] = EditorValue(0.0);
     properties["typo"] = EditorValue(1.0);
-    CHECK(graph.setNodeProperties(node.value->id, EditorValue(properties)).isAccepted());
+    CHECK(graph.setNodeProperties(node.value().id, EditorValue(properties)).ok());
     result = domain.compile(graph.snapshot(domain.domain()));
     CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Failed));
     REQUIRE(!result.diagnostics.empty());
-    CHECK_EQ(result.diagnostics[0].rule.value(), std::string("editor.pcg.unknown-property"));
+    CHECK_EQ(diagnosticRule(result.diagnostics[0]).value(), std::string("editor.pcg.unknown-property"));
 }
 
 TEST_CASE("editor.pcgGraph.transactionallyMigratesLegacyPinsAndDefaults") {
     PcgPointGraphDomain domain;
     auto input = domain.makeNode(GraphNodeId("source"), "input");
     auto prune = domain.makeNode(GraphNodeId("prune"), "self.prune");
-    REQUIRE(input.value);
-    REQUIRE(prune.value);
-    input.value->pins[0].id = GraphPinId("legacy-source-output");
-    prune.value->pins[0].id = GraphPinId("legacy-prune-input");
-    prune.value->pins[1].id = GraphPinId("legacy-prune-output");
-    prune.value->properties = EditorValue(EditorValue::Object{});
+    REQUIRE(input.ok());
+    REQUIRE(prune.ok());
+    input.value().pins[0].id = GraphPinId("legacy-source-output");
+    prune.value().pins[0].id = GraphPinId("legacy-prune-input");
+    prune.value().pins[1].id = GraphPinId("legacy-prune-output");
+    prune.value().properties = EditorValue(EditorValue::Object{});
 
     GraphDocumentData legacy;
     legacy.domain        = domain.domain();
     legacy.schemaVersion = 0;
     legacy.revision      = 17;
-    legacy.nodes         = {*input.value, *prune.value};
+    legacy.nodes         = {input.value(), prune.value()};
     legacy.edges.push_back({StableId("stable-edge"), GraphPinId("legacy-source-output"),
                             GraphPinId("legacy-prune-input")});
 
@@ -195,14 +193,14 @@ TEST_CASE("editor.pcgGraph.transactionallyMigratesLegacyPinsAndDefaults") {
     CHECK_EQ(static_cast<int>(compiled.status), static_cast<int>(EditorStatus::Applied));
     CHECK(compiled.definition.find("EVPCG_POINT_GRAPH 1") == 0);
     REQUIRE(!compiled.diagnostics.empty());
-    CHECK_EQ(compiled.diagnostics[0].rule.value(), std::string("editor.pcg.migrated-v0-v1"));
+    CHECK_EQ(diagnosticRule(compiled.diagnostics[0]).value(), std::string("editor.pcg.migrated-v0-v1"));
 
     GraphDocumentData invalid = legacy;
     invalid.nodes[1].pins[0].id = GraphPinId("legacy-source-output");
     const auto rejected = domain.migrate(invalid);
     CHECK_EQ(static_cast<int>(rejected.status), static_cast<int>(EditorStatus::Rejected));
     REQUIRE(!rejected.diagnostics.empty());
-    CHECK_EQ(rejected.diagnostics[0].rule.value(),
+    CHECK_EQ(diagnosticRule(rejected.diagnostics[0]).value(),
              std::string("editor.pcg.migration-duplicate-pin"));
     CHECK_EQ(legacy.schemaVersion, uint32_t(0));
 }
@@ -210,9 +208,9 @@ TEST_CASE("editor.pcgGraph.transactionallyMigratesLegacyPinsAndDefaults") {
 TEST_CASE("editor.pcgGraph.boundsIsolatedPreviewPointOutputs") {
     PcgPointGraphDomain domain;
     auto input = domain.makeNode(GraphNodeId("input"), "input");
-    REQUIRE(input.value);
+    REQUIRE(input.ok());
     GraphDocument graph;
-    CHECK(graph.createNode(*input.value).isAccepted());
+    CHECK(graph.createNode(input.value()).ok());
     eve::procgen::PointSet points;
     for (int index = 0; index < 1001; ++index) points.add(float(index), 0.f, 0.f);
 
@@ -220,7 +218,7 @@ TEST_CASE("editor.pcgGraph.boundsIsolatedPreviewPointOutputs") {
                                          "input", 0, 1000);
     CHECK_EQ(static_cast<int>(rejected.status), static_cast<int>(EditorStatus::Failed));
     REQUIRE(!rejected.diagnostics.empty());
-    CHECK(rejected.diagnostics.back().message.find("point budget") != std::string::npos);
+    CHECK(rejected.diagnostics.back().message().find("point budget") != std::string::npos);
 
     const auto accepted = domain.preview(graph.snapshot(domain.domain()), "input", &points,
                                          "input", 0, 1001);

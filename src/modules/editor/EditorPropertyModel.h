@@ -7,8 +7,10 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace eve::editor {
 
@@ -26,6 +28,10 @@ enum class PropertyModelSurface { Developer, Runtime };
  * DomainOperation, then staged and committed through that backend. The legacy
  * sink remains a one-way compatibility facade and is used only when no
  * transaction backend is configured.
+ *
+ * This model is owner-thread only. Observer callbacks run synchronously after
+ * a complete snapshot is published; reentrant notifications are queued until
+ * the current notification batch completes.
  */
 class EditorPropertyModel final : public property_access::IPropertyAccess {
 public:
@@ -91,9 +97,16 @@ public:
     [[nodiscard]] EditorResult<void> rebase();
 
 private:
+    struct CachedProperty {
+        property_access::PropertyChangeState state = property_access::PropertyChangeState::Missing;
+        std::optional<eve::Value>             value;
+
+        bool operator==(const CachedProperty &) const = default;
+    };
+
     struct ObserverState;
     void rebuildSchema();
-    void                                      emit(const std::string &path, const eve::Value &value);
+    void                                      dispatch(std::vector<property_access::PropertyChange> changes);
     [[nodiscard]] EditorResult<eve::Revision> readProviderRevision() const;
     [[nodiscard]] EditorResult<void>          ensureCurrentRevision() const;
 
@@ -103,7 +116,7 @@ private:
     PropertyModelSurface surface_ = PropertyModelSurface::Developer;
     HostProfile profile_;
     property_access::PropertySchema   presentationSchema_;
-    std::map<std::string, eve::Value> cachedValues_;
+    std::map<std::string, CachedProperty> cachedProperties_;
     EditSink sink_;
     IEditorTransactionBackend        *transactionBackend_ = nullptr;
     std::set<std::string>             pendingPaths_;
@@ -111,6 +124,8 @@ private:
     bool                              bound_    = false;
     std::uint64_t revision_ = 0;
     std::shared_ptr<ObserverState> observers_;
+    std::vector<std::vector<property_access::PropertyChange>> notificationQueue_;
+    bool dispatchingNotifications_ = false;
 };
 
 }  // namespace eve::editor

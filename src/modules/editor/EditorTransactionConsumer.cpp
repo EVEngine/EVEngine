@@ -1,5 +1,7 @@
 #include "editor/EditorTransactionConsumer.h"
 
+#include "editor/EditorResultProjection.h"
+
 #include <charconv>
 #include <exception>
 #include <limits>
@@ -15,21 +17,6 @@ eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::strin
     return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
-eve::StatusCode commonStatus(EditorStatus status) noexcept {
-    switch (status) {
-        case EditorStatus::Rejected: return eve::StatusCode::Rejected;
-        case EditorStatus::Conflict: return eve::StatusCode::Conflict;
-        case EditorStatus::NotFound: return eve::StatusCode::NotFound;
-        case EditorStatus::Unsupported: return eve::StatusCode::Unsupported;
-        case EditorStatus::Cancelled: return eve::StatusCode::Cancelled;
-        case EditorStatus::Applied:
-        case EditorStatus::Pending:
-        case EditorStatus::NoOp:
-        case EditorStatus::Failed: return eve::StatusCode::Failed;
-    }
-    return eve::StatusCode::Failed;
-}
-
 eve::DiagnosticCode commonDiagnostic(EditorStatus status) noexcept {
     switch (status) {
         case EditorStatus::Rejected: return eve::DiagnosticCode::InvalidArgument;
@@ -37,9 +24,10 @@ eve::DiagnosticCode commonDiagnostic(EditorStatus status) noexcept {
         case EditorStatus::NotFound: return eve::DiagnosticCode::NotFound;
         case EditorStatus::Unsupported: return eve::DiagnosticCode::Unsupported;
         case EditorStatus::Cancelled: return eve::DiagnosticCode::Cancelled;
+        case EditorStatus::Ok:
         case EditorStatus::Applied:
         case EditorStatus::Pending:
-        case EditorStatus::NoOp:
+        case EditorStatus::NoOp: return eve::DiagnosticCode::None;
         case EditorStatus::Failed: return eve::DiagnosticCode::Failed;
     }
     return eve::DiagnosticCode::Failed;
@@ -47,14 +35,10 @@ eve::DiagnosticCode commonDiagnostic(EditorStatus status) noexcept {
 
 template <class Output, class Input>
 eve::Result<Output> convertEditorFailure(const EditorResult<Input>& source, std::string_view context) {
-    std::vector<eve::Diagnostic> diagnostics;
-    const eve::DiagnosticCode    fallbackCode = commonDiagnostic(source.status);
-    for (const auto& diagnostic : source.diagnostics) {
-        diagnostics.push_back(eve::Diagnostic::error(fallbackCode, std::string(context) + ": " + diagnostic.message,
-                                                     diagnostic.rule.value()));
-    }
-    if (diagnostics.empty()) diagnostics.push_back(eve::Diagnostic::error(fallbackCode, std::string(context)));
-    return eve::Result<Output>::failure(eve::Status(commonStatus(source.status), std::move(diagnostics)));
+    if (!source.diagnostics().empty()) return eve::Result<Output>::failure(source.status());
+    return eve::Result<Output>::failure(
+        eve::Status::failure(source.code(), eve::Diagnostic::error(commonDiagnostic(source.code()),
+                                                                    std::string(context))));
 }
 
 bool hasCoordinatorCleanupFailure(const eve::Status& status) {
@@ -226,8 +210,8 @@ public:
             return failure<void>(eve::DiagnosticCode::Failed, "editor authority participant has no authority",
                                  "editor.authority");
         auto plan = authority_->preflight(specification_, operations_);
-        if (!plan.isAccepted() || !plan.value) return convertEditorFailure<void>(plan, "editor authority preflight");
-        plan_  = std::move(*plan.value);
+        if (!plan.ok()) return convertEditorFailure<void>(plan, "editor authority preflight");
+        plan_  = std::move(plan.value());
         phase_ = Phase::Prepared;
         return eve::Result<void>::success();
     }
@@ -237,8 +221,8 @@ public:
             return failure<void>(eve::DiagnosticCode::PreconditionViolation,
                                  "editor authority participant is not prepared", "editor.authority.commit");
         auto result = authority_->commit(*plan_);
-        if (!result.isAccepted() || !result.value) return convertEditorFailure<void>(result, "editor authority commit");
-        receipt_ = std::move(*result.value);
+        if (!result.ok()) return convertEditorFailure<void>(result, "editor authority commit");
+        receipt_ = std::move(result.value());
         phase_   = Phase::Committed;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
@@ -258,12 +242,12 @@ public:
                                  "editor authority participant has no committed receipt",
                                  "editor.authority.compensate");
         auto result = authority_->compensate(*receipt_);
-        if (!result.isAccepted() || !result.value)
+        if (!result.ok())
             return convertEditorFailure<void>(result, "editor authority compensation");
         // History keeps the original commit receipt.  This participant's
         // latest effect is the compensation receipt, whose afterRevision is
         // also the base revision required by a later redo.
-        receipt_ = std::move(*result.value);
+        receipt_ = std::move(result.value());
         phase_   = Phase::Compensated;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
@@ -570,9 +554,9 @@ eve::Result<EditorDryRunReport> EditorTransactionConsumer::dryRun() const {
                                                "authority preflight requires an injected authority",
                                                "editor.authority");
         auto plan = impl_->authority->preflight(pending.specification, pending.operations);
-        if (!plan.isAccepted() || !plan.value)
+        if (!plan.ok())
             return convertEditorFailure<EditorDryRunReport>(plan, "editor authority preflight");
-        report.authorityPlan = std::move(*plan.value);
+        report.authorityPlan = std::move(plan.value());
     }
     return eve::Result<EditorDryRunReport>::success(std::move(report));
 }
@@ -814,6 +798,7 @@ eve::Result<EditorTransactionRecord> EditorTransactionConsumer::undo() {
     if (authorityParticipant && authorityParticipant->receipt())
         history.specification.baseRevision = authorityParticipant->receipt()->afterRevision;
     impl_->redo.push_back(std::move(history));
+    impl_->state = EditorCommitState::Discarded;
     const auto&             moved = impl_->redo.back();
     EditorTransactionRecord record;
     record.coordinator      = std::move(receipt);
@@ -870,6 +855,7 @@ eve::Result<EditorTransactionRecord> EditorTransactionConsumer::redo() {
     history.specification                   = specification;
     if (authorityParticipant) history.authorityReceipt = authorityParticipant->receipt();
     impl_->undo.push_back(std::move(history));
+    impl_->state = EditorCommitState::Committed;
     if (!impl_->redo.empty() && authorityParticipant && authorityParticipant->receipt())
         impl_->redo.back().specification.baseRevision = authorityParticipant->receipt()->afterRevision;
     const auto&             moved = impl_->undo.back();
@@ -894,11 +880,18 @@ const std::vector<eve::Diagnostic>& EditorTransactionConsumer::diagnostics() con
 
 void EditorTransactionConsumer::clear() {
     if (impl_->pending) {
-        auto result = rollback();
-        result.ignore("EditorTransactionConsumer::clear discards active work");
+        auto result = discard();
+        if (!result.ok()) {
+            result.ignore("EditorTransactionConsumer::clear retains pending work after a failed discard");
+            return;
+        }
     }
     impl_->undo.clear();
     impl_->redo.clear();
+    impl_->state                              = EditorCommitState::Discarded;
+    impl_->retryAllowed                       = false;
+    impl_->retryBlockedByCommittedParticipant = false;
+    impl_->diagnostics.clear();
 }
 
 }  // namespace eve::editor

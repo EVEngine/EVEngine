@@ -95,6 +95,8 @@ materials <- {
     sand = { r=0.70, g=0.58, b=0.32, metallic=0.0, roughness=0.98 },
 };
 
+heightmapTargets <- eve.HeightmapTargetModule()
+
 function configureWorkspace() {
     state.workspace = editor.newWorkspace("world-authoring", "Project World Authoring");
     state.workspace.setRegionSize("top", 54.0);
@@ -282,13 +284,13 @@ function generateTerrain() {
     }
 
     if (state.terrainMesh == null) {
-        state.terrainMesh = editor.newHeightmapMeshSmooth(state.heightmap, CELL, HEIGHT_SCALE);
+        state.terrainMesh = heightmapTargets.newSmoothMesh(state.heightmap, CELL, HEIGHT_SCALE);
         state.terrainEntity = eve.Renderable3D();
         state.terrainEntity.setMesh(state.terrainMesh);
         state.terrainEntity.setPosition(0.0, 0.0, 0.0);
         state.terrainEntity.setVisible(true);
     } else {
-        editor.updateHeightmapMeshSmooth(state.terrainMesh, gfx, state.heightmap, CELL, HEIGHT_SCALE);
+        heightmapTargets.updateSmoothMesh(state.terrainMesh, gfx, state.heightmap, CELL, HEIGHT_SCALE);
     }
     applyMaterial(state.vm.material);
     if (state.brushTool != null) bindTerrainTarget();
@@ -296,8 +298,8 @@ function generateTerrain() {
 }
 
 function bindTerrainTarget() {
-    state.terrainTarget = editor.newHeightmapTarget("world.terrain", state.heightmap);
-    state.session.bindHeightmapTarget(state.terrainTarget);
+    state.terrainTarget = heightmapTargets.create("world.terrain", state.heightmap);
+    heightmapTargets.bind(state.session, state.terrainTarget);
     state.lastTargetRevision = state.terrainTarget.getRevision();
 }
 
@@ -635,7 +637,7 @@ eve_update = function(dt) {
     state.gameplayComponents.update(dt);
     state.meshCooldown -= dt;
     if (state.meshDirty && state.meshCooldown <= 0.0) {
-        editor.updateHeightmapMeshSmooth(state.terrainMesh, gfx, state.heightmap, CELL, HEIGHT_SCALE);
+        heightmapTargets.updateSmoothMesh(state.terrainMesh, gfx, state.heightmap, CELL, HEIGHT_SCALE);
         state.meshDirty = false;
         state.meshCooldown = 1.0 / 30.0;
     }

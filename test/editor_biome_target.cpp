@@ -16,17 +16,17 @@ SelectionSnapshot select(const BiomeDocumentTarget& target, const ObjectId& id,
     return selection;
 }
 void apply(BiomeDocumentTarget& target, EditorResult<DomainOperation> operation) {
-    REQUIRE(operation.value);
-    REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());
+    REQUIRE(operation.ok());
+    REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }
 class SpatialResolver final : public IBiomeSpatialResolver {
 public:
     EditorResult<eve::procgen::SpatialData*> resolve(const std::string& asset) const override {
         const auto found = assets.find(asset);
         if (found == assets.end())
-            return EditorResult<eve::procgen::SpatialData*>::error(
+            return eve::editing::failed<eve::procgen::SpatialData*>(
                 EditorStatus::NotFound, RuleId("test.biome.spatial"), "missing spatial asset");
-        return EditorResult<eve::procgen::SpatialData*>::applied(found->second);
+        return eve::editing::applied<eve::procgen::SpatialData*>(found->second);
     }
     std::map<std::string, eve::procgen::SpatialData*> assets;
 };
@@ -41,12 +41,12 @@ TEST_CASE("editor.biome.properties_are_reversible_and_snapshot_load_is_atomic") 
     const auto selection = select(target, ObjectId("oak"), "biome.asset");
     const auto scale = target.makeSet(selection, PropertyPath("asset.scale"),
                                       EditorValue::Array{.5, 1.5}, PropertySetMode::Absolute);
-    REQUIRE(scale.value);
-    REQUIRE(target.applyDomainOperation(*scale.value).isAccepted());
+    REQUIRE(scale.ok());
+    REQUIRE(target.applyDomainOperation(scale.value()).ok());
     CHECK_EQ(target.layers()[0].assets[0].minScale, .5f);
-    DomainOperation undo = *scale.value;
-    undo.payload = scale.value->inverse;
-    REQUIRE(target.applyDomainOperation(undo).isAccepted());
+    DomainOperation undo = scale.value();
+    undo.payload = scale.value().inverse;
+    REQUIRE(target.applyDomainOperation(undo).ok());
     CHECK_EQ(target.layers()[0].assets[0].minScale, .8f);
 
     const EditorValue before = target.snapshotValue();
@@ -56,7 +56,7 @@ TEST_CASE("editor.biome.properties_are_reversible_and_snapshot_load_is_atomic") 
     auto* layers = (*content)["layers"].getIf<EditorValue::Array>();
     auto* first = (*layers)[0].getIf<EditorValue::Object>();
     (*first)["density"] = 2.0;
-    CHECK_EQ(static_cast<int>(target.loadSnapshot(invalid).status),
+    CHECK_EQ(static_cast<int>(target.loadSnapshot(invalid).code()),
              static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(target.snapshotValue(), before);
 }
@@ -73,24 +73,24 @@ TEST_CASE("editor.biome.runtime_publishes_candidates_and_previews_deterministica
     SpatialResolver resolver;
     resolver.assets["areas/forest.spatial"] = &domain;
     BiomeDocumentRuntime runtime;
-    REQUIRE(runtime.publish(target, resolver).isAccepted());
+    REQUIRE(runtime.publish(target, resolver).ok());
     const Revision published = runtime.revision();
     auto first = runtime.preview(&domain, 2.f, 42, 0.f, published);
     auto second = runtime.preview(&domain, 2.f, 42, 0.f, published);
-    REQUIRE(first.value.has_value());
-    REQUIRE(second.value.has_value());
-    REQUIRE(bool(*first.value));
-    REQUIRE(bool(*second.value));
-    CHECK_EQ((*first.value)->getCount(), (*second.value)->getCount());
-    for (int i = 0; i < (*first.value)->getCount(); ++i) {
-        CHECK_EQ((*first.value)->getStringAttribute(i, "asset", ""),
-                 (*second.value)->getStringAttribute(i, "asset", ""));
-        CHECK_EQ((*first.value)->getPointSeed(i), (*second.value)->getPointSeed(i));
+    REQUIRE(first.ok());
+    REQUIRE(second.ok());
+    REQUIRE(bool(first.value()));
+    REQUIRE(bool(second.value()));
+    CHECK_EQ(first.value()->getCount(), second.value()->getCount());
+    for (int i = 0; i < first.value()->getCount(); ++i) {
+        CHECK_EQ(first.value()->getStringAttribute(i, "asset", ""),
+                 second.value()->getStringAttribute(i, "asset", ""));
+        CHECK_EQ(first.value()->getPointSeed(i), second.value()->getPointSeed(i));
     }
-    CHECK_EQ(static_cast<int>(runtime.preview(&domain, 2.f, 42, 0.f, published + 1).status),
+    CHECK_EQ(static_cast<int>(runtime.preview(&domain, 2.f, 42, 0.f, published + 1).code()),
              static_cast<int>(EditorStatus::Conflict));
     SpatialResolver missing;
-    CHECK_EQ(static_cast<int>(runtime.publish(target, missing).status),
+    CHECK_EQ(static_cast<int>(runtime.publish(target, missing).code()),
              static_cast<int>(EditorStatus::NotFound));
     CHECK_EQ(runtime.revision(), published);
 }

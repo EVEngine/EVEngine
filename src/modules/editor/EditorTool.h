@@ -1,6 +1,7 @@
 #pragma once
 
 #include "editor/EditorTarget.h"
+#include "editor/EditorResult.h"
 
 #include <memory>
 #include <string>
@@ -67,10 +68,12 @@ public:
     /** @brief Session currently dispatching the tool callback. @return Borrowed session pointer, or null. @lifetime Valid only for the current dispatch callback. */
     EditorSession* session() const { return session_; }
     /** @brief Target currently bound to the session. @return Borrowed target pointer, or null. @lifetime Valid only for the current dispatch callback. */
-    IEditableTarget*    target() const { return target_; }
+    IEditableTarget* target() const;
     EditorTransactions& transactions() const;
     /** @brief Send a command through constraints into the active transaction. */
     bool execute(std::unique_ptr<IEditCommand> command) const;
+    /** @brief Send a command without discarding validation or transaction diagnostics. */
+    [[nodiscard]] EditorResult<void> executeChecked(std::unique_ptr<IEditCommand> command) const;
 
     /** @brief Query a capability from the current target. @return Borrowed capability pointer, or null. @lifetime Valid only for the current dispatch callback. */
     template <typename Capability>
@@ -78,8 +81,7 @@ public:
 
 private:
     friend class EditorSession;
-    EditorSession*   session_ = nullptr;
-    IEditableTarget* target_  = nullptr;
+    EditorSession* session_ = nullptr;
 };
 
 /** @brief UI-facing metadata supplied by a tool implementation. */
@@ -148,8 +150,10 @@ public:
 namespace eve::editor {
 
 template <typename Capability>
+/** @return Borrowed capability pointer, or null. @lifetime Valid only for the current dispatch callback. */
 Capability* EditorContext::targetCapability() const {
-    return target_ ? target_->query<Capability>() : nullptr;
+    IEditableTarget* current = target();
+    return current ? current->query<Capability>() : nullptr;
 }
 
 }  // namespace eve::editor
