@@ -3551,7 +3551,10 @@ void Graphics::drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) {
 void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     if (!canvas) throw Exception("begin3DFrameToCanvas: null canvas");
     if (!device) throw Exception("begin3DFrameToCanvas: device not initialized");
-    active3DCanvas = static_cast<OffscreenCanvas *>(canvas);
+    auto *offscreen = dynamic_cast<OffscreenCanvas *>(canvas);
+    if (!offscreen) throw Exception("begin3DFrameToCanvas: not an offscreen canvas");
+    clearColor     = backgroundColor;
+    active3DCanvas = offscreen;
     begin3DFrame();
 }
 void Graphics::end3DFrameToCanvas() {
