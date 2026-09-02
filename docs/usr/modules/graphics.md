@@ -65,15 +65,15 @@ Canvas。Graphics 是图形场景的唯一所有者；脚本对象只保存带 o
 
 ```squirrel
 local created = gfx.newPrimitiveLine3D(
-    0, 0, 0, 4, 1, -2, 1, 0.7, 0.1, 1, 3);
+    0.0, 0.0, 0.0, 4.0, 1.0, -2.0, 1.0, 0.7, 0.1, 1.0, 3.0);
 if (created.ok) {
     debugLine <- created.value;
-    debugLine.setDash(12, 8, 0, "screen"); // screen | world
+    debugLine.setDash(12.0, 8.0, 0.0, "screen"); // screen | world
     debugLine.setDepthMode("test");         // test-write | test | ignore
 }
 
-local sphereResult = gfx.newPrimitiveSphere3D(0, 1, -4, 1.5, 0.2, 0.8, 1, 1, 2);
-local boxResult = gfx.newPrimitiveAabb3D(-1, 0, -1, 1, 2, 1, 1, 1, 0, 1, 2);
+local sphereResult = gfx.newPrimitiveSphere3D(0.0, 1.0, -4.0, 1.5, 0.2, 0.8, 1.0, 1.0, 2.0);
+local boxResult = gfx.newPrimitiveAabb3D(-1.0, 0.0, -1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 0.0, 1.0, 2.0);
 ```
 
 `newPrimitiveLine3D(...)`、`newPrimitiveSphere3D(...)` 和
