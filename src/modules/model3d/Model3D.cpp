@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
+#include <memory>
 #include <vector>
 
 namespace eve {
@@ -194,6 +195,28 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getVertexCount", &ModelData::getVertexCount);
     md.addFunc("getFaceCount", &ModelData::getFaceCount);
     md.addFunc("getVertexPosition", &ModelData::getVertexPosition);
+    md.addFunc("getVertexNormal", &ModelData::getVertexNormal);
+    md.addFunc("setVertexNormal",
+               [](ModelData *self, int meshIndex, int vertexIndex, float x, float y, float z) {
+                   auto result = self->setVertexNormal(meshIndex, vertexIndex, x, y, z);
+                   if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+               });
+    md.addFunc("applyVertexNormals", [](ModelData *self, int meshIndex, std::string kind) {
+        auto result = self->applyVertexNormals(meshIndex, kind);
+        if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+    });
+    md.addFunc("applyVertexNormalsFrom",
+               [](ModelData *self, int meshIndex, std::string kind, float x, float y, float z) {
+                   auto result = self->applyVertexNormalsFrom(meshIndex, kind, x, y, z);
+                   if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+               });
+    md.addFunc("bakeNormalMap",
+               [](ModelData *self, int meshIndex, int width, int height, int uvChannel,
+                  std::string space) -> image::ImageData * {
+                   auto baked = self->bakeNormalMap(meshIndex, width, height, uvChannel, space);
+                   if (!baked.ok()) throw eve::Exception("%s", baked.status().describe().c_str());
+                   return std::move(baked).takeValue().release();
+               });
     md.addFunc("getFaceVertexIndex", &ModelData::getFaceVertexIndex);
     md.addFunc("hasNormals", &ModelData::hasNormals);
     md.addFunc("hasTexCoords", &ModelData::hasTexCoords);

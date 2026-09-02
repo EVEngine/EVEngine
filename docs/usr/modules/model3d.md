@@ -40,6 +40,18 @@ local renderable = models.createRenderable(gfx, md, 0);
 
 `Model3D` 只负责加载 `ModelData`；ModelData 包含 mesh/material 数据和统计信息。GPU mesh、材质实例、摄像机与实际 draw 属于 Graphics。
 
+从碰撞点反查 UV 的同一套 `ModelData` 也可以**程序化改顶点法线**，再烘焙成法线贴图：
+
+```squirrel
+local md = models.newModelDataFromFile("models/hero.glb");
+md.applyVertexNormalsFrom(0, "radial", 0, 0, 0);   // 从原点指向各顶点（向外）
+// 或 md.applyVertexNormals(0, "radial");          // 原点取该 mesh 的 AABB 中心
+local nmap = md.bakeNormalMap(0, 512, 512, 0, "tangent");
+```
+
+`setVertexNormal(mesh, vertex, x, y, z)` 写单个顶点。`bakeNormalMap` 的 `space` 为 `"tangent"`（PBR 采样）或 `"object"`。无 UV 的 mesh 会失败。
+`newModelDataFromFile` 走共享缓存，不要在被多方持有的实例上改法线；从内存 `newModelData` 解码一份再改。
+
 ## 目标导向指南
 
 ### 载入并检查模型
@@ -72,7 +84,7 @@ local renderable = models.createRenderable(gfx, md, 0);
 
 - `empty()`、`getFaceCount()`、`getMaterialCount()`、`getMeshCount()`、`getName()`、`getVertexCount()`、`hasNormals()`、`hasTexCoords()`
 - 表面拓扑与 UV 反查：`getVertexPosition()`、`getFaceVertexIndex()`、`mapSurfacePointToUv()`；`SurfaceUv.getU()`、`getV()`、`getBarycentricA()`、`getBarycentricB()`、`getBarycentricC()`、`getTriangleIndex()`、`getUvChannel()`
-- 顶点流：`getTexCoordChannelCount()`、`hasTexCoordChannel()`、`getTexCoord()`、`hasTangents()`、`getTangent()`、`getBitangent()`、`getVertexColorChannelCount()`、`hasVertexColorChannel()`、`getVertexColor()`
+- 顶点流：`getTexCoordChannelCount()`、`hasTexCoordChannel()`、`getTexCoord()`、`hasTangents()`、`getTangent()`、`getBitangent()`、`getVertexColorChannelCount()`、`hasVertexColorChannel()`、`getVertexColor()`、`getVertexNormal()`、`setVertexNormal()`、`applyVertexNormals()`、`applyVertexNormalsFrom()`、`bakeNormalMap()`
 - 材质：`getMaterialIndex()`、`getMaterialName()`、`getMaterialBaseColorR/G/B/A()`、`getMaterialMetallicFactor()`、`getMaterialRoughnessFactor()`、`getMaterialOpacity()`、`getMaterialTwoSided()`、`getMaterialAlphaMode()`、`getMaterialAlphaCutoff()`、`getMaterialTextureSlotCount()`、`getMaterialTexturePath()`、`getMaterialTextureEmbeddedIndex()`
 - 内嵌贴图：`getEmbeddedTextureCount()`、`getEmbeddedTextureName()`、`getEmbeddedTextureWidth()`、`getEmbeddedTextureHeight()`、`getEmbeddedTextureImageData()`
 - 蒙皮：`hasBones()`、`getBoneCount()`、`getBoneName()`、`getInverseBindMatrixElement()`、`getBoneWeightCount()`、`getBoneWeightVertex()`、`getBoneWeightValue()`

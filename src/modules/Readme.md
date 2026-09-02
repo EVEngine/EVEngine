@@ -1,7 +1,10 @@
-这些都是可以载入的module，不需要时可以不载入
+这些都是可以载入的 module，不需要时可以不载入
 全是等待被调用的模块，不会主动去调用
 
-主要参考love2d的设计，但也要将cocos2dx中的一些优秀设计拿过来
+主要参考 love2d 的设计，但也要将 cocos2dx 中的一些优秀设计拿过来
+
+权威声明在 `cmake/module_manifest*.cmake`（`eve_declare_module`）；裁剪见 `docs/dev/模块编排与裁剪架构.md`。
+脚本用法见 `docs/usr/MODULES.md`；分项勾选进度见 `docs/dev/模块设计.md`。
 
 ## 类绑定原则
 
@@ -15,151 +18,215 @@
 2. 可扩展，日后api想扩展新功能，无需导出新的定义，只需在函数增加对新名称的支持即可
 3. 直观，不但脚本中直观，C++代码中用string也很直观地知道这是啥，避免了用宏，枚举等需要引入头文件，解决namespace等诸多问题
 
-
 ## 模块设计
 
-1. 文件系统 - filesystem
-    封装了核心的文件系统功能，提供如下功能：统一的文件系统访问、目录查看修改、监视文件变动、文件读取
-    主实现：physfs；cppfs::File 仅用于 OS 绝对路径特例
-    watch API（抽象虚函数）：`watch` / `unwatch` / `pollWatch` / `getLastWatchPath`
-    watch 实现：physfs 后端 + Poco DirectoryWatcher（FileWatch）
+按功能域列出 `src/modules/` 下的运行时模块。`*_editing` / `*_editor` 是编辑器卫星（文档/命令/面板），不逐条展开；引擎核心 `common` / `cmdline` / `devtools` 在 `src/engine/`，不是本目录。
 
-2. 事件系统 - event
-    主要处理多线程间的信号同步与各种回调事件，处理来自硬件的各种信号
-    响应式编程 - rx（`eve.Rx`）
+### 运行时内核
+
+1. 插件系统 — `plugins`（`eve.Plugins`）
+    加载第三方动态库（dll / so），补注册模块。
+
+2. 线程系统 — `thread`（`eve.Thread`）
+    线程池、异步 Task、跨线程 ThreadChannel（字符串消息）
+    `getPool` / `newThreadPool` / `getChannel` / `newChannel` / `postMain`
+    脚本异步：`src/scripts/async.nut`（Promise / nextTick / setTimeout）；帧循环 `async_pump()`
+    worker 勿碰 Squirrel VM
+
+3. 计时器 — `timer`（`eve.Timer`）
+    启动后高精度时间与帧间隔；帧计时用它，不用 HostSystem。
+
+4. 管理系统 — `system`（`eve.HostSystem`，槽 `system`）
+    `getOS` / `getProcessorCount` / `getSystemRAM` / `getProcessMemoryMB` /
+    `getWallTime` / `sleepMilliseconds` / 剪贴板 / 电量 / GPU 查询
+    脚本里 `eve.System` 是 ECS System 基类，不要混用。
+
+5. 性能剖析 — `profiler`（`eve.Profiler`）
+    按模块/zone 的 CPU 调用树；GPU 帧时间来自 Vulkan timestamp。关闭时零开销。
+
+6. 数学库 — `math`（`eve.Math`）
+    Vec2 / Vec3 / Mat4（glm）；标量与几何工具；noise；贝塞尔；可种子随机数；缓动
+
+7. 统一网格 — `grid`
+    格子 ↔ 世界坐标与拓扑（纯 C++，被 `map` / `building` 消费；无模块类）
+
+### 平台与输入
+
+8. 窗口系统 — `window`（`eve.Window`，槽 `win`）
+    渲染窗口的设置、位置、样式、全屏；只支持单窗口
+
+9. 平台事件 — `platform_event`（`eve.PlatformEvent`）
+    泵送 SDL/硬件信号与跨模块字符串消息队列（原 `event` 已改名，与玩法 `game_event` 分开）
+
+10. 响应式编程 — `rx`（`eve.Rx`）
     UniRx 风格推送流：`Subject` / `BehaviorSubject` / `ReplaySubject` / `ReactiveProperty`
-    + LINQ 操作符（`map` / `filter` / `take` / `skip` / `first` / `takeUntil` / `distinctUntilChanged`）
-    + 事件桥接（`fromEvent` + `pump`）
-    代码：`src/modules/rx/`；设计：`docs/dev/superpowers/specs/2026-08-17-rx-module-design.md`
+    + LINQ（`map` / `filter` / `take` / …）+ `fromEvent` / `pump`
+    设计：`docs/dev/superpowers/specs/2026-08-17-rx-module-design.md`
 
-3. 窗口系统 - window
-    主要处理渲染窗口的设置、位置、样式、全屏等，我们只支持单窗口
+11. 键盘 / 鼠标 / 触摸 / 手柄 — `keyboard` `mouse` `touch` `joystick`
+    输入状态查询；手柄含 SDL GameController 映射与振动
 
-4. 图形系统 - graphic
-    主要处理图形的各种渲染、显卡、shader等，是核心中的核心，并且相比love2d, 拥有更多高级功能
-    有如下主要功能：
-    a. 精灵类，根据属性，自动渲染不同样式的图片
-    b. 场景类，可以传入参数的场景，方便调试游戏的部分模块，部分章节
-    c. 地图类接口，可以直接渲染tilemap
-    d. 摄像机，可以做2d下的光照和法线贴图
-    e. 低像素优化，支持小图片的旋转
+### 数据与 I/O
 
-5. 插件系统 - plugins
-    主要负责加载第三方模块和插件，加载dll等
+12. 文件系统 — `filesystem`（`eve.Filesystem` / `eve.HotReload`，槽 `fs` / `hot`）
+    统一虚拟文件系统、目录、监视、读写
+    主实现：physfs；cppfs::File 仅用于 OS 绝对路径特例
+    watch：`watch` / `unwatch` / `pollWatch` / `getLastWatchPath`（physfs + Poco DirectoryWatcher）
 
-6. 管理系统 - system
-    负责系统版本、时间、状态等的查询和设置
-    Module：`System`（`getOS` / `getProcessorCount` / `getSystemRAM` / `getProcessMemoryMB` /
-    `getWallTime` / `sleepMilliseconds` / 剪贴板 / 电量 / GPU 查询）
-    帧计时仍用 `Timer`；GPU 信息在 Graphics init 后可用
+13. 数据抽象 — `data`（`eve.DataModule`）
+    ByteData / DataView、压缩、哈希、JSON / XML
 
-6b. 数学库 - math（`eve.Math`）
-    Vec2 / Vec3 / Mat4（glm）；标量与几何工具；noise1/2/3；贝塞尔；可种子随机数
-    代码：`src/modules/math/`
+14. 资源包 — `asset`
+    运行时包准入、manifest、Cook IR；导入桥在更高层（`asset_import` / `asset_graphics` / `asset_scene` / `asset_procgen`）
 
-6b1. 空间索引 - spatial（`eve.Spatial`）
-    QuadTree / Octree / SpatialHash2D·3D / BSPTree2D·3D：AABB 宽相查询与地图裁剪候选
-    `insert` / `queryRect|queryAABB` / `queryCircle|querySphere` / `getResultId`
-    代码：`src/modules/spatial/`
-    设计：`docs/dev/空间索引模块设计.md`
+15. 图片 / 字体 / 声音 / 音频 / 3D 模型 — `image` `font` `sound` `audio` `model3d`
+    解码与播放：ImageData；FreeType → FontData；medialoader 音频 → OpenAL Source；Assimp → ModelData
+    `ModelData` 可程序化改顶点法线（`applyVertexNormals` / `setVertexNormal`）并 `bakeNormalMap`
+    视频资源尚未独立成模块
 
-6b1a. 编辑器构件 - editor（`eve.Editor`）
-    不内置完整 3D/地图编辑器；提供可组装构件：
-    TransformGizmo / GizmoManager（平移旋转缩放/包围盒操作框）
-    TileBuffer + Brush（地图笔刷：paint/erase/fill/line/rect/stamp）
-    EditorToolbar / Inspector / Dock / History（快速搭编辑器壳）
-    代码：`src/modules/editor/`
-    设计：`docs/dev/编辑器模块设计.md`
+16. 本地化 — `i18n`（`eve.I18n`）
+    JSON 翻译表、点号键、占位符、复数、默认语言回退、热重载
 
-6b1b. 体素渲染 - voxel（`eve.Voxel`）
-    32³ chunk、贪婪矩形合并、32-bit 打包实例、六向缓冲、视锥/距离/朝向裁剪
-    `newWorld` / `selectVisible` / `drawVisible`；`Graphics::drawVoxelFaceInstances`
-    代码：`src/modules/voxel/`
+17. 网络系统 — `network`（`eve.Network`）
+    HTTP、TCP 客户端/服务端、UDP；基础网络状态
+
+18. 数据库 — `database`（`eve.Database`）
+    SQLite（Poco Data）、JSON 行接口、轻量 ORM；存档与配置表
+
+### 渲染与计算
+
+19. 图形系统 — `graphics`（`eve.Graphics`，槽 `gfx`）
+    核心渲染（Vulkan）：2D 图元、纹理、Canvas、摄像机、3D 前向/GBuffer、后处理
+    声明式路径：ECS 组件 + `RenderSystem`；Love2D 风格即时模式仅作 C++/DevTools 逃生舱
+
+20. 3D 相机 — `camera`（`eve.Camera`）
+    跟随 / 环绕 / 俯视 / 第一人称 / 过场序列
+
+21. GPU 计算 — `gpgpu`（`eve.Gpgpu`）
+    Compute shader + storage buffer；与 Graphics 共用 device。原文档里的 `compute` 即此模块。
+
+22. 张量计算 — `tensor`（`eve.TF`，类型 `Tensor`）
+    TF2 风格：默认 eager；`tf.func()` 建图 → `compile` / `run*`；大图可走 `gpgpu`
+
+23. 声明式 UI — `ui`（`eve.UI`）
+    保留式控件树（React 式 build + dirty），挂 ECS `UIHost`
+
+24. 风格化渲染 — `stylize`（`eve.Stylize`）
+    NPR：cartoon / watercolor / ink / pixel；`StylePass` / `StyleChain` / 网格着色
+    设计：`docs/风格化渲染模块设计.md`
+
+25. 昼夜 / 天气 / 贴花 / 积雪 — `daynight` `weather` `decal` `snow`
+    太阳与 IBL 天空；降水/闪电/风场；投影贴花；深度场积雪（脚印 / 弹坑 / 回填）
+
+26. 体素 — `voxel`（`eve.Voxel`）
+    32³ chunk、贪婪矩形合并、实例化绘制、视锥/距离裁剪
     设计：`docs/dev/体素渲染模块设计.md`
 
-6b1c. 可交互积雪 - snow（`eve.Snow`）
-    深度场雪面（SnowField 网格）+ 真实位移深坑 + POM 微细节 + 降雪回填
-    `newField` / `stampFootprint` / `stampImpact` / `addSnowfall` / `applyToHeightmap`
-    代码：`src/modules/snow/`
+27. 虚拟几何 — `virtualgeometry`（`eve.VirtualGeometry`）
+    GPU 簇裁剪 + LOD 的大场景几何管线
 
-6b2. 逆运动学 - ik（`eve.IK`）
-    封装 [ik.hpp](https://github.com/sunxfancy/ik.hpp)（`external/ik.hpp`）：Skeleton2D/3D、Solver2D/3D（FABRIK）
-    `newSkeleton2D` / `newSolver2D` / `createBone` / `addTarget` / `solve` / `step`
-    代码：`src/modules/ik/`
+28. Sprite-Stacking — `spritestack`（`eve.SpriteStack`）
+    把 3D 模型切成多层 RGBA，叠片伪 3D
 
-6c. 张量计算 - tensor（`eve.TF` / 类型 `Tensor`）
-    TF2 风格：默认 eager；`tf.func()` 建图 → `compile` / `run*`（对应 `tf.function`）
-    模块级 `add`/`multiply`/`matmul`/`relu`/`reduceSum`/`where`；`getDevice()` → `"cpu"`
-    代码：`src/modules/tensor/`
+29. HD-2D — `hd2d`（`eve.Hd2D`）
+    TileLayer 挤出 3D 地形 + 摄像机朝向的角色/精灵 billboard
 
-7. 资源管理系统 - image sound video font(`font`/`Font`) 3dmodel(`model3d`/`Model3D`) animation
-    负责加载图形、声音、视频、字体、3d模型、动画等不同格式数据
-    3dmodel：`Model3D::newModelData` / `newModelDataFromFile` → `ModelData`（medialoader Assimp）
-    font：`Font::newFontData` / `newFontDataFromFile` → `FontData`（FreeType；glyph → ImageData）
+30. 粒子 — `particles`（`eve.Particles`）
+    ECS `ParticleEmitter` + Config/Sim/Render System；JSON 热更；CPU 或 GPU 常驻模拟
 
-8. 网络系统 - network
-    封装网络通讯的各种基础操作
+31. 表面流体 — `fluids`（`eve.Fluids`）
+    贴网格 SDF 的表面流体 + 屏空间重建（与 Physics 的 `Fluid2D` 不同）
 
-9.  线程系统 - thread（`eve.Thread`）
-    负责线程池、异步 Task、跨线程 ThreadChannel（字符串消息）
-    `getPool` / `newThreadPool` / `getChannel` / `newChannel` / `postMain`
-    `ThreadPool::submitSleep` / `submitPush` / `submitPost` / `waitAll`；worker 勿碰 Squirrel VM
-    脚本异步：`src/scripts/async.nut`（Promise / nextTick / setTimeout / asyncSleep / asyncDelay）
-    帧循环 `async_pump()`；`.fail` 代替 JS 的 `.catch`（Squirrel 关键字）
+### 世界与仿真
 
-10. 粒子系统 - particles  
-   ECS `ParticleEmitter` + Sim/Render/Config System；JSON 热更；Camera2D/Canvas；发射区域与径向/切向力。
-    ECS：`ParticleEmitter`（Config/Sim/Draw/Resource）
-    System：`ParticleConfigSystem`（filesystem watch + mtime 回退）/ `ParticleSimSystem` / `ParticleRenderSystem`
-    Module：工厂、`newEmitterFromFile`、脚本绑定；`update` 含 poll+sim
+32. 声明式场景树 — `scene`（`eve.Scene`）
+    与 ui 同构：`SceneComponent.build` → `NodeDesc` → `SceneHost`
+    `SceneNode` + `TransformSystem`；可选 link 到 Renderable / Physics / Camera / Audio
 
-11. 物理 - box2d / box3d（脚本模块名 `Physics`）
-    负责管理 Box2D（2D）与 Box3D（3D）刚体，以及可交互 2D/3D 布料（自碰撞、二面角折角限制、按质量动量交换的刚体碰撞）与 2D 流体
-    Module：`Physics`（`setMeter` / `newWorld` / `newWorld3D` / `newCloth` / `newCloth3D` / `newFluid2D`）
-    类型：`World` / `Body` / `Fixture`；2D 坐标为像素，内部按 meter 换算
-    类型：`World3D` / `Body3D` / `Shape3D`；3D 坐标为米（Box3D）；形状 box/sphere/capsule
-    类型：`Cloth` / `Cloth3D`（Verlet 布料，`grabAt` / `interactAt` / `setCollideWorld` / `update` / `draw`）、`ClothGPU`（compute shader 加速，含空间哈希自碰撞与 Sequence 合并提交）
-    类型：`Fluid2D`（双密度松弛流体，`emit` / `interactAt` / `update` / `draw`）
-    帧循环：`world.update(dt)` / `world3.update(dt)` / `cloth.update(dt)` / `fluid.update(dt)`
-    碰撞事件：2D `begincontact` / `endcontact`；3D `begincontact3d` / `endcontact3d` → `event`
-    可选：`world.drawDebug(gfx)`；布料/流体用自带 `draw(gfx)`
-    代码：`src/modules/physics/`（避免与第三方 `Box2D/` 在大小写不敏感文件系统上冲突）
-    依赖：`third-party/box3d`（submodule）
-    示例：`examples/softbody/`（2D）、`examples/softbody3d/`（3D）
+33. 场景加载器 — `sceneloader`（`eve.SceneLoader`）
+    glTF / OBJ / FBX → 声明式场景树；热重载与异步加载
 
-11b. 声明式场景树 - scene（`eve.Scene`）
-    与 ui 同构：`SceneComponent.build` → `NodeDesc` → `SceneHost`；`mount` / `remountReconcile` / `beginBuild`
-    `SceneNode`（GameObject）+ `TransformSystem`（local → world Mat4）；`space` 为 `"2d"`/`"3d"`
-    可选 `linkRenderable2D/3D`：world TRS 同步到渲染实体
-    场景即函数（props / children 插槽），非 Prefab
-    代码：`src/modules/scene/`
+34. Tilemap — `map`（`eve.Map`）
+    TileLayer、Tiled JSON、多投影、对象层、寻路 / FlowField / FOV
 
-11c. Avatar 分层渲染 - avatar（`eve.Avatar`）
-    Image 图层叠加 / Live2D 可插拔后端 / VRoid（Model3D + Renderable3D）
-    `newImageAvatar` / `newLive2DAvatar` / `newVroidAvatar`；`update` / `sync` / `render`
+35. 物理 — `physics`（`eve.Physics`）
+    Box2D（像素 + meter）与 Box3D（米）；Cloth / Cloth3D / ClothGPU；`Fluid2D`
+    代码在 `src/modules/physics/`（避免与第三方 `Box2D/` 大小写冲突）
+
+36. 动画 — `animation`（`eve.Animation`，槽 `anim`）
+    Tween；2D 帧动画 / Spine region；3D 骨骼（状态机 / Motion Matching）；ControlAnim；AnimTrail
+
+37. 逆运动学 — `ik`（`eve.IK`）
+    [ik.hpp](https://github.com/sunxfancy/ik.hpp)：Skeleton2D/3D、Solver2D/3D（FABRIK）
+
+38. 空间索引 — `spatial`（`eve.Spatial`）
+    QuadTree / Octree / SpatialHash / BSPTree：AABB 宽相查询
+    设计：`docs/dev/空间索引模块设计.md`
+
+39. 程序化生成 — `procgen`（`eve.Procgen`）
+    算法注册表：地图 / 贴图 recipe / 网格（marching cubes 等）
+
+40. 程序化房屋 — `housegen`（`eve.HouseGen`）
+    组件库 + 请求 → 布局 JSON
+
+41. 像素物质世界 — `pixelworld`（`eve.PixelWorldModule`）
+    64×64 分块确定性沙/水/火等；配套 `pixelworld_graphics` / `pixelworld_physics` /
+    `pixelworld_thread` / `pixelworld_replay` / `pixelworld_streaming` / `pixelworld_editor`
+
+42. 群体 — `crowd`（`eve.Crowd`）
+    连续流场寻路 + 海量单位转向；Boids；与渲染解耦
+
+43. 转向 — `steering`（`eve.Steering`）
+    独立转向力 / 行为，给单位移动用
+
+### 玩法框架
+
+44. 属性 / 效果 / 标签 / 定义 / Schema — `attributes` `effects` `tags` `definitions` `schema`
+    数据驱动属性、可堆叠效果、GameplayTag、定义表、JSON schema
+
+45. 决策 / 感知 / 动作 / 战斗 — `decision` `sensing` `action` `combat`
+    条件求值、空间感知、中立动作生命周期、战斗结算（领域适配器挂上来）
+
+46. 事务 / 状态补丁 / 权限 / 策略 — `transaction` `statepatch` `authority` `policyregistry`
+    可回滚事务、带冲突检查的 JSON 补丁、actor/scope 权限、具名策略注册
+
+47. 玩法事件 / 结算 — `game_event` `settlement`
+    确定性玩法事件日志（不是平台输入）；结算流水线
+
+48. 经济 / 命令队列 / 生产 / 社交 — `economy` `orders` `production` `social`
+    资源账户；优先级命令队列；并行生产槽；关系图 / 所有权
+
+49. RPG / 背包 — `rpg`（`eve.RPG`） / `inventory`（`eve.Inventory`）
+    属性/效果/状态/技能/结算；物品、容器、装备栏
+
+50. 卡牌 — `card`（`eve.Card`）
+    手牌布局、抽洗、落牌区、费用等卡牌工具
+
+51. 建筑 / 建筑可视化 — `building` `buildingfx`
+    放置世界、鬼影、校验/吸附；2D/3D 视觉与放置网格
+
+52. 武器 / 载具 — `weapon` `vehicle`
+    武器定义、弹药、挂点、开火；载具移动、座位、炮塔；可选 Physics 适配
+
+53. NPC AI / 攀爬 — `npc_ai` `climbing`
+    数据向 NPC 编排；确定性攀爬/跑酷规划 + 胶囊约束执行
+
+54. RTS / 战术 — `rts` `tactics`
+    组合配置：RTS 命令/生产/属性；回合/格子战术棋盘
+
+55. Avatar / 对话 — `avatar` `dialogue`
+    Image / Live2D / VRoid 分层立绘；VN 舞台、打字机、选项（剧情仍用 Squirrel）
     设计：`docs/对话与Avatar模块设计.md`
-    代码：`src/modules/avatar/`
 
-11d. 对话框及脚本 - dialogue（`eve.Dialogue`）
-    VN 舞台：角色、打字机、选项、槽位；剧情仍用 Squirrel（推荐 generator）
-    `say` / `narrate` / `presentChoices` / `syncStage` / `bindAvatar`
-    设计：`docs/对话与Avatar模块设计.md`；示例：`examples/dialogue/`
-    代码：`src/modules/dialogue/`
+### 编辑与属性协议
 
-12. 动画系统 - animation（`eve.Animation`）
-    属性补间 Tween：`newTween(duration)` → `setFrom` / `setTo` / `setDelta`（相对差值）
-    缓动 kind 与 Math.ease 一致；`setDelay` / `setRepeat` / `setYoyo`；角度 `set*Angle`
-    帧循环：`anim.update(dt)`（或 `tween.update(dt)`）
-    3D 骨骼播放：`AnimSkeleton` / `AnimClip` / `AnimPose` / `AnimPlayer`
-    两套控制器：状态机 `AnimStateMachine`；Motion Matching（`MotionDatabase` + `MotionMatcher`）
-    代码：`src/modules/animation/`
+56. 属性访问 / 脚本模型 / 编辑契约 — `property_access` `scriptmodel` `editing`
+    无渲染的属性契约、Squirrel 反射适配、可编辑 Target / 命令 / 事务（给编辑器与局内建造共用）
 
-12b. 风格化渲染 - stylize（`eve.Stylize`）
-    NPR 后处理与网格着色：cartoon / watercolor / ink / pixel
-    `newPass` → `StylePass.apply` / `applyCanvas`；`newMeshShader`（cartoon/ink）
-    CPU：`processImage`（RGBA8）；SPIR-V：`scripts/compile_stylize_shaders.py`
-    代码：`src/modules/stylize/`；设计：`docs/风格化渲染模块设计.md`
+57. 编辑器构件 — `editor`（`eve.Editor`）
+    不内置完整 3D/地图编辑器；可组装：TransformGizmo、TileBuffer+Brush、Toolbar/Inspector/Dock/History
+    各领域另有 `*_editing`（文档模型）与 `*_editor`（挂到 Editor 壳）卫星模块
+    设计：`docs/dev/编辑器模块设计.md`
 
-13. GPU计算系统 - compute
-    并行化和异构计算，封装compute shader的相关操作
-
+58. 内置演示 — `demo`（`eve.Demo`）
+    仅默认演示的程序化资源（音效/行星贴图）；非通用游戏 API
