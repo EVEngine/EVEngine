@@ -208,7 +208,8 @@ function queueUnit(kind) {
     if (game.outcome != "" || game.money < cost || game.rebelled) {
         game.message="无法生产：资金不足、战局已结束或基地已失守。"; return;
     }
-    local enqueue = game.factory.enqueue(game.baseId, "build_unit", kind, "{}", kind=="tank"?8.0:4.0, 10);
+    local duration = kind == "tank" ? 8.0 : 4.0;
+    local enqueue = game.factory.enqueue(game.baseId, "build_unit", kind, "{}", duration, 10);
     if (!enqueue.ok) { game.message = enqueue.status.summary; return; }
     game.money -= cost;
     game.message = kind == "tank" ? "坦克进入生产队列。" : "步兵进入训练队列。";
@@ -439,7 +440,8 @@ function queueEnemyUnit() {
     local kind = living < 2 ? "tank" : "infantry";
     local cost = kind == "tank" ? 160.0 : 70.0;
     if (game.enemyMoney < cost) return;
-    local enqueue = game.factory.enqueue(game.enemyBase, "build_unit", kind, "{}", kind=="tank"?8.0:4.0, 8);
+    local duration = kind == "tank" ? 8.0 : 4.0;
+    local enqueue = game.factory.enqueue(game.enemyBase, "build_unit", kind, "{}", duration, 8);
     if (!enqueue.ok) return;
     game.enemyMoney -= cost;
 }
