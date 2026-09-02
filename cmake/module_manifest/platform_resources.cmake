@@ -24,7 +24,7 @@ eve_declare_module(NAME joystick LAYER 1 SCRIPT Joystick
                    GROUP minimal 2d 3d web)
 # L4 -- model/resource orchestration
 eve_declare_module(NAME model3d LIB EVModel3D LAYER 4 SCRIPT Model3D SLOT model3d
-                   DEPS filesystem
+                   DEPS filesystem image
                    THIRDPARTY medialoader_model assimp
                    GROUP 3d)
 # L1 -- platform services (continued)

@@ -85,6 +85,8 @@ const aiMaterial *ModelData::materialAt(int matIndex) const {
 
 const aiMesh *ModelData::getMesh(int meshIndex) const { return meshAt(meshIndex); }
 
+aiMesh *ModelData::meshAtMutable(int meshIndex) { return const_cast<aiMesh *>(meshAt(meshIndex)); }
+
 int ModelData::getMeshCount() const {
     const aiScene *sc = getScene();
     return sc ? static_cast<int>(sc->mNumMeshes) : 0;
@@ -152,6 +154,15 @@ float ModelData::getVertexPosition(int meshIndex, int vertexIndex, int component
         component < 0 || component > 2)
         throw eve::Exception("ModelData::getVertexPosition: invalid mesh/vertex/component");
     const aiVector3D &value = mesh->mVertices[vertexIndex];
+    return component == 0 ? value.x : (component == 1 ? value.y : value.z);
+}
+
+float ModelData::getVertexNormal(int meshIndex, int vertexIndex, int component) const {
+    const aiMesh *mesh = meshAt(meshIndex);
+    if (!mesh || !mesh->HasNormals() || vertexIndex < 0 ||
+        static_cast<unsigned>(vertexIndex) >= mesh->mNumVertices || component < 0 || component > 2)
+        throw eve::Exception("ModelData::getVertexNormal: invalid mesh/vertex/component");
+    const aiVector3D &value = mesh->mNormals[vertexIndex];
     return component == 0 ? value.x : (component == 1 ? value.y : value.z);
 }
 
