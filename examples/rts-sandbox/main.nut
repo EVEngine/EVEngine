@@ -12,10 +12,12 @@ if (!("blueBarracks" in getroottable())) blueBarracks <- null;
 if (!("blueCommand" in getroottable())) blueCommand <- null;
 if (!("blueTurret" in getroottable())) blueTurret <- null;
 if (!("blueAPC" in getroottable())) blueAPC <- null;
+if (!("blueFactionId" in getroottable())) blueFactionId <- null;
+if (!("redFactionId" in getroottable())) redFactionId <- null;
 
 GRID_W <- 36; GRID_H <- 22; CELL <- 28.0; ORIGIN_X <- 24.0; ORIGIN_Y <- 94.0;
-BLUE <- "00000000-0000-7000-8000-00000000f001";
-RED  <- "00000000-0000-7000-8000-00000000f002";
+BLUE_FACTION_SEED <- "00000000-0000-7000-8000-00000000f001";
+RED_FACTION_SEED  <- "00000000-0000-7000-8000-00000000f002";
 MATCH <- "00000000-0000-7000-8000-00000000f003";
 
 function requireResult(result, context) {
@@ -38,7 +40,7 @@ function sy(y) { return ORIGIN_Y+y*CELL; }
 function fogVisible(x,y) {
     local cx=floor(x+0.5).tointeger(),cy=floor(y+0.5).tointeger();
     if(cx<0||cy<0||cx>=GRID_W||cy>=GRID_H)return false;
-    return requireResult(sim.scriptCellVisible(BLUE,cx,cy),"query visibility");
+    return requireResult(sim.scriptCellVisible(blueFactionId,cx,cy),"query visibility");
 }
 function pressed(name) {
     local down=keyboard.isDown(name), before=(name in prevKeys)?prevKeys[name]:false;
@@ -54,44 +56,44 @@ function resetGame() {
     requireResult(sim.configureScriptWorld(GRID_W,GRID_H,1.0,0.0,0.0),"configure RTS world");
     // Persist the facade's canonical identity instead of relying on the seed
     // text after a reset. All subsequent facade calls share this owner key.
-    BLUE=requireResult(sim.newFaction(BLUE),"create blue faction");
-    RED=requireResult(sim.newFaction(RED),"create red faction");
-    requireResult(sim.configureAutoConstruction(BLUE,true,2,2),"configure blue builders");
-    requireResult(sim.configureAutoRepair(BLUE,true,2,2),"configure blue repairers");
-    requireResult(sim.configureAutoConstruction(RED,true,2,2),"configure red builders");
-    requireResult(sim.configureAutoRepair(RED,true,2,2),"configure red repairers");
-    requireResult(sim.addScriptResource(BLUE,"minerals",300),"fund blue");
-    requireResult(sim.addScriptResource(RED,"minerals",300),"fund red");
+    blueFactionId=requireResult(sim.newFaction(BLUE_FACTION_SEED),"create blue faction");
+    redFactionId=requireResult(sim.newFaction(RED_FACTION_SEED),"create red faction");
+    requireResult(sim.configureAutoConstruction(blueFactionId,true,2,2),"configure blue builders");
+    requireResult(sim.configureAutoRepair(blueFactionId,true,2,2),"configure blue repairers");
+    requireResult(sim.configureAutoConstruction(redFactionId,true,2,2),"configure red builders");
+    requireResult(sim.configureAutoRepair(redFactionId,true,2,2),"configure red repairers");
+    requireResult(sim.addScriptResource(blueFactionId,"minerals",300),"fund blue");
+    requireResult(sim.addScriptResource(redFactionId,"minerals",300),"fund red");
     for(local y=2;y<20;++y) if(y!=6&&y!=16)
         requireResult(sim.setScriptNavigationBlocked(17,y,true),"place wall");
     for(local x=1;x<GRID_W-1;++x)
         requireResult(sim.setScriptNavigationCost(x,10,0.35),"place road");
-    blueCommand=requireResult(sim.newBuilding(nextId(),"building:command_center",BLUE,4.5,10.5),"blue command");
-    blueBarracks=requireResult(sim.newBuilding(nextId(),"building:barracks",BLUE,8.5,10.5),"blue barracks");
-    blueTurret=requireResult(sim.newBuilding(nextId(),"building:turret",BLUE,13.5,6.5),"blue turret");
-    requireResult(sim.newBuilding(nextId(),"building:command_center",RED,31.0,10.5),"red command");
-    requireResult(sim.newBuilding(nextId(),"building:turret",RED,21.5,16.5),"red turret");
+    blueCommand=requireResult(sim.newBuilding(nextId(),"building:command_center",blueFactionId,4.5,10.5),"blue command");
+    blueBarracks=requireResult(sim.newBuilding(nextId(),"building:barracks",blueFactionId,8.5,10.5),"blue barracks");
+    blueTurret=requireResult(sim.newBuilding(nextId(),"building:turret",blueFactionId,13.5,6.5),"blue turret");
+    requireResult(sim.newBuilding(nextId(),"building:command_center",redFactionId,31.0,10.5),"red command");
+    requireResult(sim.newBuilding(nextId(),"building:turret",redFactionId,21.5,16.5),"red turret");
     requireResult(sim.newResourceNode(nextId(),"minerals",1800.0,11.5,4.0,4),"north minerals");
     requireResult(sim.newResourceNode(nextId(),"minerals",1800.0,24.5,18.0,4),"south minerals");
     for(local i=0;i<5;++i)
-        requireResult(sim.newUnit(nextId(),"unit:worker",BLUE,5.5,8.0+i*0.7),"blue worker");
+        requireResult(sim.newUnit(nextId(),"unit:worker",blueFactionId,5.5,8.0+i*0.7),"blue worker");
     for(local i=0;i<5;++i)
-        requireResult(sim.newUnit(nextId(),"unit:worker",RED,30.0,8.0+i*0.7),"red worker");
+        requireResult(sim.newUnit(nextId(),"unit:worker",redFactionId,30.0,8.0+i*0.7),"red worker");
     for(local i=0;i<9;++i)
-        requireResult(sim.newUnit(nextId(),"unit:marine",BLUE,9.0+(i%3),13.0+(i/3).tointeger()),"blue marine");
-    blueAPC=requireResult(sim.newUnit(nextId(),"unit:apc",BLUE,7.0,16.5),"blue APC");
+        requireResult(sim.newUnit(nextId(),"unit:marine",blueFactionId,9.0+(i%3),13.0+(i/3).tointeger()),"blue marine");
+    blueAPC=requireResult(sim.newUnit(nextId(),"unit:apc",blueFactionId,7.0,16.5),"blue APC");
     for(local i=0;i<9;++i)
-        requireResult(sim.newUnit(nextId(),"unit:marine",RED,26.0-(i%3),13.0+(i/3).tointeger()),"red marine");
+        requireResult(sim.newUnit(nextId(),"unit:marine",redFactionId,26.0-(i%3),13.0+(i/3).tointeger()),"red marine");
     requireResult(sim.newMatch(MATCH),"create match");
     requireResult(sim.configureMatch(MATCH,"headquarters","command_center",0.0),"configure victory");
-    requireResult(sim.addMatchParticipant(MATCH,BLUE,1),"join blue");
-    requireResult(sim.addMatchParticipant(MATCH,RED,2),"join red");
+    requireResult(sim.addMatchParticipant(MATCH,blueFactionId,1),"join blue");
+    requireResult(sim.addMatchParticipant(MATCH,redFactionId,2),"join red");
     requireResult(sim.startMatch(MATCH),"start match");
 }
 function selectAtCursor() {
     local state=requireResult(sim.inspectState(),"inspect"), best=null, bestD=0.8*0.8;
     foreach(unit in state.units) {
-        if(unit.faction!=BLUE || unit.garrisoned) continue;
+        if(unit.faction!=blueFactionId || unit.garrisoned) continue;
         local dx=unit.x-wx(),dy=unit.y-wy(),d=dx*dx+dy*dy;
         if(d<bestD){bestD=d;best=unit.subject;}
     }
@@ -100,7 +102,7 @@ function selectAtCursor() {
 function selectArmy() {
     selected=[]; local state=requireResult(sim.inspectState(),"inspect");
     foreach(unit in state.units)
-        if(unit.faction==BLUE && unit.definition=="unit:marine") selected.push(unit.subject);
+        if(unit.faction==blueFactionId && unit.definition=="unit:marine") selected.push(unit.subject);
 }
 function pruneSelection() {
     local state=requireResult(sim.inspectState(),"inspect"), live=[];
@@ -111,7 +113,7 @@ function refreshHud() {
     if(!uiBuilt||sim==null)return;
     pruneSelection();
     local state=requireResult(sim.inspectState(),"inspect");
-    local minerals=requireResult(sim.scriptResource(BLUE,"minerals"),"read minerals");
+    local minerals=requireResult(sim.scriptResource(blueFactionId,"minerals"),"read minerals");
     local matchState=requireResult(sim.inspectMatch(MATCH),"inspect match");
     local isolated=0;
     foreach(id in selected){local unit=unitBySubject(state,id);if(unit!=null&&!unit.inCommand)++isolated;}
@@ -123,7 +125,7 @@ function refreshHud() {
 function nearestEnemy(state) {
     local best=null,bestD=999999.0;
     foreach(unit in state.units) {
-        if(unit.faction==BLUE)continue;
+        if(unit.faction==blueFactionId)continue;
         local dx=unit.x-wx(),dy=unit.y-wy(),d=dx*dx+dy*dy;
         if(d<bestD){bestD=d;best=unit.subject;}
     }
@@ -187,7 +189,7 @@ eve_update=function(dt){
     if(pressed("b")||pressed("B")){
         local worker=firstSelectedWorker(requireResult(sim.inspectState(),"inspect"));
         if(worker!=null)requireResult(sim.startScriptConstruction(
-            BLUE,nextId(),"building:barracks",wx(),wy(),worker),"start barracks construction");
+            blueFactionId,nextId(),"building:barracks",wx(),wy(),worker),"start barracks construction");
     }
     if(pressed("u")||pressed("U"))
         requireResult(sim.queueScriptResearch(blueBarracks,"infantry_weapons_1",0),"research weapons");
@@ -222,27 +224,27 @@ eve_render=function(){
     local state=requireResult(sim.inspectState(),"inspect");
     foreach(node in state.resourceNodes){
         local nx=floor(node.x+0.5).tointeger(),ny=floor(node.y+0.5).tointeger();
-        if(requireResult(sim.scriptCellExplored(BLUE,nx,ny),"query resource fog"))
+        if(requireResult(sim.scriptCellExplored(blueFactionId,nx,ny),"query resource fog"))
             gfx.drawSolidRect(sx(node.x)-10.0,sy(node.y)-10.0,20.0,20.0,0.15,0.75,0.92,1.0);
     }
     foreach(building in state.buildings){
-        if(building.faction!=BLUE&&!fogVisible(building.x,building.y))continue;
-        local isBlue=building.faction==BLUE,size=building.definition=="building:command_center"?64.0:44.0;
+        if(building.faction!=blueFactionId&&!fogVisible(building.x,building.y))continue;
+        local isBlue=building.faction==blueFactionId,size=building.definition=="building:command_center"?64.0:44.0;
         gfx.drawSolidRect(sx(building.x)-size*0.5,sy(building.y)-size*0.5,size,size,
             isBlue?0.18:0.75,isBlue?0.48:0.20,isBlue?0.88:0.18,building.powered?1.0:0.35);
     }
     foreach(unit in state.units){
         if(unit.garrisoned)continue;
-        if(unit.faction!=BLUE&&!fogVisible(unit.x,unit.y))continue;
-        local isBlue=unit.faction==BLUE,worker=unit.definition=="unit:worker",size=worker?10.0:14.0;
+        if(unit.faction!=blueFactionId&&!fogVisible(unit.x,unit.y))continue;
+        local isBlue=unit.faction==blueFactionId,worker=unit.definition=="unit:worker",size=worker?10.0:14.0;
         gfx.drawSolidRect(sx(unit.x)-size*0.5,sy(unit.y)-size*0.5,size,size,
             isBlue?0.25:0.92,isBlue?0.62:0.25,isBlue?0.96:0.18,1.0);
     }
     foreach(id in selected){local unit=unitBySubject(state,id);if(unit!=null)
         gfx.drawSolidRect(sx(unit.x)-9,sy(unit.y)+9,18,2,0.2,1.0,0.35,1.0);}
     for(local y=0;y<GRID_H;++y)for(local x=0;x<GRID_W;++x){
-        local explored=requireResult(sim.scriptCellExplored(BLUE,x,y),"query explored");
-        local visible=requireResult(sim.scriptCellVisible(BLUE,x,y),"query visible");
+        local explored=requireResult(sim.scriptCellExplored(blueFactionId,x,y),"query explored");
+        local visible=requireResult(sim.scriptCellVisible(blueFactionId,x,y),"query visible");
         if(!explored)gfx.drawSolidRect(sx(x),sy(y),CELL-1,CELL-1,0.01,0.015,0.02,0.94);
         else if(!visible)gfx.drawSolidRect(sx(x),sy(y),CELL-1,CELL-1,0.02,0.03,0.05,0.58);
     }
