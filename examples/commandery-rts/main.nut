@@ -421,8 +421,22 @@ function nearestPoint(faction, wantEnemyOwned) {
     return best;
 }
 
+function activeTasks(owner) {
+    local n=0;
+    for (local i=0;i<game.factory.taskCount();i+=1) {
+        local task=game.factory.taskAt(i);
+        local st=task.getState();
+        if (task.getOwner()==owner && st!="completed" && st!="cancelled" && st!="failed") n+=1;
+    }
+    return n;
+}
+
 function queueEnemyUnit() {
-    local kind = livingCount(game.frontier) < 2 ? "tank" : "infantry";
+    local living = livingCount(game.frontier);
+    local pending = activeTasks(game.enemyBase);
+    if (living + pending >= 4) return;
+    if (pending >= game.factory.slotCount(game.enemyBase)) return;
+    local kind = living < 2 ? "tank" : "infantry";
     local cost = kind == "tank" ? 160.0 : 70.0;
     if (game.enemyMoney < cost) return;
     local enqueue = game.factory.enqueue(game.enemyBase, "build_unit", kind, "{}", kind=="tank"?8.0:4.0, 8);
@@ -444,13 +458,13 @@ function updateEnemyAI(dt) {
     // Assault is gated: outnumbered openings always held/raided. choose() is
     // deterministic, so a 0.60 assault score previously won every first tick.
     local assaultUrge = 0.05;
-    if (crownN > 0 && frontierN >= 3 && forceDelta >= 0) {
+    if (crownN > 0 && frontierN >= 3 && forceDelta >= 1 && game.time > 15.0) {
         assaultUrge = clamp(0.40 + forceDelta * 0.18, 0.40, 0.90);
     }
     local captureUrge = (crownMines > 0 && frontierN >= 2) ? 0.70 : 0.15;
     local holdUrge = forceDelta < 0 ? 0.78 : 0.28;
     local action=game.mind.choose("assault="+assaultUrge+":1;capture="+captureUrge+":1;hold="+holdUrge+":1");
-    if(action=="assault" && !game.rebelled && frontierN >= 3 && forceDelta >= 0) {
+    if(action=="assault" && !game.rebelled && frontierN >= 3 && forceDelta >= 1 && game.time > 15.0) {
         local triggerResult = game.mind.trigger("frontier.ai", "base_exposed");
         if (!triggerResult.ok) { game.message = triggerResult.status.summary; return; }
     } else {
