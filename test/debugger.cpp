@@ -3,8 +3,10 @@
 
 #include "common/Capability.h"
 #include "common/IStateProvider.h"
+#include "common/Module.h"
 #include "common/StateValue.h"
 #include "devtools/Debugger.hpp"
+#include "devtools/DevTool.hpp"
 #include "devtools/Snapshot.hpp"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -47,7 +49,8 @@ TEST_CASE("devtools.debugger.breakpointsMatchBasename") {
     const int id = d.setBreakpoint("scripts/main.nut", 42);
     CHECK(id > 0);
     CHECK(d.hasBreakpoint("main.nut", 42));
-    CHECK(d.hasBreakpoint("/abs/path/main.nut", 42));
+    CHECK(d.hasBreakpoint("scripts/main.nut", 42));
+    REQUIRE(!d.hasBreakpoint("/game/other/main.nut", 42));
     CHECK(!d.hasBreakpoint("main.nut", 43));
     CHECK(d.clearBreakpoint("main.nut", 42));
     CHECK(!d.hasBreakpoint("main.nut", 42));
@@ -537,6 +540,8 @@ TEST_CASE("devtools.debugger.normalizeSource") {
     CHECK(Debugger::sourcesMatch("/abs/game/main.nut", "main.nut"));
     CHECK(Debugger::sourcesMatch("/abs/game/scripts/a.nut", "scripts/a.nut"));
     CHECK(!Debugger::sourcesMatch("foo.nut", "barfoo.nut"));
+    REQUIRE(!Debugger::sourcesMatch("/proj/a/main.nut", "/proj/b/main.nut"));
+    REQUIRE(!Debugger::sourcesMatch("scripts/main.nut", "other/main.nut"));
 }
 
 TEST_CASE("devtools.debugger.clearBreakpointsMatchesAlias") {
@@ -776,6 +781,7 @@ TEST_CASE("devtools.debugger.breakpointsEnabledMasterSwitch") {
     d.clearBreakpoints();
     d.setBreakpoint("t.nut", 3);
     d.setBreakpointsEnabled(false);
+    CHECK(d.hasBreakpoint("t.nut", 3));  // registered even while skip-all is on
 
     SourceLoc loc;
     loc.source = "t.nut";
@@ -787,4 +793,210 @@ TEST_CASE("devtools.debugger.breakpointsEnabledMasterSwitch") {
     CHECK(d.onScriptLine(loc));
     CHECK(d.isPaused());
     d.resume();
+}
+
+TEST_CASE("devtools.debugger.pauseAtRecordsLocation") {
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.resume();
+
+    SourceLoc loc;
+    loc.source   = "err.nut";
+    loc.line     = 12;
+    loc.function = "boom";
+    d.pauseAt(PauseReason::Exception, loc);
+    CHECK(d.isPaused());
+    CHECK_EQ(d.pauseLocation().source, std::string("err.nut"));
+    CHECK_EQ(d.pauseLocation().line, 12);
+    CHECK_EQ(d.pauseLocation().function, std::string("boom"));
+    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Exception));
+
+    d.pauseAt(PauseReason::Snapshot, d.pauseLocation());
+    CHECK(d.isPaused());
+    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Snapshot));
+    CHECK_EQ(d.pauseLocation().line, 12);
+
+    d.pause(PauseReason::PauseKey);
+    CHECK(d.pauseLocation().empty());
+    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::PauseKey));
+    d.resume();
+}
+
+TEST_CASE("devtools.debugger.breakpointConditionReplaceAndEnableById") {
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.clearBreakpoints();
+    d.setBreakpointsEnabled(true);
+
+    const int id = d.setBreakpoint("t.nut", 10, true, "flag");
+    CHECK(id > 0);
+    auto bps = d.breakpoints();
+    REQUIRE(!bps.empty());
+    CHECK_EQ(bps[0].condition, std::string("flag"));
+
+    CHECK_EQ(d.setBreakpoint("t.nut", 10, true, ""), id);
+    bps = d.breakpoints();
+    CHECK(bps[0].condition.empty());
+
+    CHECK(d.setBreakpointEnabled(id, false));
+    CHECK(!d.setBreakpointEnabled(99999, false));
+    CHECK(d.hasBreakpoint("t.nut", 10));
+
+    SourceLoc loc;
+    loc.source = "t.nut";
+    loc.line   = 10;
+    CHECK(!d.onScriptLine(loc));
+    CHECK(!d.isPaused());
+
+    CHECK(d.setBreakpointEnabled(id, true));
+    CHECK(d.onScriptLine(loc));
+    CHECK(d.isPaused());
+    d.resume();
+    d.clearBreakpoints();
+}
+
+TEST_CASE("devtools.debugger.conditionalBreakpointUsesLocals") {
+    struct St {
+        Debugger* dbg = nullptr;
+        int       stops = 0;
+    };
+    auto hook = [](HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQInteger line,
+                   const SQChar* funcname) {
+        auto* st = static_cast<St*>(sq_getforeignptr(v));
+        if (!st || !st->dbg || type != 'l') return;
+        SourceLoc loc;
+        loc.source   = sourcename ? sourcename : "";
+        loc.line     = static_cast<int>(line);
+        loc.function = funcname ? funcname : "";
+        if (st->dbg->onScriptLine(loc)) {
+            ++st->stops;
+            st->dbg->resume();
+        }
+    };
+
+    const char* body =
+        "function f() {\n"     // 1
+        "    local n = 1\n"    // 2
+        "    n = 2\n"          // 3  condition n == 2 should stop here
+        "    n = 3\n"          // 4
+        "}\n"
+        "f()\n";
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.clearBreakpoints();
+    d.attach(v);
+    d.setBreakpoint("buffer", 3, true, "n == 2");
+    d.setBreakpoint("buffer", 2, true, "n == 2");  // n is 1 here → skip
+
+    St st;
+    st.dbg = &d;
+    sq_setforeignptr(v, &st);
+    sq_enabledebuginfo(v, SQTrue);
+    sq_setnativedebughook(v, +hook);
+
+    REQUIRE(SQ_SUCCEEDED(sq_compilebuffer(v, body, static_cast<SQInteger>(std::strlen(body)),
+                                          _SC("buffer"), SQTrue)));
+    sq_pushroottable(v);
+    REQUIRE(SQ_SUCCEEDED(sq_call(v, 1, SQFalse, SQTrue)));
+    sq_poptop(v);
+
+    CHECK_EQ(st.stops, 1);
+
+    sq_setnativedebughook(v, nullptr);
+    sq_setforeignptr(v, nullptr);
+    d.clearBreakpoints();
+    d.detach();
+}
+
+TEST_CASE("devtools.debugger.conditionalBreakpointStopsOnEvalError") {
+    struct St {
+        Debugger* dbg = nullptr;
+        int       stops = 0;
+    };
+    auto hook = [](HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQInteger line,
+                   const SQChar* funcname) {
+        auto* st = static_cast<St*>(sq_getforeignptr(v));
+        if (!st || !st->dbg || type != 'l') return;
+        SourceLoc loc;
+        loc.source   = sourcename ? sourcename : "";
+        loc.line     = static_cast<int>(line);
+        loc.function = funcname ? funcname : "";
+        if (st->dbg->onScriptLine(loc)) {
+            ++st->stops;
+            st->dbg->resume();
+        }
+    };
+
+    const char* body =
+        "function f() {\n"
+        "    local n = 1\n"
+        "}\n"
+        "f()\n";
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.clearBreakpoints();
+    d.attach(v);
+    d.setBreakpoint("buffer", 2, true, "no_such_local + 1");
+
+    St st;
+    st.dbg = &d;
+    sq_setforeignptr(v, &st);
+    sq_enabledebuginfo(v, SQTrue);
+    sq_setnativedebughook(v, +hook);
+
+    REQUIRE(SQ_SUCCEEDED(sq_compilebuffer(v, body, static_cast<SQInteger>(std::strlen(body)),
+                                          _SC("buffer"), SQTrue)));
+    sq_pushroottable(v);
+    REQUIRE(SQ_SUCCEEDED(sq_call(v, 1, SQFalse, SQTrue)));
+    sq_poptop(v);
+
+    CHECK_EQ(st.stops, 1);
+
+    sq_setnativedebughook(v, nullptr);
+    sq_setforeignptr(v, nullptr);
+    d.clearBreakpoints();
+    d.detach();
+}
+
+TEST_CASE("devtools.debugger.scriptApiSetBreakpointCondition") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    auto& dt = DevTool::instance();
+    dt.detach();
+    Debugger::instance().clearBreakpoints();
+    dt.attach(vm, false);
+    dt.exposeScriptApi(vm);
+
+    ssq::Script script = vm.compileSource(
+        "function check() {\n"
+        "    local a = eve.dev.setBreakpoint(\"api.nut\", 10)\n"
+        "    local b = eve.dev.setBreakpoint(\"api.nut\", 11, \"n == 2\")\n"
+        "    return a > 0 && b > 0\n"
+        "}\n");
+    vm.run(script);
+    REQUIRE(vm.callFunc(vm.findFunc("check"), vm).toBool());
+
+    bool sawPlain = false;
+    bool sawCond  = false;
+    for (const auto& bp : Debugger::instance().breakpoints()) {
+        if (bp.line == 10) {
+            sawPlain = true;
+            CHECK(bp.condition.empty());
+        }
+        if (bp.line == 11) {
+            sawCond = true;
+            REQUIRE_EQ(bp.condition, std::string("n == 2"));
+        }
+    }
+    CHECK(sawPlain);
+    REQUIRE(sawCond);
+
+    Debugger::instance().clearBreakpoints();
+    dt.detach();
 }

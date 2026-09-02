@@ -29,11 +29,19 @@ void auditHook(HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQIntege
                const SQChar* funcname) {
     auto* st = static_cast<AuditDriver*>(sq_getforeignptr(v));
     if (!st || !st->dbg) return;
-    if (type != 'l') return;
     SourceLoc loc;
     loc.source   = sourcename ? sourcename : "";
     loc.line     = static_cast<int>(line);
     loc.function = funcname ? funcname : "";
+    if (type == 'c') {
+        st->dbg->onCall(loc);
+        return;
+    }
+    if (type == 'r') {
+        st->dbg->onReturn(loc);
+        return;
+    }
+    if (type != 'l') return;
     if (st->dbg->onScriptLine(loc)) {
         const int idx = st->stops;
         st->stopLines.push_back(loc.line);
@@ -58,6 +66,7 @@ void runAudit(const char* src, const char* bufname, AuditDriver& driver) {
     d.detach();
     driver.dbg = &d;
     d.attach(v);
+    d.setVirtualSource(bufname, src);
 
     sq_setforeignptr(v, &driver);
     sq_enabledebuginfo(v, SQTrue);
@@ -112,6 +121,68 @@ TEST_CASE("devtools.audit.callStackAtNestedBreakpoint") {
     CHECK_EQ(captured[1].loc.line, 5);
     // Top-level script frame present.
     CHECK(!captured[2].loc.source.empty());
+}
+
+TEST_CASE("devtools.audit.callStackNamesAnonymousBindings") {
+    const char* src =
+        "callee <- function() {\n"
+        "    local a = 1\n"
+        "}\n"
+        "caller <- function() {\n"
+        "    callee()\n"
+        "}\n"
+        "caller()\n";
+
+    AuditDriver driver;
+    driver.actions = {[]() { Debugger::instance().resume(); }};
+
+    std::vector<StackFrameInfo> captured;
+    driver.capture = [&]() { captured = Debugger::instance().stackTrace(16); };
+
+    Debugger& d = Debugger::instance();
+    d.clearBreakpoints();
+    d.setBreakpoint("audit_anon.nut", 2);
+    runAudit(src, "audit_anon.nut", driver);
+
+    REQUIRE(driver.stops >= 1);
+    REQUIRE(captured.size() >= 2u);
+    REQUIRE(captured[0].name.find("callee") != std::string::npos);
+    REQUIRE(captured[1].name.find("caller") != std::string::npos);
+}
+
+TEST_CASE("devtools.audit.callStackTopStaysCurrentIfCallGraphHasExtraInnerFrame") {
+    const char* src =
+        "callee <- function() {\n"
+        "    local a = 1\n"
+        "}\n"
+        "caller <- function() {\n"
+        "    callee()\n"
+        "}\n"
+        "caller()\n";
+
+    AuditDriver driver;
+    driver.actions = {[]() { Debugger::instance().resume(); }};
+
+    std::vector<StackFrameInfo> captured;
+    driver.capture = [&]() {
+        SourceLoc extra;
+        extra.source   = "audit_shift.nut";
+        extra.line     = 4;
+        extra.function = "unknown";
+        Debugger::instance().onCall(extra);
+        captured = Debugger::instance().stackTrace(16);
+    };
+
+    Debugger& d = Debugger::instance();
+    d.clearBreakpoints();
+    d.setBreakpoint("audit_shift.nut", 2);
+    runAudit(src, "audit_shift.nut", driver);
+
+    REQUIRE(driver.stops >= 1);
+    REQUIRE(captured.size() >= 2u);
+    REQUIRE(captured[0].name.find("callee") != std::string::npos);
+    REQUIRE(captured[0].name.find("caller") == std::string::npos);
+    REQUIRE(captured[1].name.find("caller") != std::string::npos);
 }
 
 // ---------------------------------------------------------------------------
@@ -212,6 +283,35 @@ TEST_CASE("devtools.audit.stepOverSkipsCallee") {
     CHECK_EQ(driver.stopLines[1], 6);  // local b = 2 in caller, not inside callee
     CHECK(driver.stopFuncs[1].find("caller") != std::string::npos);
     CHECK_EQ(driver.stopDepths[1], driver.stopDepths[0]);
+}
+
+TEST_CASE("devtools.audit.breakpointHitsInsideStepOver") {
+    const char* src =
+        "function callee() {\n"
+        "    local a = 1\n"
+        "}\n"
+        "function caller() {\n"
+        "    callee()\n"
+        "    local b = 2\n"
+        "}\n"
+        "caller()\n";
+
+    AuditDriver driver;
+    driver.actions = {
+        []() { Debugger::instance().stepOver(); },
+        []() { Debugger::instance().resume(); },
+    };
+
+    Debugger& d = Debugger::instance();
+    d.clearBreakpoints();
+    d.setBreakpoint("audit7.nut", 5);  // call site — start stepOver from here
+    d.setBreakpoint("audit7.nut", 2);  // inside callee — must still stop
+    runAudit(src, "audit7.nut", driver);
+
+    REQUIRE(driver.stops >= 2);
+    CHECK_EQ(driver.stopLines[0], 5);
+    CHECK_EQ(driver.stopLines[1], 2);
+    CHECK(driver.stopFuncs[1].find("callee") != std::string::npos);
 }
 
 // ---------------------------------------------------------------------------

@@ -151,6 +151,13 @@ public:
     const BindingContract* find(std::string_view key) const noexcept;
     /** @brief Finds a uniquely named method; returns nullptr when absent or ambiguous. */
     const BindingContract* findMethod(std::string_view method) const noexcept;
+    /**
+     * @brief Finds a method on one script class.
+     * @return nullptr when the class has no such method.
+     */
+    const BindingContract* findMethod(std::string_view scriptClass, std::string_view method) const noexcept;
+    /** @brief True when generated contracts include this script class. */
+    bool hasScriptClass(std::string_view scriptClass) const noexcept;
     /** @brief Returns a stable snapshot sorted by contract key. */
     std::vector<BindingContract> snapshot() const;
 

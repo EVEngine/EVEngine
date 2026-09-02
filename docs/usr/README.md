@@ -238,7 +238,7 @@ eve.dev.ai.note("boss phase");  // DevTools AI 会话日志；F9 切换面板
 > 在仓库根目录执行 `make devlab`（自动带 `--debug`），依次按 F4（控制台/REPL）、
 > F6/F7（快照）、F9（AI 面板）、Pause（暂停）即可体验「运行时即编辑器」的开发循环。
 
-VS Code 调试适配器位于仓库 `tools/vscode-eve-debug/`；Cursor 等 Agent 可通过 `tools/eve-mcp/` 连接 `--mcp-port`（见[开发者文档：AI 与 MCP](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/AI与MCP支持.md)）。如果只需快速定位问题，先确认：
+VS Code 扩展位于仓库 `tools/vscode-eve-debug/`（EveScript LSP + DAP 调试）；Cursor 等 Agent 可通过 `tools/eve-mcp/` 连接 `--mcp-port`（见[开发者文档：AI 与 MCP](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/AI与MCP支持.md)）。如果只需快速定位问题，先确认：
 
 1. `config.nut` 和 `main.nut` 位于传给 `run` 的同一游戏目录；
 2. 每帧绘制前调用了 `gfx.clear()`；

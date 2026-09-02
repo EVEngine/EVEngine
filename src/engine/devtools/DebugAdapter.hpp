@@ -32,7 +32,8 @@ namespace eve::dev {
  *
  * Supported requests: initialize, launch/attach, setBreakpoints,
  * configurationDone, threads, stackTrace, scopes, variables, continue,
- * next/stepIn/stepOut, pause, evaluate, disconnect.
+ * next/stepIn/stepOut, pause, evaluate, disconnect, custom `errorSlice`
+ * (last DevTool dynamic backward slice).
  */
 class EVENGINE_API DebugAdapter {
 public:

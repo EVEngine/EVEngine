@@ -1,12 +1,13 @@
-#include "cmdline/LanguageIndex.h"
+#include "devtools/LanguageIndex.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <cstdint>
 #include <string>
 
-using eve::cmd::lsp::Position;
-using eve::cmd::lsp::WorkspaceIndex;
+using eve::dev::lsp::Position;
+using eve::dev::lsp::WorkspaceIndex;
 
 TEST_CASE("languageIndex.crossFileDefinitionAndReferences") {
     WorkspaceIndex index;
@@ -80,4 +81,45 @@ TEST_CASE("languageIndex.rejectsInvalidRename") {
     WorkspaceIndex index;
     index.update("game:/main.nut", "file:///game/main.nut", "local value = 1\n");
     CHECK(!index.rename("game:/main.nut", Position{0, 7}, "not-valid").has_value());
+}
+
+TEST_CASE("languageIndex.semanticTokensDistinguishClassFunctionVariable") {
+    WorkspaceIndex index;
+    index.update("game:/main.nut", "file:///game/main.nut",
+                 "class Player {}\n"
+                 "function greet(name) { return name }\n"
+                 "local speed = 1\n"
+                 "const MAX = 2\n"
+                 "greet(\"x\")\n"
+                 "Player()\n"
+                 "speed = MAX\n");
+
+    const auto tokens = index.semanticTokens("game:/main.nut");
+    const auto typeAt = [&](std::string_view name, size_t line) -> uint32_t {
+        for (const auto& token : tokens)
+            if (token.name == name && token.start.line == line) return token.type;
+        return 99;
+    };
+    CHECK_EQ(typeAt("Player", 0), eve::dev::lsp::SemanticTypes::Class);
+    CHECK_EQ(typeAt("greet", 1), eve::dev::lsp::SemanticTypes::Function);
+    CHECK_EQ(typeAt("speed", 2), eve::dev::lsp::SemanticTypes::Variable);
+    CHECK_EQ(typeAt("MAX", 3), eve::dev::lsp::SemanticTypes::Variable);
+    CHECK_EQ(typeAt("greet", 4), eve::dev::lsp::SemanticTypes::Function);
+    CHECK_EQ(typeAt("Player", 5), eve::dev::lsp::SemanticTypes::Class);
+    CHECK_EQ(typeAt("speed", 6), eve::dev::lsp::SemanticTypes::Variable);
+}
+
+TEST_CASE("languageIndex.semanticTokensLiteralsAndSelf") {
+    WorkspaceIndex index;
+    index.update("game:/main.nut", "file:///game/main.nut", "local ready = true\nthis.base = null\n");
+    const auto tokens = index.semanticTokens("game:/main.nut");
+    const auto typeAt = [&](std::string_view name, size_t line) -> uint32_t {
+        for (const auto& token : tokens)
+            if (token.name == name && token.start.line == line) return token.type;
+        return 99;
+    };
+    CHECK_EQ(typeAt("true", 0), eve::dev::lsp::SemanticTypes::Keyword);
+    CHECK_EQ(typeAt("this", 1), eve::dev::lsp::SemanticTypes::Keyword);
+    CHECK_EQ(typeAt("base", 1), eve::dev::lsp::SemanticTypes::Keyword);
+    CHECK_EQ(typeAt("null", 1), eve::dev::lsp::SemanticTypes::Keyword);
 }

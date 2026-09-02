@@ -782,12 +782,20 @@ eve language-server --root /path/to/my-game
 
 - 语法和结构化诊断；
 - `config.modules` / `optionalModules` 检查；
-- 已知脚本符号与 Binding Contract 补全；
+- 已知脚本符号、EveScript 关键字、模块 slot 与 Binding Contract 补全（含 `gfx.` 成员）；
 - 原生方法签名和文档 Hover；
+- 调用处 signature help；
+- 文档符号大纲；
 - 跨文件 `import` / `export` 定义跳转；
 - 项目级引用查找；
 - 导出符号和 import alias 的安全重命名；
-- 文档打开、增量更新和关闭同步。
+- 按花括号 / 方括号缩进的文档格式化（及范围格式化）；
+- 多行 `{ }`、`[ ]` 与 `/* */` 代码折叠；
+- 语义高亮（类 / 函数 / 方法 / 变量 / 模块 slot）；
+- 文档打开、增量 `contentChanges` 和关闭同步。
+
+进程内宿主（测试、VS Code 扩展）可以直接使用 `eve::dev::LanguageServer` 的 typed API，不必走 stdio。
+VS Code / Cursor 安装仓库内 `tools/vscode-eve-debug/` 后，打开 `.nut` 即会启动该语言服务。
 
 运行时调试：
 
