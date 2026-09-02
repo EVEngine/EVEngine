@@ -1310,6 +1310,7 @@ Shader *Graphics::newShaderFromWgsl(const std::string &, const std::string &) {
 }
 
 void Graphics::flushBatch() {
+    ensureFileTexturesReady();
     if (!initialized) return;
     if (isCanvasActive()) {
         auto *oc = dynamic_cast<OffscreenCanvas *>(activeCanvas);

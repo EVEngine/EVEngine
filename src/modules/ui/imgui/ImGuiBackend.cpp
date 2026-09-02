@@ -7,6 +7,7 @@
 #include "graphics/Graphics.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <imgui_impl_sdl.h>
 
 #ifdef EVENGINE_WEBGPU
@@ -262,13 +263,8 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     }
 #endif
 
-    gfx_->setPresentOverlay(&ImGuiBackend::presentOverlayThunk, this);
-    // The ImGui context + Vulkan pipeline are bound to the native window. When
-    // the window is destroyed, tear down so the next init() rebuilds against a
-    // fresh window — even if SDL hands back the same pointer.
-    gfx_->addWindowDestroyedCallback(&ImGuiBackend::windowDestroyedThunk, this);
-
     initialized_ = true;
+    gfx_->addWindowDestroyedCallback(&ImGuiBackend::windowDestroyedThunk, this);
     return true;
 }
 
@@ -280,7 +276,7 @@ void ImGuiBackend::windowDestroyedThunk(void *userdata) {
 void ImGuiBackend::shutdown() {
     if (!initialized_) return;
     if (frameOpen_) {
-        ImGui::EndFrame();
+        if (GImGui && GImGui->WithinFrameScope) ImGui::EndFrame();
         frameOpen_ = false;
     }
     if (gfx_) {
@@ -345,7 +341,7 @@ void ImGuiBackend::newFrame() {
     if (!initialized_ || !window_) return;
     queuedTextureDraws_.clear();
     if (frameOpen_) {
-        ImGui::EndFrame();
+        if (GImGui && GImGui->WithinFrameScope) ImGui::EndFrame();
         frameOpen_ = false;
     }
 #ifdef EVENGINE_WEBGPU
@@ -356,17 +352,19 @@ void ImGuiBackend::newFrame() {
     ImGui_ImplSDL2_NewFrame(window_);
     ImGui::NewFrame();
     frameOpen_ = true;
+    if (gfx_) gfx_->setPresentOverlay(&ImGuiBackend::presentOverlayThunk, this);
 }
 
 void ImGuiBackend::applyScale(float scale) {
     if (!initialized_) return;
     scale = std::clamp(scale, 0.5f, 5.f);
-    const bool changed = scale != uiScale_;
     uiScale_ = scale;
     setThemeDpiScale(dpiScale_);
     setThemeUiScale(scale);
     applyThemeToImGui(globalTheme(), scale);
-    if (changed) rebuildFonts();
+    // Atlas pixels are baked at dpiScale_, not uiScale_. Rebuilding here
+    // without Fonts->Clear() used to duplicate merged CJK fonts (tofu / missing
+    // glyphs) and cost another ~500ms. Logical size is FontGlobalScale only.
 }
 
 void ImGuiBackend::setScale(float scale) {
@@ -423,6 +421,8 @@ void ImGuiBackend::loadFonts() {
     ImGuiIO &io = ImGui::GetIO();
     ImFontAtlas *atlas = io.Fonts;
     if (!atlas) return;
+
+    atlas->Clear();
 
     // Rasterize at the physical DPI resolution so glyphs stay crisp; the
     // FontGlobalScale set in applyThemeToImGui cancels this so the logical
@@ -674,6 +674,7 @@ bool ImGuiBackend::wantCaptureKeyboard() const {
 
 void ImGuiBackend::renderDrawData(void *commandBuffer) {
     if (!initialized_ || !commandBuffer) return;
+    if (!GImGui || !GImGui->WithinFrameScope) return;
     ImGui::Render();
     frameOpen_ = false;
 #ifdef EVENGINE_WEBGPU
@@ -712,10 +713,11 @@ void ImGuiBackend::renderDrawData(void *commandBuffer) {
 #endif
 }
 
-void ImGuiBackend::presentOverlayThunk(void *userdata, void *commandBuffer) {
+bool ImGuiBackend::presentOverlayThunk(void *userdata, void *commandBuffer) {
     auto *self = static_cast<ImGuiBackend *>(userdata);
-    if (!self) return;
-    self->renderDrawData(commandBuffer);
+    if (!self || !self->initialized_ || !GImGui || !GImGui->WithinFrameScope) return false;
+    if (commandBuffer) self->renderDrawData(commandBuffer);
+    return true;
 }
 
 }  // namespace eve::ui

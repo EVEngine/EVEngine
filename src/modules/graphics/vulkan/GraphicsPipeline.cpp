@@ -768,6 +768,7 @@ void Graphics::queueUiResolve() {
 
 bool Graphics::renderUiOverlayPass() {
     if (!presentOverlayFn_) return false;
+    if (!presentOverlayFn_(presentOverlayUser_, nullptr)) return false;
     createUiColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
     auto *slot = currentUiColorSlot();
     if (!slot || !uiRenderPass || !slot->framebuffer) return false;

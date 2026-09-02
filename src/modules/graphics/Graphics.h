@@ -565,12 +565,21 @@ public:
     virtual float getMaxAnisotropy() const = 0;
 
     /** Load file via Filesystem + Image decode, then upload (RGBA8). Throws on failure.
-     *  Same path returns the same Texture* and reloads pixels in place on repeat calls. */
+     *  Same path returns the same Texture* and reloads pixels in place on repeat calls.
+     *  CPU decode is queued on the thread pool; GPU upload is coalesced automatically
+     *  before the texture is sampled or its size is queried. */
     virtual Texture *newTextureFromFile(const std::string &filename) = 0;
     /** Load a texture from disk with wrap/repeat sampling (for tiling structures).
      *  Non-virtual helper (same pattern as newTextureFromImageData); reads + decodes
      *  via Filesystem/Image then uploads with the requested repeat modes. */
     Texture *newTextureFromFileRepeated(const std::string &filename, bool repeatU, bool repeatV);
+
+    /**
+     * @brief Finish CPU decode and GPU upload for outstanding `newTextureFromFile` results.
+     * @thread Game/render thread that owns the device.
+     * @remarks Called automatically from size queries, 2D flush, and present.
+     */
+    void ensureFileTexturesReady();
 
     /** @brief Reload a path-cached texture from disk in place (pointer stable). False if unbound. */
     virtual bool reloadTextureFromFile(const std::string &filename) = 0;
@@ -1226,8 +1235,10 @@ public:
     /**
      * @brief Optional overlay drawn inside the swapchain render pass (before end).
      * Used by declarative UI (ImGui). `commandBuffer` is a VkCommandBuffer as void*.
+     * Called with `commandBuffer == nullptr` as a probe: return true only when
+     * this frame has overlay draw data, so the backend can skip an empty UI pass.
      */
-    using PresentOverlayFn = void (*)(void *userdata, void *commandBuffer);
+    using PresentOverlayFn = bool (*)(void *userdata, void *commandBuffer);
     void setPresentOverlay(PresentOverlayFn fn, void *userdata) {
         presentOverlayFn_ = fn;
         presentOverlayUser_ = userdata;
@@ -1694,6 +1705,19 @@ public:
 	// virtual void drawQuads(int start, int count, const vertex::Attributes &attributes, const vertex::BufferBindings &buffers, Texture *texture) = 0;
 
 protected:
+    struct DeferredFileTexture {
+        std::string key;
+        Texture *texture = nullptr;
+    };
+
+    void requestFileImageDecode(const std::string &key);
+    bool fileTextureSourceExists(const std::string &filename) const;
+    void dropDeferredFileTexture(Texture *texture);
+    virtual bool uploadDeferredFileTexture(Texture *texture, image::ImageData *data);
+
+    std::vector<DeferredFileTexture> deferredFileTextures_;
+    bool realizingFileTextures_ = false;
+
     int width = 0;
     int height = 0;
     int pixelWidth = 0;

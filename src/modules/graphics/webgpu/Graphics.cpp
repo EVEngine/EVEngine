@@ -22,6 +22,7 @@
 #include "graphics/webgpu/wgsl_shaders.h"
 
 #include "common/Exception.h"
+#include "common/Resource.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/FileData.h"
@@ -2232,21 +2233,62 @@ float Graphics::getMaxAnisotropy() const { return maxSamplerAnisotropy; }
 
 Texture *Graphics::newTextureFromFile(const std::string &filename) {
     if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
+    if (!fileTextureSourceExists(filename))
+        throw Exception("Could not load image file: %s", filename.c_str());
+
     auto it = texturesByPath.find(filename);
-    if (it != texturesByPath.end()) {
-        reloadTextureFromFile(filename);
+    if (it != texturesByPath.end() && it->second) {
+        requestFileImageDecode(filename);
+        if (it->second->hasDeferredFilePixels()) return it->second;
+        auto waited = eve::ResourceManager::getInstance().waitFor(filename);
+        if (!waited.ok()) throw Exception("%s", waited.status().describe().c_str());
+        auto *data = dynamic_cast<image::ImageData *>(&waited.value().get());
+        if (!data ||
+            !updateTexture(it->second, data->getWidth(), data->getHeight(),
+                           static_cast<const uint8_t *>(data->getData())))
+            throw Exception("newTextureFromFile: reload failed '%s'", filename.c_str());
         return it->second;
     }
-    auto *imgMod = image::Image::create();
-    eve::ref<image::ImageData> data(imgMod->newImageDataFromFile(filename));
-    Texture *tex = newTexture(data.get());
-    texturesByPath[filename] = tex;
-    return tex;
+
+    requestFileImageDecode(filename);
+    auto tex = std::make_unique<Texture>();
+    tex->markDeferredFilePixels(this);
+    Texture *raw = tex.get();
+    ownedTextures.push_back(std::move(tex));
+    texturesByPath[filename] = raw;
+    deferredFileTextures_.push_back({filename, raw});
+    return raw;
+}
+
+bool Graphics::uploadDeferredFileTexture(Texture *texture, image::ImageData *data) {
+    if (!texture || !data) return false;
+    if (texture->gpuHandle)
+        return updateTexture(texture, data->getWidth(), data->getHeight(),
+                             static_cast<const uint8_t *>(data->getData()));
+    Texture *fresh = newTexture(data);
+    if (!fresh || !fresh->gpuHandle) return false;
+    texture->gpuHandle = fresh->gpuHandle;
+    texture->width = fresh->width;
+    texture->height = fresh->height;
+    texture->pixelWidth = fresh->pixelWidth;
+    texture->pixelHeight = fresh->pixelHeight;
+    texture->mipmapCount = fresh->mipmapCount;
+    texture->sampler = fresh->sampler;
+    fresh->gpuHandle = nullptr;
+    auto texIt = std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                              [&](const std::unique_ptr<Texture> &t) { return t.get() == fresh; });
+    if (texIt == ownedTextures.end()) return false;
+    (void)texIt->release();
+    ownedTextures.erase(texIt);
+    delete fresh;
+    return true;
 }
 
 bool Graphics::reloadTextureFromFile(const std::string &filename) {
     auto it = texturesByPath.find(filename);
     if (it == texturesByPath.end()) return false;
+
+    ensureFileTexturesReady();
 
     image::ImageData *data = nullptr;
     try {
@@ -2264,7 +2306,24 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
 }
 
 bool Graphics::releaseTexture(Texture *texture) {
-    if (!texture || !texture->gpuHandle) return false;
+    if (!texture) return false;
+    dropDeferredFileTexture(texture);
+    if (!texture->gpuHandle) {
+        auto texIt = std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                                  [&](const std::unique_ptr<Texture> &t) {
+                                      return t.get() == texture;
+                                  });
+        if (texIt == ownedTextures.end()) return false;
+        for (auto it = texturesByPath.begin(); it != texturesByPath.end();) {
+            if (it->second == texture)
+                it = texturesByPath.erase(it);
+            else
+                ++it;
+        }
+        (void)texIt->release();
+        ownedTextures.erase(texIt);
+        return true;
+    }
     // Renderer-owned fallback textures must never be released by callers.
     if (texture->gpuHandle == whiteTexture || texture->gpuHandle == flatNormalTexture ||
         texture->gpuHandle == flatNormalTexture3D ||
@@ -3292,6 +3351,7 @@ void Graphics::setLighting2D(const Lighting2DUBO &ubo) {
 
 void Graphics::flush2D(wgpu::RenderPassEncoder pass, int viewW, int viewH,
                        WGPUTextureFormat format) {
+    ensureFileTexturesReady();
     auto spans = std::move(overlaySpans);
     const bool offscreen = uint32_t(format) != uint32_t(surfaceFormat);
 
@@ -4912,6 +4972,7 @@ struct Graphics::PendingReadback {
 };
 
 void Graphics::present() {
+    ensureFileTexturesReady();
     if (!device || !surface || !swapchainConfigured) return;
     pumpReadback();
     rebuildSwapchainIfNeeded();
@@ -5229,7 +5290,7 @@ void Graphics::present() {
                     surfaceFormat);
         }
 
-        if (presentOverlayFn_) {
+        if (presentOverlayFn_ && presentOverlayFn_(presentOverlayUser_, nullptr)) {
             WGPURenderPassEncoder cPass = pass.Get();
             presentOverlayFn_(presentOverlayUser_, &cPass);
         }
