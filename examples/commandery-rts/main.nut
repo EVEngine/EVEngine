@@ -36,6 +36,20 @@ function mousePressed(button) {
 function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
 function distance(ax, ay, bx, by) { local x=ax-bx; local y=ay-by; return sqrt(x*x+y*y); }
 
+function requireResult(result, context) {
+    if (result == null || !result.ok) {
+        local summary = result == null ? "null result" : result.status.summary;
+        throw context + ": " + summary;
+    }
+    return result.value;
+}
+
+function livingCount(faction) {
+    local n = 0;
+    foreach (u in game.units) if (u.alive && u.faction == faction) n += 1;
+    return n;
+}
+
 function makeUnit(id, faction, kind, x, y, commander) {
     local tank = kind == "tank";
     local stats = attributes.newSet(id);
@@ -44,29 +58,24 @@ function makeUnit(id, faction, kind, x, y, commander) {
     stats.setBase("speed", tank ? 42.0 : 58.0);
     social.setOwner(id, faction);
     if (commander != "") social.assign(id, "subordinate", commander);
-    local queueResult = orders.newQueueOwned();
-    if (!queueResult.ok) throw queueResult.status.summary;
+    local queue = requireResult(orders.newQueueOwned(), "create order queue for " + id);
     return {
         id=id faction=faction kind=kind x=x y=y tx=x ty=y
         hp=tank ? 180.0 : 85.0 maxHp=tank ? 180.0 : 85.0
         damage=tank ? 24.0 : 10.0 speed=tank ? 42.0 : 58.0
         range=tank ? 70.0 : 48.0 cooldown=0.0 selected=false alive=true
-        radius=tank ? 17.0 : 10.0 holdFire=false
-        commander=commander stats=stats queue=queueResult.value aimX=1.0 aimY=0.0
+        radius=tank ? 17.0 : 10.0 holdFire=false orderId=""
+        commander=commander stats=stats queue=queue aimX=1.0 aimY=0.0
     };
 }
 
 function resetGame() {
     social.clear();
-    local authorityResult = authority.newStore();
-    local mindResult = decision.newContext();
-    local statusesResult = effects.newContainer();
-    local sensingResult = sensing.newWorld();
-    local authorityStore = authorityResult.ok ? authorityResult.value : null;
-    local mindContext = mindResult.ok ? mindResult.value : null;
-    local statusContainer = statusesResult.ok ? statusesResult.value : null;
-    local productionResult = production.newWorkQueue();
-    if (!productionResult.ok) throw productionResult.status.summary;
+    local authorityStore = requireResult(authority.newStore(), "create authority store");
+    local mindContext = requireResult(decision.newContext(), "create decision context");
+    local statusContainer = requireResult(effects.newContainer(), "create effect container");
+    local sensor = requireResult(sensing.newWorld(), "create sensing world");
+    local factory = requireResult(production.newWorkQueue(), "create production queue");
     local generalStats = attributes.newSet("general.arden");
     generalStats.setBase("administration", 76.0);
     generalStats.setBase("command", 84.0);
@@ -79,11 +88,11 @@ function resetGame() {
         crown="faction.crown" frontier="faction.frontier"
         general="general.arden" baseId="base.north" enemyBase="base.frontier"
         generalStats=generalStats baseStats=baseStats
-        authority=authorityStore factory=productionResult.value
-        sensor=sensingResult.ok ? sensingResult.value : null mind=mindContext
+        authority=authorityStore factory=factory
+        sensor=sensor mind=mindContext
         statuses=statusContainer stream=events.newLog()
         units=[] projectiles=[] particles=[] selected=null money=520.0 enemyMoney=400.0 incomeTimer=0.0
-        salaryTimer=0.0 aiTimer=0.0 spawnCursor=0 governor=true rebelled=false
+        salaryTimer=0.0 aiTimer=0.0 spawnCursor=0 governor=true rebelled=false outcome=""
         message="北方军区已就绪。左键选兵，右键移动。" time=0.0 productionTick=0
         points=[
             { id="mine.north" x=300.0 y=210.0 owner="faction.crown" governor="general.arden" capture=0.0 capturing="" contested=false },
@@ -100,20 +109,22 @@ function resetGame() {
     social.setRelation("officers.north", game.general, "support", 0.68);
     game.authority.grant(game.general, game.baseId, "govern_base", "rank.general", 10, 0.0);
     game.authority.grant(game.general, "army.north", "issue_orders", "rank.general", 10, 0.0);
-    game.factory.setSlotCount(game.baseId, 2);
-    local mindStateResult = game.mind.setState("frontier.ai", "raid");
-    if (!mindStateResult.ok) return;
-    local mindTransitionResult = game.mind.addTransition(
-        "frontier.ai", "raid", "base_exposed", "assault");
-    if (!mindTransitionResult.ok) return;
-    local mindGridResult = game.mind.newGrid("threat", 10, 6, 100.0, 0.0, 80.0);
-    if (!mindGridResult.ok) return;
+    requireResult(game.factory.setSlotCount(game.baseId, 2), "north production slots");
+    requireResult(game.factory.setSlotCount(game.enemyBase, 2), "frontier production slots");
+    requireResult(game.mind.setState("frontier.ai", "raid"), "seed frontier AI");
+    requireResult(game.mind.addTransition("frontier.ai", "raid", "base_exposed", "assault"),
+                  "frontier raid->assault");
+    requireResult(game.mind.addTransition("frontier.ai", "assault", "hold_mines", "raid"),
+                  "frontier assault->raid");
+    requireResult(game.mind.newGrid("threat", 10, 6, 100.0, 0.0, 80.0), "threat grid");
 
-    game.units.push(makeUnit("crown.tank.1", game.crown, "tank", 220.0, 470.0, game.general));
-    game.units.push(makeUnit("crown.infantry.1", game.crown, "infantry", 175.0, 520.0, game.general));
-    game.units.push(makeUnit("crown.infantry.2", game.crown, "infantry", 260.0, 535.0, game.general));
-    game.units.push(makeUnit("frontier.tank.1", game.frontier, "tank", 815.0, 455.0, "general.boros"));
-    game.units.push(makeUnit("frontier.infantry.1", game.frontier, "infantry", 870.0, 510.0, "general.boros"));
+    // Crown starts near the north mine; Frontier garrisons the east mine so the
+    // opening is an economic contest instead of an instant deathball.
+    game.units.push(makeUnit("crown.tank.1", game.crown, "tank", 220.0, 250.0, game.general));
+    game.units.push(makeUnit("crown.infantry.1", game.crown, "infantry", 280.0, 230.0, game.general));
+    game.units.push(makeUnit("crown.infantry.2", game.crown, "infantry", 175.0, 520.0, game.general));
+    game.units.push(makeUnit("frontier.tank.1", game.frontier, "tank", 800.0, 250.0, "general.boros"));
+    game.units.push(makeUnit("frontier.infantry.1", game.frontier, "infantry", 760.0, 220.0, "general.boros"));
     refreshAdministration();
     refreshPanel();
 }
@@ -130,6 +141,7 @@ function refreshAdministration() {
 }
 
 function toggleGovernor() {
+    if (game.outcome != "") return;
     if (game.governor) {
         social.unassign(game.general, "governor", game.baseId);
         game.authority.revokeBySource("rank.general", "dismissed");
@@ -146,6 +158,7 @@ function toggleGovernor() {
 }
 
 function paySalary() {
+    if (game.outcome != "") return;
     if (game.money < 80.0) { game.message="资金不足，无法支付军饷。"; return; }
     game.money -= 80.0;
     game.generalStats.removeBySource("treasury.unpaid", "");
@@ -155,13 +168,14 @@ function paySalary() {
 }
 
 function withholdSalary() {
+    if (game.outcome != "") return;
     local loyalty = game.generalStats.getFinal("loyalty", 0.0);
     game.generalStats.setBase("loyalty", clamp(loyalty - 22.0, 0.0, 100.0));
-    local effectId = game.statuses.apply(game.general, "salary_unpaid", game.crown, 10, 20.0,
-                                         "salary", "refresh");
+    requireResult(game.statuses.apply(game.general, "salary_unpaid", game.crown, 10, 20.0,
+                                      "salary", "refresh"), "apply unpaid-salary effect");
     social.addRelation("officers.north", game.general, "support", 0.08);
-    game.message = "军饷被拖欠：忠诚下降，部属抱团。";
     evaluateRebellion();
+    if (!game.rebelled) game.message = "军饷被拖欠：忠诚下降，部属抱团。";
 }
 
 function evaluateRebellion() {
@@ -194,10 +208,27 @@ function evaluateRebellion() {
 
 function queueUnit(kind) {
     local cost = kind == "tank" ? 160.0 : 70.0;
-    if (game.money < cost || game.rebelled) { game.message="无法生产：资金不足或基地已失守。"; return; }
+    if (game.outcome != "" || game.money < cost || game.rebelled) {
+        game.message="无法生产：资金不足、战局已结束或基地已失守。"; return;
+    }
+    local enqueue = game.factory.enqueue(game.baseId, "build_unit", kind, "{}", kind=="tank"?8.0:4.0, 10);
+    if (!enqueue.ok) { game.message = enqueue.status.summary; return; }
     game.money -= cost;
-    game.factory.enqueue(game.baseId, "build_unit", kind, "{}", kind=="tank"?8.0:4.0, 10);
     game.message = kind == "tank" ? "坦克进入生产队列。" : "步兵进入训练队列。";
+}
+
+function spawnCompletedTask(task) {
+    local kind = task.getProduct();
+    local owner = task.getOwner();
+    local faction = owner == game.enemyBase ? game.frontier : game.crown;
+    local commander = faction == game.crown ? game.general : "general.boros";
+    local id = (faction == game.crown ? "crown." : "frontier.") + kind + ".built." + game.spawnCursor;
+    local x = faction == game.crown ? 145.0 + game.spawnCursor*18.0 : 880.0 - game.spawnCursor*18.0;
+    local y = faction == game.crown ? 430.0 : 260.0;
+    game.units.push(makeUnit(id, faction, kind, x, y, commander));
+    game.spawnCursor += 1;
+    local who = faction == game.crown ? "我军" : "敌军";
+    game.message = who + (kind == "tank" ? "坦克完成并加入编队。" : "步兵完成训练。");
 }
 
 function updateProduction(dt) {
@@ -208,12 +239,7 @@ function updateProduction(dt) {
     while (game.spawnCursor < game.factory.taskCount()) {
         local task = game.factory.taskAt(game.spawnCursor);
         if (task.getState() != "completed") break;
-        local kind = task.getProduct();
-        local id = "crown." + kind + ".built." + game.spawnCursor;
-        game.units.push(makeUnit(id, game.crown, kind, 145.0 + game.spawnCursor*18.0,
-                                 430.0, game.general));
-        game.spawnCursor += 1;
-        game.message = kind == "tank" ? "新坦克完成并加入将领编队。" : "新步兵完成训练。";
+        spawnCompletedTask(task);
     }
 }
 
@@ -242,6 +268,7 @@ function selectedUnits(){local result=[];foreach(u in game.units)if(u.alive&&u.s
 
 function issueMove(x, y) {
     local group=selectedUnits();if(group.len()==0)return;
+    if (game.outcome != "") { game.message = "战局已结束，无法再下达命令。"; return; }
     if (!game.authority.can(game.general, "army.north", "issue_orders")) {
         game.message = "命令被拒绝：将领没有军区指挥权。";
         return;
@@ -251,7 +278,13 @@ function issueMove(x, y) {
         local rows=((group.len()+cols-1)/cols).tointeger();
         group[i].tx=clamp(x+(col-(cols-1)*0.5)*42.0,30.0,930.0);
         group[i].ty=clamp(y+(row-(rows-1)*0.5)*42.0,100.0,675.0);
-        group[i].queue.replace("move",10,0.0);
+        local replaced = group[i].queue.replace("move",10,0.0);
+        group[i].orderId = requireResult(replaced, "replace move order");
+        local order = group[i].queue.find(group[i].orderId);
+        if (order != null) {
+            order.getPayload().setNumber("x", group[i].tx);
+            order.getPayload().setNumber("y", group[i].ty);
+        }
     }
     game.message = "已向 "+group.len()+" 个单位下达编队移动命令。";
 }
@@ -265,12 +298,19 @@ function handleBattlefieldInput() {
         if(dx*dx+dy*dy>49.0)selectBox(selectionDrag.sx,selectionDrag.sy,selectionDrag.x,selectionDrag.y);
         else selectAt(selectionDrag.sx,selectionDrag.sy);selectionDrag.active=false;}
     previousMouse.left=left;
-    if(mx<960.0&&mousePressed(2))issueMove(mx,my);
+    if(mx<960.0&&mousePressed(2)&&game.outcome=="")issueMove(mx,my);
 }
 
 function moveUnit(u, dt) {
     local d = distance(u.x,u.y,u.tx,u.ty);
-    if (d < 2.0) return;
+    if (d < 2.0) {
+        if (u.orderId != "") {
+            local done = u.queue.complete(u.orderId);
+            if (done.ok) u.orderId = "";
+        }
+        return;
+    }
+    requireResult(u.queue.update(dt), "advance order queue");
     steering.arrive(u.x,u.y,u.tx,u.ty,u.speed,70.0,2.0); // reusable engine primitive
     local step = d < u.speed*dt ? d : u.speed*dt;
     u.x += (u.tx-u.x)/d*step;
@@ -344,6 +384,8 @@ function updateParticles(dt) {
 }
 
 function updateCombat(dt) {
+    if (game.outcome != "") return;
+    local assault = game.mind.state("frontier.ai") == "assault";
     foreach (u in game.units) if (u.alive) {
         u.cooldown = u.cooldown-dt > 0.0 ? u.cooldown-dt : 0.0;
         local enemy = nearestEnemy(u);
@@ -357,7 +399,7 @@ function updateCombat(dt) {
             if (d <= u.range) {
                 shouldMove=false;
                 if(u.cooldown<=0.0){fireProjectile(u,enemy);u.cooldown=u.kind=="tank"?1.4:0.8;}
-            } else if (u.faction == game.frontier && d < 300.0) {
+            } else if (u.faction == game.frontier && assault && d < 280.0) {
                 u.tx=enemy.x;u.ty=enemy.y;
             }
         }
@@ -366,21 +408,74 @@ function updateCombat(dt) {
     separateUnits();
 }
 
+function nearestPoint(faction, wantEnemyOwned) {
+    local ax=0.0, ay=0.0, n=0;
+    foreach (u in game.units) if (u.alive && u.faction == faction) { ax+=u.x; ay+=u.y; n+=1; }
+    if (n == 0) return null;
+    ax = ax / n; ay = ay / n;
+    local best=null; local bestD=100000.0;
+    foreach (p in game.points) {
+        local match = wantEnemyOwned ? (p.owner != faction) : (p.owner == faction);
+        if (!match) continue;
+        local d=distance(ax,ay,p.x,p.y);
+        if (d < bestD) { best=p; bestD=d; }
+    }
+    return best;
+}
+
+function queueEnemyUnit() {
+    local kind = livingCount(game.frontier) < 2 ? "tank" : "infantry";
+    local cost = kind == "tank" ? 160.0 : 70.0;
+    if (game.enemyMoney < cost) return;
+    local enqueue = game.factory.enqueue(game.enemyBase, "build_unit", kind, "{}", kind=="tank"?8.0:4.0, 8);
+    if (!enqueue.ok) return;
+    game.enemyMoney -= cost;
+}
+
 function updateEnemyAI(dt) {
     game.aiTimer += dt; if(game.aiTimer<1.0)return; game.aiTimer=0.0;
-    // Mirror batch facts into Sensing; policy meaning remains here.
+    if (game.outcome != "") return;
     foreach (u in game.units) if(u.alive && game.sensor != null) {
         local sensingUpdate = game.sensor.upsert(u.id,u.x,u.y,u.faction,"unit,"+u.kind,"all");
-        if (!sensingUpdate.ok) return;
+        if (!sensingUpdate.ok) { game.message = sensingUpdate.status.summary; return; }
     }
-    local action=game.mind.choose("assault=0.82:2,0.65:1;capture=0.7:2,0.8:1;hold=0.3:1");
+    local crownN = livingCount(game.crown);
+    local frontierN = livingCount(game.frontier);
+    local crownMines=0; foreach(p in game.points) if(p.owner==game.crown) crownMines+=1;
+    local assaultUrge = crownN > 0 ? clamp(0.35 + (3-frontierN)*0.15 + (3-crownMines)*0.1, 0.05, 0.95) : 0.05;
+    local captureUrge = crownMines > 0 ? 0.55 : 0.2;
+    local holdUrge = frontierN <= 1 ? 0.7 : 0.25;
+    local action=game.mind.choose("assault="+assaultUrge+":2;capture="+captureUrge+":2;hold="+holdUrge+":1");
     if(action=="assault" && !game.rebelled) {
         local triggerResult = game.mind.trigger("frontier.ai", "base_exposed");
-        if (!triggerResult.ok || !triggerResult.value) return;
+        if (!triggerResult.ok) { game.message = triggerResult.status.summary; return; }
+    } else if (action=="hold" || action=="capture") {
+        local holdResult = game.mind.trigger("frontier.ai", "hold_mines");
+        if (!holdResult.ok) { game.message = holdResult.status.summary; return; }
     }
+    local aiState = game.mind.state("frontier.ai");
+    local captureTarget = nearestPoint(game.frontier, true);
     foreach (u in game.units) if(u.alive && u.faction==game.frontier) {
-        local enemy=nearestEnemy(u);
-        if(enemy!=null){u.tx=enemy.x;u.ty=enemy.y;}
+        if (aiState=="assault") {
+            local enemy=nearestEnemy(u);
+            if(enemy!=null){u.tx=enemy.x;u.ty=enemy.y;}
+        } else if (captureTarget != null) {
+            u.tx = captureTarget.x; u.ty = captureTarget.y;
+        }
+    }
+    if (frontierN < 3) queueEnemyUnit();
+}
+
+function updateOutcome() {
+    if (game.outcome != "" || game.rebelled) return;
+    local crownN = livingCount(game.crown);
+    local frontierN = livingCount(game.frontier);
+    if (frontierN == 0) {
+        game.outcome = "victory";
+        game.message = "胜利：前线部队已被消灭。按 R 重置。";
+    } else if (crownN == 0) {
+        game.outcome = "defeat";
+        game.message = "战败：北方直属部队全灭。按 R 重置。";
     }
 }
 
@@ -460,10 +555,12 @@ function refreshPanel() {
     ui.setText("resources","Treasury: "+game.money.tointeger()+"   Mines "+owned+"   +"+income.tointeger()+" / 2s");
     ui.setText("general","General Arden  Loyalty "+loyalty+"  Support "+support+"%");
     ui.setText("authority","Governor: "+(game.governor?"YES":"NO")+
-        "   Rebellion: "+(game.rebelled?"YES":"no"));
+        "   Rebellion: "+(game.rebelled?"YES":"no")+
+        "   "+(game.outcome=="victory"?"VICTORY":(game.outcome=="defeat"?"DEFEAT":"IN BATTLE")));
     ui.setText("production","Production speed x"+format("%.2f",speed)+
         "   Tasks "+game.factory.taskCount());
-    ui.setText("ai","Enemy AI: "+game.mind.state("frontier.ai"));
+    ui.setText("ai","Enemy AI: "+game.mind.state("frontier.ai")+
+        "   Crown "+livingCount(game.crown)+"  Frontier "+livingCount(game.frontier));
     ui.setText("base_north","North Base: "+ownerName(game.rebelled?game.frontier:game.crown)+
         " | Governor: "+(game.governor&&!game.rebelled?"Arden ADM76":"NONE"));
     ui.setText("base_enemy","Frontier Base: FRONTIER | Boros");
@@ -499,12 +596,14 @@ function eve_update(dt) {
     handleBattlefieldInput();
     updateProduction(dt); updateEnemyAI(dt); updateCombat(dt);updateCapture(dt);
     updateProjectiles(dt);updateParticles(dt);updateEconomy(dt);
-    evaluateRebellion(); refreshPanel();
+    evaluateRebellion(); updateOutcome(); refreshPanel();
 }
 
 function drawBase(x,y,faction,hp) {
-    local blue=faction==game.crown; gfx.drawSolidRect(x-46.0,y-38.0,92.0,76.0,blue?0.16:0.62,blue?0.42:0.18,blue?0.72:0.20,1.0);
-    gfx.drawSolidRect(x-25.0,y-58.0,50.0,24.0,0.20,0.22,0.24,1.0);
+    local blue=faction==game.crown;
+    gfx.drawSolidRect(x-50.0,y-42.0,100.0,84.0,blue?0.18:0.72,blue?0.48:0.22,blue?0.82:0.18,1.0);
+    gfx.drawSolidRect(x-28.0,y-62.0,56.0,26.0,blue?0.32:0.45,blue?0.38:0.20,blue?0.55:0.16,1.0);
+    gfx.drawSolidRect(x-18.0,y-18.0,36.0,28.0,0.90,0.78,0.28,1.0);
 }
 function drawUnit(u){if(!u.alive)return;local blue=u.faction==game.crown;local s=u.kind=="tank"?30.0:18.0;
     // Health bar is submitted first because the solid batch draws in reverse order.
