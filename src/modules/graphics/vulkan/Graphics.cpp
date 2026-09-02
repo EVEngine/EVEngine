@@ -355,6 +355,8 @@ Graphics::~Graphics() {
     if (mesh3dTransparentPipeline) device->destroyPipeline(mesh3dTransparentPipeline);
     for (auto pipeline : mesh3dSurfacePipelines)
         if (pipeline) device->destroyPipeline(pipeline);
+    for (auto pipeline : primitive3DPipelines)
+        if (pipeline) device->destroyPipeline(pipeline);
     destroyOffscreen3DResources();
     if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
     if (mesh3dShaderPipelineLayout) device->destroyPipelineLayout(mesh3dShaderPipelineLayout);

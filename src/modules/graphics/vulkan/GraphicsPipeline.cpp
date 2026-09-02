@@ -49,37 +49,39 @@
 
 #include "graphics/shaders/color_frag_spv.inc"
 #include "graphics/shaders/color_vert_spv.inc"
-#include "graphics/shaders/textured_vert_spv.inc"
-#include "graphics/shaders/textured_frag_spv.inc"
-#include "graphics/shaders/scene_tonemap_frag_spv.inc"
-#include "graphics/shaders/mesh3d_vert_spv.inc"
-#include "graphics/shaders/mesh3d_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
-#include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
-#include "graphics/shaders/resolve_vis_vert_spv.inc"
-#include "graphics/shaders/resolve_vis_frag_spv.inc"
-#include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
-#include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_alpha_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_skin_vert_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_skin_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_skin_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_skin_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_skin_alpha_frag_spv.inc"
-#include "graphics/shaders/decal_box_vert_spv.inc"
 #include "graphics/shaders/decal_box_frag_spv.inc"
+#include "graphics/shaders/decal_box_vert_spv.inc"
 #include "graphics/shaders/lit2d_frag_spv.inc"
 #include "graphics/shaders/lit2d_vert_spv.inc"
+#include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
+#include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
+#include "graphics/shaders/mesh3d_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
 #include "graphics/shaders/mesh3d_hair_frag_spv.inc"
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_skin_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_skin_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
+#include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/shaders/particle_distortion_frag_spv.inc"
+#include "graphics/shaders/primitive3d_frag_spv.inc"
+#include "graphics/shaders/primitive3d_vert_spv.inc"
+#include "graphics/shaders/resolve_vis_frag_spv.inc"
+#include "graphics/shaders/resolve_vis_vert_spv.inc"
+#include "graphics/shaders/scene_tonemap_frag_spv.inc"
+#include "graphics/shaders/textured_frag_spv.inc"
 #include "graphics/shaders/textured_opaque_frag_spv.inc"
+#include "graphics/shaders/textured_vert_spv.inc"
 #include "graphics/vulkan/GraphicsInternal.h"
 
 namespace eve::graphics::vulkan {
@@ -135,6 +137,33 @@ vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRende
         .setDynamicStatesViewportScissor()
         .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                        vk::FrontFace::eCounterClockwise)
+        .build(renderPass);
+}
+
+vk::Pipeline createPrimitive3DPipeline(vkb::Device &device, const vkb::BuiltRenderPass &renderPass,
+                                       vk::PipelineLayout layout, PrimitiveDepthMode depth, BlendMode blend,
+                                       PrimitiveCullMode cull, vk::SampleCountFlagBits samples) {
+    const bool              depthTest  = depth != PrimitiveDepthMode::Ignore;
+    const bool              depthWrite = depth == PrimitiveDepthMode::TestAndWrite;
+    const vk::CullModeFlags cullFlags =
+        cull == PrimitiveCullMode::Back
+            ? vk::CullModeFlagBits::eBack
+            : (cull == PrimitiveCullMode::Front ? vk::CullModeFlagBits::eFront : vk::CullModeFlagBits::eNone);
+    std::vector<vk::PipelineColorBlendAttachmentState> attachments(1, makeBlendAttachment(blend));
+    vk::PipelineColorBlendStateCreateInfo              blending{};
+    blending.attachmentCount = 1;
+    blending.pAttachments    = attachments.data();
+    return device.createPipeline()
+        .useClassicPipeline(embeddedSpirv(primitive3d_vert_spv), embeddedSpirv(primitive3d_frag_spv))
+        .setPipelineLayout(layout)
+        .setVertexInputState(vkb::VertexInputStateBuilder()
+                                 .addInputBinding<Primitive3DVertex>()
+                                 .addAttributeDescription<Primitive3DVertex>())
+        .setDynamicStatesViewportScissor()
+        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.f, cullFlags, vk::FrontFace::eCounterClockwise)
+        .setDepthStencil(depthTest, depthWrite, depthTest ? vk::CompareOp::eLessOrEqual : vk::CompareOp::eAlways)
+        .setMultisampler(false, samples)
+        .setColorBlending(blending)
         .build(renderPass);
 }
 }  // namespace
@@ -1348,6 +1377,7 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     destroyPipeline(device, mesh3dGpuDrivenPipeline);
     destroyPipeline(device, resolveVisPipeline);
     destroyPipeline(device, voxelRectPipeline);
+    for (auto &pipeline : primitive3DPipelines) destroyPipeline(device, pipeline);
 
     mesh3dPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv),
                                                embeddedSpirv(mesh3d_frag_spv),
@@ -1383,6 +1413,7 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     }
     if (voxelRectPipelineLayout)
         voxelRectPipeline = buildVoxelRectPipeline(target, samples);
+    rebuildPrimitive3DPipelines(target, samples);
 
     for (auto &g : ownedGpuShaders) {
         if (!g->isMesh3D) continue;
@@ -1406,6 +1437,30 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
 
     scenePassPipelineTarget = targetHandle;
     scenePassPipelineSamples = samples;
+}
+
+size_t Graphics::primitive3DPipelineIndex(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull) {
+    return static_cast<size_t>(depth) * 15u + static_cast<size_t>(blend) * 3u + static_cast<size_t>(cull);
+}
+
+void Graphics::rebuildPrimitive3DPipelines(const vkb::BuiltRenderPass &target, vk::SampleCountFlagBits samples) {
+    buildPrimitive3DPipelines(target, samples, primitive3DPipelines);
+}
+
+void Graphics::buildPrimitive3DPipelines(const vkb::BuiltRenderPass &target, vk::SampleCountFlagBits samples,
+                                         std::array<vk::Pipeline, kPrimitive3DPipelineVariants> &pipelines) {
+    for (auto &pipeline : pipelines) destroyPipeline(device, pipeline);
+    for (int depthValue = 0; depthValue < 3; ++depthValue) {
+        for (int blendValue = 0; blendValue < 5; ++blendValue) {
+            for (int cullValue = 0; cullValue < 3; ++cullValue) {
+                const auto depth = static_cast<PrimitiveDepthMode>(depthValue);
+                const auto blend = static_cast<BlendMode>(blendValue);
+                const auto cull  = static_cast<PrimitiveCullMode>(cullValue);
+                pipelines[primitive3DPipelineIndex(depth, blend, cull)] =
+                    createPrimitive3DPipeline(device, target, pipelineLayout, depth, blend, cull, samples);
+            }
+        }
+    }
 }
 
 void Graphics::queueSceneColorResolve() {

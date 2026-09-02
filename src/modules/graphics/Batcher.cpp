@@ -11,6 +11,17 @@ void Batcher::addRect(float x, float y, float w, float h, const Color &color) {
     addTexturedRect(x, y, w, h, color, 0, 0, 1, 1);
 }
 
+void Batcher::addTriangle(glm::vec2 a, glm::vec2 b, glm::vec2 c, const Color &color) {
+    addTriangle(a, b, c, color, color, color);
+}
+
+void Batcher::addTriangle(glm::vec2 a, glm::vec2 b, glm::vec2 c, const Color &colorA, const Color &colorB,
+                          const Color &colorC) {
+    verts.push_back(BatchVertex{a, colorA, {0.f, 0.f}});
+    verts.push_back(BatchVertex{b, colorB, {0.f, 0.f}});
+    verts.push_back(BatchVertex{c, colorC, {0.f, 0.f}});
+}
+
 void Batcher::addTexturedRect(float x, float y, float w, float h, const Color &color,
                               float u0, float v0, float u1, float v1, bool rotatedUV) {
     BatchVertex v0p, v1p, v2p, v3p;

@@ -15,23 +15,24 @@
 #else
 #include "graphics/vulkan/Graphics.h"
 #endif
-#include "graphics/AmbientOcclusion.h"
 #include "graphics/AlphaMask.h"
+#include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
-#include "graphics/Font.h"
 #include "graphics/FogVolume.h"
+#include "graphics/Font.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
+#include "graphics/PrimitiveScene.h"
 #include "graphics/Quad.h"
+#include "graphics/ReflectionProbeCapture.h"
+#include "graphics/ReflectionProbeRegistry.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"
-#include "graphics/ReflectionProbeCapture.h"
-#include "graphics/ReflectionProbeRegistry.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
@@ -44,6 +45,7 @@
 #include "common/RenderTrace.h"
 #include "common/Resource.h"
 #include "common/SquirrelBinding.h"
+#include "common/SquirrelOwnership.h"
 #include "common/StartupTiming.h"
 #include "common/Diagnostic.h"
 #include "filesystem/Filesystem.h"
@@ -64,6 +66,82 @@
 namespace eve::graphics {
 
 namespace {
+
+struct ScriptPrimitive3D {
+    ScriptPrimitive3D(std::weak_ptr<PrimitiveScene> sceneValue, PrimitiveHandle handleValue)
+        : scene(std::move(sceneValue)), handle(handleValue) {}
+    ~ScriptPrimitive3D() noexcept {
+        if (auto owner = scene.lock(); owner && !owner->isStale(handle))
+            owner->remove(handle).ignore("script primitive proxy destruction");
+    }
+
+    std::weak_ptr<PrimitiveScene> scene;
+    PrimitiveHandle               handle;
+};
+
+template <class T>
+eve::Result<T> primitiveBindingFailure(eve::DiagnosticCode code, std::string message, std::string path) {
+    return eve::Result<T>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "graphics.primitive.binding"));
+}
+
+eve::Result<PrimitiveDescriptor3D> primitiveDescriptor(ScriptPrimitive3D* value) {
+    if (!value)
+        return primitiveBindingFailure<PrimitiveDescriptor3D>(eve::DiagnosticCode::InvalidArgument,
+                                                              "primitive proxy must not be null", "primitive");
+    auto scene = value->scene.lock();
+    if (!scene)
+        return primitiveBindingFailure<PrimitiveDescriptor3D>(eve::DiagnosticCode::StaleHandle,
+                                                              "primitive scene owner no longer exists", "primitive");
+    const PrimitiveDescriptor3D* descriptor = scene->tryGet(value->handle);
+    if (!descriptor)
+        return primitiveBindingFailure<PrimitiveDescriptor3D>(eve::DiagnosticCode::StaleHandle,
+                                                              "primitive handle is stale", "primitive");
+    return eve::Result<PrimitiveDescriptor3D>::success(*descriptor);
+}
+
+template <class Mutator>
+eve::Result<PrimitiveUpdateStatus> mutatePrimitive(ScriptPrimitive3D* value, Mutator&& mutator) {
+    auto descriptor = primitiveDescriptor(value);
+    if (!descriptor) return eve::Result<PrimitiveUpdateStatus>::failure(descriptor.status());
+    PrimitiveDescriptor3D copy = std::move(descriptor).takeValue();
+    std::invoke(std::forward<Mutator>(mutator), copy);
+    auto scene = value->scene.lock();
+    if (!scene)
+        return primitiveBindingFailure<PrimitiveUpdateStatus>(eve::DiagnosticCode::StaleHandle,
+                                                              "primitive scene owner no longer exists", "primitive");
+    return scene->update(value->handle, std::move(copy));
+}
+
+ssq::Table makePrimitiveProxy(HSQUIRRELVM vm, const std::shared_ptr<PrimitiveScene>& scene,
+                              eve::Result<PrimitiveHandle>&& result) {
+    if (!result) return eve::script::projectStatusResult(vm, result.status(), false, false);
+    const PrimitiveHandle handle = std::move(result).takeValue();
+    auto                  object = eve::script::makeOwnedSquirrelInstance<ScriptPrimitive3D>(
+        vm, std::make_unique<ScriptPrimitive3D>(scene, handle));
+    if (!object) {
+        const eve::Status status = object.status();
+        object.ignore("failed to create owned primitive proxy");
+        scene->remove(handle).ignore("rollback failed primitive proxy allocation");
+        return eve::script::projectStatusResult(vm, status, false, false);
+    }
+    auto projected = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    projected.set("value", std::move(object).takeValue());
+    projected.set("ownership", std::string("owned"));
+    projected.set("owner", static_cast<std::int64_t>(handle.owner()));
+    projected.set("index", static_cast<std::int64_t>(handle.index()));
+    projected.set("generation", static_cast<std::int64_t>(handle.generation()));
+    return projected;
+}
+
+ScenePrimitivePaint scriptPrimitivePaint(float r, float g, float b, float a, float width) {
+    ScenePrimitivePaint paint;
+    paint.color             = Color(r, g, b, a);
+    paint.mode              = PaintMode::Stroke;
+    paint.stroke.width      = width;
+    paint.stroke.widthSpace = WidthSpace::ScreenPixels;
+    return paint;
+}
 
 bool copyArrayFloats(ssq::Array arr, std::vector<float> &out) {
     const size_t n = arr.size();
@@ -144,6 +222,7 @@ void setShaderScript(Graphics *gfx, ssq::Object obj) {
 }  // namespace
 
 Graphics::Graphics() {
+    primitiveScene_ = std::make_shared<PrimitiveScene>();
     // The window module owns the native window; we own the render surface.
     // Register as its surface host so window never has to include graphics.
     // The query happens after native window creation, so this pointer is valid
@@ -242,6 +321,154 @@ void Graphics::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Graphics::create, false);
     expose(cls);
     const auto vm = table.getHandle();
+
+    auto primitive = table.addClass<ScriptPrimitive3D>(
+        "Primitive3D", std::function<ScriptPrimitive3D*()>([]() { return nullptr; }), false);
+    primitive.addFunc("ownership", [](ScriptPrimitive3D*) { return std::string("owned"); });
+    primitive.addFunc("isStale", [](ScriptPrimitive3D* value) {
+        if (!value) return true;
+        auto scene = value->scene.lock();
+        return !scene || scene->isStale(value->handle);
+    });
+    primitive.addFunc("remove", [vm](ScriptPrimitive3D* value) {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                primitiveBindingFailure<PrimitiveRemoveStatus>(eve::DiagnosticCode::InvalidArgument,
+                                                               "primitive proxy must not be null", "primitive")
+                    .status(),
+                false, false);
+        auto scene = value->scene.lock();
+        if (!scene)
+            return eve::script::projectStatusResult(
+                vm,
+                primitiveBindingFailure<PrimitiveRemoveStatus>(eve::DiagnosticCode::StaleHandle,
+                                                               "primitive scene owner no longer exists", "primitive")
+                    .status(),
+                false, false);
+        auto              result = scene->remove(value->handle);
+        const eve::Status status = result.status();
+        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        std::move(result).takeValue();
+        value->handle = {};
+        return eve::script::projectStatusResult(vm, status, true, false);
+    });
+    primitive.addFunc("setVisible", [vm](ScriptPrimitive3D* value, bool visible) {
+        auto result =
+            mutatePrimitive(value, [visible](PrimitiveDescriptor3D& descriptor) { descriptor.visible = visible; });
+        const eve::Status status = result.status();
+        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        std::move(result).takeValue();
+        return eve::script::projectStatusResult(vm, status, true, false);
+    });
+    primitive.addFunc("setColor", [vm](ScriptPrimitive3D* value, float r, float g, float b, float a) {
+        auto result = mutatePrimitive(
+            value, [=](PrimitiveDescriptor3D& descriptor) { descriptor.paint.color = Color(r, g, b, a); });
+        const eve::Status status = result.status();
+        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        std::move(result).takeValue();
+        return eve::script::projectStatusResult(vm, status, true, false);
+    });
+    primitive.addFunc("setLineWidth", [vm](ScriptPrimitive3D* value, float width) {
+        auto result = mutatePrimitive(
+            value, [width](PrimitiveDescriptor3D& descriptor) { descriptor.paint.stroke.width = width; });
+        const eve::Status status = result.status();
+        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        std::move(result).takeValue();
+        return eve::script::projectStatusResult(vm, status, true, false);
+    });
+    primitive.addFunc("setDash", [vm](ScriptPrimitive3D* value, float drawLength, float gapLength, float phase,
+                                      const std::string& space) {
+        if (space != "screen" && space != "world")
+            return eve::script::projectStatusResult(
+                vm,
+                primitiveBindingFailure<PrimitiveUpdateStatus>(eve::DiagnosticCode::InvalidArgument,
+                                                               "dash space must be screen or world", "dashSpace")
+                    .status(),
+                false, false);
+        auto              result = mutatePrimitive(value, [=](PrimitiveDescriptor3D& descriptor) {
+            DashPattern dash;
+            dash.intervals = {drawLength, gapLength};
+            dash.phase     = phase;
+            dash.space     = space == "screen" ? DashSpace::ScreenPixels : DashSpace::WorldUnits;
+            descriptor.paint.stroke.dash = std::move(dash);
+        });
+        const eve::Status status = result.status();
+        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        std::move(result).takeValue();
+        return eve::script::projectStatusResult(vm, status, true, false);
+    });
+    primitive.addFunc("clearDash", [vm](ScriptPrimitive3D* value) {
+        auto result =
+            mutatePrimitive(value, [](PrimitiveDescriptor3D& descriptor) { descriptor.paint.stroke.dash.reset(); });
+        const eve::Status status = result.status();
+        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        std::move(result).takeValue();
+        return eve::script::projectStatusResult(vm, status, true, false);
+    });
+    primitive.addFunc("setDepthMode", [vm](ScriptPrimitive3D* value, const std::string& mode) {
+        std::optional<PrimitiveDepthMode> parsed;
+        if (mode == "test-write")
+            parsed = PrimitiveDepthMode::TestAndWrite;
+        else if (mode == "test")
+            parsed = PrimitiveDepthMode::TestOnly;
+        else if (mode == "ignore")
+            parsed = PrimitiveDepthMode::Ignore;
+        if (!parsed)
+            return eve::script::projectStatusResult(
+                vm,
+                primitiveBindingFailure<PrimitiveUpdateStatus>(
+                    eve::DiagnosticCode::InvalidArgument, "depth mode must be test-write, test, or ignore", "depthMode")
+                    .status(),
+                false, false);
+        auto result = mutatePrimitive(
+            value, [mode = *parsed](PrimitiveDescriptor3D& descriptor) { descriptor.paint.depth = mode; });
+        const eve::Status status = result.status();
+        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        std::move(result).takeValue();
+        return eve::script::projectStatusResult(vm, status, true, false);
+    });
+    primitive.addFunc("setObjectId", [vm](ScriptPrimitive3D* value, std::int64_t objectId) {
+        if (objectId < 0)
+            return eve::script::projectStatusResult(
+                vm,
+                primitiveBindingFailure<PrimitiveUpdateStatus>(eve::DiagnosticCode::InvalidArgument,
+                                                               "object id must be non-negative", "objectId")
+                    .status(),
+                false, false);
+        auto              result = mutatePrimitive(value, [objectId](PrimitiveDescriptor3D& descriptor) {
+            descriptor.paint.objectId = static_cast<std::uint64_t>(objectId);
+        });
+        const eve::Status status = result.status();
+        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        std::move(result).takeValue();
+        return eve::script::projectStatusResult(vm, status, true, false);
+    });
+
+    cls.addFunc("newPrimitiveLine3D", [vm](Graphics* self, float ax, float ay, float az, float bx, float by, float bz,
+                                           float r, float g, float b, float a, float width) {
+        auto                  scene = self->getPrimitiveScene();
+        PrimitiveDescriptor3D descriptor;
+        descriptor.geometry = PrimitivePolyline3D{{{ax, ay, az}, {bx, by, bz}}, false};
+        descriptor.paint    = scriptPrimitivePaint(r, g, b, a, width);
+        return makePrimitiveProxy(vm, scene, scene->add(std::move(descriptor)));
+    });
+    cls.addFunc("newPrimitiveSphere3D", [vm](Graphics* self, float x, float y, float z, float radius, float r, float g,
+                                             float b, float a, float width) {
+        auto                  scene = self->getPrimitiveScene();
+        PrimitiveDescriptor3D descriptor;
+        descriptor.geometry = PrimitiveSphere3D{{x, y, z}, radius, 32};
+        descriptor.paint    = scriptPrimitivePaint(r, g, b, a, width);
+        return makePrimitiveProxy(vm, scene, scene->add(std::move(descriptor)));
+    });
+    cls.addFunc("newPrimitiveAabb3D", [vm](Graphics* self, float minX, float minY, float minZ, float maxX, float maxY,
+                                           float maxZ, float r, float g, float b, float a, float width) {
+        auto                  scene = self->getPrimitiveScene();
+        PrimitiveDescriptor3D descriptor;
+        descriptor.geometry = PrimitiveAabb3D{{minX, minY, minZ}, {maxX, maxY, maxZ}};
+        descriptor.paint    = scriptPrimitivePaint(r, g, b, a, width);
+        return makePrimitiveProxy(vm, scene, scene->add(std::move(descriptor)));
+    });
     cls.addFunc("replaceShaderFromGlsl",
                 [vm](Graphics* self, Shader* shader, const std::string& vertex,
                      const std::string& fragment) {

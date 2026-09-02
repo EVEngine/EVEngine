@@ -15,6 +15,8 @@
 
 namespace eve::graphics {
 
+class Texture;
+
 struct ReflectionProbeUpload {
     static constexpr int kMaxProbes = 2;
     struct Probe {
@@ -32,8 +34,8 @@ struct ReflectionProbeUpload {
 class Canvas;
 class Camera3D;
 class Mesh;
+class PrimitiveSceneCanvas3D;
 class Shader;
-class Texture;
 struct ClusteredLightingUpload;
 struct Lighting3DPack;
 struct ShadowUpload;
@@ -55,6 +57,14 @@ public:
     virtual void begin3DFrame() = 0;
     virtual void begin3DFrameToCanvas(Canvas *canvas) = 0;
     virtual void end3DFrameToCanvas() = 0;
+
+    /**
+     * @brief Submits an owning frame-local primitive canvas into the active 3D pass.
+     * @param canvas Synchronously consumed command snapshot; it is never retained.
+     * @thread Render-thread affine and valid only between begin/end 3D frame calls.
+     * @reentrancy Does not invoke scripts or caller callbacks.
+     */
+    virtual void drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) = 0;
 
     virtual void setMesh3DViewProj(const glm::mat4 &viewProj) = 0;
     virtual void setMesh3DView(const glm::mat4 &view) = 0;

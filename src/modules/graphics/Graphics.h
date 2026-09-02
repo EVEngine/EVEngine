@@ -45,6 +45,7 @@ class GlobalIllumination;
 class GrassField;
 class Material;
 class Mesh;
+class PrimitiveScene;
 
 /**
  * @brief One borrowed RGBA8 source rectangle for a batched texture update.
@@ -416,6 +417,14 @@ public:
         return (width > 0) ? double(pixelWidth) / double(width) : 1.0;
     }
     double getScreenDPIScale() const { return getCurrentDPIScale(); }
+
+    /**
+     * @brief Returns the authoritative persistent spatial-primitive scene.
+     * @return Shared owner used by long-lived script proxies and the renderer.
+     * @ownership The Graphics module and returned shared pointer co-own the scene.
+     * @thread Mutation is restricted to the graphics owner thread.
+     */
+    [[nodiscard]] std::shared_ptr<PrimitiveScene> getPrimitiveScene() const noexcept { return primitiveScene_; }
 
     /** @brief Internal immediate-mode helper used by RenderSystem / Batcher. */
     virtual void drawSolidRect(float x, float y, float w, float h, const Color &color,
@@ -1727,6 +1736,7 @@ protected:
     Shader *currentShader = nullptr;
     Font *currentFont = nullptr;
     std::unique_ptr<RenderControl> renderControl_;
+    std::shared_ptr<PrimitiveScene>                         primitiveScene_;
     std::unique_ptr<AmbientOcclusion> pipelineAO_;
     std::unique_ptr<GlobalIllumination> pipelineGI_;
     std::unique_ptr<ScreenSpaceReflection> pipelineSSR_;
