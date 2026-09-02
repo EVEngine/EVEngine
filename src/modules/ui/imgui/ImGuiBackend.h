@@ -34,7 +34,7 @@ public:
 
 private:
     void renderDrawData(void *vkCommandBuffer);
-    static void presentOverlayThunk(void *userdata, void *commandBuffer);
+    static bool presentOverlayThunk(void *userdata, void *commandBuffer);
     static void windowDestroyedThunk(void *userdata);
     void applyScale(float scale);
     /** @brief Initial logical UI scale; follows Windows display DPI and mobile density. */

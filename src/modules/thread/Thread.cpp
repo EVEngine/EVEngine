@@ -1,8 +1,11 @@
 #include "thread/Thread.h"
 
+#include "common/AsyncWork.h"
+#include "common/Diagnostic.h"
 #include "common/Exception.h"
 #include "common/Capability.h"
 #include "common/MainThreadPost.h"
+#include "common/Result.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -12,11 +15,41 @@
 namespace eve {
 namespace thread {
 
+namespace {
+
+class PoolExecutor final : public eve::caps::IAsyncWorkExecutor {
+public:
+    explicit PoolExecutor(Thread *owner) : owner_(owner) {}
+
+    eve::Result<void> submit(std::function<void()> work) override {
+        if (!work) {
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "IAsyncWorkExecutor: null work"));
+        }
+        try {
+            std::unique_ptr<Task> task(owner_->getPool()->submit(std::move(work)));
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+        } catch (const eve::Exception &ex) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, ex.what()));
+        }
+    }
+
+private:
+    Thread *owner_ = nullptr;
+};
+
+}  // namespace
+
 Module_IMPL(Thread, new Thread());
 
-Thread::Thread() = default;
+Thread::Thread() {
+    executor_ = std::make_unique<PoolExecutor>(this);
+    cap::provide<caps::IAsyncWorkExecutor>(executor_.get());
+}
 
 Thread::~Thread() {
+    cap::revoke<caps::IAsyncWorkExecutor>(executor_.get());
     if (defaultPool_)
         defaultPool_->stop();
     if (defaultJobSystem_)

@@ -1034,7 +1034,7 @@ bool AvatarInstance::addLayer(const std::string &name, graphics::Texture *textur
     // Layered portraits are UI-style artwork and retain their authored colors
     // when the scene has no Camera2D ambient light configured.
     sp->receiveLight = false;
-    if (texture) {
+    if (texture && !texture->hasDeferredFilePixels()) {
         sp->width  = float(texture->getWidth());
         sp->height = float(texture->getHeight());
     }
@@ -1047,7 +1047,7 @@ bool AvatarInstance::setLayerTexture(const std::string &name, graphics::Texture 
     if (!L) return false;
     auto sp     = L->entity->sprite();
     sp->texture = texture;
-    if (texture && L->autoSize) {
+    if (texture && L->autoSize && !texture->hasDeferredFilePixels()) {
         sp->width  = float(texture->getWidth());
         sp->height = float(texture->getHeight());
     }

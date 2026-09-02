@@ -67,7 +67,16 @@ TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
         "}\n"
         "compatSystem <- CompatSystem()\n"
         "if (compatSystem.update(2) != 3) throw \"script ECS System was replaced\"\n"
-        "if (\"getPlatform\" in compatSystem) throw \"native System leaked into script ECS\"\n",
+        "if (\"getPlatform\" in compatSystem) throw \"native System leaked into script ECS\"\n"
+        "class CompatEntity extends eve.Entity {\n"
+        "  function update(dt) { return dt + 2 }\n"
+        "}\n"
+        "compatEntity <- CompatEntity()\n"
+        "if (compatEntity.update(2) != 4) throw \"script ECS Entity identity changed\"\n"
+        "vehicle <- eve.Vehicle()\n"
+        "if (!(\"update\" in vehicle)) throw \"Vehicle binding lost update\"\n"
+        "scene <- eve.Scene()\n"
+        "if (!(\"update\" in scene)) throw \"Scene binding lost update\"\n",
         "eager-native-binding.nut");
 }
 
