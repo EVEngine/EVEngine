@@ -115,13 +115,13 @@ function resetGame() {
                   "frontier assault->raid");
     requireResult(game.mind.newGrid("threat", 10, 6, 100.0, 0.0, 80.0), "threat grid");
 
-    // Crown starts near the north mine; Frontier garrisons the east mine so the
-    // opening is an economic contest instead of an instant deathball.
-    game.units.push(makeUnit("crown.tank.1", game.crown, "tank", 220.0, 250.0, game.general));
-    game.units.push(makeUnit("crown.infantry.1", game.crown, "infantry", 280.0, 230.0, game.general));
-    game.units.push(makeUnit("crown.infantry.2", game.crown, "infantry", 175.0, 520.0, game.general));
+    // Crown holds north + a picket on the bridge mine; Frontier garrisons east.
+    // The opening is an economic contest, not a map-wide deathball.
+    game.units.push(makeUnit("crown.tank.1", game.crown, "tank", 240.0, 240.0, game.general));
+    game.units.push(makeUnit("crown.infantry.1", game.crown, "infantry", 290.0, 200.0, game.general));
+    game.units.push(makeUnit("crown.infantry.2", game.crown, "infantry", 500.0, 360.0, game.general));
     game.units.push(makeUnit("frontier.tank.1", game.frontier, "tank", 800.0, 250.0, "general.boros"));
-    game.units.push(makeUnit("frontier.infantry.1", game.frontier, "infantry", 760.0, 220.0, "general.boros"));
+    game.units.push(makeUnit("frontier.infantry.1", game.frontier, "infantry", 740.0, 210.0, "general.boros"));
     refreshAdministration();
     refreshPanel();
 }
@@ -440,25 +440,38 @@ function updateEnemyAI(dt) {
     local crownN = livingCount(game.crown);
     local frontierN = livingCount(game.frontier);
     local crownMines=0; foreach(p in game.points) if(p.owner==game.crown) crownMines+=1;
-    local assaultUrge = crownN > 0 ? clamp(0.35 + (3-frontierN)*0.15 + (3-crownMines)*0.1, 0.05, 0.95) : 0.05;
-    local captureUrge = crownMines > 0 ? 0.55 : 0.2;
-    local holdUrge = frontierN <= 1 ? 0.7 : 0.25;
-    local action=game.mind.choose("assault="+assaultUrge+":2;capture="+captureUrge+":2;hold="+holdUrge+":1");
-    if(action=="assault" && !game.rebelled) {
+    local forceDelta = frontierN - crownN;
+    // Assault is gated: outnumbered openings always held/raided. choose() is
+    // deterministic, so a 0.60 assault score previously won every first tick.
+    local assaultUrge = 0.05;
+    if (crownN > 0 && frontierN >= 3 && forceDelta >= 0) {
+        assaultUrge = clamp(0.40 + forceDelta * 0.18, 0.40, 0.90);
+    }
+    local captureUrge = (crownMines > 0 && frontierN >= 2) ? 0.70 : 0.15;
+    local holdUrge = forceDelta < 0 ? 0.78 : 0.28;
+    local action=game.mind.choose("assault="+assaultUrge+":1;capture="+captureUrge+":1;hold="+holdUrge+":1");
+    if(action=="assault" && !game.rebelled && frontierN >= 3 && forceDelta >= 0) {
         local triggerResult = game.mind.trigger("frontier.ai", "base_exposed");
         if (!triggerResult.ok) { game.message = triggerResult.status.summary; return; }
-    } else if (action=="hold" || action=="capture") {
+    } else {
         local holdResult = game.mind.trigger("frontier.ai", "hold_mines");
         if (!holdResult.ok) { game.message = holdResult.status.summary; return; }
     }
     local aiState = game.mind.state("frontier.ai");
     local captureTarget = nearestPoint(game.frontier, true);
+    local ownedMine = nearestPoint(game.frontier, false);
+    local assigned = 0;
     foreach (u in game.units) if(u.alive && u.faction==game.frontier) {
         if (aiState=="assault") {
             local enemy=nearestEnemy(u);
             if(enemy!=null){u.tx=enemy.x;u.ty=enemy.y;}
-        } else if (captureTarget != null) {
-            u.tx = captureTarget.x; u.ty = captureTarget.y;
+        } else {
+            assigned += 1;
+            if (action == "hold" || (assigned == 1 && ownedMine != null)) {
+                if (ownedMine != null) { u.tx = ownedMine.x; u.ty = ownedMine.y; }
+            } else if (captureTarget != null) {
+                u.tx = captureTarget.x; u.ty = captureTarget.y;
+            }
         }
     }
     if (frontierN < 3) queueEnemyUnit();

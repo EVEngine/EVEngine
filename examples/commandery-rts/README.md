@@ -41,10 +41,11 @@ Controls:
 - `R`: reset the scenario.
 - The right-hand panel mirrors those buttons.
 
-The opening deploys Crown around the north mine and Frontier around the east mine
-so the first minute is an economic contest. Frontier AI starts in `raid` (contest
-mines, train replacements) and only flips to `assault` from live force/mine
-counts. The match ends when one side has no living units.
+The opening deploys Crown on the north and bridge mines, Frontier on the east
+mine. Frontier AI starts in `raid`: hold while outnumbered, leave a garrison,
+contest the nearest Crown mine, and train up. It only flips to `assault` once it
+has at least three units and is not outnumbered. The match ends when one side
+has no living units.
 
 The engine module does not contain `General`, `Rebellion`, or a fixed RTS AI
 type; those rules are all in `main.nut`.
