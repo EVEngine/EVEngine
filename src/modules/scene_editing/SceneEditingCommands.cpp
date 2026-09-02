@@ -33,7 +33,7 @@ bool assignVector3(const editing::Value& payload, const char* key, double& x, do
 
 template <class T>
 editing::Result<T> error(editing::Status status, const char* rule, std::string message) {
-    return editing::Result<T>::error(status, editing::RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, editing::RuleId(rule), std::move(message));
 }
 
 }  // namespace
@@ -55,10 +55,10 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                 return error<editing::CommandPlan>(editing::Status::Rejected, "scene.editing.transform-payload",
                                                    "Scene transform requires a transform target and object id");
             auto current = capability->readTransform(editing::ObjectId(*object));
-            if (!current.isAccepted() || !current.value)
-                return error<editing::CommandPlan>(current.status, "scene.editing.transform-object",
+            if (!current.ok())
+                return error<editing::CommandPlan>(current.code(), "scene.editing.transform-object",
                                                    "Scene object transform is unavailable");
-            SceneTransformValue transform = *current.value;
+            SceneTransformValue transform = current.value();
             if (!assignVector3(request.payload, "position", transform.x, transform.y, transform.z) ||
                 !assignVector3(request.payload, "rotation", transform.rotationX, transform.rotationY,
                                transform.rotationZ) ||
@@ -66,13 +66,13 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                 return error<editing::CommandPlan>(editing::Status::Rejected, "scene.editing.transform-vector",
                                                    "Position, rotation and scale must contain three numbers");
             auto operation = capability->makeSetTransform(editing::ObjectId(*object), transform);
-            if (!operation.isAccepted() || !operation.value)
-                return error<editing::CommandPlan>(operation.status, "scene.editing.transform-operation",
+            if (!operation.ok())
+                return error<editing::CommandPlan>(operation.code(), "scene.editing.transform-operation",
                                                    "Scene target rejected the transform");
             editing::CommandPlan plan;
-            plan.operations.push_back(std::move(*operation.value));
+            plan.operations.push_back(std::move(operation.value()));
             plan.summary = editing::Value::Object{{"object", *object}};
-            return editing::Result<editing::CommandPlan>::applied(std::move(plan));
+            return eve::editing::applied<editing::CommandPlan>(std::move(plan));
         });
 }
 

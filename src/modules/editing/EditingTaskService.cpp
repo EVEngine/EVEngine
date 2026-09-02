@@ -39,7 +39,7 @@ TaskService::~TaskService() {
 
 Result<TaskId> TaskService::submit(std::string name, Work work) {
     if (name.empty() || !work)
-        return Result<TaskId>::error(Status::Rejected, RuleId("editing.task.invalid"),
+        return eve::editing::failed<TaskId>(Status::Rejected, RuleId("editing.task.invalid"),
                                            "Task name and worker are required");
     auto task           = std::make_shared<TaskRecord>();
     task->snapshot.name = std::move(name);
@@ -48,7 +48,7 @@ Result<TaskId> TaskService::submit(std::string name, Work work) {
     {
         std::lock_guard lock(mutex_);
         if (stopping_)
-            return Result<TaskId>::error(Status::Rejected, RuleId("editing.task.stopping"),
+            return eve::editing::failed<TaskId>(Status::Rejected, RuleId("editing.task.stopping"),
                                                "Task service is stopping");
         task->snapshot.id = TaskId("editor.task." + std::to_string(++sequence_));
         id                = task->snapshot.id;
@@ -56,33 +56,33 @@ Result<TaskId> TaskService::submit(std::string name, Work work) {
         queue_.push_back(std::move(task));
     }
     workReady_.notify_one();
-    return Result<TaskId>::applied(id);
+    return eve::editing::applied<TaskId>(id);
 }
 
 Result<void> TaskService::cancel(const TaskId& task) {
     std::lock_guard lock(mutex_);
     auto            found = tasks_.find(task);
     if (found == tasks_.end())
-        return Result<void>::error(Status::NotFound, RuleId("editing.task.not-found"),
+        return eve::editing::failed<void>(Status::NotFound, RuleId("editing.task.not-found"),
                                          "Task does not exist");
     auto& record = *found->second;
     if (record.snapshot.state == TaskState::Succeeded || record.snapshot.state == TaskState::Failed ||
         record.snapshot.state == TaskState::Cancelled)
-        return Result<void>::error(Status::Conflict, RuleId("editing.task.already-finished"),
+        return eve::editing::failed<void>(Status::Conflict, RuleId("editing.task.already-finished"),
                                          "Finished tasks cannot be cancelled");
     record.cancelled->store(true, std::memory_order_relaxed);
     if (record.snapshot.state == TaskState::Queued) record.snapshot.state = TaskState::Cancelled;
     workReady_.notify_all();
-    return Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 Result<TaskSnapshot> TaskService::snapshot(const TaskId& task) const {
     std::lock_guard lock(mutex_);
     auto            found = tasks_.find(task);
     if (found == tasks_.end())
-        return Result<TaskSnapshot>::error(Status::NotFound, RuleId("editing.task.not-found"),
+        return eve::editing::failed<TaskSnapshot>(Status::NotFound, RuleId("editing.task.not-found"),
                                                        "Task does not exist");
-    return Result<TaskSnapshot>::applied(found->second->snapshot);
+    return eve::editing::applied<TaskSnapshot>(found->second->snapshot);
 }
 
 Result<void> TaskService::waitIdle(std::chrono::milliseconds timeout) {
@@ -93,9 +93,10 @@ Result<void> TaskService::waitIdle(std::chrono::milliseconds timeout) {
                             [](const auto& entry) { return entry.second->snapshot.state == TaskState::Running; });
     });
     if (!idle)
-        return Result<void>::error(Status::Pending, RuleId("editing.task.wait-timeout"),
-                                   "Task service did not become idle before the deadline");
-    return Result<void>::applied();
+        return eve::editing::failed<void>(Status::Failed, eve::DiagnosticCode::Failed,
+                                          RuleId("editing.task.wait-timeout"),
+                                          "Task service did not become idle before the deadline");
+    return eve::editing::applied<void>();
 }
 
 void TaskService::workerLoop() {
@@ -126,11 +127,15 @@ void TaskService::workerLoop() {
             outcome = task->work(context);
         } catch (const std::exception& error) {
             outcome.status = Status::Failed;
-            outcome.diagnostics.push_back({RuleId("editor.task.exception"), DiagnosticSeverity::Error, error.what()});
+            outcome.diagnostics.push_back(ruleDiagnostic(eve::DiagnosticCode::Failed,
+                                                         RuleId("editor.task.exception"),
+                                                         DiagnosticSeverity::Error, error.what()));
         } catch (...) {
             outcome.status = Status::Failed;
-            outcome.diagnostics.push_back(
-                {RuleId("editor.task.exception"), DiagnosticSeverity::Error, "Unknown worker exception"});
+            outcome.diagnostics.push_back(ruleDiagnostic(eve::DiagnosticCode::Failed,
+                                                         RuleId("editor.task.exception"),
+                                                         DiagnosticSeverity::Error,
+                                                         "Unknown worker exception"));
         }
 
         {

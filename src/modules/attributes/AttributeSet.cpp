@@ -367,4 +367,18 @@ const AttributeModifier* AttributeSet::modifierAt(int index) const {
     return order_[static_cast<std::size_t>(index)];
 }
 
+int AttributeSet::attributeCount() const { return static_cast<int>(values_.size()); }
+
+std::string AttributeSet::attributeAt(int index) const {
+    if (index < 0 || static_cast<std::size_t>(index) >= values_.size()) return {};
+    std::vector<std::string> names;
+    names.reserve(values_.size());
+    for (const auto &[name, value] : values_) {
+        (void)value;
+        names.push_back(name);
+    }
+    std::sort(names.begin(), names.end());
+    return names[static_cast<std::size_t>(index)];
+}
+
 }  // namespace eve::attributes

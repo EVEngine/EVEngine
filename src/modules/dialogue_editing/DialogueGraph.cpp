@@ -9,7 +9,7 @@ namespace {
 
 template <class T>
 EditorResult<T> dialogueError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -20,7 +20,8 @@ const EditorValue* field(const EditorValue& value, const char* key) {
 }
 
 void diagnostic(DialogueGraphCompileResult& result, const char* rule, std::string message) {
-    result.diagnostics.push_back({RuleId(rule), DiagnosticSeverity::Error, std::move(message)});
+    result.diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId(rule),
+                                                              DiagnosticSeverity::Error, std::move(message)));
 }
 
 bool isDialogueKind(const std::string& kind) {
@@ -71,9 +72,9 @@ GraphConnectionDecision DialogueGraphDomain::canConnect(const GraphPinRecord& fr
                        to.direction == GraphPinDirection::Input && from.type == "dialogue.flow" &&
                        to.type == "dialogue.flow" && from.node != to.node;
     if (!decision.allowed)
-        decision.diagnostics.push_back({RuleId("editor.dialogue.invalid-connection"),
-                                        DiagnosticSeverity::Error,
-                                        "Dialogue flow requires output-to-input pins on distinct nodes"});
+        decision.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.dialogue.invalid-connection"),
+            DiagnosticSeverity::Error, "Dialogue flow requires output-to-input pins on distinct nodes"));
     return decision;
 }
 
@@ -90,7 +91,7 @@ EditorResult<GraphNodeRecord> DialogueGraphDomain::makeNode(const GraphNodeId& i
     if (kind != "end")
         node.pins.push_back({GraphPinId(id.value() + ".out"), id, "dialogue.flow",
                              GraphPinDirection::Output});
-    return EditorResult<GraphNodeRecord>::applied(std::move(node));
+    return eve::editing::applied<GraphNodeRecord>(std::move(node));
 }
 
 EditorResult<GraphNodeRecord> DialogueGraphDomain::makeRouteNode(const GraphNodeId& id,
@@ -104,7 +105,7 @@ EditorResult<GraphNodeRecord> DialogueGraphDomain::makeRouteNode(const GraphNode
     node.properties = EditorValue::Object{{"label", label}};
     node.pins = {{GraphPinId(id.value() + ".in"), id, "dialogue.flow", GraphPinDirection::Input},
                  {GraphPinId(id.value() + ".out"), id, "dialogue.flow", GraphPinDirection::Output}};
-    return EditorResult<GraphNodeRecord>::applied(std::move(node));
+    return eve::editing::applied<GraphNodeRecord>(std::move(node));
 }
 
 DialogueGraphCompileResult DialogueGraphDomain::compile(const GraphDocumentData& graph) const {

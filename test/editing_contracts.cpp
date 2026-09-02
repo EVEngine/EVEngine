@@ -15,38 +15,38 @@
 #include "editing/EditingVolume.h"
 #include "editing/EditableTarget.h"
 #include "definitions_editing/DefinitionTarget.h"
-#include "editor/EditorDefinitionTarget.h"
+#include "definitions_editor/EditorDefinitionTarget.h"
 #include "editor/EditorAuthority.h"
-#include "editor/EditorAvatarTarget.h"
-#include "editor/EditorBiomeTarget.h"
-#include "editor/EditorCameraTarget.h"
-#include "editor/EditorAnimationClip.h"
+#include "avatar_editor/EditorAvatarTarget.h"
+#include "biome_editor/EditorBiomeTarget.h"
+#include "camera_editor/EditorCameraTarget.h"
+#include "animation_editor/EditorAnimationClip.h"
 #include "editor/EditorCommandTypes.h"
-#include "editor/EditorGraph.h"
-#include "editor/EditorFluidTarget.h"
-#include "editor/EditorHd2dTarget.h"
-#include "editor/EditorHouseGenTarget.h"
-#include "editor/EditorInputMapTarget.h"
-#include "editor/EditorLightingTarget.h"
+#include "material_editor/EditorGraph.h"
+#include "fluids_editor/EditorFluidTarget.h"
+#include "hd2d_editor/EditorHd2dTarget.h"
+#include "housegen_editor/EditorHouseGenTarget.h"
+#include "input_editor/EditorInputMapTarget.h"
+#include "lighting_editor/EditorLightingTarget.h"
 #include "editor/EditorIds.h"
-#include "editor/EditorMapDocument.h"
-#include "editor/EditorMaterialTarget.h"
-#include "editor/EditorParticleGraph.h"
+#include "map_editor/EditorMapDocument.h"
+#include "material_editor/EditorMaterialTarget.h"
+#include "particles_editor/EditorParticleGraph.h"
 #include "editor/EditorProperty.h"
 #include "editor/EditorProtocol.h"
-#include "editor/EditorPhysicsAsset.h"
-#include "editor/EditorPhysicsTarget.h"
+#include "physics_editor/EditorPhysicsAsset.h"
+#include "physics_editor/EditorPhysicsTarget.h"
 #include "editor/EditorResult.h"
 #include "editor/EditorSelection.h"
-#include "editor/EditorSceneTarget.h"
-#include "editor/EditorSurfaceFluidTarget.h"
+#include "scene_editor/EditorSceneTarget.h"
+#include "fluids_editor/EditorSurfaceFluidTarget.h"
 #include "editor/EditorTarget.h"
 #include "editor/EditorTaskService.h"
-#include "editor/EditorUiDocumentTarget.h"
+#include "ui_editor/EditorUiDocumentTarget.h"
 #include "editor/EditorValue.h"
-#include "editor/EditorVirtualGeometryTarget.h"
+#include "virtualgeometry_editor/EditorVirtualGeometryTarget.h"
 #include "editor/EditorVolumeTarget.h"
-#include "editor/EditorVoxelPaletteTarget.h"
+#include "voxel_editor/EditorVoxelPaletteTarget.h"
 #include "physics_editing/PhysicsColliderAsset.h"
 #include "physics_editing/PhysicsTarget.h"
 #include "map_editing/MapDocument.h"
@@ -54,7 +54,7 @@
 #include "material_editing/MaterialTarget.h"
 #include "particles_editing/ParticleGraph.h"
 #include "procgen_editing/TextureRecipeTarget.h"
-#include "editor/EditorTextureRecipeTarget.h"
+#include "procgen_editor/EditorTextureRecipeTarget.h"
 #include "animation_editing/AnimationClip.h"
 #include "avatar_editing/AvatarTarget.h"
 #include "biome_editing/BiomeTarget.h"
@@ -63,13 +63,13 @@
 #include "crowd_editing/CrowdDocument.h"
 #include "localization_editing/LocalizationDocument.h"
 #include "social_editing/SocialDocument.h"
-#include "editor/EditorBuildingTarget.h"
-#include "editor/EditorCrowdDocument.h"
-#include "editor/EditorLocalization.h"
-#include "editor/EditorSocialDocument.h"
+#include "building_editor/EditorBuildingTarget.h"
+#include "crowd_editor/EditorCrowdDocument.h"
+#include "localization_editor/EditorLocalization.h"
+#include "social_editor/EditorSocialDocument.h"
 #include "scene_editing/SceneTarget.h"
 #include "sceneloader_editing/SceneImportTarget.h"
-#include "editor/EditorSceneImportTarget.h"
+#include "sceneloader_editor/EditorSceneImportTarget.h"
 #include "ui_editing/UiDocument.h"
 #include "input_editing/InputMapTarget.h"
 #include "hd2d_editing/Hd2dTarget.h"
@@ -85,11 +85,11 @@
 #include "queue_editing/QueueInspector.h"
 #include "graphics_editing/OffscreenPreview.h"
 #include "domain_gizmo_editing/DomainGizmoPreview.h"
-#include "editor/EditorNetworkTelemetry.h"
-#include "editor/EditorProfiler.h"
-#include "editor/EditorQueueInspector.h"
-#include "editor/EditorOffscreenPreview.h"
-#include "editor/EditorGizmoPreview.h"
+#include "network_editor/EditorNetworkTelemetry.h"
+#include "profiler_editor/EditorProfiler.h"
+#include "queue_editor/EditorQueueInspector.h"
+#include "graphics_editor/EditorOffscreenPreview.h"
+#include "domain_gizmo_editor/EditorGizmoPreview.h"
 
 #include <string>
 #include <type_traits>
@@ -104,7 +104,6 @@ static_assert(std::is_same_v<eve::editor::TransactionReceipt, eve::editing::Tran
 static_assert(std::is_same_v<eve::editor::SelectionSnapshot, eve::editing::SelectionSnapshot>);
 static_assert(std::is_same_v<eve::editor::IEditableTarget, eve::editing::IEditableTarget>);
 static_assert(std::is_same_v<eve::editor::IIntVolumeTarget, eve::editing::IIntVolumeTarget>);
-static_assert(std::is_same_v<eve::editor::VoxelWorldTarget, eve::voxel_editing::VoxelWorldTarget>);
 static_assert(std::is_same_v<eve::editor::IDomainOperationTarget, eve::editing::IDomainOperationTarget>);
 static_assert(
     std::is_same_v<eve::editor::IDomainOperationTargetStaging, eve::editing::IDomainOperationTargetStaging>);
@@ -164,6 +163,8 @@ static_assert(std::is_same_v<eve::editor::Light3DDocumentTarget,
 static_assert(std::is_same_v<eve::editor::VirtualGeometryDocumentTarget,
                              eve::virtualgeometry_editing::VirtualGeometryDocumentTarget>);
 static_assert(std::is_same_v<eve::editor::VoxelPaletteTarget, eve::voxel_editing::VoxelPaletteTarget>);
+static_assert(!std::is_copy_constructible_v<eve::editing::Result<int>>);
+static_assert(!std::is_copy_constructible_v<eve::editing::Result<void>>);
 
 TEST_CASE("editing.contracts.ids_values_and_editor_compatibility") {
     using namespace eve::editing;
@@ -181,16 +182,27 @@ TEST_CASE("editing.contracts.ids_values_and_editor_compatibility") {
     CHECK(!value.isWithinLimits(1, 16, 128));
 }
 
+TEST_CASE("editing.contracts.property_path_is_textual") {
+    using namespace eve::editing;
+    const PropertyPath left("layout.size");
+    const PropertyPath same("layout.size");
+    const PropertyPath right("layout.position");
+    CHECK(left == same);
+    CHECK(left != right);
+    CHECK_EQ(left.value(), std::string("layout.size"));
+}
+
 TEST_CASE("editing.contracts.structured_result") {
     using namespace eve::editing;
 
-    const auto accepted = Result<Value>::applied(Value("ready"));
-    CHECK(accepted.isAccepted());
-    REQUIRE(accepted.value.has_value());
-    CHECK_EQ(*accepted.value->getIf<std::string>(), std::string("ready"));
+    const auto accepted = eve::editing::applied<Value>(Value("ready"));
+    CHECK(accepted.ok());
+    CHECK_EQ(*accepted.value().getIf<std::string>(), std::string("ready"));
 
-    const auto rejected = Result<void>::error(Status::Rejected, RuleId("authoring.invalid"), "invalid input");
-    CHECK(!rejected.isAccepted());
-    CHECK_EQ(rejected.diagnostics.size(), size_t{1});
-    CHECK_EQ(rejected.diagnostics.front().rule.value(), std::string("authoring.invalid"));
+    const auto rejected = eve::editing::failed<void>(Status::Rejected, RuleId("authoring.invalid"), "invalid input");
+    CHECK(!rejected.ok());
+    CHECK_EQ(rejected.diagnostics().size(), size_t{1});
+    CHECK_EQ(eve::editing::diagnosticRule(rejected.diagnostics().front()).value(),
+             std::string("authoring.invalid"));
+    rejected.ignore();
 }

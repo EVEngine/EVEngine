@@ -1,4 +1,4 @@
-#include "editor/EditorAudioImportDiagnostics.h"
+#include "audio_editor/EditorAudioImportDiagnostics.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

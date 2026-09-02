@@ -54,19 +54,19 @@ TEST_CASE("editor.preview.offscreen_artifacts_are_bounded_revision_safe_and_rele
     int draws = 0;
     auto rendered = service.render({StableId("material"), 5, 64, 32, {0.0, 0.0, 0.0, 1.0}},
         [&](eve::graphics::Graphics* graphics, eve::graphics::Canvas* canvas) {
-            REQUIRE(graphics); REQUIRE(canvas); ++draws; return EditorResult<void>::applied();
+            REQUIRE(graphics); REQUIRE(canvas); ++draws; return eve::editing::applied<void>();
         });
-    REQUIRE(rendered.value); CHECK_EQ(draws, 1); CHECK_EQ(rendered.value->width, 64);
+    REQUIRE(rendered.ok()); CHECK_EQ(draws, 1); CHECK_EQ(rendered.value().width, 64);
     CHECK_EQ(targets.bindings, 2); CHECK(targets.current == nullptr);
-    auto pixels = service.image(rendered.value->handle, 5); REQUIRE(pixels.value); REQUIRE(*pixels.value);
-    CHECK_EQ((*pixels.value)->getWidth(), 64);
-    CHECK_EQ(static_cast<int>(service.image(rendered.value->handle, 6).status), static_cast<int>(EditorStatus::Conflict));
-    CHECK(service.release(rendered.value->handle).isAccepted());
-    CHECK_EQ(static_cast<int>(service.image(rendered.value->handle, 5).status), static_cast<int>(EditorStatus::NotFound));
+    auto pixels = service.image(rendered.value().handle, 5); REQUIRE(pixels.ok()); REQUIRE(pixels.value());
+    CHECK_EQ(pixels.value()->getWidth(), 64);
+    CHECK_EQ(static_cast<int>(service.image(rendered.value().handle, 6).code()), static_cast<int>(EditorStatus::Conflict));
+    CHECK(service.release(rendered.value().handle).ok());
+    CHECK_EQ(static_cast<int>(service.image(rendered.value().handle, 5).code()), static_cast<int>(EditorStatus::NotFound));
     CHECK_EQ(static_cast<int>(service.render({StableId("huge"), 1, 5000, 1},
-        [](auto*, auto*) { return EditorResult<void>::applied(); }).status), static_cast<int>(EditorStatus::Rejected));
+        [](auto*, auto*) { return eve::editing::applied<void>(); }).code()), static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(static_cast<int>(service.render({StableId("throw"), 2, 32, 32},
-        [](auto*, auto*) -> EditorResult<void> { throw std::runtime_error("draw failed"); }).status),
+        [](auto*, auto*) -> EditorResult<void> { throw std::runtime_error("draw failed"); }).code()),
         static_cast<int>(EditorStatus::Failed));
     CHECK(targets.current == nullptr); CHECK_EQ(targets.bindings, 4);
 }

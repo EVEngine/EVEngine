@@ -18,22 +18,22 @@ GraphDocumentData basicGraph(AnimationStateGraphDomain& domain) {
     auto idle = domain.makeStateNode(GraphNodeId("idle"), "asset://animations/idle.eva");
     auto run = domain.makeStateNode(GraphNodeId("run"), "asset://animations/run.eva");
     auto transition = domain.makeTransitionNode(GraphNodeId("idle-to-run"));
-    REQUIRE(idle.value);
-    REQUIRE(run.value);
-    REQUIRE(transition.value);
+    REQUIRE(idle.ok());
+    REQUIRE(run.ok());
+    REQUIRE(transition.ok());
 
-    EditorValue::Object transitionProperties = *transition.value->properties.getIf<EditorValue::Object>();
+    EditorValue::Object transitionProperties = *transition.value().properties.getIf<EditorValue::Object>();
     transitionProperties["blendSeconds"] = 0.15;
     transitionProperties["conditionKind"] = "float";
     transitionProperties["parameter"] = "speed";
     transitionProperties["operator"] = ">";
     transitionProperties["threshold"] = 0.1;
-    transition.value->properties = EditorValue(std::move(transitionProperties));
+    transition.value().properties = EditorValue(std::move(transitionProperties));
 
     eve::editing::GraphDocument graph;
-    REQUIRE(graph.createNode(*idle.value).isAccepted());
-    REQUIRE(graph.createNode(*run.value).isAccepted());
-    REQUIRE(graph.createNode(*transition.value).isAccepted());
+    REQUIRE(graph.createNode(idle.value()).ok());
+    REQUIRE(graph.createNode(run.value()).ok());
+    REQUIRE(graph.createNode(transition.value()).ok());
     const GraphPinRecord* idleOut = graph.findPin(GraphPinId("idle.out"));
     const GraphPinRecord* transitionIn = graph.findPin(GraphPinId("idle-to-run.in"));
     const GraphPinRecord* transitionOut = graph.findPin(GraphPinId("idle-to-run.out"));
@@ -43,12 +43,12 @@ GraphDocumentData basicGraph(AnimationStateGraphDomain& domain) {
     REQUIRE(transitionOut);
     REQUIRE(runIn);
     REQUIRE(graph.connect({StableId("edge-in"), idleOut->id, transitionIn->id},
-                          domain.canConnect(*idleOut, *transitionIn)).isAccepted());
+                          domain.canConnect(*idleOut, *transitionIn)).ok());
     REQUIRE(graph.connect({StableId("edge-out"), transitionOut->id, runIn->id},
-                          domain.canConnect(*transitionOut, *runIn)).isAccepted());
+                          domain.canConnect(*transitionOut, *runIn)).ok());
     EditorValue::Object parameters;
     parameters["entry"] = "idle";
-    REQUIRE(graph.setParameters(EditorValue(std::move(parameters))).isAccepted());
+    REQUIRE(graph.setParameters(EditorValue(std::move(parameters))).ok());
     return graph.snapshot(domain.domain());
 }
 
@@ -102,14 +102,14 @@ TEST_CASE("editor.animation.state_graph_rejects_direct_state_connections") {
     AnimationStateGraphDomain domain;
     auto idle = domain.makeStateNode(GraphNodeId("idle"), "idle.eva");
     auto run = domain.makeStateNode(GraphNodeId("run"), "run.eva");
-    REQUIRE(idle.value);
-    REQUIRE(run.value);
-    CHECK(domain.canConnect(idle.value->pins[1], run.value->pins[0]).allowed);
+    REQUIRE(idle.ok());
+    REQUIRE(run.ok());
+    CHECK(domain.canConnect(idle.value().pins[1], run.value().pins[0]).allowed);
 
     GraphDocumentData invalid;
     invalid.domain = domain.domain();
-    invalid.nodes = {*idle.value, *run.value};
-    invalid.edges = {{StableId("direct"), idle.value->pins[1].id, run.value->pins[0].id}};
+    invalid.nodes = {idle.value(), run.value()};
+    invalid.edges = {{StableId("direct"), idle.value().pins[1].id, run.value().pins[0].id}};
     invalid.parameters = EditorValue::Object{{"entry", "idle"}};
     const auto compiled = domain.compile(invalid);
     CHECK_EQ(static_cast<int>(compiled.status), static_cast<int>(EditorStatus::Failed));
@@ -131,13 +131,12 @@ TEST_CASE("editor.animation.state_graph_builds_real_runtime_state_machine") {
         if (asset == "asset://animations/run.eva") return &run;
         return static_cast<eve::animation::AnimClip*>(nullptr);
     });
-    REQUIRE(built.isAccepted());
-    REQUIRE(built.value);
-    CHECK_EQ((*built.value)->getStateCount(), 2);
-    delete *built.value;
+    REQUIRE(built.ok());
+    CHECK_EQ(built.value()->getStateCount(), 2);
+    delete built.value();
 
     auto missing = builder.build(graph, &skeleton, [](const std::string&) {
         return static_cast<eve::animation::AnimClip*>(nullptr);
     });
-    CHECK_EQ(static_cast<int>(missing.status), static_cast<int>(EditorStatus::NotFound));
+    CHECK_EQ(static_cast<int>(missing.code()), static_cast<int>(EditorStatus::NotFound));
 }

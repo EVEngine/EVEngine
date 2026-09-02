@@ -128,12 +128,12 @@ editing::Result<graphics::Mesh*> createHeightmapMesh(procgen::Heightmap* heightm
                                                      float heightScale, bool smoothNormals) {
     auto* graphics = ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!graphics || !heightmap)
-        return editing::Result<graphics::Mesh*>::error(
+        return eve::editing::failed<graphics::Mesh*>(
             editing::Status::Unsupported, editing::RuleId("procgen.preview.provider-absent"),
             "Heightmap preview requires Graphics and a source heightmap");
     HeightmapArrays arrays = build(*heightmap, cellSize, heightScale, smoothNormals);
     if (arrays.indices.empty())
-        return editing::Result<graphics::Mesh*>::error(
+        return eve::editing::failed<graphics::Mesh*>(
             editing::Status::Rejected, editing::RuleId("procgen.preview.empty-heightmap"),
             "Heightmap preview requires a valid grid and cell size");
     auto* mesh = graphics->newMeshFromArrays(
@@ -141,31 +141,31 @@ editing::Result<graphics::Mesh*> createHeightmapMesh(procgen::Heightmap* heightm
         static_cast<int>(arrays.positions.size() / 3U), arrays.indices.data(),
         static_cast<int>(arrays.indices.size()));
     if (!mesh)
-        return editing::Result<graphics::Mesh*>::error(
+        return eve::editing::failed<graphics::Mesh*>(
             editing::Status::Failed, editing::RuleId("procgen.preview.mesh-create-failed"),
             "Graphics rejected the heightmap preview mesh");
-    return editing::Result<graphics::Mesh*>::applied(mesh);
+    return eve::editing::applied<graphics::Mesh*>(mesh);
 }
 
 editing::Result<void> updateHeightmapMesh(graphics::Mesh* mesh, graphics::Graphics* graphics,
                                           procgen::Heightmap* heightmap, float cellSize,
                                           float heightScale, bool smoothNormals) {
     if (!mesh || !graphics || !heightmap)
-        return editing::Result<void>::error(
+        return eve::editing::failed<void>(
             editing::Status::Rejected, editing::RuleId("procgen.preview.invalid-update"),
             "Heightmap preview update requires mesh, Graphics and heightmap");
     HeightmapArrays arrays = build(*heightmap, cellSize, heightScale, smoothNormals);
     if (arrays.indices.empty())
-        return editing::Result<void>::error(
+        return eve::editing::failed<void>(
             editing::Status::Rejected, editing::RuleId("procgen.preview.empty-heightmap"),
             "Heightmap preview requires a valid grid and cell size");
     if (!graphics->updateMeshVertices(mesh, arrays.positions.data(), arrays.normals.data(),
                                       arrays.texcoords.data(),
                                       static_cast<int>(arrays.positions.size() / 3U), nullptr, 0))
-        return editing::Result<void>::error(
+        return eve::editing::failed<void>(
             editing::Status::Failed, editing::RuleId("procgen.preview.mesh-update-failed"),
             "Graphics rejected the heightmap preview update");
-    return editing::Result<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::procgen_graphics_editing

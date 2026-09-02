@@ -357,6 +357,45 @@ public:
     void setHostResizable(bool resizable);
     /** @brief Positions the host window with a pivot (0..1 each axis). */
     void setHostPos(float x, float y, float pivotX = 0.f, float pivotY = 0.f);
+    /**
+     * @brief Projects the selected host from a 3D world point through the active Camera3D.
+     * @param x World X coordinate.
+     * @param y World Y coordinate.
+     * @param z World Z coordinate.
+     */
+    void setHostWorldAnchor(float x, float y, float z);
+    /** @brief Returns the selected host to ordinary screen-space placement. */
+    void clearHostWorldAnchor();
+    /**
+     * @brief Configures off-screen handling and safe-edge margin.
+     * @param policy Either "hide" or "clamp".
+     * @param safeMargin Minimum distance from the viewport edge in pixels.
+     */
+    void setHostWorldEdgePolicy(const std::string &policy, float safeMargin = 8.f);
+    /**
+     * @brief Configures distance scaling.
+     * @param enabled Whether distance scaling is active.
+     * @param referenceDistance Distance producing scale 1; must be positive.
+     * @param minScale Lower scale bound.
+     * @param maxScale Upper scale bound.
+     */
+    void setHostWorldDistanceScale(bool enabled, float referenceDistance = 10.f,
+                                   float minScale = 0.65f, float maxScale = 1.25f);
+    /**
+     * @brief Configures deterministic overlap avoidance for projected hosts.
+     * @param enabled Whether this host may be displaced to avoid overlap.
+     * @param priority Higher values claim space first.
+     * @param padding Extra separation around the measured host rectangle.
+     * @param maxDisplacement Maximum vertical displacement in pixels.
+     */
+    void setHostWorldOverlap(bool enabled, int priority = 0, float padding = 4.f,
+                             float maxDisplacement = 96.f);
+    /** @brief Returns the selected host projection state as a stable lowercase name. @return State name. */
+    std::string getHostWorldState() const;
+    /** @brief Returns the selected host's derived screen X coordinate. @return Screen X in pixels. */
+    float getHostWorldScreenX() const;
+    /** @brief Returns the selected host's derived screen Y coordinate. @return Screen Y in pixels. */
+    float getHostWorldScreenY() const;
     /** Host anchor in display (0..1); offsets come from setHostPos. */
     void setHostAnchor(float x, float y);
     /** Explicit host window size (px). */

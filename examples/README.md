@@ -36,6 +36,7 @@ make run/<platform>-debug GAME=examples/<name>
 | [galgame](galgame/README.md) | 完整视觉小说《潮汐电台》：原创美术、分支结局、AUTO/SKIP/回想与存读档 |
 | [building](building/README.md) | 建筑放置：地形约束、道路邻接、鬼影预览、旋转拆除 |
 | [building-tilemap](building-tilemap/README.md) | 在等距 / 六角 tilemap 上放置建筑（2D 精灵穿插） |
+| [pixelworld](pixelworld/README.md) | Noita 风格的分块沙、水、油、火焰与蒸汽像素物质仿真 |
 | [iso-grid-walk](iso-grid-walk/README.md) | 独立 2.5D PNG 经可插拔 pipeline 生成 TileSet，方格移动与 A* |
 | [dynamic-water-grid](dynamic-water-grid/README.md) | 双网格岸线、逐格守恒水量、等距连续水面 Shader 与素材替换契约 |
 | [metroidvania](metroidvania/README.md) | 物理驱动的横版动作游戏：连击、蹬墙跳、空中冲刺、Boss |

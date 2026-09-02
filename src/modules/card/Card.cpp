@@ -107,8 +107,8 @@ void destroyHandles(std::vector<ecs::EntityHandle> &hs) {
 }
 
 template <typename T>
-void registerCppEntityClassForScript() {
-    eve::registerCppEntityView(typeid(T *).hash_code(), [](ssq::Array &out) {
+void registerCppEntityClassForScript(const ssq::Class &cls) {
+    eve::registerCppEntityView(cls, [](ssq::Array &out) {
         HSQUIRRELVM vm = out.getHandle();
         sq_pushobject(vm, out.getRaw());
         ecs::Table *table = ecs::current();
@@ -632,11 +632,6 @@ void Card::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Card::create, false);
     expose(cls);
 
-    registerCppEntityClassForScript<CardData>();
-    registerCppEntityClassForScript<Hand>();
-    registerCppEntityClassForScript<Deck>();
-    registerCppEntityClassForScript<Zone>();
-
     // LayoutConfig —— 全部布局参数（UiCard Configs）
     auto cfgCls = table.addClass<LayoutConfig>(
         "LayoutConfig", std::function<LayoutConfig *()>([]() -> LayoutConfig * { return nullptr; }), false);
@@ -692,6 +687,7 @@ void Card::expose(ssq::Table &table) {
     // CardData
     auto cardCls = table.addClass<CardData>(
         "CardData", std::function<CardData *()>([]() -> CardData * { return nullptr; }), false);
+    registerCppEntityClassForScript<CardData>(cardCls);
     cardCls.addFunc("getId", [](CardData *c) -> std::string { return c ? c->identity()->id : std::string{}; });
     cardCls.addFunc("getInstanceId", [](CardData *c) -> std::string {
         return c ? c->identity()->id : std::string{};
@@ -752,6 +748,7 @@ void Card::expose(ssq::Table &table) {
     // Deck
     auto deckCls = table.addClass<Deck>(
         "Deck", std::function<Deck *()>([]() -> Deck * { return nullptr; }), false);
+    registerCppEntityClassForScript<Deck>(deckCls);
     deckCls.addFunc("push", &Deck::push);
     deckCls.addFunc("draw", &Deck::draw);
     deckCls.addFunc("peek", &Deck::peek);
@@ -764,6 +761,7 @@ void Card::expose(ssq::Table &table) {
     // Zone
     auto zoneCls = table.addClass<Zone>(
         "Zone", std::function<Zone *()>([]() -> Zone * { return nullptr; }), false);
+    registerCppEntityClassForScript<Zone>(zoneCls);
     zoneCls.addFunc("getId", [](Zone *z) -> std::string { return z ? z->rect()->id : std::string{}; });
     zoneCls.addFunc("setId", [](Zone *z, const std::string &v) { if (z) z->rect()->id = v; });
     zoneCls.addFunc("getLabel", [](Zone *z) -> std::string { return z ? z->rect()->label : std::string{}; });
@@ -798,6 +796,7 @@ void Card::expose(ssq::Table &table) {
     // Hand
     auto handCls = table.addClass<Hand>(
         "Hand", std::function<Hand *()>([]() -> Hand * { return nullptr; }), false);
+    registerCppEntityClassForScript<Hand>(handCls);
     handCls.addFunc("getOwner", [](Hand *h) -> std::string { return h ? h->meta()->owner : std::string{}; });
     handCls.addFunc("setOwner", [](Hand *h, const std::string &v) { if (h) h->meta()->owner = v; });
     handCls.addFunc("getConfig", [](Hand *h) -> LayoutConfig * { return h ? h->meta()->config : nullptr; });

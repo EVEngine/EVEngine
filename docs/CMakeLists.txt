@@ -13,7 +13,7 @@ endif()
 
 if(NOT DEFINED EVENGINE_MAJOR_VERSION)
     set(EVENGINE_MAJOR_VERSION "0")
-    set(EVENGINE_MINOR_VERSION "3")
+    set(EVENGINE_MINOR_VERSION "4")
     set(EVENGINE_PATCH_VERSION "0")
 endif()
 
@@ -118,6 +118,10 @@ set(_doc_module_pages
     "mouse.md|mod_mouse|鼠标模块"
     "network.md|mod_network|网络模块"
     "particles.md|mod_particles|粒子模块"
+    "pixelworld.md|mod_pixelworld|像素物质世界模块"
+    "pixelworld_replay.md|mod_pixelworld_replay|PixelWorld 确定性重放模块"
+    "pixelworld_streaming.md|mod_pixelworld_streaming|PixelWorld 兴趣区 Streaming 模块"
+    "pixelworld_editor.md|mod_pixelworld_editor|PixelWorld Catalog 编辑器模块"
     "physics.md|mod_physics|物理模块（Box2D + Box3D + 布料 + 流体）"
     "plugins.md|mod_plugins|原生插件模块"
     "procgen.md|mod_procgen|程序化生成模块"

@@ -8,7 +8,7 @@ namespace {
 
 template <class T>
 EditorResult<T> audioError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -60,11 +60,11 @@ EditorResult<void> AudioSourceTarget::applyDomainOperation(const DomainOperation
         return audioError<void>(EditorStatus::Unsupported, "editor.audio.property",
                                 "Unknown audio source property: " + *path);
     auto valid = validatePropertyValue(*descriptor, *value);
-    if (!valid.isAccepted()) return valid;
+    if (!valid.ok()) return valid;
     values_[*path] = *value;
     ++revision_;
     dirty_.include(0, 0);
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::unique_ptr<IDomainOperationTarget> AudioSourceTarget::cloneDomainState() const {
@@ -78,7 +78,7 @@ EditorResult<void> AudioSourceTarget::commitDomainState(
         return audioError<void>(EditorStatus::Conflict, "editor.audio.candidate-mismatch",
                                 "Audio source candidate belongs to another target");
     *this = *typed;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 eve::Result<eve::Revision> AudioSourceTarget::currentRevision(const SelectionSnapshot& selection) const {
@@ -115,12 +115,7 @@ EditorResult<DomainOperation> AudioSourceTarget::makeSet(const SelectionSnapshot
         return audioError<DomainOperation>(EditorStatus::Unsupported, "editor.audio.property",
                                            "Unknown audio source property: " + path.value());
     auto valid = validatePropertyValue(*descriptor, value);
-    if (!valid.isAccepted()) {
-        EditorResult<DomainOperation> failed;
-        failed.status = valid.status;
-        failed.diagnostics = std::move(valid.diagnostics);
-        return failed;
-    }
+    if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
     auto payload = [&](const EditorValue& assigned) {
         EditorValue::Object object;
         object["path"] = path.value();
@@ -135,7 +130,7 @@ EditorResult<DomainOperation> AudioSourceTarget::makeSet(const SelectionSnapshot
     operation.hasInverse = true;
     operation.affectedProperties.push_back(path.value());
     operation.mergeKey = "audio.source:" + id_ + ":" + path.value();
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> AudioSourceTarget::makeReset(const SelectionSnapshot& selection,

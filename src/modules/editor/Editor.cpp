@@ -2,43 +2,29 @@
 
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
-#include "editor/ActionTimelineScriptBindings.h"
-#include "editor/Brush.h"
 #include "editor/EditorAutomationProvider.h"
 #include "editor/EditorDock.h"
-#include "editor/EditorHistory.h"
 #include "editor/EditorInspector.h"
 #include "editor/EditorSession.h"
 #include "editor/EditorTargetCoordinator.h"
 #include "editor/EditorToolbar.h"
-#include "editor/EditorVolumeTarget.h"
 #include "editor/EditorWorkspace.h"
 #include "editor/FieldBrushTool.h"
-#include "editor/FieldTargets.h"
 #include "editor/GizmoManager.h"
-#include "editor/ReflectionProbeVisualizer.h"
 #include "editor/ScriptEditorTool.h"
-#include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
 #include "editor/VolumeBrushTool.h"
-#include "material_editing/MaterialEditingCommands.h"
-#include "procgen_graphics_editing/HeightmapMesh.h"
-#include "scene_editing/SceneEditingCommands.h"
 
-#include "graphics/Graphics.h"
-#include "graphics/Mesh.h"
-#include "graphics/ReflectionProbeCapture.h"
-#ifdef EVENGINE_HAS_PROCGEN
-#include "procgen/heightmap/Heightmap.h"
-#endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <stdexcept>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace eve::editor {
@@ -49,6 +35,7 @@ namespace {
 
 const char* statusName(EditorStatus status) {
     switch (status) {
+        case EditorStatus::Ok: return "ok";
         case EditorStatus::Applied: return "applied";
         case EditorStatus::Pending: return "pending";
         case EditorStatus::NoOp: return "no-op";
@@ -200,9 +187,9 @@ ssq::Array diagnosticArray(HSQUIRRELVM vm, const std::vector<EditorDiagnostic>& 
     ssq::Array out(vm);
     for (const EditorDiagnostic& diagnostic : diagnostics) {
         ssq::Table item(vm);
-        item.set("rule", diagnostic.rule.value());
-        item.set("message", diagnostic.message);
-        item.set("severity", static_cast<int>(diagnostic.severity));
+        item.set("rule", editing::diagnosticRule(diagnostic).value());
+        item.set("message", diagnostic.message());
+        item.set("severity", static_cast<int>(diagnostic.severity()));
         out.push(item);
     }
     return out;
@@ -211,14 +198,14 @@ ssq::Array diagnosticArray(HSQUIRRELVM vm, const std::vector<EditorDiagnostic>& 
 template <class T>
 ssq::Table resultTable(HSQUIRRELVM vm, const EditorResult<T>& result) {
     ssq::Table out(vm);
-    out.set("status", std::string(statusName(result.status)));
-    out.set("accepted", result.isAccepted());
-    out.set("diagnostics", diagnosticArray(vm, result.diagnostics));
+    out.set("status", std::string(statusName(result.code())));
+    out.set("accepted", result.ok());
+    out.set("diagnostics", diagnosticArray(vm, result.diagnostics()));
     return out;
 }
 
 EditorResult<EditorValue> invalidScriptPayload() {
-    return EditorResult<EditorValue>::error(
+    return eve::editing::failed<EditorValue>(
         EditorStatus::Rejected, RuleId("editor.script.invalid-payload"),
         "Script payload must contain only null, bool, number, string, array, or table values");
 }
@@ -262,11 +249,11 @@ bool registerScriptCommand(Editor* editor, const std::string& id, const std::str
                 operation.type    = id;
                 operation.payload = request.payload;
                 plan.operations.push_back(std::move(operation));
-                return EditorResult<CommandPlan>::applied(std::move(plan));
+                return eve::editing::applied<CommandPlan>(std::move(plan));
             },
             [callback = std::move(callback)](const CommandRequest& request, const CommandPlan& plan) {
                 if (!invokeScriptCommand(callback, request.payload))
-                    return EditorResult<TransactionReceipt>::error(
+                    return eve::editing::failed<TransactionReceipt>(
                         EditorStatus::Rejected, RuleId("editor.script.command-rejected"),
                         "Script command callback rejected the planned payload");
                 TransactionReceipt receipt;
@@ -275,10 +262,10 @@ bool registerScriptCommand(Editor* editor, const std::string& id, const std::str
                 receipt.beforeRevision   = plan.baseRevision;
                 receipt.afterRevision    = plan.baseRevision + 1;
                 receipt.authorityReceipt = "script:local";
-                return EditorResult<TransactionReceipt>::applied(std::move(receipt));
+                return eve::editing::applied<TransactionReceipt>(std::move(receipt));
             },
             true)
-        .isAccepted();
+        .ok();
 }
 
 }  // namespace
@@ -286,20 +273,20 @@ bool registerScriptCommand(Editor* editor, const std::string& id, const std::str
 Editor::Editor()
     : targets_(std::make_unique<EditorTargetCoordinator>(commandService_)),
       automation_(std::make_unique<EditorAutomationProvider>(commandService_, *targets_)) {
-    const auto sceneCommands    = eve::scene_editing::registerEditingCommands(*targets_);
-    const auto materialCommands = eve::material_editing::registerEditingCommands(*targets_);
-    if (!sceneCommands.isAccepted() || !materialCommands.isAccepted())
-        throw std::runtime_error("Failed to register built-in domain editing commands");
+    eve::cap::provide<eve::editing::IEditingCommandRegistry>(targets_.get());
     eve::cap::provide<eve::IEditorAutomation>(automation_.get());
 }
 
-Editor::~Editor() { eve::cap::revoke<eve::IEditorAutomation>(automation_.get()); }
+Editor::~Editor() {
+    eve::cap::revoke<eve::IEditorAutomation>(automation_.get());
+    eve::cap::revoke<eve::editing::IEditingCommandRegistry>(targets_.get());
+}
 
 EditorResult<void> Editor::registerEditingTarget(IEditableTarget& target) { return targets_->registerTarget(target); }
 
 EditorResult<void> Editor::unregisterEditingTarget(const TargetId& target) {
     auto result = targets_->unregisterTarget(target);
-    if (result.status == EditorStatus::Applied) automation_->targetUnregistered(target);
+    if (result.code() == EditorStatus::Applied) automation_->targetUnregistered(target);
     return result;
 }
 
@@ -307,111 +294,67 @@ EditorResult<void> Editor::bindEditingTarget(EditorSession& session, const Targe
     return targets_->bind(session, target);
 }
 
-TransformGizmo* Editor::newGizmo() { return new TransformGizmo(); }
+std::unique_ptr<TransformGizmo> Editor::newGizmo() { return std::make_unique<TransformGizmo>(); }
 
-GizmoManager* Editor::newGizmoManager() { return new GizmoManager(); }
+std::unique_ptr<GizmoManager> Editor::newGizmoManager() { return std::make_unique<GizmoManager>(); }
 
-ReflectionProbeVisualizer* Editor::newReflectionProbeVisualizer(
-    graphics::ReflectionProbeCapture* probe) {
-    return new ReflectionProbeVisualizer(probe);
-}
+std::unique_ptr<EditorToolbar> Editor::newToolbar() { return std::make_unique<EditorToolbar>(); }
 
-TileBuffer* Editor::newTileBuffer(int width, int height) { return new TileBuffer(width, height); }
+std::unique_ptr<EditorInspector> Editor::newInspector() { return std::make_unique<EditorInspector>(); }
 
-Brush* Editor::newBrush() { return new Brush(); }
+std::unique_ptr<EditorDock> Editor::newDock() { return std::make_unique<EditorDock>(); }
 
-EditorToolbar* Editor::newToolbar() { return new EditorToolbar(); }
-
-EditorInspector* Editor::newInspector() { return new EditorInspector(); }
-
-EditorDock* Editor::newDock() { return new EditorDock(); }
-
-EditorHistory* Editor::newHistory() { return new EditorHistory(); }
-
-EditorSession* Editor::newSession() {
-    auto* session = new EditorSession();
+std::unique_ptr<EditorSession> Editor::newSession() {
+    auto session = std::make_unique<EditorSession>();
     session->setCommandService(&commandService_);
     return session;
 }
 
-EditorWorkspace* Editor::newWorkspace(const std::string& id, const std::string& title) {
-    if (id.empty()) return nullptr;
-    return new EditorWorkspace(id, title.empty() ? id : title);
+EditorResult<std::unique_ptr<EditorWorkspace>> Editor::newWorkspace(const std::string& id, const std::string& title) {
+    if (id.empty())
+        return eve::editing::failed<std::unique_ptr<EditorWorkspace>>(
+            EditorStatus::Rejected, RuleId("editor.workspace.empty-id"), "Workspace id must be non-empty");
+    return eve::editing::applied<std::unique_ptr<EditorWorkspace>>(
+        std::make_unique<EditorWorkspace>(id, title.empty() ? id : title));
 }
 
-TileBufferTarget* Editor::newTileBufferTarget(const std::string& id, TileBuffer* buffer) {
-    return new TileBufferTarget(id, buffer);
+std::unique_ptr<ScriptEditorTool> Editor::newScriptTool(const std::string& id, const std::string& label) {
+    return std::make_unique<ScriptEditorTool>(id, label);
 }
 
-#ifdef EVENGINE_HAS_MAP
-TileLayerTarget* Editor::newTileLayerTarget(const std::string& id, map::TileLayer* layer) {
-    return eve::map_editing::createTileLayerTarget(id, layer).release();
+std::unique_ptr<ConstantBrushFalloff> Editor::newConstantBrushFalloff() {
+    return std::make_unique<ConstantBrushFalloff>();
 }
-#endif
-
-ScriptEditorTool* Editor::newScriptTool(const std::string& id, const std::string& label) {
-    return new ScriptEditorTool(id, label);
+std::unique_ptr<LinearBrushFalloff> Editor::newLinearBrushFalloff() { return std::make_unique<LinearBrushFalloff>(); }
+std::unique_ptr<SmoothBrushFalloff> Editor::newSmoothBrushFalloff() { return std::make_unique<SmoothBrushFalloff>(); }
+std::unique_ptr<CircleBrushKernel> Editor::newCircleBrushKernel() { return std::make_unique<CircleBrushKernel>(); }
+std::unique_ptr<BoxBrushKernel> Editor::newBoxBrushKernel() { return std::make_unique<BoxBrushKernel>(); }
+std::unique_ptr<PaintIntFieldOperation> Editor::newPaintIntFieldOperation(int value) {
+    return std::make_unique<PaintIntFieldOperation>(value);
 }
-
-ConstantBrushFalloff*    Editor::newConstantBrushFalloff() { return new ConstantBrushFalloff(); }
-LinearBrushFalloff*      Editor::newLinearBrushFalloff() { return new LinearBrushFalloff(); }
-SmoothBrushFalloff*      Editor::newSmoothBrushFalloff() { return new SmoothBrushFalloff(); }
-CircleBrushKernel*       Editor::newCircleBrushKernel() { return new CircleBrushKernel(); }
-BoxBrushKernel*          Editor::newBoxBrushKernel() { return new BoxBrushKernel(); }
-PaintIntFieldOperation*  Editor::newPaintIntFieldOperation(int value) { return new PaintIntFieldOperation(value); }
-AddScalarFieldOperation* Editor::newAddScalarFieldOperation() { return new AddScalarFieldOperation(); }
-FieldBrushTool*          Editor::newFieldBrushTool(const std::string& id, const std::string& label) {
-    return new FieldBrushTool(id, label, nullptr, nullptr);
+std::unique_ptr<AddScalarFieldOperation> Editor::newAddScalarFieldOperation() {
+    return std::make_unique<AddScalarFieldOperation>();
+}
+std::unique_ptr<FieldBrushTool> Editor::newFieldBrushTool(const std::string& id, const std::string& label) {
+    return std::make_unique<FieldBrushTool>(id, label, nullptr, nullptr);
 }
 
-SphereVolumeBrushKernel* Editor::newSphereVolumeBrushKernel() { return new SphereVolumeBrushKernel(); }
-BoxVolumeBrushKernel*    Editor::newBoxVolumeBrushKernel() { return new BoxVolumeBrushKernel(); }
-PaintIntVolumeOperation* Editor::newPaintIntVolumeOperation(int value) { return new PaintIntVolumeOperation(value); }
-VolumeBrushTool*         Editor::newVolumeBrushTool(const std::string& id, const std::string& label) {
-    return new VolumeBrushTool(id, label);
+std::unique_ptr<SphereVolumeBrushKernel> Editor::newSphereVolumeBrushKernel() {
+    return std::make_unique<SphereVolumeBrushKernel>();
 }
-
-#ifdef EVENGINE_HAS_VOXEL
-VoxelWorldTarget* Editor::newVoxelWorldTarget(const std::string& id, voxel::VoxelWorld* world) {
-    return eve::voxel_editing::createVoxelWorldTarget(id, world).release();
+std::unique_ptr<BoxVolumeBrushKernel> Editor::newBoxVolumeBrushKernel() {
+    return std::make_unique<BoxVolumeBrushKernel>();
 }
-#endif
-
-#ifdef EVENGINE_HAS_PROCGEN
-HeightmapTarget* Editor::newHeightmapTarget(const std::string& id, procgen::Heightmap* heightmap) {
-    return eve::procgen_editing::createHeightmapTarget(id, heightmap).release();
+std::unique_ptr<PaintIntVolumeOperation> Editor::newPaintIntVolumeOperation(int value) {
+    return std::make_unique<PaintIntVolumeOperation>(value);
 }
-
-int Editor::applyHeightmapBrush(procgen::Heightmap* hm, float centerX, float centerY, float radius, float strength) {
-    auto result = eve::procgen_editing::applyHeightmapBrush(hm, centerX, centerY, radius, strength);
-    return result.value.value_or(0);
+std::unique_ptr<VolumeBrushTool> Editor::newVolumeBrushTool(const std::string& id, const std::string& label) {
+    return std::make_unique<VolumeBrushTool>(id, label);
 }
-
-graphics::Mesh* Editor::newHeightmapMesh(procgen::Heightmap* hm, float cellSize, float heightScale) {
-    auto created = eve::procgen_graphics_editing::createHeightmapMesh(hm, cellSize, heightScale, false);
-    return created.value.value_or(nullptr);
-}
-
-bool Editor::updateHeightmapMesh(graphics::Mesh* mesh, graphics::Graphics* gfx, procgen::Heightmap* hm, float cellSize,
-                                 float heightScale) {
-    return eve::procgen_graphics_editing::updateHeightmapMesh(mesh, gfx, hm, cellSize, heightScale, false).isAccepted();
-}
-
-graphics::Mesh* Editor::newHeightmapMeshSmooth(procgen::Heightmap* hm, float cellSize, float heightScale) {
-    auto created = eve::procgen_graphics_editing::createHeightmapMesh(hm, cellSize, heightScale, true);
-    return created.value.value_or(nullptr);
-}
-
-bool Editor::updateHeightmapMeshSmooth(graphics::Mesh* mesh, graphics::Graphics* gfx, procgen::Heightmap* hm,
-                                       float cellSize, float heightScale) {
-    return eve::procgen_graphics_editing::updateHeightmapMesh(mesh, gfx, hm, cellSize, heightScale, true).isAccepted();
-}
-#endif
 
 void Editor::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Editor::create, false);
     expose(cls);
-    exposeActionTimelineScriptBindings(table, cls);
 
     auto gizmo = table.addClass<TransformGizmo>(
         "TransformGizmo", std::function<TransformGizmo*()>([]() -> TransformGizmo* { return nullptr; }), true);
@@ -474,24 +417,6 @@ void Editor::expose(ssq::Table& table) {
     gizmo.addFunc("getPartLength", &TransformGizmo::getPartLength);
     gizmo.addFunc("getPartRadius", &TransformGizmo::getPartRadius);
 
-    auto probeVisualizer = table.addClass<ReflectionProbeVisualizer>(
-        "ReflectionProbeVisualizer",
-        std::function<ReflectionProbeVisualizer*()>([]() -> ReflectionProbeVisualizer* {
-            return nullptr;
-        }),
-        true);
-    probeVisualizer.addFunc("setExtents", &ReflectionProbeVisualizer::setExtents);
-    probeVisualizer.addFunc("getLineCount", &ReflectionProbeVisualizer::getLineCount);
-    probeVisualizer.addFunc("getLineStart", &ReflectionProbeVisualizer::getLineStart);
-    probeVisualizer.addFunc("getLineEnd", &ReflectionProbeVisualizer::getLineEnd);
-    probeVisualizer.addFunc("getColorR", &ReflectionProbeVisualizer::getColorR);
-    probeVisualizer.addFunc("getColorG", &ReflectionProbeVisualizer::getColorG);
-    probeVisualizer.addFunc("getColorB", &ReflectionProbeVisualizer::getColorB);
-    probeVisualizer.addFunc("getCenterX", &ReflectionProbeVisualizer::getCenterX);
-    probeVisualizer.addFunc("getCenterY", &ReflectionProbeVisualizer::getCenterY);
-    probeVisualizer.addFunc("getCenterZ", &ReflectionProbeVisualizer::getCenterZ);
-    probeVisualizer.addFunc("getStatusLabel", &ReflectionProbeVisualizer::getStatusLabel);
-
     auto mgr = table.addClass<GizmoManager>(
         "GizmoManager", std::function<GizmoManager*()>([]() -> GizmoManager* { return nullptr; }), true);
     mgr.addFunc("getGizmo", &GizmoManager::getGizmo);
@@ -512,52 +437,6 @@ void Editor::expose(ssq::Table& table) {
     mgr.addFunc("endDrag", &GizmoManager::endDrag);
     mgr.addFunc("isDragging", &GizmoManager::isDragging);
     mgr.addFunc("isHovered", &GizmoManager::isHovered);
-
-    auto buf = table.addClass<TileBuffer>("TileBuffer",
-                                          std::function<TileBuffer*()>([]() -> TileBuffer* { return nullptr; }), true);
-    buf.addFunc("getWidth", &TileBuffer::getWidth);
-    buf.addFunc("getHeight", &TileBuffer::getHeight);
-    buf.addFunc("resize", &TileBuffer::resize);
-    buf.addFunc("clear", &TileBuffer::clear);
-    buf.addFunc("fill", &TileBuffer::fill);
-    buf.addFunc("setGid", &TileBuffer::setGid);
-    buf.addFunc("getGid", &TileBuffer::getGid);
-    buf.addFunc("inBounds", &TileBuffer::inBounds);
-
-    auto brush = table.addClass<Brush>("Brush", std::function<Brush*()>([]() -> Brush* { return nullptr; }), true);
-    brush.addFunc("setTool", &Brush::setTool);
-    brush.addFunc("getTool", &Brush::getTool);
-    brush.addFunc("setSize", &Brush::setSize);
-    brush.addFunc("getSize", &Brush::getSize);
-    brush.addFunc("setShape", &Brush::setShape);
-    brush.addFunc("getShape", &Brush::getShape);
-    brush.addFunc("setTile", &Brush::setTile);
-    brush.addFunc("getTile", &Brush::getTile);
-    brush.addFunc("setEraseTile", &Brush::setEraseTile);
-    brush.addFunc("getEraseTile", &Brush::getEraseTile);
-    brush.addFunc("setStampSize", &Brush::setStampSize);
-    brush.addFunc("getStampWidth", &Brush::getStampWidth);
-    brush.addFunc("getStampHeight", &Brush::getStampHeight);
-    brush.addFunc("setStampTile", &Brush::setStampTile);
-    brush.addFunc("getStampTile", &Brush::getStampTile);
-    brush.addFunc("clearStamp", &Brush::clearStamp);
-    brush.addFunc("paintAt", &Brush::paintAt);
-    brush.addFunc("eraseAt", &Brush::eraseAt);
-    brush.addFunc("floodFill", &Brush::floodFill);
-    brush.addFunc("paintLine", &Brush::paintLine);
-    brush.addFunc("paintRect", &Brush::paintRect);
-    brush.addFunc("previewAt", &Brush::previewAt);
-    brush.addFunc("previewLine", &Brush::previewLine);
-    brush.addFunc("previewRect", &Brush::previewRect);
-    brush.addFunc("getPreviewCount", &Brush::getPreviewCount);
-    brush.addFunc("getPreviewX", &Brush::getPreviewX);
-    brush.addFunc("getPreviewY", &Brush::getPreviewY);
-    brush.addFunc("getPreviewGid", &Brush::getPreviewGid);
-    brush.addFunc("getChangeCount", &Brush::getChangeCount);
-    brush.addFunc("getChangeX", &Brush::getChangeX);
-    brush.addFunc("getChangeY", &Brush::getChangeY);
-    brush.addFunc("getChangeOldGid", &Brush::getChangeOldGid);
-    brush.addFunc("getChangeNewGid", &Brush::getChangeNewGid);
 
     auto tb = table.addClass<EditorToolbar>(
         "EditorToolbar", std::function<EditorToolbar*()>([]() -> EditorToolbar* { return nullptr; }), true);
@@ -614,30 +493,6 @@ void Editor::expose(ssq::Table& table) {
     dock.addFunc("getRegionY", &EditorDock::getRegionY);
     dock.addFunc("getRegionW", &EditorDock::getRegionW);
     dock.addFunc("getRegionH", &EditorDock::getRegionH);
-
-    auto hist = table.addClass<EditorHistory>(
-        "EditorHistory", std::function<EditorHistory*()>([]() -> EditorHistory* { return nullptr; }), true);
-    hist.addFunc("clear", &EditorHistory::clear);
-    hist.addFunc("push", &EditorHistory::push);
-    hist.addFunc("beginGroup", &EditorHistory::beginGroup);
-    hist.addFunc("recordTile", &EditorHistory::recordTile);
-    hist.addFunc("endGroup", &EditorHistory::endGroup);
-    hist.addFunc("isGrouping", &EditorHistory::isGrouping);
-    hist.addFunc("canUndo", &EditorHistory::canUndo);
-    hist.addFunc("canRedo", &EditorHistory::canRedo);
-    hist.addFunc("getUndoCount", &EditorHistory::getUndoCount);
-    hist.addFunc("getRedoCount", &EditorHistory::getRedoCount);
-    hist.addFunc("undo", &EditorHistory::undo);
-    hist.addFunc("redo", &EditorHistory::redo);
-    hist.addFunc("applyLastToBuffer", &EditorHistory::applyLastToBuffer);
-    hist.addFunc("getLastActionName", &EditorHistory::getLastActionName);
-    hist.addFunc("getLastActionKind", &EditorHistory::getLastActionKind);
-    hist.addFunc("getLastPayload", &EditorHistory::getLastPayload);
-    hist.addFunc("getLastTileCount", &EditorHistory::getLastTileCount);
-    hist.addFunc("getLastTileX", &EditorHistory::getLastTileX);
-    hist.addFunc("getLastTileY", &EditorHistory::getLastTileY);
-    hist.addFunc("getLastTileOldGid", &EditorHistory::getLastTileOldGid);
-    hist.addFunc("getLastTileNewGid", &EditorHistory::getLastTileNewGid);
 
     auto constantFalloff = table.addClass<ConstantBrushFalloff>(
         "ConstantBrushFalloff",
@@ -751,69 +606,6 @@ void Editor::expose(ssq::Table& table) {
         if (self) self->setOperation(operation);
     });
 
-    auto tileTarget = table.addClass<TileBufferTarget>(
-        "TileBufferTarget", std::function<TileBufferTarget*()>([]() -> TileBufferTarget* { return nullptr; }), true);
-    tileTarget.addFunc("getTargetId", [](TileBufferTarget* self) { return self ? self->targetId() : std::string{}; });
-    tileTarget.addFunc("getRevision", [](TileBufferTarget* self) {
-        return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
-    });
-    tileTarget.addFunc("getWidth", &TileBufferTarget::width);
-    tileTarget.addFunc("getHeight", &TileBufferTarget::height);
-    tileTarget.addFunc("readInt", &TileBufferTarget::readInt);
-    tileTarget.addFunc("writeInt", &TileBufferTarget::writeInt);
-    tileTarget.addFunc("clearDirtyRegion", &TileBufferTarget::clearDirtyRegion);
-
-#ifdef EVENGINE_HAS_MAP
-    auto tileLayerTarget = table.addClass<TileLayerTarget>(
-        "TileLayerTarget", std::function<TileLayerTarget*()>([]() -> TileLayerTarget* { return nullptr; }), true);
-    tileLayerTarget.addFunc("getTargetId",
-                            [](TileLayerTarget* self) { return self ? self->targetId() : std::string{}; });
-    tileLayerTarget.addFunc("getRevision", [](TileLayerTarget* self) {
-        return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
-    });
-    tileLayerTarget.addFunc("getWidth", &TileLayerTarget::width);
-    tileLayerTarget.addFunc("getHeight", &TileLayerTarget::height);
-    tileLayerTarget.addFunc("readInt", &TileLayerTarget::readInt);
-    tileLayerTarget.addFunc("writeInt", &TileLayerTarget::writeInt);
-    tileLayerTarget.addFunc("clearDirtyRegion", &TileLayerTarget::clearDirtyRegion);
-#endif
-
-#ifdef EVENGINE_HAS_PROCGEN
-    auto heightmapTarget = table.addClass<HeightmapTarget>(
-        "HeightmapTarget", std::function<HeightmapTarget*()>([]() -> HeightmapTarget* { return nullptr; }), true);
-    heightmapTarget.addFunc("getTargetId",
-                            [](HeightmapTarget* self) { return self ? self->targetId() : std::string{}; });
-    heightmapTarget.addFunc("getRevision", [](HeightmapTarget* self) {
-        return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
-    });
-    heightmapTarget.addFunc("getWidth", &HeightmapTarget::width);
-    heightmapTarget.addFunc("getHeight", &HeightmapTarget::height);
-    heightmapTarget.addFunc("readScalar", &HeightmapTarget::readScalar);
-    heightmapTarget.addFunc("writeScalar", &HeightmapTarget::writeScalar);
-    heightmapTarget.addFunc("sampleScalar", &HeightmapTarget::sampleScalar);
-    heightmapTarget.addFunc("clearDirtyRegion", &HeightmapTarget::clearDirtyRegion);
-#endif
-
-#ifdef EVENGINE_HAS_VOXEL
-    auto voxelTarget = table.addClass<VoxelWorldTarget>(
-        "VoxelWorldTarget", std::function<VoxelWorldTarget*()>([]() -> VoxelWorldTarget* { return nullptr; }), true);
-    voxelTarget.addFunc("getTargetId", [](VoxelWorldTarget* self) { return self ? self->targetId() : std::string{}; });
-    voxelTarget.addFunc("getRevision", [](VoxelWorldTarget* self) {
-        return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
-    });
-    voxelTarget.addFunc("readInt3", &VoxelWorldTarget::readInt3);
-    voxelTarget.addFunc("writeInt3", [](VoxelWorldTarget* self, int x, int y, int z, int value) {
-        return self && self->writeInt3(x, y, z, value) == editing::FieldWriteStatus::Applied;
-    });
-    voxelTarget.addFunc("clearDirtyVolume", &VoxelWorldTarget::clearDirtyVolume);
-    voxelTarget.addFunc("getDirtyMinX", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().minX : 0; });
-    voxelTarget.addFunc("getDirtyMinY", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().minY : 0; });
-    voxelTarget.addFunc("getDirtyMinZ", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().minZ : 0; });
-    voxelTarget.addFunc("getDirtyMaxX", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().maxX : -1; });
-    voxelTarget.addFunc("getDirtyMaxY", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().maxY : -1; });
-    voxelTarget.addFunc("getDirtyMaxZ", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().maxZ : -1; });
-#endif
-
     auto session = table.addClass<EditorSession>(
         "EditorSession", std::function<EditorSession*()>([]() -> EditorSession* { return nullptr; }), true);
     session.addFunc("addTool", std::function<bool(EditorSession*, ScriptEditorTool*)>(
@@ -822,24 +614,6 @@ void Editor::expose(ssq::Table& table) {
                     [](EditorSession* self, FieldBrushTool* tool) { return self && self->addTool(tool); });
     session.addFunc("addVolumeTool",
                     [](EditorSession* self, VolumeBrushTool* tool) { return self && self->addTool(tool); });
-    session.addFunc("bindTileBufferTarget", [](EditorSession* self, TileBufferTarget* target) {
-        if (self) self->bindTarget(target);
-    });
-#ifdef EVENGINE_HAS_MAP
-    session.addFunc("bindTileLayerTarget", [](EditorSession* self, TileLayerTarget* target) {
-        if (self) self->bindTarget(target);
-    });
-#endif
-#ifdef EVENGINE_HAS_VOXEL
-    session.addFunc("bindVoxelWorldTarget", [](EditorSession* self, VoxelWorldTarget* target) {
-        if (self) self->bindTarget(target);
-    });
-#endif
-#ifdef EVENGINE_HAS_PROCGEN
-    session.addFunc("bindHeightmapTarget", [](EditorSession* self, HeightmapTarget* target) {
-        if (self) self->bindTarget(target);
-    });
-#endif
     session.addFunc("clearTarget", [](EditorSession* self) {
         if (self) self->bindTarget(nullptr);
     });
@@ -887,25 +661,25 @@ void Editor::expose(ssq::Table& table) {
         if (!self || !objectToEditorValue(payload, value)) return resultTable(vm, invalidScriptPayload());
         const EditorResult<PlanId> planned = self->retainPlan(CommandId(id), value, CommandSource::Script);
         ssq::Table                 out     = resultTable(vm, planned);
-        if (planned.value) out.set("planId", planned.value->value());
+        if (planned.ok()) out.set("planId", planned.value().value());
         return out;
     });
     session.addFunc(
         "executePlan", [](EditorSession* self, const std::string& planId, ssq::Object scriptContext) -> ssq::Object {
             HSQUIRRELVM vm = scriptContext.getHandle();
             if (!self)
-                return resultTable(vm, EditorResult<TransactionReceipt>::error(EditorStatus::Failed,
+                return resultTable(vm, eve::editing::failed<TransactionReceipt>(EditorStatus::Failed,
                                                                                RuleId("editor.script.missing-session"),
                                                                                "Editor session is not available"));
             const EditorResult<TransactionReceipt> executed =
                 self->executeRetainedPlan(PlanId(planId), CommandSource::Script);
             ssq::Table out = resultTable(vm, executed);
-            if (executed.value) {
-                out.set("transactionId", executed.value->id.value());
-                out.set("transactionState", std::string(transactionStateName(executed.value->state)));
-                out.set("beforeRevision", static_cast<int64_t>(executed.value->beforeRevision));
-                out.set("afterRevision", static_cast<int64_t>(executed.value->afterRevision));
-                out.set("authorityReceipt", executed.value->authorityReceipt);
+            if (executed.ok()) {
+                out.set("transactionId", executed.value().id.value());
+                out.set("transactionState", std::string(transactionStateName(executed.value().state)));
+                out.set("beforeRevision", static_cast<int64_t>(executed.value().beforeRevision));
+                out.set("afterRevision", static_cast<int64_t>(executed.value().afterRevision));
+                out.set("authorityReceipt", executed.value().authorityReceipt);
             }
             return out;
         });
@@ -918,7 +692,7 @@ void Editor::expose(ssq::Table& table) {
                         const EditorResult<EditorValue> executed =
                             self->executeCommand(CommandId(id), value, CommandSource::Script);
                         ssq::Table out = resultTable(vm, executed);
-                        if (executed.value) setValue(out, "value", *executed.value);
+                        if (executed.ok()) setValue(out, "value", executed.value());
                         return out;
                     });
     session.addFunc("dispatchPointer",
@@ -963,15 +737,20 @@ void Editor::expose(ssq::Table& table) {
     workspace.addFunc("getId", &EditorWorkspace::getId);
     workspace.addFunc("getTitle", &EditorWorkspace::getTitle);
     workspace.addFunc("setTitle", &EditorWorkspace::setTitle);
-    workspace.addFunc("registerPanel", &EditorWorkspace::registerPanel);
-    workspace.addFunc("removePanel", &EditorWorkspace::removePanel);
+    workspace.addFunc("registerPanel",
+                      static_cast<bool (EditorWorkspace::*)(const std::string&, const std::string&,
+                                                            const std::string&, int)>(&EditorWorkspace::registerPanel));
+    workspace.addFunc("removePanel",
+                      static_cast<bool (EditorWorkspace::*)(const std::string&)>(&EditorWorkspace::removePanel));
     workspace.addFunc("clearPanels", &EditorWorkspace::clearPanels);
-    workspace.addFunc("movePanel", &EditorWorkspace::movePanel);
+    workspace.addFunc("movePanel", static_cast<bool (EditorWorkspace::*)(const std::string&, const std::string&, int)>(
+                                       &EditorWorkspace::movePanel));
     workspace.addFunc("setPanelCapability", &EditorWorkspace::setPanelCapability);
     workspace.addFunc("setPanelContext", &EditorWorkspace::setPanelContext);
     workspace.addFunc("setPanelVisible", &EditorWorkspace::setPanelVisible);
     workspace.addFunc("setPanelSingleton", &EditorWorkspace::setPanelSingleton);
-    workspace.addFunc("activatePanel", &EditorWorkspace::activatePanel);
+    workspace.addFunc("activatePanel",
+                      static_cast<bool (EditorWorkspace::*)(const std::string&)>(&EditorWorkspace::activatePanel));
     workspace.addFunc("getActivePanel", &EditorWorkspace::getActivePanel);
     workspace.addFunc("getPanelCount", &EditorWorkspace::getPanelCount);
     workspace.addFunc("getPanelId", &EditorWorkspace::getPanelId);
@@ -1014,49 +793,45 @@ void Editor::expose(ssq::Table& table) {
 
 void Editor::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Editor::getName);
-    cls.addFunc("newGizmo", &Editor::newGizmo);
-    cls.addFunc("newGizmoManager", &Editor::newGizmoManager);
-    cls.addFunc("newReflectionProbeVisualizer", &Editor::newReflectionProbeVisualizer);
-    cls.addFunc("newTileBuffer", &Editor::newTileBuffer);
-    cls.addFunc("newBrush", &Editor::newBrush);
-    cls.addFunc("newToolbar", &Editor::newToolbar);
-    cls.addFunc("newInspector", &Editor::newInspector);
-    cls.addFunc("newDock", &Editor::newDock);
-    cls.addFunc("newHistory", &Editor::newHistory);
-    cls.addFunc("newSession", &Editor::newSession);
-    cls.addFunc("newWorkspace", &Editor::newWorkspace);
-    cls.addFunc("newScriptTool", &Editor::newScriptTool);
-    cls.addFunc("newConstantBrushFalloff", &Editor::newConstantBrushFalloff);
-    cls.addFunc("newLinearBrushFalloff", &Editor::newLinearBrushFalloff);
-    cls.addFunc("newSmoothBrushFalloff", &Editor::newSmoothBrushFalloff);
-    cls.addFunc("newCircleBrushKernel", &Editor::newCircleBrushKernel);
-    cls.addFunc("newBoxBrushKernel", &Editor::newBoxBrushKernel);
-    cls.addFunc("newPaintIntFieldOperation", &Editor::newPaintIntFieldOperation);
-    cls.addFunc("newAddScalarFieldOperation", &Editor::newAddScalarFieldOperation);
-    cls.addFunc("newFieldBrushTool", &Editor::newFieldBrushTool);
-    cls.addFunc("newSphereVolumeBrushKernel", &Editor::newSphereVolumeBrushKernel);
-    cls.addFunc("newBoxVolumeBrushKernel", &Editor::newBoxVolumeBrushKernel);
-    cls.addFunc("newPaintIntVolumeOperation", &Editor::newPaintIntVolumeOperation);
-    cls.addFunc("newVolumeBrushTool", &Editor::newVolumeBrushTool);
-    cls.addFunc("newTileBufferTarget", &Editor::newTileBufferTarget);
-#ifdef EVENGINE_HAS_MAP
-    cls.addFunc("newTileLayerTarget", &Editor::newTileLayerTarget);
-#endif
-#ifdef EVENGINE_HAS_VOXEL
-    cls.addFunc("newVoxelWorldTarget", &Editor::newVoxelWorldTarget);
-#endif
+    cls.addFunc("newGizmo", [](Editor* self) { return self->newGizmo().release(); });
+    cls.addFunc("newGizmoManager", [](Editor* self) { return self->newGizmoManager().release(); });
+    cls.addFunc("newToolbar", [](Editor* self) { return self->newToolbar().release(); });
+    cls.addFunc("newInspector", [](Editor* self) { return self->newInspector().release(); });
+    cls.addFunc("newDock", [](Editor* self) { return self->newDock().release(); });
+    cls.addFunc("newSession", [](Editor* self) { return self->newSession().release(); });
+    cls.addFunc("newWorkspace", [](Editor* self, const std::string& id, const std::string& title) {
+        auto created = self->newWorkspace(id, title);
+        return created.ok() ? std::move(created).takeValue().release() : nullptr;
+    });
+    cls.addFunc("newScriptTool", [](Editor* self, const std::string& id, const std::string& label) {
+        return self->newScriptTool(id, label).release();
+    });
+    cls.addFunc("newConstantBrushFalloff", [](Editor* self) { return self->newConstantBrushFalloff().release(); });
+    cls.addFunc("newLinearBrushFalloff", [](Editor* self) { return self->newLinearBrushFalloff().release(); });
+    cls.addFunc("newSmoothBrushFalloff", [](Editor* self) { return self->newSmoothBrushFalloff().release(); });
+    cls.addFunc("newCircleBrushKernel", [](Editor* self) { return self->newCircleBrushKernel().release(); });
+    cls.addFunc("newBoxBrushKernel", [](Editor* self) { return self->newBoxBrushKernel().release(); });
+    cls.addFunc("newPaintIntFieldOperation", [](Editor* self, int value) {
+        return self->newPaintIntFieldOperation(value).release();
+    });
+    cls.addFunc("newAddScalarFieldOperation",
+                [](Editor* self) { return self->newAddScalarFieldOperation().release(); });
+    cls.addFunc("newFieldBrushTool", [](Editor* self, const std::string& id, const std::string& label) {
+        return self->newFieldBrushTool(id, label).release();
+    });
+    cls.addFunc("newSphereVolumeBrushKernel",
+                [](Editor* self) { return self->newSphereVolumeBrushKernel().release(); });
+    cls.addFunc("newBoxVolumeBrushKernel", [](Editor* self) { return self->newBoxVolumeBrushKernel().release(); });
+    cls.addFunc("newPaintIntVolumeOperation", [](Editor* self, int value) {
+        return self->newPaintIntVolumeOperation(value).release();
+    });
+    cls.addFunc("newVolumeBrushTool", [](Editor* self, const std::string& id, const std::string& label) {
+        return self->newVolumeBrushTool(id, label).release();
+    });
     cls.addFunc("registerScriptCommand", registerScriptCommand);
     cls.addFunc("unregisterScriptCommand", [](Editor* self, const std::string& id) {
         return self && self->commandService().unregisterCommand(CommandId(id), "script:" + id);
     });
-#ifdef EVENGINE_HAS_PROCGEN
-    cls.addFunc("newHeightmapTarget", &Editor::newHeightmapTarget);
-    cls.addFunc("newHeightmapMesh", &Editor::newHeightmapMesh);
-    cls.addFunc("updateHeightmapMesh", &Editor::updateHeightmapMesh);
-    cls.addFunc("newHeightmapMeshSmooth", &Editor::newHeightmapMeshSmooth);
-    cls.addFunc("updateHeightmapMeshSmooth", &Editor::updateHeightmapMeshSmooth);
-    cls.addFunc("applyHeightmapBrush", &Editor::applyHeightmapBrush);
-#endif
 }
 
 }  // namespace eve::editor

@@ -187,7 +187,7 @@ int System::getGpuMemoryTotalMB() const {
 }
 
 void System::expose(ssq::Table &table) {
-    auto cls = table.addClass(name, System::create, false);
+    auto cls = table.addClass("HostSystem", System::create, false);
     expose(cls);
 }
 

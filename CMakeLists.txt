@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.21)
 
+# Keep Windows/Ninja compiler invocations below cmd.exe's command-line limit
+# (long include graphs and per-target flags) by letting Ninja pass flags
+# through response files.
+if(CMAKE_HOST_WIN32 AND CMAKE_GENERATOR MATCHES "Ninja")
+    set(CMAKE_NINJA_FORCE_RESPONSE_FILE ON CACHE BOOL
+        "Use response files for Windows Ninja compile and link commands" FORCE)
+endif()
+
 set(EVENGINE_BUILD_PLATFORM "" CACHE STRING
     "EVEngine target platform override; unlike legacy BUILD_PLATFORM this cannot collide with dependencies")
 
@@ -82,7 +90,7 @@ endif()
 message(STATUS "Compiler cache: ${_eve_compiler_cache_status}")
 
 set(EVENGINE_MAJOR_VERSION "0")
-set(EVENGINE_MINOR_VERSION "3")
+set(EVENGINE_MINOR_VERSION "4")
 set(EVENGINE_PATCH_VERSION "0")
 set(EVENGINE_DEV_VERSION "-dev")
 
@@ -93,6 +101,8 @@ option(EVENGINE_BUILD_HOST
     "Build the interactive/native eve host (disabled by core/headless/server profiles)" ON)
 option(EVENGINE_BUILD_PROFILE_CHECKS
     "Build independent public-header and optional-capability profile checks" OFF)
+option(EVENGINE_BUILD_PIXELWORLD_BENCHMARK
+    "Build the renderer-independent PixelWorld million-cell benchmark" OFF)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
 option(EVENGINE_VULKAN_USE_VMA
     "Use the bundled Vulkan Memory Allocator for VKBuilder buffers" ON)
@@ -455,6 +465,9 @@ function(main)
     endif()
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
+    if(EVENGINE_BUILD_PIXELWORLD_BENCHMARK)
+        add_subdirectory(benchmarks/pixelworld)
+    endif()
     if(EVENGINE_BUILD_HOST)
         add_subdirectory(src/scripts)
     endif()

@@ -3,8 +3,11 @@
 // Which modules exist depends on how the engine was built (see
 // cmake/module_manifest.cmake), so nothing here names a module that might have
 // been trimmed. `eve.moduleList` is generated at configure time from the same
-// manifest that drives the link list, and optional modules are used behind
-// `has_module()` guards.
+// manifest that drives the link list. `config.modules` / `optionalModules`
+// select which of those slots are constructed; omitted fields keep the old
+// "instantiate everything in the build" behaviour. Optional modules are used
+// behind `has_module()` / `ensure_module()` guards. Native class methods bind
+// on first `eve.ClassName` access; `m.cls in eve` does not trigger that.
 //
 // The frame body lives in eve_frame() so both drivers can share it: desktop
 // runs the while loop at the bottom, while the browser build returns to C++
@@ -33,9 +36,82 @@ function normalize_path(path) {
     return s;
 }
 
-/** True when the build contains this module, i.e. the slot got bound below. */
+/** True when the build contains this module and it has been instantiated. */
 function has_module(slot) {
     return slot in getroottable() && getroottable()[slot] != null;
+}
+
+function _module_entry(slot) {
+    if (!("moduleList" in eve)) return null;
+    foreach (m in eve.moduleList) {
+        if (m.slot == slot) return m;
+    }
+    return null;
+}
+
+/**
+ * Instantiate a script module by root slot if the build contains it.
+ * Safe to call more than once. Returns true when the slot is live.
+ */
+function ensure_module(slot) {
+    if (has_module(slot)) return true;
+    local m = _module_entry(slot);
+    if (m == null) return false;
+    local _m0 = clock();
+    try {
+        getroottable()[slot] <- eve[m.cls]();
+    } catch (e) {
+        print("module " + m.cls + " failed to initialize: " + e + "\n");
+        return false;
+    }
+    local _mdt = (clock() - _m0) * 1000.0;
+    if (_mdt >= 50.0)
+        print("[startup] module " + m.cls + " took " + _mdt + " ms\n");
+    return has_module(slot);
+}
+
+// Frame loop / window / reload always need these slots when the build has them.
+_boot_module_slots <- ["fs", "hot", "timer", "platform_event", "win", "gfx"];
+
+function _mark_slots(dest, arr) {
+    if (arr == null) return;
+    foreach (slot in arr)
+        dest[slot] <- true;
+}
+
+function instantiate_configured_modules() {
+    local filtering = ("modules" in config) || ("optionalModules" in config);
+    local wanted = {};
+    if (filtering) {
+        // Trimmed builds bind modules against the canonical script ECS classes.
+        // Compatibility mode below preserves the historical native-first order.
+        if (eve._ensureScriptECS() < 0)
+            throw "failed to initialize script ECS";
+        _mark_slots(wanted, _boot_module_slots);
+        if ("modules" in config) {
+            if (typeof config.modules != "array")
+                throw "config.modules must be an array of module slot strings";
+            _mark_slots(wanted, config.modules);
+        }
+        if ("optionalModules" in config) {
+            if (typeof config.optionalModules != "array")
+                throw "config.optionalModules must be an array of module slot strings";
+            _mark_slots(wanted, config.optionalModules);
+        }
+    } else {
+        // Compatibility mode historically exposed every native class before
+        // constructing modules. Preserve that shared-type registration order.
+        if (eve._bindAllNativeClasses() < 0)
+            throw "failed to bind native module classes";
+    }
+    local n = 0;
+    foreach (m in eve.moduleList) {
+        if (filtering && !(m.slot in wanted)) continue;
+        if (ensure_module(m.slot))
+            n += 1;
+    }
+    _startup_ms("all modules instantiated");
+    _log("boot: " + n + " module(s) instantiated" + (filtering ? " (filtered)" : ""));
 }
 
 // ---------------------------------------------------------------------------
@@ -48,6 +124,7 @@ _input_edge_state <- { };
 // 边沿检测：只在“刚按下”的那一帧返回 true。用于按键（可带备用键名）。
 // 状态跨热重载保留，所以改脚本保存后不会丢按键边沿。
 function key_just_pressed(name, alternate = "") {
+    if (!has_module("keyboard")) return false;
     local down = keyboard.isDown(name) ||
                  (alternate != "" && keyboard.isDown(alternate));
     local key = (alternate == "") ? ("k_" + name) : (name + ":" + alternate);
@@ -102,7 +179,7 @@ if ("devServerArg" in eve && eve.devServerArg != null && eve.devServerArg != "")
 // Startup timing (temporary diagnostics; remove once startup is fast).
 // ---------------------------------------------------------------------------
 _startup_t0 <- clock();
-print("[startup] load.nut begins at process clock " + (clock() * 1000.0) + " ms\n");
+print("[startup] load.nut in scripts begins at process clock " + (clock() * 1000.0) + " ms\n");
 
 function _startup_ms(label) {
     local ms = (clock() - _startup_t0) * 1000.0;
@@ -117,22 +194,11 @@ function _log(msg) {
 
 // ---------------------------------------------------------------------------
 // Bind the modules this build actually contains.
+// When config.modules / optionalModules is set, only those slots plus the
+// boot set (fs/hot/timer/platform_event/win/gfx) are constructed.
 // ---------------------------------------------------------------------------
 
-foreach (m in eve.moduleList) {
-    if (!(m.cls in eve)) continue;
-    local _m0 = clock();
-    try {
-        getroottable()[m.slot] <- eve[m.cls]();
-    } catch (e) {
-        print("module " + m.cls + " failed to initialize: " + e + "\n");
-    }
-    local _mdt = (clock() - _m0) * 1000.0;
-    if (_mdt >= 50.0)
-        print("[startup] module " + m.cls + " took " + _mdt + " ms\n");
-}
-_startup_ms("all modules instantiated");
-_log("boot: " + eve.moduleList.len() + " module(s) instantiated");
+instantiate_configured_modules();
 
 // Project-wide module requirements belong to config.nut.  Validate them only
 // after the build's module list has been instantiated, and before any game

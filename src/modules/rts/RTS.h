@@ -6,6 +6,7 @@
  */
 
 #include "common/Module.h"
+#include "common/GameplayControl.h"
 #include "rts/RTSAttributes.h"
 #include "rts/RTSEffects.h"
 #include "rts/RTSProductionAction.h"
@@ -24,14 +25,35 @@ namespace eve::rts {
  * authoritative state owners, while action lifecycle state remains owned by
  * the caller-provided action::ActionRuntime through IRTSActionExecutor.
  */
-class RTS : public Module {
+class RTS : public Module, public IGameplayControlProvider {
 public:
     Module_REG(RTS);
 
     /** @brief Construct an empty RTS composition profile. */
-    RTS() = default;
+    RTS();
     /** @brief Destroy only live entities created through this module. */
     ~RTS() override;
+
+    /** @copydoc IGameplayControlProvider::gameplayDomain */
+    [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayControlProvider::observeGameplay */
+    [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
+                                                               SubjectRef instance) const override;
+    /** @copydoc IGameplayControlProvider::availableGameplayActions */
+    [[nodiscard]] Result<std::vector<GameplayActionDescriptor>> availableGameplayActions(
+        const GameplaySession& session, SubjectRef instance, SubjectRef subject) const override;
+    /** @copydoc IGameplayControlProvider::submitGameplay */
+    [[nodiscard]] Result<GameplayCommandReceipt> submitGameplay(const GameplaySession& session,
+                                                                 SubjectRef instance,
+                                                                 const GameplayCommand& command) override;
+    /** @copydoc IGameplayControlProvider::advanceGameplay */
+    [[nodiscard]] Result<GameplayObservation> advanceGameplay(const GameplaySession& session,
+                                                               SubjectRef instance,
+                                                               const SimulationStep& step) override;
+    /** @copydoc IGameplayControlProvider::gameplayEvents */
+    [[nodiscard]] Result<std::vector<GameplayEvent>> gameplayEvents(const GameplaySession& session,
+                                                                     SubjectRef instance,
+                                                                     std::uint64_t afterSequence) const override;
 
     /**
      * @brief Create and own one Unit root.
@@ -61,7 +83,7 @@ public:
      * @param formation Deterministic formation layout.
      * @return Accepted order ids in selection order.
      */
-    [[nodiscard]] Result<FanOutReceipt> fanOut(const Player::Selection& selection, const CommandSpec& command,
+    [[nodiscard]] Result<FanOutReceipt> fanOut(Player::Selection& selection, const CommandSpec& command,
                                                const FormationSpec& formation) const;
 
     /** @brief Read a canonical selected combat attribute through the RTS facade. */
@@ -111,10 +133,16 @@ public:
     [[nodiscard]] std::size_t factionCount() const noexcept;
 
 private:
+    struct GameplayRuntime;
+    [[nodiscard]] Player* resolvePlayer(SubjectRef subject) const noexcept;
+    [[nodiscard]] Unit* resolveUnit(SubjectRef subject) const noexcept;
     std::vector<ecs::EntityHandle> units_;
     std::vector<ecs::EntityHandle> buildings_;
     std::vector<ecs::EntityHandle> players_;
     std::vector<ecs::EntityHandle> factions_;
+    std::unique_ptr<GameplayRuntime> gameplayRuntime_;
+    std::uint64_t                   nextGameplayEventSequence_ = 1;
+    std::vector<GameplayEvent>      gameplayEvents_;
 };
 
 }  // namespace eve::rts

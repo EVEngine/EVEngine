@@ -9,6 +9,8 @@
  * 元素/暴击/命中）。暴击与元素耐性通过 TraitSystem 查询。
  */
 
+#include "common/Result.h"
+
 #include <string>
 #include <vector>
 
@@ -42,6 +44,17 @@ struct DamageResult {
  */
 class BattleSystem {
 public:
+    /**
+     * @brief Validate and publish one skill damage definition atomically.
+     * @param skillId Non-empty definition id.
+     * @param spec Candidate definition; a non-empty formula must satisfy the formula grammar.
+     * @return Success after publication, or a structured diagnostic without mutating the registry.
+     * @thread Call on the owning RPG definition thread; registry mutation is not synchronized.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] static eve::Result<void> registerSkillDamageChecked(const std::string &skillId,
+                                                                      const SkillDamageSpec &spec);
+    /** @brief Compatibility facade; invalid definitions are ignored. */
     static void registerSkillDamage(const std::string &skillId, const SkillDamageSpec &spec);
     static const SkillDamageSpec *findSkillDamage(const std::string &skillId);
     static void clearSkillDamage();
@@ -51,6 +64,15 @@ public:
      * @return 公式结果；未知参数/语法按 0 处理（不抛）。
      */
     static double evaluateFormula(const std::string &formula, RPGActor *attacker, RPGActor *target);
+
+    /**
+     * @brief Strictly parse and evaluate a damage formula.
+     * @return The finite result, or ParseError for malformed input and InvalidArgument for division by zero.
+     * @thread Pure synchronous evaluation; actor reads must obey the caller's simulation-thread contract.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] static eve::Result<double> evaluateFormulaChecked(const std::string &formula,
+                                                                     RPGActor *attacker, RPGActor *target);
 
     /**
      * @brief 结算一次命中：命中判定、公式、元素耐性、暴击。

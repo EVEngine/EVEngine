@@ -7,17 +7,15 @@ namespace eve::crowd_editing {
 EditorResult<void> CrowdRuntimeApplier::apply(const CrowdDocumentTarget& document,
                                               crowd::Crowd* runtime) const {
     if (!runtime)
-        return EditorResult<void>::error(EditorStatus::Rejected, RuleId("editor.crowd.runtime"),
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.crowd.runtime"),
                                          "Live Crowd runtime is required");
     const auto diagnostics = document.validate();
     for (const auto& diagnostic : diagnostics)
-        if (diagnostic.severity == DiagnosticSeverity::Error) {
-            EditorResult<void> result; result.status = EditorStatus::Rejected;
-            result.diagnostics = diagnostics; return result;
-        }
+        if (diagnostic.severity() == DiagnosticSeverity::Error)
+            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     const auto agents = document.agents();
     if (agents.size() > static_cast<std::size_t>(runtime->getMaxAgents()))
-        return EditorResult<void>::error(EditorStatus::Rejected, RuleId("editor.crowd.runtime-capacity"),
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.crowd.runtime-capacity"),
                                          "Crowd document exceeds the runtime agent capacity");
     std::map<StableId, CrowdPathRecord> paths;
     for (const auto& path : document.paths()) paths.emplace(path.id, path);
@@ -27,7 +25,7 @@ EditorResult<void> CrowdRuntimeApplier::apply(const CrowdDocumentTarget& documen
             static_cast<float>(agent.y), static_cast<float>(agent.heading), static_cast<float>(agent.radius));
         if (index < 0) {
             runtime->clearAgents();
-            return EditorResult<void>::error(EditorStatus::Failed, RuleId("editor.crowd.runtime-capacity"),
+            return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.crowd.runtime-capacity"),
                                               "Crowd runtime rejected an agent or reached capacity");
         }
         runtime->setAgentSpeed(index, static_cast<float>(agent.maximumSpeed));
@@ -36,7 +34,7 @@ EditorResult<void> CrowdRuntimeApplier::apply(const CrowdDocumentTarget& documen
             const auto found = paths.find(agent.path);
             if (found == paths.end() || found->second.points.empty()) {
                 runtime->clearAgents();
-                return EditorResult<void>::error(EditorStatus::Conflict, RuleId("editor.crowd.runtime-path"),
+                return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.crowd.runtime-path"),
                                                   "Path agent has no runtime waypoint");
             }
             action = "seek";
@@ -45,11 +43,11 @@ EditorResult<void> CrowdRuntimeApplier::apply(const CrowdDocumentTarget& documen
         }
         if (!runtime->setAgentAction(index, action)) {
             runtime->clearAgents();
-            return EditorResult<void>::error(EditorStatus::Failed, RuleId("editor.crowd.runtime-action"),
+            return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.crowd.runtime-action"),
                                               "Crowd runtime rejected an agent behavior");
         }
     }
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::crowd_editing

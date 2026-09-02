@@ -30,8 +30,8 @@ class MaterialDocumentTarget final : public virtual IEditableTarget,
 public:
     explicit MaterialDocumentTarget(std::string id);
 
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
@@ -84,8 +84,8 @@ class MaterialPublishingTarget final : public IDomainOperationTarget,
 public:
     /** @brief Create an owned material document bound to a non-owning runtime sink. */
     MaterialPublishingTarget(std::string id, IMaterialRuntimeSink* sink);
-    const std::string& targetId() const override { return document_.targetId(); }
-    unsigned long long revision() const override { return document_.revision(); }
+    TargetId targetId() const override { return TargetId(document_.targetId()); }
+    std::uint64_t revision() const override { return document_.revision(); }
     EditRegion dirtyRegion() const override { return document_.dirtyRegion(); }
     void clearDirtyRegion() override { document_.clearDirtyRegion(); }
     TargetDescriptor describe() const override;

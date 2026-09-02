@@ -12,6 +12,7 @@
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
 #include "editor/Editor.h"
+#include "pixelworld/PixelWorldModule.h"
 #include "ui/EditorHost.h"
 
 #include <Poco/Dynamic/Var.h>
@@ -276,6 +277,9 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     dt.attach(vm, false);
     dt.exposeScriptApi(vm);
 
+    eve::pixelworld::PixelWorldModule pixelworldModule;
+    eve::pixelworld::PixelWorld       pixelworld(9081);
+
     eve::editor::Editor            editor;
     eve::editor::CommandDescriptor editorCommand;
     editorCommand.id          = eve::editor::CommandId("mcp.test-command");
@@ -284,10 +288,10 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     REQUIRE(editor.commandService()
                 .registerCommand(std::move(editorCommand),
                                  [](const eve::editor::CommandContext&, const eve::editor::EditorValue&) {
-                                     return eve::editor::EditorResult<eve::editor::EditorValue>::applied(
+                                     return eve::editing::applied<eve::editor::EditorValue>(
                                          eve::editor::EditorValue("executed"));
                                  })
-                .isAccepted());
+                .ok());
 
     const int port = mcp.listen(0);
     REQUIRE(port > 0);
@@ -315,6 +319,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     auto tools = toolsMsg->getObject("result")->getArray("tools");
     REQUIRE(tools);
     bool foundStatus          = false;
+    bool foundGameplay        = false;
     bool foundEval            = false;
     bool foundScene           = false;
     bool foundProc            = false;
@@ -348,10 +353,16 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     bool foundAgentStart      = false;
     bool foundAgentEvidence   = false;
     bool foundAgentComplete   = false;
+    bool foundPixelWorlds     = false;
+    bool foundPixelSamples    = false;
+    bool foundPixelCatalog    = false;
+    bool foundPixelValidate   = false;
+    bool foundPixelApply      = false;
     for (size_t i = 0; i < tools->size(); ++i) {
         auto              t    = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
         if (name == "eve_status") foundStatus = true;
+        if (name == "eve_gameplay") foundGameplay = true;
         if (name == "eve_eval") foundEval = true;
         if (name == "eve_scene_status") foundScene = true;
         if (name == "eve_procgen_recipes") foundProc = true;
@@ -385,8 +396,14 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_agent_session_start") foundAgentStart = true;
         if (name == "eve_agent_session_evidence") foundAgentEvidence = true;
         if (name == "eve_agent_session_complete") foundAgentComplete = true;
+        if (name == "eve_pixelworld_worlds") foundPixelWorlds = true;
+        if (name == "eve_pixelworld_samples") foundPixelSamples = true;
+        if (name == "eve_pixelworld_catalog_builtin") foundPixelCatalog = true;
+        if (name == "eve_pixelworld_catalog_validate") foundPixelValidate = true;
+        if (name == "eve_pixelworld_catalog_apply") foundPixelApply = true;
     }
     CHECK(foundStatus);
+    CHECK(foundGameplay);
     CHECK(foundEval);
     CHECK(foundScene);
     CHECK(foundProc);
@@ -420,6 +437,11 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundAgentStart);
     CHECK(foundAgentEvidence);
     CHECK(foundAgentComplete);
+    CHECK(foundPixelWorlds);
+    CHECK(foundPixelSamples);
+    CHECK(foundPixelCatalog);
+    CHECK(foundPixelValidate);
+    CHECK(foundPixelApply);
 
     client.sendRequest(3, "tools/call", "{\"name\":\"eve_status\",\"arguments\":{}}");
     auto statusMsg = client.expectResult(3);
@@ -430,6 +452,17 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     const std::string text = content->getObject(0)->getValue<std::string>("text");
     CHECK(text.find("\"attached\":true") != std::string::npos);
     CHECK(text.find("\"mcpPort\":") != std::string::npos);
+
+    client.sendRequest(
+        40, "tools/call",
+        "{\"name\":\"eve_gameplay\",\"arguments\":{\"request\":{\"schemaId\":"
+        "\"evengine.gameplay-control-request\",\"schemaVersion\":1,\"op\":\"domains\"}}}");
+    auto gameplayMsg = client.expectResult(40);
+    REQUIRE(gameplayMsg);
+    auto gameplayContent = gameplayMsg->getObject("result")->getArray("content");
+    REQUIRE(gameplayContent);
+    CHECK(gameplayContent->getObject(0)->getValue<std::string>("text").find("\"domains\"") !=
+          std::string::npos);
 
     client.sendRequest(4, "tools/call", "{\"name\":\"eve_ai_note\",\"arguments\":{\"text\":\"hello agent\"}}");
     REQUIRE(client.expectResult(4));
@@ -509,6 +542,26 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     const std::string sceneObserveAbsent = textOf(
         21, "{\"name\":\"eve_editor_execute_observe\",\"arguments\":{\"target\":\"mcp.test\",\"command\":\"mcp.test-command\",\"payload\":{},\"observer\":\"scene-node\",\"host\":\"world\",\"node\":\"player\"}}");
     CHECK(sceneObserveAbsent.find("scene module not available") != std::string::npos);
+    const std::string pixelWorlds = textOf(22, "{\"name\":\"eve_pixelworld_worlds\",\"arguments\":{}}");
+    CHECK(pixelWorlds.find("\"seed\":9081") != std::string::npos);
+    const std::string worldId = std::to_string(pixelworld.worldLink().world);
+    const std::string pixelPaused = textOf(
+        23, "{\"name\":\"eve_pixelworld_pause\",\"arguments\":{\"world\":" + worldId +
+                ",\"paused\":true}}");
+    CHECK(pixelPaused.find("\"paused\":true") != std::string::npos);
+    const std::string pixelStepped = textOf(
+        24, "{\"name\":\"eve_pixelworld_step\",\"arguments\":{\"world\":" + worldId +
+                ",\"count\":2}}");
+    CHECK(pixelStepped.find("\"lastTick\":2") != std::string::npos);
+    const std::string pixelSamples = textOf(
+        25, "{\"name\":\"eve_pixelworld_samples\",\"arguments\":{\"world\":" + worldId + "}}");
+    CHECK(pixelSamples.find("\"tick\":2") != std::string::npos);
+    const std::string pixelCatalog =
+        textOf(26, "{\"name\":\"eve_pixelworld_catalog_builtin\",\"arguments\":{}}");
+    CHECK(pixelCatalog.find("eve.pixelworld.material-catalog") != std::string::npos);
+    const std::string invalidCatalog = textOf(
+        27, "{\"name\":\"eve_pixelworld_catalog_validate\",\"arguments\":{\"catalog\":{}}}");
+    CHECK(invalidCatalog.find("\"ok\":false") != std::string::npos);
 
     mcp.stop();
     dt.detach();

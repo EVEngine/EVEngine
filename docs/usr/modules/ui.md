@@ -230,7 +230,7 @@ ui.setItemAccessibility("button", "Save scene", "");
 - `animateHostPos()`、`badge()`、`button()`、`checkbox()`、`combo()`、`consumeChange()`、`consumeClick()`、`consumeDrop()`、`dispatchEvents()`、`dragDropSupport()`、`end()`、`getChecked()`、`getDropOrigin()`、`getDropSource()`、`getDropText()`、`getDropType()`、`getName()`
 - `getFocusedId()`、`getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`、`moveFocus()`
 - `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`
-- `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemFlexGrow()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
+- `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setHostWorldAnchor()`、`clearHostWorldAnchor()`、`setHostWorldEdgePolicy()`、`setHostWorldDistanceScale()`、`setHostWorldOverlap()`、`getHostWorldState()`、`getHostWorldScreenX()`、`getHostWorldScreenY()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemFlexGrow()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
 - `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setThemeScope()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
 - `wantCaptureMouse()`、`registerTexture()`、`unregisterTexture()`、`setImageTextureId()`、`setImageNinePatchFile()`
 - `image()`、`imageButton()`、`ninePatch()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`
@@ -277,6 +277,32 @@ if (target != "") {
 （悬停、按住、控件本地鼠标坐标、拖拽增量、滚轮）通过 `viewportHovered/Active/MouseX/
 MouseY/DragDX/DragDY/Wheel(id)` 每帧读取。完整示例见
 `examples/terrain-editor`（高度图地形 + orbit 相机 + 抬高/压低笔刷）。
+
+## 3D 世界锚点（World Anchor）
+
+世界锚点把整个 UI Host 投影到当前活动 `Camera3D` 的屏幕位置，适合单位名牌、交互提示、
+任务标记和编辑器 3D gizmo 标签。先选择 Host，再调用
+`setHostWorldAnchor(x, y, z)`；`clearHostWorldAnchor()` 恢复普通屏幕布局。
+
+`setHostWorldEdgePolicy("hide"|"clamp")` 控制目标离开视口后的行为；
+`setHostWorldDistanceScale(enabled, referenceDistance, minScale, maxScale)` 配置按相机距离缩放。
+相机不可用或目标在相机背面时 Host 自动隐藏，不会沿用上一帧坐标。世界坐标由游戏场景
+持有者负责更新；UI 只保存投影输入和逐帧派生的屏幕状态。当前版本不做深度遮挡判断，
+需要被场景几何遮挡的面板应继续使用 3D mesh/material。
+
+大量名牌同时出现时，可用 `setHostWorldOverlap(true, priority, padding,
+maxDisplacement)` 开启确定性的屏幕矩形避让。高优先级、近距离 Host 先占位，其余 Host
+在限定距离内上下寻找空位；没有可用位置时状态变为 `crowded` 并暂停渲染。
+`getHostWorldState()` 返回 `visible`、`behind-camera`、`outside-viewport`、`no-camera`、
+`crowded` 或 `disabled`；最终屏幕坐标可通过 `getHostWorldScreenX/Y()` 查询。
+
+```squirrel
+ui.select("unit-nameplate")
+ui.setHostWorldAnchor(unitX, unitY + 2.0, unitZ)
+ui.setHostWorldEdgePolicy("clamp")
+ui.setHostWorldDistanceScale(true, 10.0, 0.7, 1.2)
+ui.setHostWorldOverlap(true, 10, 4.0, 96.0)
+```
 
 ## MCP EditorHost 脚本接口
 

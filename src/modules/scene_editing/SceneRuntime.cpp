@@ -12,7 +12,7 @@ namespace {
 
 template <class T>
 EditorResult<T> liveError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 std::map<ObjectId, SceneObjectSnapshot> collect(const SceneTargetBase& target) {
@@ -29,7 +29,7 @@ std::map<ObjectId, SceneObjectSnapshot> collect(const SceneTargetBase& target) {
         if (!object) continue;
         const auto* id = object->at("id").getIf<std::string>();
         auto snapshot = target.sceneObject(ObjectId(*id));
-        if (snapshot.isAccepted() && snapshot.value) result.emplace(snapshot.value->id, *snapshot.value);
+        if (snapshot.ok()) result.emplace(snapshot.value().id, snapshot.value());
     }
     return result;
 }
@@ -82,8 +82,10 @@ SceneHostEditorTarget::SceneHostEditorTarget(std::string id, scene::SceneHost* h
         request.transform = {node.x, node.y, node.z, node.pitch, node.yaw, node.roll,
                              node.sx, node.sy, node.sz};
         auto operation = makeCreate(request);
-        if (operation.isAccepted() && operation.value)
-            static_cast<void>(SceneTargetBase::applyDomainOperation(*operation.value));
+        if (operation.ok()) {
+            auto applied = SceneTargetBase::applyDomainOperation(operation.value());
+            applied.ignore();
+        }
     }
     clearDirtyRegion();
 }
@@ -110,7 +112,7 @@ EditorResult<std::vector<SceneComponentLinkSnapshot>> SceneHostEditorTarget::com
         result.push_back({scene::linkKindName(link.kind), link.syncMode, alive});
     }
     std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) { return a.kind < b.kind; });
-    return EditorResult<std::vector<SceneComponentLinkSnapshot>>::applied(std::move(result));
+    return eve::editing::applied<std::vector<SceneComponentLinkSnapshot>>(std::move(result));
 }
 
 EditorResult<void> SceneHostEditorTarget::applyDomainOperation(const DomainOperation& operation) {
@@ -121,7 +123,7 @@ EditorResult<void> SceneHostEditorTarget::applyDomainOperation(const DomainOpera
         return liveError<void>(EditorStatus::Failed, "editor.scene.live-stage-failed",
                                "Could not stage live scene operation");
     EditorResult<void> applied = staged->SceneTargetBase::applyDomainOperation(operation);
-    if (!applied.isAccepted()) return applied;
+    if (!applied.ok()) return applied;
     return commitDomainState(std::move(candidate));
 }
 
@@ -207,7 +209,7 @@ EditorResult<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase&
                                        "Live SceneHost rejected object transform: " + id.value());
         }
     }
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 EditorResult<void> SceneHostEditorTarget::commitDomainState(
@@ -217,7 +219,7 @@ EditorResult<void> SceneHostEditorTarget::commitDomainState(
         return liveError<void>(EditorStatus::Conflict, "editor.scene.live-candidate-mismatch",
                                "Live scene candidate has an incompatible type");
     EditorResult<void> synchronized = synchronizeHost(*staged);
-    if (!synchronized.isAccepted()) return synchronized;
+    if (!synchronized.ok()) return synchronized;
     return SceneTargetBase::commitDomainState(std::move(candidate));
 }
 

@@ -2,6 +2,7 @@
 #include <string>
 #include <type_traits>
 #include <vector>
+#include "common/BorrowedRef.h"
 #include "editing/EditingProtocol.h"
 namespace eve::editing {
 struct EditRegion {
@@ -39,13 +40,13 @@ struct TargetDescriptor {
 class IEditableTarget {
 public:
     virtual ~IEditableTarget()                     = default;
-    virtual const std::string& targetId() const    = 0;
-    virtual unsigned long long revision() const    = 0;
+    virtual TargetId           targetId() const    = 0;
+    virtual std::uint64_t      revision() const    = 0;
     virtual EditRegion         dirtyRegion() const = 0;
     virtual void               clearDirtyRegion()  = 0;
     /** @brief Describe the target for tools and automation. */
     virtual TargetDescriptor describe() const {
-        return {TargetId(targetId()), {}, revision(), false, {}};
+        return {targetId(), {}, revision(), false, {}};
     }
     /**
      * @brief Query an optional stable capability.
@@ -57,15 +58,39 @@ public:
         (void)capability;
         return nullptr;
     }
+    /**
+     * @brief Query a capability through its interface-owned stable identity.
+     * @tparam C Capability interface declaring static editingCapabilityId().
+     * @return Borrowed typed capability, or empty when unsupported.
+     * @lifetime Valid until this target is destroyed or the capability is explicitly invalidated.
+     */
+    template <class C>
+    eve::OptionalRef<C> capability() {
+        if constexpr (requires { C::editingCapabilityId(); }) {
+            if (void* raw = queryCapability(C::editingCapabilityId()))
+                return eve::OptionalRef<C>(std::ref(*static_cast<C*>(raw)));
+        }
+        if constexpr (std::is_polymorphic_v<C>) {
+            if (auto* typed = dynamic_cast<C*>(this)) return eve::OptionalRef<C>(std::ref(*typed));
+        }
+        return {};
+    }
+    template <class C>
+    eve::OptionalRef<const C> capability() const {
+        if constexpr (std::is_polymorphic_v<C>) {
+            if (auto* typed = dynamic_cast<const C*>(this)) return eve::OptionalRef<const C>(std::ref(*typed));
+        }
+        return {};
+    }
     template <class C>
     C* query() {
-        static_assert(std::is_polymorphic_v<C>);
-        return dynamic_cast<C*>(this);
+        auto cap = capability<C>();
+        return cap ? &cap->get() : nullptr;
     }
     template <class C>
     const C* query() const {
-        static_assert(std::is_polymorphic_v<C>);
-        return dynamic_cast<const C*>(this);
+        auto cap = capability<C>();
+        return cap ? &cap->get() : nullptr;
     }
 };
 enum class FieldWriteStatus { Applied, Unchanged, Rejected };
@@ -78,13 +103,15 @@ public:
 };
 class IIntFieldTarget : public virtual IGridTarget {
 public:
+    static CapabilityId editingCapabilityId() { return CapabilityId("eve.editing.target.int-field.v1"); }
     virtual int  readInt(int, int) const = 0;
     [[nodiscard]] virtual FieldWriteStatus writeInt(int, int, int) = 0;
 };
 class IScalarFieldTarget : public virtual IGridTarget {
 public:
+    static CapabilityId editingCapabilityId() { return CapabilityId("eve.editing.target.scalar-field.v1"); }
     virtual float            readScalar(int, int) const       = 0;
-    virtual FieldWriteStatus writeScalar(int, int, float)     = 0;
+    [[nodiscard]] virtual FieldWriteStatus writeScalar(int, int, float)     = 0;
     virtual float            sampleScalar(float, float) const = 0;
 };
 /** @brief Optional capability exposing a deterministic, persistence-safe editing snapshot. */

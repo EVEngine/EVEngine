@@ -14,7 +14,7 @@ const editing::Value* field(const editing::Value& value, const char* key) {
 
 template <class T>
 editing::Result<T> error(editing::Status status, const char* rule, std::string message) {
-    return editing::Result<T>::error(status, editing::RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, editing::RuleId(rule), std::move(message));
 }
 
 editing::SelectionSnapshot selectionFor(editing::IEditableTarget& target) {
@@ -23,7 +23,7 @@ editing::SelectionSnapshot selectionFor(editing::IEditableTarget& target) {
     editing::SelectionItem item;
     item.domain = editing::SelectionDomain::Asset;
     item.target = editing::TargetId(target.targetId());
-    item.item   = editing::StableId(target.targetId());
+    item.item   = editing::StableId(target.targetId().value());
     item.type   = "graphics.material";
     selection.items.push_back(item);
     selection.primary = item;
@@ -51,13 +51,13 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                                                    "Material property requires a property target, path and value");
             auto operation = properties->makeSet(selectionFor(target), editing::PropertyPath(*path), *value,
                                                  editing::PropertySetMode::Absolute);
-            if (!operation.isAccepted() || !operation.value)
-                return error<editing::CommandPlan>(operation.status, "material.editing.property-operation",
+            if (!operation.ok())
+                return error<editing::CommandPlan>(operation.code(), "material.editing.property-operation",
                                                    "Material target rejected the property value");
             editing::CommandPlan plan;
-            plan.operations.push_back(std::move(*operation.value));
+            plan.operations.push_back(std::move(operation.value()));
             plan.summary = editing::Value::Object{{"path", *path}};
-            return editing::Result<editing::CommandPlan>::applied(std::move(plan));
+            return eve::editing::applied<editing::CommandPlan>(std::move(plan));
         });
 }
 

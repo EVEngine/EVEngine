@@ -9,7 +9,7 @@ namespace {
 
 template <class T>
 EditorResult<T> jointError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -59,11 +59,11 @@ EditorResult<void> PhysicsJointTarget::applyDomainOperation(const DomainOperatio
         return jointError<void>(EditorStatus::Unsupported, "editor.physics.joint-property",
                                 "Unknown joint property: " + *path);
     auto valid = validatePropertyValue(*descriptor, *value);
-    if (!valid.isAccepted()) return valid;
+    if (!valid.ok()) return valid;
     values_[*path] = *value;
     ++revision_;
     dirty_.include(0, 0);
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::unique_ptr<IDomainOperationTarget> PhysicsJointTarget::cloneDomainState() const {
@@ -76,7 +76,7 @@ EditorResult<void> PhysicsJointTarget::commitDomainState(std::unique_ptr<IDomain
         return jointError<void>(EditorStatus::Conflict, "editor.physics.joint-candidate-mismatch",
                                 "Joint candidate belongs to another target");
     *this = *typed;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 eve::Result<eve::Revision> PhysicsJointTarget::currentRevision(const SelectionSnapshot& selection) const {
@@ -106,11 +106,8 @@ EditorResult<DomainOperation> PhysicsJointTarget::makeSet(const SelectionSnapsho
         return jointError<DomainOperation>(EditorStatus::Unsupported, "editor.physics.joint-property",
                                            "Unknown joint property: " + path.value());
     auto valid = validatePropertyValue(*descriptor, value);
-    if (!valid.isAccepted()) {
-        EditorResult<DomainOperation> failed;
-        failed.status      = valid.status;
-        failed.diagnostics = std::move(valid.diagnostics);
-        return failed;
+    if (!valid.ok()) {
+        return EditorResult<DomainOperation>::failure(valid.status());
     }
     auto payload = [&](const EditorValue& assigned) {
         EditorValue::Object object;
@@ -126,7 +123,7 @@ EditorResult<DomainOperation> PhysicsJointTarget::makeSet(const SelectionSnapsho
     operation.hasInverse = true;
     operation.affectedProperties.push_back(path.value());
     operation.mergeKey = "physics.joint:" + id_ + ":" + path.value();
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> PhysicsJointTarget::makeReset(const SelectionSnapshot& selection,
@@ -152,8 +149,9 @@ std::vector<EditorDiagnostic> PhysicsJointTarget::validate() const {
     const auto                    text   = [&](const char* path) { return *values_.at(path).getIf<std::string>(); };
     const auto                    number = [&](const char* path) { return *values_.at(path).getIf<double>(); };
     if (text("body.a").empty() || text("body.b").empty() || text("body.a") == text("body.b"))
-        diagnostics.push_back({RuleId("editor.physics.joint-bodies"), DiagnosticSeverity::Error,
-                               "Joint requires two distinct body references"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::InvariantViolation, RuleId("editor.physics.joint-bodies"),
+            DiagnosticSeverity::Error, "Joint requires two distinct body references"));
     const std::string kind = text("joint.kind");
     if (kind == "prismatic" || kind == "wheel") {
         const auto& axis          = *values_.at("joint.axis").getIf<EditorValue::Array>();
@@ -163,12 +161,14 @@ std::vector<EditorDiagnostic> PhysicsJointTarget::validate() const {
             lengthSquared += value * value;
         }
         if (lengthSquared < 1e-12)
-            diagnostics.push_back({RuleId("editor.physics.joint-axis"), DiagnosticSeverity::Error,
-                                   "Prismatic and wheel joints require a non-zero axis"});
+            diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::InvariantViolation, RuleId("editor.physics.joint-axis"),
+                DiagnosticSeverity::Error, "Prismatic and wheel joints require a non-zero axis"));
     }
     if (*values_.at("limit.enabled").getIf<bool>() && number("limit.minimum") > number("limit.maximum"))
-        diagnostics.push_back(
-            {RuleId("editor.physics.joint-limit"), DiagnosticSeverity::Error, "Joint limit minimum exceeds maximum"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::InvariantViolation, RuleId("editor.physics.joint-limit"),
+            DiagnosticSeverity::Error, "Joint limit minimum exceeds maximum"));
     return diagnostics;
 }
 

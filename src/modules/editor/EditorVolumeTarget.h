@@ -1,9 +1,6 @@
 #pragma once
 #include "editing/EditingVolume.h"
 #include "editor/EditCommand.h"
-#ifdef EVENGINE_HAS_VOXEL
-#include "voxel_editing/VoxelWorldTarget.h"
-#endif
 
 #include <memory>
 #include <string>
@@ -13,9 +10,6 @@ namespace eve::editor {
 
 using EditVolume = eve::editing::EditVolume;
 using IIntVolumeTarget = eve::editing::IIntVolumeTarget;
-#ifdef EVENGINE_HAS_VOXEL
-using VoxelWorldTarget = eve::voxel_editing::VoxelWorldTarget;
-#endif
 
 /** @brief Reversible integer-volume command shared by voxel and custom volume targets. */
 class IntVolumeEditCommand final : public IEditCommand {

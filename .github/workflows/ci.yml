@@ -272,7 +272,7 @@ jobs:
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
       # Pull-request cache entries are scoped to refs/pull/*/merge and cannot
       # warm other PRs. Let PRs consume the dev cache without duplicating it.
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -345,7 +345,11 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 debug
-        timeout-minutes: 40
+        # A PR that changes the third-party patch/cache key must do a full cold
+        # dependency plus engine/test build. Recent windows-2025 runners can
+        # exceed 40 minutes without any compiler failure, so retain a bounded
+        # hang guard while allowing the cold build to finish.
+        timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -467,11 +471,14 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    # A cold Release build took 55 minutes and the process-isolated 3510-case
+    # suite reached 3060/3510 at the former 30-minute test guard. Preserve
+    # bounded hang detection while budgeting setup, build, and the full suite.
+    timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
-      SCCACHE_GHA_RW_MODE: READ_ONLY
+      SCCACHE_GHA_RW_MODE: ${{ (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -513,12 +520,12 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        timeout-minutes: 40
+        timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           make build/win32 JOBS="${NUMBER_OF_PROCESSORS:-8}"
-          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_ENABLE_ASSERTS=ON"
 
       - name: Report C/C++ compilation cache
         if: always()
@@ -526,7 +533,7 @@ jobs:
         run: sccache --show-stats
 
       - name: Run win32 release unit tests
-        timeout-minutes: 30
+        timeout-minutes: 45
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/win32
@@ -543,7 +550,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -621,7 +628,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
-      SCCACHE_GHA_RW_MODE: READ_ONLY
+      SCCACHE_GHA_RW_MODE: ${{ (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -673,14 +680,14 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android release
-        timeout-minutes: 45
+        timeout-minutes: 60
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android \
             ANDROID_SDK="$ANDROID_SDK" \
             ANDROID_NDK="$ANDROID_NDK" \
             JAVA_HOME="$JAVA_HOME" \
-            CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_ENABLE_ASSERTS=ON" \
             ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
 
       - name: Report C/C++ compilation cache
@@ -697,7 +704,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -796,7 +803,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-release
-      SCCACHE_GHA_RW_MODE: READ_ONLY
+      SCCACHE_GHA_RW_MODE: ${{ (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -836,7 +843,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           make build/macosx JOBS="$(sysctl -n hw.ncpu)"
-          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_ENABLE_ASSERTS=ON"
 
       - name: Report C/C++ compilation cache
         if: always()
@@ -970,13 +977,15 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # Full debug build + per-case unit tests + all-example smoke exceeded the
+    # previous 60-minute job cap even though each step stayed within its guard.
+    timeout-minutes: 90
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
       # Populate shared caches only from long-lived branches; PR-scoped writes
       # are dead stores after that PR closes and quickly evict reusable entries.
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -1134,7 +1143,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-release
-      SCCACHE_GHA_RW_MODE: READ_ONLY
+      SCCACHE_GHA_RW_MODE: ${{ (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -1198,7 +1207,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           make build/linux JOBS="$(nproc)"
-          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_ENABLE_ASSERTS=ON"
 
       - name: Report C/C++ compilation cache
         if: always()
@@ -1227,7 +1236,7 @@ jobs:
       UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-asan
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -1298,10 +1307,10 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (ASan+UBSan)
-        # The process-isolated 3297-case suite reached 3220/3297 at the old
-        # 50-minute limit. Keep a bounded guard while allowing the measured
-        # sanitizer overhead to finish on a hosted runner.
-        timeout-minutes: 60
+        # The process-isolated 3513-case suite reached 3444/3513 at the old
+        # 60-minute limit without a sanitizer finding. Keep a bounded guard
+        # while allowing the measured hosted-runner overhead to finish.
+        timeout-minutes: 70
         env:
           ALSOFT_DRIVERS: "null"
         run: |
@@ -1314,11 +1323,11 @@ jobs:
     needs: [source-quality]
     if: ${{ needs.source-quality.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-coverage
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: ${{ (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -1386,7 +1395,7 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (coverage)
-        timeout-minutes: 30
+        timeout-minutes: 40
         env:
           ALSOFT_DRIVERS: "null"
         run: |

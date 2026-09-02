@@ -5,9 +5,9 @@
 #include "animation/AnimClipRegistry.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimSkeleton.h"
-#include "editor/ActionPreviewController.h"
-#include "editor/ActionTimelineEditor.h"
-#include "editor/AnimationRootMotionPreviewSource.h"
+#include "action_editor/ActionPreviewController.h"
+#include "action_editor/ActionTimelineEditor.h"
+#include "action_editor/AnimationRootMotionPreviewSource.h"
 #include "editor/EditorWorkspace.h"
 #include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
@@ -205,7 +205,7 @@ TEST_CASE("kaykitCombatAssets.importRigClipsAndDriveActionEditorPreview") {
 
     eve::editor::ActionTimelineEditor editor("asset.kaykit.light-attack", timeline);
     eve::editor::EditorWorkspace      workspace("kaykit.combat", "KayKit Combat Action Editor");
-    REQUIRE(editor.configureWorkspace(workspace).isAccepted());
+    REQUIRE(editor.configureWorkspace(workspace).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
     CHECK_EQ(workspace.getActivePanel(), "action.timeline");
 
@@ -213,16 +213,16 @@ TEST_CASE("kaykitCombatAssets.importRigClipsAndDriveActionEditorPreview") {
     REQUIRE(editor
                 .resizeState(id("kaykit-state:hitbox"), seconds(attack->getDuration() * 0.28),
                              seconds(attack->getDuration() * 0.64))
-                .isAccepted());
-    REQUIRE(editor.undo().isAccepted());
+                .ok());
+    REQUIRE(editor.undo().ok());
     CHECK_EQ(editor.target().timeline().tracks[0].states[0].start, originalHitStart);
 
     eve::animation::AnimClipRegistry::registerPath(timeline.animationUri, attack.get());
     eve::editor::AnimationRootMotionPreviewSource rootMotion;
     RecordingPreviewSink                          sink;
     eve::editor::ActionPreviewController          preview(editor, sink, &rootMotion);
-    REQUIRE(preview.setRootMotionSampleCount(16).isAccepted());
-    REQUIRE(preview.refresh().isAccepted());
+    REQUIRE(preview.setRootMotionSampleCount(16).ok());
+    REQUIRE(preview.refresh().ok());
     REQUIRE(sink.presented.has_value());
     CHECK(static_cast<int>(sink.presented->rootMotionState) ==
           static_cast<int>(eve::action::RootMotionPreviewState::Available));
@@ -230,8 +230,8 @@ TEST_CASE("kaykitCombatAssets.importRigClipsAndDriveActionEditorPreview") {
 
     editor.play();
     auto advanced = preview.update(timeline.duration);
-    REQUIRE(advanced.isAccepted());
-    REQUIRE_EQ(*advanced.value, 10u);
+    REQUIRE(advanced.ok());
+    REQUIRE_EQ(advanced.value(), 10u);
     REQUIRE(sink.presented.has_value());
     REQUIRE_EQ(sink.presented->cues.size(), 10u);
     CHECK(!sink.discarded);

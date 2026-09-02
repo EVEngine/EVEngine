@@ -16,8 +16,8 @@ class AudioSourceTarget final : public virtual IEditableTarget,
 public:
     explicit AudioSourceTarget(std::string id);
 
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
@@ -77,8 +77,8 @@ public:
     /** @brief Create an authoring target bound to a non-owning runtime sink. */
     AudioSourcePublishingTarget(std::string id, IAudioSourceRuntimeSink* sink);
 
-    const std::string& targetId() const override { return document_.targetId(); }
-    unsigned long long revision() const override { return document_.revision(); }
+    TargetId targetId() const override { return TargetId(document_.targetId()); }
+    std::uint64_t revision() const override { return document_.revision(); }
     EditRegion dirtyRegion() const override { return document_.dirtyRegion(); }
     void clearDirtyRegion() override { document_.clearDirtyRegion(); }
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
@@ -114,8 +114,8 @@ class AudioMixerTarget final : public virtual IEditableTarget,
                                public IDomainOperationTargetStaging {
 public:
     explicit AudioMixerTarget(std::string id);
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;

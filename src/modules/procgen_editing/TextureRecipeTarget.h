@@ -18,8 +18,8 @@ class TextureRecipeTarget final : public virtual IEditableTarget, public IDomain
 public:
     /** @brief Construct a registered procedural texture recipe target. @throws std::invalid_argument When recipe is not registered. */
     TextureRecipeTarget(std::string id, std::string recipe);
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;

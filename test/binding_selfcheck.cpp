@@ -26,10 +26,20 @@ TEST_CASE("binding.selfcheck.scriptSurface") {
             Climbing = ["newRuntime", "newAnchorGraphJson"],
         };
         foreach (cls, methods in hot) {
-            if (!(cls in eve)) { missing.push(cls + ":ctor-missing"); continue; }
+            // Module classes are installed lazily through eve's _get delegate.
+            // Squirrel's `in` operator only checks existing slots and therefore
+            // bypasses the resolver that this smoke test is meant to exercise.
+            local ctor = null;
+            try {
+                ctor = eve[cls];
+            } catch (e) {
+                missing.push(cls + ":ctor-missing");
+                continue;
+            }
+            if (ctor == null) { missing.push(cls + ":ctor-null"); continue; }
             local inst = null;
             try {
-                inst = eve[cls]();
+                inst = ctor();
             } catch (e) {
                 missing.push(cls + ":ctor:" + e);
                 continue;

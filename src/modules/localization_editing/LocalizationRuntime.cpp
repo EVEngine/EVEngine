@@ -10,7 +10,7 @@ namespace eve::localization_editing {
 namespace {
 
 EditorResult<void> auditionError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<void>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<void>(status, RuleId(rule), std::move(message));
 }
 
 }  // namespace
@@ -41,7 +41,7 @@ EditorResult<void> LocalizationVoiceAudition::play(const LocalizationDocument& d
     if (!voice->bindSource(key, locale, source) || !voice->play(key, locale))
         return auditionError(EditorStatus::Failed, "editor.localization.voice-playback-failed",
                              "Voice source could not be registered or played");
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::localization_editing

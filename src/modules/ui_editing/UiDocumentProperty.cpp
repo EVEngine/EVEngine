@@ -8,7 +8,7 @@ namespace {
 
 template <class T>
 EditorResult<T> propertyError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 PropertyDescriptor uiProperty(const char* path, const char* label, PropertyType type,
@@ -284,7 +284,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSet(const SelectionSnapshot&
     operation.hasInverse = true;
     operation.affectedProperties.push_back(path.value());
     operation.mergeKey = "ui.selection:" + path.value();
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> UiDocumentTarget::makeReset(const SelectionSnapshot& selection,

@@ -15,6 +15,7 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 namespace eve {
 namespace detail {
@@ -24,8 +25,9 @@ namespace detail {
  *
  * The token starts active for a newly-created Result. A move transfers its
  * responsibility after payload movement succeeds; a moved-from Result is
- * disarmed. In non-assert builds this class has no data member and its methods
- * compile to no-ops.
+ * disarmed. The two bytes remain present in non-assert builds so Result keeps
+ * one ABI when a Release engine library is consumed by an assertion-enabled
+ * test or tool; the observation operations themselves compile to no-ops.
  */
 class ResultObservation {
 public:
@@ -37,9 +39,7 @@ public:
     /** @brief Start an inactive token used while a Result move is constructed. */
     struct InactiveTag {};
     explicit ResultObservation(InactiveTag) noexcept {
-#if !defined(ZEROERR_NO_ASSERT)
         mustObserve_ = false;
-#endif
     }
 
 #if !defined(ZEROERR_NO_ASSERT)
@@ -75,15 +75,55 @@ protected:
 #endif
     }
 
-private:
+    /** @brief Drop observation duty; used when a moved-from result is empty. */
+    void disarmObservation() noexcept {
 #if !defined(ZEROERR_NO_ASSERT)
+        mustObserve_ = false;
+#endif
+    }
+
+    /** @brief Require a fresh check after replacing the carried outcome. */
+    void requireObservation() noexcept {
+#if !defined(ZEROERR_NO_ASSERT)
+        observed_    = false;
+        mustObserve_ = true;
+#endif
+    }
+
+private:
+    // Do not condition these fields on ZEROERR_NO_ASSERT. Public Result<T>
+    // values cross static/shared-library boundaries whose assertion policy may
+    // intentionally differ from the consumer (notably Release unit tests).
     mutable bool observed_    = false;
     bool         mustObserve_ = true;
-#endif
 };
 
 template <class T>
 using ResultReturn = std::invoke_result_t<T>;
+
+/**
+ * @brief True when `From` may convert into `To` only by adding const.
+ *
+ * Allows `T` → `const T` and `T*` → `const T*`. Dropping const, including
+ * `const T*` → `T*`, is rejected so a const Result cannot be widened back
+ * into a mutable one. `void` is excluded; `Result<void>` is a separate type.
+ */
+template <class From, class To>
+concept ResultConstConversion =
+    std::is_same_v<To, const From> ||
+    (std::is_pointer_v<From> && std::is_same_v<To, const std::remove_pointer_t<From>*>);
+
+/**
+ * @brief Replace `destination` with `source` even when `T` is not assignable.
+ *
+ * `std::optional<const T>` can be constructed but not assigned. Rebuild the
+ * optional so `Result<const T>` can still move-assign.
+ */
+template <class T, class U>
+void moveAssignOptional(std::optional<T>& destination, std::optional<U>&& source) {
+    destination.reset();
+    if (source.has_value()) destination.emplace(std::move(*source));
+}
 
 }  // namespace detail
 
@@ -93,8 +133,14 @@ using ResultReturn = std::invoke_result_t<T>;
  * Every Result is checked in an assertion-enabled build before destruction.
  * Calling `ok`, `status`, `value`, `error`, a composition helper, `ignore`, or
  * `expect` counts as an explicit observation. In release-style builds where
- * `ZEROERR_NO_ASSERT` is defined, observation has no storage or branch cost;
- * the class remains `[[nodiscard]]` at compile time.
+ * `ZEROERR_NO_ASSERT` is defined, observation checks have no branch cost. The
+ * small observation token retains a stable ABI and the class remains
+ * `[[nodiscard]]` at compile time.
+ *
+ * `Result<U>` implicitly converts to `Result<T>` when `T` is `U` with added
+ * const, including `Result<T*>` → `Result<const T*>`. Returning the const form
+ * makes `value()` yield a const view even from a non-const Result, so callers
+ * cannot mutate through a read-only operation.
  *
  * @tparam T Owning value type. References and void use a different form.
  */
@@ -102,6 +148,9 @@ template <class T>
 class [[nodiscard("Result must be checked or explicitly ignored")]] Result : private detail::ResultObservation {
     static_assert(!std::is_reference_v<T>, "Result<T> cannot hold a reference; use a handle or value");
     static_assert(!std::is_void_v<T>, "Result<void> has a dedicated specialization");
+
+    template <class U>
+    friend class Result;
 
 public:
     /** @brief Construct a successful result owning `value`. */
@@ -142,7 +191,35 @@ public:
         if (this == &other) return *this;
         assertCanBeOverwritten();
         status_ = std::move(other.status_);
-        value_  = std::move(other.value_);
+        detail::moveAssignOptional(value_, std::move(other.value_));
+        adoptObservationFrom(other);
+        return *this;
+    }
+
+    /**
+     * @brief Convert a Result into a more const-qualified Result of the same outcome.
+     * @param other Source result whose value type converts to `T` by adding const.
+     * @remarks Observation responsibility is transferred, matching same-type move.
+     */
+    template <class U>
+        requires detail::ResultConstConversion<U, T>
+    Result(Result<U>&& other)
+        : detail::ResultObservation(detail::ResultObservation::InactiveTag{}),
+          status_(std::move(other.status_)),
+          value_(std::optional<T>(std::move(other.value_))) {
+        adoptObservationFrom(other);
+    }
+
+    /**
+     * @brief Move-assign from a Result whose value converts to `T` by adding const.
+     * @param other Source result whose value type converts to `T` by adding const.
+     */
+    template <class U>
+        requires detail::ResultConstConversion<U, T>
+    Result& operator=(Result<U>&& other) {
+        assertCanBeOverwritten();
+        status_ = std::move(other.status_);
+        detail::moveAssignOptional(value_, std::move(other.value_));
         adoptObservationFrom(other);
         return *this;
     }

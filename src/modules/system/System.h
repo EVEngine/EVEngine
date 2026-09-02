@@ -11,7 +11,8 @@ namespace eve::system {
  * @brief System module — OS / hardware / wall-clock / clipboard / optional GPU info.
  * Frame timing stays on Timer; this is host/environment queries.
  *
- * Script: `sys <- eve.System();`
+ * Script: `sys <- eve.HostSystem();`. `eve.System` is reserved for the script
+ * ECS system base class.
  */
 class System : public Module {
 public:

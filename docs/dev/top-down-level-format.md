@@ -1,6 +1,6 @@
 # Top-down level documents
 
-The editor uses `eve::editor::LevelDocument` as its format-neutral working model. A document
+Level editing uses `eve::level_editing::LevelDocument` as its format-neutral working model. A document
 contains an ordered stack of tile and object layers. It supports `orthogonal`, `isometric`,
 `staggered`, and `hexagonal` maps; coordinates and object sizes are world pixels, while tile
 layers are dense row-major GID grids where `0` is empty.

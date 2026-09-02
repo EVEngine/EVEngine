@@ -22,21 +22,21 @@ EditorProfilerFrame frame(std::uint64_t sequence, double cpuMs, double gpuMs) {
 TEST_CASE("editor.profiler retains bounded owning history") {
     EditorProfilerModel model;
     auto configured = model.configure({10.0, 10.0, 4.0, 2});
-    REQUIRE(static_cast<int>(configured.status) == static_cast<int>(EditorStatus::Applied));
-    REQUIRE(static_cast<int>(model.ingest(frame(1, 8.0, 7.0)).status) == static_cast<int>(EditorStatus::Applied));
-    REQUIRE(static_cast<int>(model.ingest(frame(2, 12.0, 11.0)).status) == static_cast<int>(EditorStatus::Applied));
-    REQUIRE(static_cast<int>(model.ingest(frame(3, 9.0, 8.0)).status) == static_cast<int>(EditorStatus::Applied));
+    REQUIRE(static_cast<int>(configured.code()) == static_cast<int>(EditorStatus::Applied));
+    REQUIRE(static_cast<int>(model.ingest(frame(1, 8.0, 7.0)).code()) == static_cast<int>(EditorStatus::Applied));
+    REQUIRE(static_cast<int>(model.ingest(frame(2, 12.0, 11.0)).code()) == static_cast<int>(EditorStatus::Applied));
+    REQUIRE(static_cast<int>(model.ingest(frame(3, 9.0, 8.0)).code()) == static_cast<int>(EditorStatus::Applied));
     CHECK(model.history().size() == 2);
     CHECK(model.history().front().sequence == 2);
 
     const auto before = model.history().size();
-    CHECK(static_cast<int>(model.ingest(frame(3, 9.0, 8.0)).status) == static_cast<int>(EditorStatus::Conflict));
+    CHECK(static_cast<int>(model.ingest(frame(3, 9.0, 8.0)).code()) == static_cast<int>(EditorStatus::Conflict));
     CHECK(model.history().size() == before);
 }
 
 TEST_CASE("editor.profiler filters sorts and summarizes latest frame") {
     EditorProfilerModel model;
-    REQUIRE(static_cast<int>(model.ingest(frame(1, 12.0, 11.0)).status) == static_cast<int>(EditorStatus::Applied));
+    REQUIRE(static_cast<int>(model.ingest(frame(1, 12.0, 11.0)).code()) == static_cast<int>(EditorStatus::Applied));
 
     EditorProfilerQuery query;
     query.module = "physics";
@@ -54,8 +54,8 @@ TEST_CASE("editor.profiler filters sorts and summarizes latest frame") {
 
 TEST_CASE("editor.profiler reports configured budget violations") {
     EditorProfilerModel model;
-    REQUIRE(static_cast<int>(model.configure({10.0, 10.0, 4.0, 30}).status) == static_cast<int>(EditorStatus::Applied));
-    REQUIRE(static_cast<int>(model.ingest(frame(1, 12.0, 11.0)).status) == static_cast<int>(EditorStatus::Applied));
+    REQUIRE(static_cast<int>(model.configure({10.0, 10.0, 4.0, 30}).code()) == static_cast<int>(EditorStatus::Applied));
+    REQUIRE(static_cast<int>(model.ingest(frame(1, 12.0, 11.0)).code()) == static_cast<int>(EditorStatus::Applied));
     CHECK(model.diagnostics().size() == 3);
 }
 
@@ -63,6 +63,6 @@ TEST_CASE("editor.profiler rejects invalid frames atomically") {
     EditorProfilerModel model;
     auto invalid       = frame(1, 1.0, 1.0);
     invalid.zones[0].selfMs = 8.0;
-    CHECK(static_cast<int>(model.ingest(std::move(invalid)).status) == static_cast<int>(EditorStatus::Rejected));
+    CHECK(static_cast<int>(model.ingest(std::move(invalid)).code()) == static_cast<int>(EditorStatus::Rejected));
     CHECK(model.history().empty());
 }

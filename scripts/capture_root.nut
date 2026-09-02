@@ -39,7 +39,6 @@ if (file_exists("config.nut"))
 
 // Bind the modules this build actually contains.
 foreach (m in eve.moduleList) {
-    if (!(m.cls in eve)) continue;
     try {
         getroottable()[m.slot] <- eve[m.cls]();
     } catch (e) {

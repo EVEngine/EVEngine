@@ -1,3 +1,4 @@
+#include "common/ECS.h"
 #include "scene/Scene.h"
 
 #include "scene/ArtifactProvider.h"
@@ -271,12 +272,10 @@ void injectSceneComponentClass(ssq::Table &eveTable) {
 }
 
 /**
- * Per-node script entities (eve.SceneEntity) + the eve.Scene / eve.SceneNodeRef
- * wrappers over native primitives. Injected by a post-ECS hook so eve.Entity
- * (and its create()/view machinery) already exists.
+ * Per-node script entities (eve.SceneEntity). Injected by a post-ECS hook so
+ * eve.Entity already exists, without waiting for the Scene class methods.
  */
-const char *kSceneEntityScript = R"SQ(
-// Per-node script entity base: nodes get gameplay logic through the script ECS.
+const char *kSceneEntityBaseScript = R"SQ(
 eve.SceneEntity <- class extends eve.Entity {
     _scene = null
     hostName = ""
@@ -291,7 +290,13 @@ eve.SceneEntity <- class extends eve.Entity {
     function onDetach() {}
     function update(dt) {}
 }
+)SQ";
 
+/**
+ * eve.Scene / eve.SceneNodeRef wrappers over native primitives. Applied after
+ * those classes have been addClass'd (on first use of eve.Scene).
+ */
+const char *kSceneEntityScript = R"SQ(
 // ---- eve.Scene: per-node entity API (script wrappers over native primitives) ----
 
 eve.Scene["getNodeRef"] <- function(nodeId, hostName = null) {
@@ -591,6 +596,20 @@ eve.SceneNodeRef["getBounds"] <- function() {
 }
 )SQ";
 
+void injectSceneEntityBase(ssq::Table &eveTable) {
+    HSQUIRRELVM vm = eveTable.getHandle();
+    const SQInteger top = sq_gettop(vm);
+    if (SQ_FAILED(sq_compilebuffer(vm, kSceneEntityBaseScript,
+                                   static_cast<SQInteger>(std::strlen(kSceneEntityBaseScript)),
+                                   "SceneEntity.nut", SQTrue))) {
+        sq_settop(vm, top);
+        return;
+    }
+    sq_pushroottable(vm);
+    sq_call(vm, 1, SQFalse, SQTrue);
+    sq_settop(vm, top);
+}
+
 void injectSceneEntityScript(ssq::Table &eveTable) {
     HSQUIRRELVM vm = eveTable.getHandle();
     const SQInteger top = sq_gettop(vm);
@@ -605,7 +624,10 @@ void injectSceneEntityScript(ssq::Table &eveTable) {
     sq_settop(vm, top);
 }
 
-bool g_sceneEntityHookRegistered = false;
+[[maybe_unused]] const bool g_sceneEntityHookRegistered = []() {
+    eve::registerPostEcsHook([](ssq::Table &t) { injectSceneEntityBase(t); });
+    return true;
+}();
 
 }  // namespace
 
@@ -1194,13 +1216,7 @@ void Scene::expose(ssq::Table &table) {
     refCls.addFunc("getPath", &SceneNodeRef::getPath);
 
     injectSceneComponentClass(table);
-
-    // Register a hook so eve.SceneEntity (extends eve.Entity) is injected only
-    // after exposeECS() has defined the script ECS base classes.
-    if (!g_sceneEntityHookRegistered) {
-        g_sceneEntityHookRegistered = true;
-        eve::registerPostEcsHook([](ssq::Table &t) { injectSceneEntityScript(t); });
-    }
+    injectSceneEntityScript(table);
 }
 
 void Scene::expose(ssq::Class &cls) {

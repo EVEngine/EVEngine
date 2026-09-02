@@ -1,9 +1,9 @@
-#include "editor/EditorSceneComponentPayload.h"
-#include "editor/EditorSceneTarget.h"
+#include "scene_editor/EditorSceneComponentPayload.h"
+#include "scene_editor/EditorSceneTarget.h"
 #include "editor/EditorTransactionService.h"
-#include "editor/EditorAudioTarget.h"
-#include "editor/EditorMaterialTarget.h"
-#include "editor/EditorPhysicsTarget.h"
+#include "audio_editor/EditorAudioTarget.h"
+#include "material_editor/EditorMaterialTarget.h"
+#include "physics_editor/EditorPhysicsTarget.h"
 
 #include "zeroerr/unittest.h"
 
@@ -30,8 +30,8 @@ public:
         static const std::string type = "health";
         return type;
     }
-    const std::string& targetId() const override { return id_; }
-    unsigned long long revision() const override { return revision_; }
+    TargetId targetId() const override { return TargetId(id_); }
+    std::uint64_t revision() const override { return revision_; }
     EditRegion dirtyRegion() const override { return {}; }
     void clearDirtyRegion() override {}
 
@@ -43,15 +43,16 @@ public:
 
     EditorResult<IDomainOperationTarget*> payloadOperationTarget(
         const SelectionSnapshot&) const override {
-        return EditorResult<IDomainOperationTarget*>::applied(
+        return eve::editing::applied<IDomainOperationTarget*>(
             const_cast<HealthPayloadProvider*>(this));
     }
 
     std::vector<EditorDiagnostic> validateComponent(
         const SceneComponentPayloadRef& component) const override {
         if (component.generation != generation_)
-            return {{RuleId("test.health.stale"), DiagnosticSeverity::Error,
-                     "Health component reference is stale"}};
+            return {eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::PreconditionViolation, RuleId("test.health.stale"),
+                DiagnosticSeverity::Error, "Health component reference is stale")};
         return {};
     }
 
@@ -85,15 +86,10 @@ public:
         if (mode != PropertySetMode::Absolute || selection.items.size() != 1 ||
             selection.items.front().item != StableId("hero.health") ||
             path != PropertyPath("points"))
-            return EditorResult<DomainOperation>::error(EditorStatus::Rejected,
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
                 RuleId("test.health.selection"), "Invalid health component selection");
         const auto validation = validatePropertyValue(schema(selection).properties.front(), value);
-        if (!validation.isAccepted()) {
-            EditorResult<DomainOperation> result;
-            result.status = validation.status;
-            result.diagnostics = validation.diagnostics;
-            return result;
-        }
+        if (!validation.ok()) return EditorResult<DomainOperation>::failure(validation.status());
         DomainOperation operation;
         operation.type = "test.health.set.v1";
         operation.target = TargetId(id_);
@@ -103,7 +99,7 @@ public:
         operation.affectedObjects.push_back({TargetId(id_), "hero.health", generation_});
         operation.affectedProperties.push_back(path.value());
         operation.mergeKey = "health:hero.health:points";
-        return EditorResult<DomainOperation>::applied(std::move(operation));
+        return eve::editing::applied<DomainOperation>(std::move(operation));
     }
 
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
@@ -113,18 +109,18 @@ public:
 
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override {
         if (operation.target != TargetId(id_) || operation.type != "test.health.set.v1")
-            return EditorResult<void>::error(EditorStatus::Rejected, RuleId("test.health.operation"),
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("test.health.operation"),
                                              "Invalid health operation");
         const EditorValue* component = field(operation.payload, "component");
         const EditorValue* value = field(operation.payload, "value");
         const auto* componentId = component ? component->getIf<std::string>() : nullptr;
         const auto* number = value ? value->getIf<double>() : nullptr;
         if (!componentId || *componentId != "hero.health" || !number || *number < 0.0)
-            return EditorResult<void>::error(EditorStatus::Rejected, RuleId("test.health.payload"),
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("test.health.payload"),
                                              "Invalid health payload");
         points_ = *number;
         ++revision_;
-        return EditorResult<void>::applied();
+        return eve::editing::applied<void>();
     }
 
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override {
@@ -135,10 +131,10 @@ public:
         std::unique_ptr<IDomainOperationTarget> candidate) override {
         auto* typed = dynamic_cast<HealthPayloadProvider*>(candidate.get());
         if (!typed)
-            return EditorResult<void>::error(EditorStatus::Conflict, RuleId("test.health.candidate"),
+            return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("test.health.candidate"),
                                              "Invalid health candidate");
         *this = *typed;
-        return EditorResult<void>::applied();
+        return eve::editing::applied<void>();
     }
 
     double points() const { return points_; }
@@ -155,7 +151,7 @@ class RecordingAudioSink final : public IAudioSourceRuntimeSink {
 public:
     EditorResult<void> publish(const AudioSourceTarget& candidate) override {
         if (reject)
-            return EditorResult<void>::error(EditorStatus::Rejected,
+            return eve::editing::failed<void>(EditorStatus::Rejected,
                                              RuleId("test.audio.runtime-rejected"),
                                              "Runtime rejected candidate");
         SelectionSnapshot selection;
@@ -164,13 +160,13 @@ public:
         const auto read = candidate.read(selection, PropertyPath("play.volume"));
         const auto* value = read.value.getIf<double>();
         if (!value)
-            return EditorResult<void>::error(EditorStatus::Failed,
+            return eve::editing::failed<void>(EditorStatus::Failed,
                                              RuleId("test.audio.runtime-value"),
                                              "Candidate volume is unavailable");
         volume = *value;
         revision = candidate.revision();
         ++publishes;
-        return EditorResult<void>::applied();
+        return eve::editing::applied<void>();
     }
 
     bool reject = false;
@@ -183,7 +179,7 @@ class RecordingMaterialSink final : public IMaterialRuntimeSink {
 public:
     EditorResult<void> publish(const MaterialDocumentTarget& candidate) override {
         if (reject)
-            return EditorResult<void>::error(EditorStatus::Rejected,
+            return eve::editing::failed<void>(EditorStatus::Rejected,
                                              RuleId("test.material.runtime-rejected"),
                                              "Runtime rejected material candidate");
         SelectionSnapshot selection;
@@ -192,13 +188,13 @@ public:
         const auto read = candidate.read(selection, PropertyPath("shading.roughness"));
         const auto* value = read.value.getIf<double>();
         if (!value)
-            return EditorResult<void>::error(EditorStatus::Failed,
+            return eve::editing::failed<void>(EditorStatus::Failed,
                                              RuleId("test.material.runtime-value"),
                                              "Candidate roughness is unavailable");
         roughness = *value;
         revision = candidate.revision();
         ++publishes;
-        return EditorResult<void>::applied();
+        return eve::editing::applied<void>();
     }
 
     bool reject = false;
@@ -218,12 +214,12 @@ EditorResult<TransactionReceipt> commit(IDomainOperationTarget& target,
     specification.target = TargetId(target.targetId());
     specification.baseRevision = baseRevision;
     auto begun = transactions.begin(std::move(specification));
-    if (!begun.isAccepted())
-        return EditorResult<TransactionReceipt>::error(begun.status, RuleId("test.begin"),
+    if (!begun.ok())
+        return eve::editing::failed<TransactionReceipt>(begun.code(), RuleId("test.begin"),
                                                        "Could not begin transaction");
     auto appended = transactions.append(operation);
-    if (!appended.isAccepted())
-        return EditorResult<TransactionReceipt>::error(appended.status, RuleId("test.append"),
+    if (!appended.ok())
+        return eve::editing::failed<TransactionReceipt>(appended.code(), RuleId("test.append"),
                                                        "Could not append operation");
     return transactions.commit();
 }
@@ -233,8 +229,8 @@ EditorResult<TransactionReceipt> commit(IDomainOperationTarget& target,
 TEST_CASE("editor.scene.component_payload_registry_routes_schema_transactions_and_undo") {
     HealthPayloadProvider provider;
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&provider).isAccepted());
-    CHECK_EQ(static_cast<int>(registry.registerProvider(&provider).status),
+    REQUIRE(registry.registerProvider(&provider).ok());
+    CHECK_EQ(static_cast<int>(registry.registerProvider(&provider).code()),
              static_cast<int>(EditorStatus::Conflict));
 
     SceneDocumentTarget scene("scene");
@@ -246,57 +242,57 @@ TEST_CASE("editor.scene.component_payload_registry_routes_schema_transactions_an
              ISceneComponentPayloadTarget::editorCapabilityId());
 
     auto references = payloads->componentPayloads(TargetId("scene"), ObjectId("hero"));
-    REQUIRE(references.value);
-    REQUIRE_EQ(references.value->size(), size_t{1});
-    CHECK_EQ(references.value->front().component, StableId("hero.health"));
-    auto selection = makeSceneComponentSelection("scene-inspector", *references.value, 12);
-    REQUIRE(selection.value);
+    REQUIRE(references.ok());
+    REQUIRE_EQ(references.value().size(), size_t{1});
+    CHECK_EQ(references.value().front().component, StableId("hero.health"));
+    auto selection = makeSceneComponentSelection("scene-inspector", references.value(), 12);
+    REQUIRE(selection.ok());
 
-    auto properties = payloads->propertyProvider(*selection.value);
-    auto target = payloads->operationTarget(*selection.value);
-    REQUIRE(properties.value);
-    REQUIRE(target.value);
-    CHECK_EQ((*properties.value)->schema(*selection.value).typeId, std::string("health"));
-    CHECK_EQ(*(*properties.value)->read(*selection.value, PropertyPath("points")).value.getIf<double>(),
+    auto properties = payloads->propertyProvider(selection.value());
+    auto target = payloads->operationTarget(selection.value());
+    REQUIRE(properties.ok());
+    REQUIRE(target.ok());
+    CHECK_EQ(properties.value()->schema(selection.value()).typeId, std::string("health"));
+    CHECK_EQ(*properties.value()->read(selection.value(), PropertyPath("points")).value.getIf<double>(),
              80.0);
 
-    auto operation = (*properties.value)->makeSet(*selection.value, PropertyPath("points"), 25.0,
+    auto operation = properties.value()->makeSet(selection.value(), PropertyPath("points"), 25.0,
                                                   PropertySetMode::Absolute);
-    REQUIRE(operation.value);
-    LocalWorldAuthority authority(*target.value);
+    REQUIRE(operation.ok());
+    LocalWorldAuthority authority(target.value());
     LocalTransactionBackend transactions(&authority);
-    const Revision baseRevision = (*target.value)->revision();
-    REQUIRE(commit(**target.value, transactions, *operation.value, baseRevision, "health.set").isAccepted());
+    const Revision baseRevision = target.value()->revision();
+    REQUIRE(commit(*target.value(), transactions, operation.value(), baseRevision, "health.set").ok());
     CHECK_EQ(provider.points(), 25.0);
-    REQUIRE(transactions.undo().isAccepted());
+    REQUIRE(transactions.undo().ok());
     CHECK_EQ(provider.points(), 80.0);
 
-    auto stale = commit(**target.value, transactions, *operation.value, baseRevision, "health.stale");
-    CHECK_EQ(static_cast<int>(stale.status), static_cast<int>(EditorStatus::Conflict));
+    auto stale = commit(*target.value(), transactions, operation.value(), baseRevision, "health.stale");
+    CHECK_EQ(static_cast<int>(stale.code()), static_cast<int>(EditorStatus::Conflict));
 }
 
 TEST_CASE("editor.scene.component_payload_registry_rejects_mixed_and_stale_references") {
     HealthPayloadProvider provider;
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&provider).isAccepted());
+    REQUIRE(registry.registerProvider(&provider).ok());
     auto references = registry.componentPayloads(TargetId("scene"), ObjectId("hero"));
-    REQUIRE(references.value);
-    SceneComponentPayloadRef stale = references.value->front();
+    REQUIRE(references.ok());
+    SceneComponentPayloadRef stale = references.value().front();
     provider.invalidate();
     auto diagnostics = registry.validatePayload(stale);
-    CHECK_EQ(static_cast<int>(diagnostics.status), static_cast<int>(EditorStatus::Conflict));
+    CHECK_EQ(static_cast<int>(diagnostics.code()), static_cast<int>(EditorStatus::Conflict));
 
     SelectionSnapshot mixed;
     mixed.items = {{SelectionDomain::Scene, TargetId("scene"), StableId("hero.health"), "health"},
                    {SelectionDomain::Scene, TargetId("scene"), StableId("hero.audio"), "audio"}};
-    CHECK_EQ(static_cast<int>(registry.propertyProvider(mixed).status),
+    CHECK_EQ(static_cast<int>(registry.propertyProvider(mixed).code()),
              static_cast<int>(EditorStatus::Rejected));
     const auto unregisterResult = registry.unregisterProvider(&provider);
     REQUIRE_EQ(static_cast<int>(unregisterResult),
                static_cast<int>(SceneComponentChange::Changed));
-    auto selection = makeSceneComponentSelection("scene", *references.value);
-    REQUIRE(selection.value);
-    CHECK_EQ(static_cast<int>(registry.propertyProvider(*selection.value).status),
+    auto selection = makeSceneComponentSelection("scene", references.value());
+    REQUIRE(selection.ok());
+    CHECK_EQ(static_cast<int>(registry.propertyProvider(selection.value()).code()),
              static_cast<int>(EditorStatus::Unsupported));
 }
 
@@ -313,62 +309,62 @@ TEST_CASE("editor.scene.component_bindings_reuse_audio_physics_and_material_targ
     REQUIRE(audioBindings.bind(
         {scene, hero, StableId("hero.audio"), "audio.source", 1, 0},
         {SelectionDomain::Scene, TargetId(audio.targetId()), StableId("source"), "audio.source"},
-        &audio, &audio, [&] { return audio.validate(); }).isAccepted());
+        &audio, &audio, [&] { return audio.validate(); }).ok());
     REQUIRE(physicsBindings.bind(
         {scene, hero, StableId("hero.collider"), "physics.collider3d", 2, 0},
         {SelectionDomain::Scene, TargetId(collider.targetId()), StableId("collider"),
          "physics.collider3d"},
-        &collider, &collider, [&] { return collider.validate(); }).isAccepted());
+        &collider, &collider, [&] { return collider.validate(); }).ok());
     REQUIRE(materialBindings.bind(
         {scene, hero, StableId("hero.material"), "graphics.material", 3, 0},
         {SelectionDomain::Scene, TargetId(material.targetId()), StableId("material"),
          "graphics.material"},
-        &material, &material, [&] { return material.validate(); }).isAccepted());
+        &material, &material, [&] { return material.validate(); }).ok());
 
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&audioBindings).isAccepted());
-    REQUIRE(registry.registerProvider(&physicsBindings).isAccepted());
-    REQUIRE(registry.registerProvider(&materialBindings).isAccepted());
+    REQUIRE(registry.registerProvider(&audioBindings).ok());
+    REQUIRE(registry.registerProvider(&physicsBindings).ok());
+    REQUIRE(registry.registerProvider(&materialBindings).ok());
     auto all = registry.componentPayloads(scene, hero);
-    REQUIRE(all.value);
-    REQUIRE_EQ(all.value->size(), size_t{3});
-    CHECK_EQ(all.value->at(0).type, std::string("audio.source"));
-    CHECK_EQ(all.value->at(1).type, std::string("graphics.material"));
-    CHECK_EQ(all.value->at(2).type, std::string("physics.collider3d"));
+    REQUIRE(all.ok());
+    REQUIRE_EQ(all.value().size(), size_t{3});
+    CHECK_EQ(all.value().at(0).type, std::string("audio.source"));
+    CHECK_EQ(all.value().at(1).type, std::string("graphics.material"));
+    CHECK_EQ(all.value().at(2).type, std::string("physics.collider3d"));
 
-    const auto audioRef = all.value->at(0);
+    const auto audioRef = all.value().at(0);
     auto selection = makeSceneComponentSelection("inspector", {audioRef});
-    REQUIRE(selection.value);
-    auto properties = registry.propertyProvider(*selection.value);
-    auto operationTarget = registry.operationTarget(*selection.value);
-    REQUIRE(properties.value);
-    REQUIRE(operationTarget.value);
-    CHECK_EQ((*properties.value)->schema(*selection.value).typeId, std::string("audio.source"));
-    auto setVolume = (*properties.value)->makeSet(
-        *selection.value, PropertyPath("play.volume"), 0.25, PropertySetMode::Absolute);
-    REQUIRE(setVolume.value);
-    LocalWorldAuthority authority(*operationTarget.value);
+    REQUIRE(selection.ok());
+    auto properties = registry.propertyProvider(selection.value());
+    auto operationTarget = registry.operationTarget(selection.value());
+    REQUIRE(properties.ok());
+    REQUIRE(operationTarget.ok());
+    CHECK_EQ(properties.value()->schema(selection.value()).typeId, std::string("audio.source"));
+    auto setVolume = properties.value()->makeSet(
+        selection.value(), PropertyPath("play.volume"), 0.25, PropertySetMode::Absolute);
+    REQUIRE(setVolume.ok());
+    LocalWorldAuthority authority(operationTarget.value());
     LocalTransactionBackend transactions(&authority);
-    REQUIRE(commit(**operationTarget.value, transactions, *setVolume.value,
-                   (*operationTarget.value)->revision(), "component.audio.volume").isAccepted());
+    REQUIRE(commit(*operationTarget.value(), transactions, setVolume.value(),
+                   operationTarget.value()->revision(), "component.audio.volume").ok());
     CHECK_EQ(*audio.read({"module", {{SelectionDomain::Scene, TargetId(audio.targetId()),
                                      StableId("source"), "audio.source"}}, {}, 0},
                          PropertyPath("play.volume")).value.getIf<double>(), 0.25);
-    CHECK_EQ(static_cast<int>(registry.validatePayload(audioRef).status),
+    CHECK_EQ(static_cast<int>(registry.validatePayload(audioRef).code()),
              static_cast<int>(EditorStatus::Conflict));
-    REQUIRE(transactions.undo().isAccepted());
+    REQUIRE(transactions.undo().ok());
     CHECK_EQ(*audio.read({"module", {{SelectionDomain::Scene, TargetId(audio.targetId()),
                                      StableId("source"), "audio.source"}}, {}, 0},
                          PropertyPath("play.volume")).value.getIf<double>(), 1.0);
 
-    auto colliderSelection = makeSceneComponentSelection("inspector", {all.value->at(2)});
-    REQUIRE(colliderSelection.value);
-    CHECK(registry.propertyProvider(*colliderSelection.value).value.value()->schema(
-              *colliderSelection.value).find(PropertyPath("material.friction")) != nullptr);
-    auto materialSelection = makeSceneComponentSelection("inspector", {all.value->at(1)});
-    REQUIRE(materialSelection.value);
-    CHECK(registry.propertyProvider(*materialSelection.value).value.value()->schema(
-              *materialSelection.value).find(PropertyPath("shading.roughness")) != nullptr);
+    auto colliderSelection = makeSceneComponentSelection("inspector", {all.value().at(2)});
+    REQUIRE(colliderSelection.ok());
+    CHECK(registry.propertyProvider(colliderSelection.value()).value()->schema(
+              colliderSelection.value()).find(PropertyPath("material.friction")) != nullptr);
+    auto materialSelection = makeSceneComponentSelection("inspector", {all.value().at(1)});
+    REQUIRE(materialSelection.ok());
+    CHECK(registry.propertyProvider(materialSelection.value()).value()->schema(
+              materialSelection.value()).find(PropertyPath("shading.roughness")) != nullptr);
 }
 
 TEST_CASE("editor.scene.audio_component_publication_is_staged_live_and_reversible") {
@@ -379,40 +375,40 @@ TEST_CASE("editor.scene.audio_component_publication_is_staged_live_and_reversibl
         {TargetId("scene"), ObjectId("hero"), StableId("hero.audio"), "audio.source", 1, 0},
         {SelectionDomain::Scene, TargetId(live.targetId()), StableId("source"), "audio.source"},
         &live.authoringTarget(), &live,
-        [&] { return live.authoringTarget().validate(); }).isAccepted());
+        [&] { return live.authoringTarget().validate(); }).ok());
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&bindings).isAccepted());
+    REQUIRE(registry.registerProvider(&bindings).ok());
     auto components = registry.componentPayloads(TargetId("scene"), ObjectId("hero"));
-    REQUIRE(components.value);
-    auto selection = makeSceneComponentSelection("inspector", *components.value);
-    REQUIRE(selection.value);
-    auto properties = registry.propertyProvider(*selection.value);
-    auto operationTarget = registry.operationTarget(*selection.value);
-    REQUIRE(properties.value);
-    REQUIRE(operationTarget.value);
+    REQUIRE(components.ok());
+    auto selection = makeSceneComponentSelection("inspector", components.value());
+    REQUIRE(selection.ok());
+    auto properties = registry.propertyProvider(selection.value());
+    auto operationTarget = registry.operationTarget(selection.value());
+    REQUIRE(properties.ok());
+    REQUIRE(operationTarget.ok());
 
-    auto change = (*properties.value)->makeSet(*selection.value, PropertyPath("play.volume"),
+    auto change = properties.value()->makeSet(selection.value(), PropertyPath("play.volume"),
                                                0.4, PropertySetMode::Absolute);
-    REQUIRE(change.value);
-    LocalWorldAuthority authority(*operationTarget.value);
+    REQUIRE(change.ok());
+    LocalWorldAuthority authority(operationTarget.value());
     LocalTransactionBackend transactions(&authority);
-    REQUIRE(commit(**operationTarget.value, transactions, *change.value,
-                   (*operationTarget.value)->revision(), "audio.live.volume").isAccepted());
+    REQUIRE(commit(*operationTarget.value(), transactions, change.value(),
+                   operationTarget.value()->revision(), "audio.live.volume").ok());
     CHECK_EQ(sink.volume, 0.4);
     CHECK_EQ(sink.revision, live.revision());
     CHECK_EQ(sink.publishes, 1);
-    REQUIRE(transactions.undo().isAccepted());
+    REQUIRE(transactions.undo().ok());
     CHECK_EQ(sink.volume, 1.0);
     CHECK_EQ(sink.publishes, 2);
 
-    auto rejected = (*properties.value)->makeSet(*selection.value, PropertyPath("play.volume"),
+    auto rejected = properties.value()->makeSet(selection.value(), PropertyPath("play.volume"),
                                                  0.2, PropertySetMode::Absolute);
-    REQUIRE(rejected.value);
+    REQUIRE(rejected.ok());
     sink.reject = true;
     const Revision before = live.revision();
-    auto failed = commit(**operationTarget.value, transactions, *rejected.value, before,
+    auto failed = commit(*operationTarget.value(), transactions, rejected.value(), before,
                          "audio.live.rejected");
-    CHECK_EQ(static_cast<int>(failed.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(failed.code()), static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(live.revision(), before);
     CHECK_EQ(sink.volume, 1.0);
 }
@@ -427,40 +423,40 @@ TEST_CASE("editor.scene.material_component_publication_is_staged_live_and_revers
         {SelectionDomain::Asset, TargetId(live.targetId()), StableId("material"),
          "graphics.material"},
         &live.authoringTarget(), &live,
-        [&] { return live.authoringTarget().validate(); }).isAccepted());
+        [&] { return live.authoringTarget().validate(); }).ok());
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&bindings).isAccepted());
+    REQUIRE(registry.registerProvider(&bindings).ok());
     auto components = registry.componentPayloads(TargetId("scene"), ObjectId("hero"));
-    REQUIRE(components.value);
-    auto selection = makeSceneComponentSelection("inspector", *components.value);
-    REQUIRE(selection.value);
-    auto properties = registry.propertyProvider(*selection.value);
-    auto operationTarget = registry.operationTarget(*selection.value);
-    REQUIRE(properties.value);
-    REQUIRE(operationTarget.value);
+    REQUIRE(components.ok());
+    auto selection = makeSceneComponentSelection("inspector", components.value());
+    REQUIRE(selection.ok());
+    auto properties = registry.propertyProvider(selection.value());
+    auto operationTarget = registry.operationTarget(selection.value());
+    REQUIRE(properties.ok());
+    REQUIRE(operationTarget.ok());
 
-    auto change = (*properties.value)->makeSet(*selection.value,
+    auto change = properties.value()->makeSet(selection.value(),
                                                PropertyPath("shading.roughness"), 0.8,
                                                PropertySetMode::Absolute);
-    REQUIRE(change.value);
-    LocalWorldAuthority authority(*operationTarget.value);
+    REQUIRE(change.ok());
+    LocalWorldAuthority authority(operationTarget.value());
     LocalTransactionBackend transactions(&authority);
-    REQUIRE(commit(**operationTarget.value, transactions, *change.value,
-                   (*operationTarget.value)->revision(), "material.live.roughness").isAccepted());
+    REQUIRE(commit(*operationTarget.value(), transactions, change.value(),
+                   operationTarget.value()->revision(), "material.live.roughness").ok());
     CHECK_EQ(sink.roughness, 0.8);
     CHECK_EQ(sink.revision, live.revision());
-    REQUIRE(transactions.undo().isAccepted());
+    REQUIRE(transactions.undo().ok());
     CHECK_EQ(sink.roughness, 0.45);
 
-    auto rejected = (*properties.value)->makeSet(*selection.value,
+    auto rejected = properties.value()->makeSet(selection.value(),
                                                  PropertyPath("shading.roughness"), 0.6,
                                                  PropertySetMode::Absolute);
-    REQUIRE(rejected.value);
+    REQUIRE(rejected.ok());
     sink.reject = true;
     const Revision before = live.revision();
-    auto failed = commit(**operationTarget.value, transactions, *rejected.value, before,
+    auto failed = commit(*operationTarget.value(), transactions, rejected.value(), before,
                          "material.live.rejected");
-    CHECK_EQ(static_cast<int>(failed.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(failed.code()), static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(live.revision(), before);
     CHECK_EQ(sink.roughness, 0.45);
 }

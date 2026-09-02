@@ -8,7 +8,7 @@ namespace {
 
 template <class T>
 EditorResult<T> materialError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 PropertyDescriptor property(const char* path, const char* label, const char* category,
@@ -72,11 +72,11 @@ EditorResult<void> MaterialDocumentTarget::applyDomainOperation(const DomainOper
         return materialError<void>(EditorStatus::Unsupported, "editor.material.property-unsupported",
                                    "Unknown material property: " + *path);
     auto valid = validateAssignment(*descriptor, *value);
-    if (!valid.isAccepted()) return valid;
+    if (!valid.ok()) return valid;
     values_[*path] = *value;
     ++revision_;
     dirty_.include(0, 0);
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::unique_ptr<IDomainOperationTarget> MaterialDocumentTarget::cloneDomainState() const {
@@ -90,7 +90,7 @@ EditorResult<void> MaterialDocumentTarget::commitDomainState(
         return materialError<void>(EditorStatus::Conflict, "editor.material.candidate-mismatch",
                                    "Material candidate belongs to another target");
     *this = *typed;
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 eve::Result<eve::Revision> MaterialDocumentTarget::currentRevision(const SelectionSnapshot& selection) const {
@@ -127,12 +127,7 @@ EditorResult<DomainOperation> MaterialDocumentTarget::makeSet(const SelectionSna
         return materialError<DomainOperation>(EditorStatus::Unsupported, "editor.material.property-unsupported",
                                               "Unknown material property: " + path.value());
     auto valid = validateAssignment(*descriptor, value);
-    if (!valid.isAccepted()) {
-        EditorResult<DomainOperation> failed;
-        failed.status = valid.status;
-        failed.diagnostics = std::move(valid.diagnostics);
-        return failed;
-    }
+    if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
     const auto previous = values_.find(path.value());
     if (previous == values_.end())
         return materialError<DomainOperation>(EditorStatus::NotFound, "editor.material.property-missing",
@@ -151,7 +146,7 @@ EditorResult<DomainOperation> MaterialDocumentTarget::makeSet(const SelectionSna
     operation.hasInverse = true;
     operation.affectedProperties.push_back(path.value());
     operation.mergeKey = "material:" + id_ + ":" + path.value();
-    return EditorResult<DomainOperation>::applied(std::move(operation));
+    return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
 EditorResult<DomainOperation> MaterialDocumentTarget::makeReset(const SelectionSnapshot& selection,
@@ -188,13 +183,13 @@ EditorResult<void> MaterialDocumentTarget::loadSnapshot(const EditorValue& snaps
             return materialError<void>(EditorStatus::Unsupported, "editor.material.snapshot-property",
                                        "Material snapshot contains unknown property: " + path);
         auto valid = validateAssignment(*descriptor, value);
-        if (!valid.isAccepted()) return valid;
+        if (!valid.ok()) return valid;
         candidate[path] = value;
     }
     values_ = std::move(candidate);
     ++revision_;
     dirty_.clear();
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 std::vector<EditorDiagnostic> MaterialDocumentTarget::validate() const {
@@ -206,16 +201,19 @@ std::vector<EditorDiagnostic> MaterialDocumentTarget::validate() const {
         return value ? *value : std::string{};
     };
     if (stringValue("shading.model") == "custom" && stringValue("textures.shader").empty())
-        diagnostics.push_back({RuleId("editor.material.custom-shader-required"), DiagnosticSeverity::Error,
-                               "Custom shading requires a shader asset"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.material.custom-shader-required"),
+            DiagnosticSeverity::Error, "Custom shading requires a shader asset"));
     if (stringValue("surface.mode") == "masked" && stringValue("textures.albedo").empty())
-        diagnostics.push_back({RuleId("editor.material.mask-without-albedo"), DiagnosticSeverity::Warning,
-                               "Masked material has no albedo texture providing alpha"});
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.material.mask-without-albedo"),
+            DiagnosticSeverity::Warning, "Masked material has no albedo texture providing alpha"));
     if (!stringValue("textures.height").empty()) {
         const auto* scale = values_.at("parallax.scale").getIf<double>();
         if (scale && *scale == 0.0)
-            diagnostics.push_back({RuleId("editor.material.height-without-parallax"), DiagnosticSeverity::Info,
-                                   "Height texture is assigned while parallax scale is zero"});
+            diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::PreconditionViolation, RuleId("editor.material.height-without-parallax"),
+                DiagnosticSeverity::Info, "Height texture is assigned while parallax scale is zero"));
     }
     return diagnostics;
 }

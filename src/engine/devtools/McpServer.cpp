@@ -1,6 +1,7 @@
 #include "devtools/McpServer.hpp"
 
 #include "common/EditorAutomation.h"
+#include "common/GameplayControlJson.h"
 #include "common/ScriptError.h"
 #include "devtools/Immortal.hpp"
 
@@ -21,6 +22,7 @@
 #include "common/EditorHost.h"
 #include "common/Module.h"
 #include "common/ParticlesQuery.h"
+#include "common/PixelWorldAutomation.h"
 #include "common/PhysicsQuery.h"
 #include "common/ProcgenQuery.h"
 #include "common/RenderCapture.h"
@@ -436,6 +438,9 @@ eve::IAudioQuery*       mcpAudio() { return eve::cap::query<eve::IAudioQuery>();
 eve::IEditorHost*       mcpHost() { return eve::cap::query<eve::IEditorHost>(); }
 eve::IUIAutomation*     mcpUI() { return eve::cap::query<eve::IUIAutomation>(); }
 eve::IEditorAutomation* mcpEditor() { return eve::cap::query<eve::IEditorAutomation>(); }
+eve::IPixelWorldAutomation* mcpPixelWorld() {
+    return eve::cap::query<eve::IPixelWorldAutomation>();
+}
 
 Poco::JSON::Object::Ptr renderableObservation(eve::IRenderCapture& capture, int entityId, int generation) {
     Poco::JSON::Object::Ptr output = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
@@ -694,6 +699,26 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     auto& dap = DebugAdapter::instance();
 
     if (name == "eve_status") return engineStatusJson(mcp);
+
+    if (name == "eve_gameplay") {
+        if (!args || !args->has("request")) return "error: missing request";
+        std::string request;
+        try {
+            request = mcpStringify(args->get("request"));
+        } catch (const std::exception& error) {
+            return std::string("error: invalid request: ") + error.what();
+        }
+        auto response = eve::executeGameplayControlJson(request);
+        return response ? std::move(response).takeValue()
+                        : std::string("error: ") + response.status().describe();
+    }
+
+    if (name.rfind("eve_pixelworld_", 0) == 0) {
+        auto* provider = mcpPixelWorld();
+        if (!provider) return "{\"ok\":false,\"error\":\"pixelworld module not available\"}";
+        return provider->invoke(name.substr(std::string("eve_pixelworld_").size()),
+                                mcpStringify(Poco::Dynamic::Var(args)));
+    }
 
     // ============================= Game UI =============================
     if (name == "eve_ui_tree") {
@@ -1623,7 +1648,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.3.0\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.4.0\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. eve_host_* tools create JSON-defined editor "
         "windows bound to Squirrel ViewModels (MVVM) for AI-crafted terrain/material/event editors.\"}";
     return makeResult(idJson, resultJson);
@@ -1634,6 +1659,41 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"tools\":["
         "{\"name\":\"eve_status\",\"description\":\"Runtime + debugger + MCP/DAP status JSON.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay through the versioned shared control protocol.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":[\"request\"]}},"
+        "{\"name\":\"eve_pixelworld_worlds\",\"description\":\"List live PixelWorld simulations and status.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_pixelworld_catalog_builtin\",\"description\":\"Return the canonical versioned built-in material/reaction Catalog document.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_pixelworld_catalog_validate\",\"description\":\"Transactionally validate and canonicalize a material/reaction Catalog document.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"catalog\":{}},\"required\":[\"catalog\"]}},"
+        "{\"name\":\"eve_pixelworld_catalog_apply\",\"description\":\"Hot-reload a compatible Catalog into a paused world using optimistic fingerprint concurrency.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},\"catalog\":{},"
+        "\"expectedFingerprint\":{\"type\":\"string\"}},\"required\":[\"world\",\"catalog\",\"expectedFingerprint\"]}},"
+        "{\"name\":\"eve_pixelworld_pause\",\"description\":\"Pause or resume one PixelWorld.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
+        "\"paused\":{\"type\":\"boolean\"}},\"required\":[\"world\",\"paused\"]}},"
+        "{\"name\":\"eve_pixelworld_step\",\"description\":\"Explicitly advance one PixelWorld by 1-1024 ticks, including while paused.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
+        "\"count\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":1024}},\"required\":[\"world\"]}},"
+        "{\"name\":\"eve_pixelworld_edit\",\"description\":\"Apply a strictly sequenced paint, heat, or explosion edit.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
+        "\"sequence\":{\"type\":\"integer\"},\"kind\":{\"type\":\"string\",\"enum\":[\"paint\",\"heat\",\"explosion\"]},"
+        "\"x\":{\"type\":\"integer\"},\"y\":{\"type\":\"integer\"},\"radius\":{\"type\":\"integer\"},"
+        "\"material\":{\"type\":\"integer\"},\"strength\":{\"type\":\"integer\"},"
+        "\"temperatureDelta\":{\"type\":\"integer\"}},\"required\":[\"world\",\"sequence\",\"kind\"]}},"
+        "{\"name\":\"eve_pixelworld_diagnostics\",\"description\":\"Inspect bounded per-Chunk activity, material and temperature diagnostics.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
+        "\"minX\":{\"type\":\"integer\"},\"minY\":{\"type\":\"integer\"},\"maxX\":{\"type\":\"integer\"},"
+        "\"maxY\":{\"type\":\"integer\"}},\"required\":[\"world\"]}},"
+        "{\"name\":\"eve_pixelworld_samples\",\"description\":\"Read the latest bounded PixelWorld simulation performance samples.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
+        "\"limit\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":256}},\"required\":[\"world\"]}},"
+        "{\"name\":\"eve_pixelworld_snapshot_capture\",\"description\":\"Capture a canonical PixelWorld snapshot as hex.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"}},\"required\":[\"world\"]}},"
+        "{\"name\":\"eve_pixelworld_snapshot_restore\",\"description\":\"Transactionally restore a canonical hex PixelWorld snapshot.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
+        "\"snapshot\":{\"type\":\"string\"}},\"required\":[\"world\",\"snapshot\"]}},"
         "{\"name\":\"eve_ui_tree\",\"description\":\"Inspect retained game UI hosts and semantic widget trees (not "
         "only eve_host editors).\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"host\":{\"type\":\"string\",\"description\":\"optional "
@@ -2047,9 +2107,9 @@ std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr 
     } else if (name == "test_scenario") {
         text =
             "Design a short automated test against the live EVEngine session:\n"
-            "1) eve_pause then eve_snapshot_capture as baseline.\n"
-            "2) Mutate or advance with eve_step_frame / eve_run_script.\n"
-            "3) Assert with eve_eval / eve_watch_list.\n"
+            "1) eve_gameplay op=domains, then observe and actions for the target gameplay instance.\n"
+            "2) Submit player-equivalent commands and advance deterministic ticks with eve_gameplay.\n"
+            "3) Read gameplay events and assert resulting revision/state; use eve_eval only for non-gameplay state.\n"
             "4) eve_snapshot_restore to reset; record notes via eve_ai_note.";
     } else if (name == "ai_game_review") {
         text =

@@ -23,12 +23,12 @@ void checkAtomicPublishingContract(PublishingTarget& target, MakeOperation makeO
 
     rejectPublication(true);
     const auto rejected = target.applyDomainOperation(operation);
-    CHECK(!rejected.isAccepted());
+    CHECK(!rejected.ok());
     CHECK_EQ(target.revision(), before);
 
     rejectPublication(false);
     const auto applied = target.applyDomainOperation(operation);
-    CHECK(applied.isAccepted());
+    CHECK(applied.ok());
     CHECK_EQ(target.revision(), before + 1);
 }
 
@@ -36,7 +36,7 @@ SelectionSnapshot audioSelection(const eve::audio_editing::AudioSourcePublishing
     SelectionItem item;
     item.domain = SelectionDomain::Asset;
     item.target = TargetId(target.targetId());
-    item.item   = StableId(target.targetId());
+    item.item   = StableId(target.targetId().value());
     item.type   = "audio.source";
     SelectionSnapshot selection;
     selection.channel = "audio";
@@ -62,9 +62,9 @@ class AudioSink final : public eve::audio_editing::IAudioSourceRuntimeSink {
 public:
     eve::audio_editing::EditorResult<void> publish(
         const eve::audio_editing::AudioSourceTarget&) override {
-        return reject ? eve::audio_editing::EditorResult<void>::error(
+        return reject ? eve::editing::failed<void>(
                             Status::Failed, RuleId("test.contract.audio-publication"), "injected failure")
-                      : eve::audio_editing::EditorResult<void>::applied();
+                      : eve::editing::applied<void>();
     }
     bool reject = false;
 };
@@ -73,9 +73,9 @@ class PhysicsSink final : public eve::physics_editing::IPhysicsColliderRuntimeSi
 public:
     eve::physics_editing::EditorResult<void> publish(
         const eve::physics_editing::PhysicsColliderTarget&) override {
-        return reject ? eve::physics_editing::EditorResult<void>::error(
+        return reject ? eve::editing::failed<void>(
                             Status::Failed, RuleId("test.contract.physics-publication"), "injected failure")
-                      : eve::physics_editing::EditorResult<void>::applied();
+                      : eve::editing::applied<void>();
     }
     bool reject = false;
 };
@@ -91,8 +91,8 @@ TEST_CASE("editing.satellite.audio_and_physics_share_atomic_publication_contract
             auto operation = target.authoringTarget().makeSet(
                 audioSelection(target), PropertyPath("clip.asset"), Value("asset://contract.ogg"),
                 PropertySetMode::Absolute);
-            REQUIRE(operation.value);
-            return *operation.value;
+            REQUIRE(operation.ok());
+            return std::move(operation.value());
         },
         [&](bool reject) { audioSink.reject = reject; });
 
@@ -104,8 +104,8 @@ TEST_CASE("editing.satellite.audio_and_physics_share_atomic_publication_contract
             auto operation = target.authoringTarget().makeSet(
                 physicsSelection(target), PropertyPath("shape.kind"), Value("sphere"),
                 PropertySetMode::Absolute);
-            REQUIRE(operation.value);
-            return *operation.value;
+            REQUIRE(operation.ok());
+            return std::move(operation.value());
         },
         [&](bool reject) { physicsSink.reject = reject; });
 }
@@ -114,17 +114,17 @@ TEST_CASE("editing.satellite.audio_and_physics_publish_open_factory_providers") 
     eve::editor::Editor host;
     const auto audioHandle = eve::audio_editing::registerEditingProvider(host.extensionProviders());
     const auto physicsHandle = eve::physics_editing::registerEditingProvider(host.extensionProviders());
-    REQUIRE(audioHandle.value);
-    REQUIRE(physicsHandle.value);
+    REQUIRE(audioHandle.ok());
+    REQUIRE(physicsHandle.ok());
 
-    auto audioLease = host.extensionProviders().acquire(*audioHandle.value);
-    auto physicsLease = host.extensionProviders().acquire(*physicsHandle.value);
-    REQUIRE(audioLease.value);
-    REQUIRE(physicsLease.value);
+    auto audioLease = host.extensionProviders().acquire(audioHandle.value());
+    auto physicsLease = host.extensionProviders().acquire(physicsHandle.value());
+    REQUIRE(audioLease.ok());
+    REQUIRE(physicsLease.ok());
     auto* audioFactory = static_cast<eve::audio_editing::IAudioEditingFactory*>(
-        audioLease.value->query(eve::audio_editing::IAudioEditingFactory::capabilityId()));
+        audioLease.value().query(eve::audio_editing::IAudioEditingFactory::capabilityId()));
     auto* physicsFactory = static_cast<eve::physics_editing::IPhysicsEditingFactory*>(
-        physicsLease.value->query(eve::physics_editing::IPhysicsEditingFactory::capabilityId()));
+        physicsLease.value().query(eve::physics_editing::IPhysicsEditingFactory::capabilityId()));
     REQUIRE(audioFactory != nullptr);
     REQUIRE(physicsFactory != nullptr);
     const auto audioTarget = audioFactory->createSource("audio.provider-target", nullptr);

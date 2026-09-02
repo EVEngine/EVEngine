@@ -47,7 +47,8 @@ editing::GizmoSnapshot failure(std::string target, Revision revision, const char
     editing::GizmoSnapshot result;
     result.target = std::move(target);
     result.targetRevision = revision;
-    result.diagnostics.push_back({RuleId(rule), DiagnosticSeverity::Error, std::move(message)});
+    result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+        eve::DiagnosticCode::PreconditionViolation, RuleId(rule), DiagnosticSeverity::Error, std::move(message)));
     return result;
 }
 
@@ -112,9 +113,9 @@ editing::GizmoSnapshot SkeletonOverlayBuilder::build(
                                              parent.position, {}, direction, rgba, 0.0, length,
                                              bone.retarget == SkeletonRetargetState::Unmatched});
             } else {
-                result.diagnostics.push_back(
-                    {RuleId("editor.skeleton.zero-length"), DiagnosticSeverity::Warning,
-                     "Bone has the same world position as its parent: " + bone.name});
+                result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+                    eve::DiagnosticCode::PreconditionViolation, RuleId("editor.skeleton.zero-length"),
+                    DiagnosticSeverity::Warning, "Bone has the same world position as its parent: " + bone.name));
             }
         }
         if (options.showAxes && (!options.axesForSelectedOnly || bone.selected)) {

@@ -7,10 +7,10 @@ namespace eve::editor {
 EditorResult<SelectionSnapshot> EditorSelectionService::set(std::string channel, std::vector<SelectionItem> items,
                                                             std::optional<SelectionItem> primary) {
     if (channel.empty())
-        return EditorResult<SelectionSnapshot>::error(
+        return eve::editing::failed<SelectionSnapshot>(
             EditorStatus::Rejected, RuleId("editor.selection.channel-required"), "Selection channel is required");
     if (primary && std::find(items.begin(), items.end(), *primary) == items.end())
-        return EditorResult<SelectionSnapshot>::error(EditorStatus::Rejected,
+        return eve::editing::failed<SelectionSnapshot>(EditorStatus::Rejected,
                                                       RuleId("editor.selection.primary-missing"),
                                                       "Primary selection must be included in items");
     SelectionSnapshot value;
@@ -23,7 +23,7 @@ EditorResult<SelectionSnapshot> EditorSelectionService::set(std::string channel,
         (void)owner;
         listener(value);
     }
-    return EditorResult<SelectionSnapshot>::applied(std::move(value));
+    return eve::editing::applied<SelectionSnapshot>(std::move(value));
 }
 
 EditorResult<SelectionSnapshot> EditorSelectionService::clear(const std::string& channel) { return set(channel, {}); }
@@ -38,17 +38,17 @@ SelectionSnapshot EditorSelectionService::snapshot(const std::string& channel) c
 
 EditorResult<void> EditorSelectionService::subscribe(std::string owner, Listener listener) {
     if (owner.empty() || !listener)
-        return EditorResult<void>::error(EditorStatus::Rejected, RuleId("editor.selection.invalid-listener"),
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.selection.invalid-listener"),
                                          "Selection listener owner and callback are required");
     listeners_.insert_or_assign(std::move(owner), std::move(listener));
-    return EditorResult<void>::applied();
+    return eve::editing::applied<void>();
 }
 
 bool EditorSelectionService::unsubscribe(const std::string& owner) { return listeners_.erase(owner) != 0; }
 
 EditorResult<EditorFocusSnapshot> EditorFocusService::focus(std::string channel, StableId surface, StableId item) {
     if (channel.empty() || surface.empty())
-        return EditorResult<EditorFocusSnapshot>::error(EditorStatus::Rejected, RuleId("editor.focus.invalid"),
+        return eve::editing::failed<EditorFocusSnapshot>(EditorStatus::Rejected, RuleId("editor.focus.invalid"),
                                                         "Focus channel and surface are required");
     EditorFocusSnapshot value;
     value.channel  = std::move(channel);
@@ -56,7 +56,7 @@ EditorResult<EditorFocusSnapshot> EditorFocusService::focus(std::string channel,
     value.item     = std::move(item);
     value.sequence = ++sequence_;
     focus_.insert_or_assign(value.channel, value);
-    return EditorResult<EditorFocusSnapshot>::applied(std::move(value));
+    return eve::editing::applied<EditorFocusSnapshot>(std::move(value));
 }
 
 EditorFocusSnapshot EditorFocusService::snapshot(const std::string& channel) const {

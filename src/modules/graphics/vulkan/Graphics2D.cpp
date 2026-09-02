@@ -1133,6 +1133,7 @@ Shader *Graphics::newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                        const std::vector<uint32_t> &fragSpv) {
     ASSERT(initialized);
     if (!initialized) throw Exception("newMeshShaderFromSpv: graphics not initialized");
+    createMesh3DPipeline();
     if (fragSpv.empty()) throw Exception("newMeshShaderFromSpv: empty fragment SPIR-V");
     if (!mesh3dShaderPipelineLayout)
         throw Exception("newMeshShaderFromSpv: mesh3d pipeline layout missing");
@@ -1176,6 +1177,7 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                        const std::vector<uint32_t> &fragSpv) {
     ASSERT(initialized);
     if (!initialized) throw Exception("newHairShaderFromSpv: graphics not initialized");
+    createMesh3DPipeline();
     if (fragSpv.empty()) throw Exception("newHairShaderFromSpv: empty fragment SPIR-V");
     if (!mesh3dShaderPipelineLayout)
         throw Exception("newHairShaderFromSpv: mesh3d pipeline layout missing");

@@ -37,7 +37,9 @@ EditorGizmoSnapshot failure(const std::string& target, Revision revision,
                             const char* rule, std::string message) {
     EditorGizmoSnapshot result;
     result.target = target; result.targetRevision = revision;
-    result.diagnostics.push_back({RuleId(rule), DiagnosticSeverity::Error, std::move(message)});
+    result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+        eve::DiagnosticCode::InvalidArgument, RuleId(rule), DiagnosticSeverity::Error,
+        std::move(message)));
     return result;
 }
 
@@ -45,7 +47,7 @@ EditorGizmoSnapshot failure(const std::string& target, Revision revision,
 
 EditorGizmoSnapshot EditorGizmoPreviewBuilder::collider(const PhysicsColliderTarget& target) const {
     EditorGizmoSnapshot result;
-    result.target = target.targetId(); result.targetRevision = target.revision();
+    result.target = target.targetId().value(); result.targetRevision = target.revision();
     const EditorValue snapshot = target.snapshotValue();
     const auto* kindValue = property(snapshot, "shape.kind");
     const auto* kind = kindValue ? kindValue->getIf<std::string>() : nullptr;
@@ -75,8 +77,10 @@ EditorGizmoSnapshot EditorGizmoPreviewBuilder::collider(const PhysicsColliderTar
         primitive.radius = *radius; primitive.length = *height;
     } else {
         result.status = EditorStatus::Unsupported;
-        result.diagnostics.push_back({RuleId("editor.gizmo.complex-collider-asset"), DiagnosticSeverity::Warning,
-                                      "Complex collider gizmo requires resolved asset geometry: " + *kind});
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::Unsupported, RuleId("editor.gizmo.complex-collider-asset"),
+            DiagnosticSeverity::Warning,
+            "Complex collider gizmo requires resolved asset geometry: " + *kind));
         return result;
     }
     result.primitives.push_back(std::move(primitive)); result.status = EditorStatus::Applied;
@@ -85,7 +89,7 @@ EditorGizmoSnapshot EditorGizmoPreviewBuilder::collider(const PhysicsColliderTar
 
 EditorGizmoSnapshot EditorGizmoPreviewBuilder::joint(const PhysicsJointTarget& target,
                                                      const ObjectPositionResolver& bodies) const {
-    EditorGizmoSnapshot result; result.target = target.targetId(); result.targetRevision = target.revision();
+    EditorGizmoSnapshot result; result.target = target.targetId().value(); result.targetRevision = target.revision();
     const EditorValue snapshot = target.snapshotValue();
     const auto* bodyAValue = property(snapshot, "body.a"); const auto* bodyBValue = property(snapshot, "body.b");
     const auto* bodyA = bodyAValue ? bodyAValue->getIf<std::string>() : nullptr;
@@ -98,13 +102,13 @@ EditorGizmoSnapshot EditorGizmoPreviewBuilder::joint(const PhysicsJointTarget& t
         return failure(result.target, result.targetRevision, "editor.gizmo.invalid-joint",
                        "Joint gizmo requires body references, anchors, axis and a position resolver");
     auto originA = bodies(*bodyA); auto originB = bodies(*bodyB);
-    if (!originA.value || !originB.value)
+    if (!originA.ok() || !originB.ok())
         return failure(result.target, result.targetRevision, "editor.gizmo.joint-body-not-found",
                        "Joint gizmo could not resolve both body positions");
     std::array<double, 3> anchorA, anchorB, line;
     for (std::size_t i = 0; i < 3; ++i) {
-        anchorA[i] = originA.value->at(i) + localA[i];
-        anchorB[i] = originB.value->at(i) + localB[i];
+        anchorA[i] = originA.value().at(i) + localA[i];
+        anchorB[i] = originB.value().at(i) + localB[i];
         line[i] = anchorB[i] - anchorA[i];
     }
     const double length = std::sqrt(line[0] * line[0] + line[1] * line[1] + line[2] * line[2]);
@@ -124,7 +128,7 @@ EditorGizmoSnapshot EditorGizmoPreviewBuilder::joint(const PhysicsJointTarget& t
 }
 
 EditorGizmoSnapshot EditorGizmoPreviewBuilder::audioSource(const AudioSourceTarget& target) const {
-    EditorGizmoSnapshot result; result.target = target.targetId(); result.targetRevision = target.revision();
+    EditorGizmoSnapshot result; result.target = target.targetId().value(); result.targetRevision = target.revision();
     const EditorValue snapshot = target.snapshotValue(); std::array<double, 3> position, direction;
     const auto* referenceValue = property(snapshot, "spatial.reference-distance");
     const auto* maximumValue = property(snapshot, "spatial.maximum-distance");
@@ -144,7 +148,7 @@ EditorGizmoSnapshot EditorGizmoPreviewBuilder::audioSource(const AudioSourceTarg
 }
 
 EditorGizmoSnapshot EditorGizmoPreviewBuilder::light(const Light3DDocumentTarget& target) const {
-    EditorGizmoSnapshot result; result.target = target.targetId(); result.targetRevision = target.revision();
+    EditorGizmoSnapshot result; result.target = target.targetId().value(); result.targetRevision = target.revision();
     const EditorValue snapshot = target.snapshotValue(); std::array<double, 3> position, direction;
     const auto* typeValue = property(snapshot, "light.type"); const auto* type = typeValue ? typeValue->getIf<std::string>() : nullptr;
     const auto* colorValue = property(snapshot, "light.color"); const auto* color = colorValue ? colorValue->getIf<EditorValue::Array>() : nullptr;

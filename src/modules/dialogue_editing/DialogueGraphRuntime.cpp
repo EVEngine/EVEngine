@@ -10,7 +10,7 @@ namespace {
 
 template <class T>
 EditorResult<T> runtimeError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* field(const EditorValue& value, const char* key) {
@@ -26,12 +26,9 @@ EditorResult<dialogue::ConversationDocument*> DialogueGraphRuntimeBuilder::build
     const GraphDocumentData& graph) const {
     DialogueGraphDomain domain;
     const DialogueGraphCompileResult compiled = domain.compile(graph);
-    if (compiled.status != EditorStatus::Applied) {
-        EditorResult<dialogue::ConversationDocument*> failed;
-        failed.status = compiled.status;
-        failed.diagnostics = compiled.diagnostics;
-        return failed;
-    }
+    if (compiled.status != EditorStatus::Applied)
+        return EditorResult<dialogue::ConversationDocument*>::failure(
+            eve::Status(compiled.status, compiled.diagnostics));
     const auto* id = field(compiled.definition, "id")->getIf<std::string>();
     const auto* version = field(compiled.definition, "version")->getIf<int64_t>();
     const auto* entry = field(compiled.definition, "entry")->getIf<std::string>();
@@ -83,19 +80,20 @@ EditorResult<dialogue::ConversationDocument*> DialogueGraphRuntimeBuilder::build
         }
     }
     if (!document->setEntry(*entry) || !document->validate()) {
-        EditorResult<dialogue::ConversationDocument*> failed =
-            runtimeError<dialogue::ConversationDocument*>(EditorStatus::Failed,
-                                                           "editor.dialogue.runtime-validation",
-                                                           "Conversation runtime validation failed");
+        std::vector<EditorDiagnostic> diagnostics;
+        diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::Failed, RuleId("editor.dialogue.runtime-validation"), DiagnosticSeverity::Error,
+            "Conversation runtime validation failed"));
         for (int index = 0; index < document->getDiagnosticCount(); ++index)
-            failed.diagnostics.push_back({RuleId("editor.dialogue.runtime-diagnostic"),
-                                          document->getDiagnosticSeverity(index) == "error"
-                                              ? DiagnosticSeverity::Error
-                                              : DiagnosticSeverity::Warning,
-                                          document->getDiagnosticMessage(index)});
-        return failed;
+            diagnostics.push_back(eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::Failed, RuleId("editor.dialogue.runtime-diagnostic"),
+                document->getDiagnosticSeverity(index) == "error" ? DiagnosticSeverity::Error
+                                                                    : DiagnosticSeverity::Warning,
+                document->getDiagnosticMessage(index)));
+        return EditorResult<dialogue::ConversationDocument*>::failure(
+            eve::Status(EditorStatus::Failed, std::move(diagnostics)));
     }
-    return EditorResult<dialogue::ConversationDocument*>::applied(document.release());
+    return eve::editing::applied<dialogue::ConversationDocument*>(document.release());
 }
 
 }  // namespace eve::dialogue_editing

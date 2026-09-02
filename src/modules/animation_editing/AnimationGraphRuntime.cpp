@@ -12,7 +12,7 @@ namespace {
 
 template <class T>
 EditorResult<T> runtimeError(EditorStatus status, const char* rule, std::string message) {
-    return EditorResult<T>::error(status, RuleId(rule), std::move(message));
+    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
 const EditorValue* runtimeField(const EditorValue& value, const char* key) {
@@ -32,12 +32,9 @@ EditorResult<animation::AnimStateMachine*> AnimationStateGraphRuntimeBuilder::bu
                                                          "Animation skeleton and clip resolver are required");
     AnimationStateGraphDomain domain;
     const AnimationGraphCompileResult compiled = domain.compile(graph);
-    if (compiled.status != EditorStatus::Applied) {
-        EditorResult<animation::AnimStateMachine*> failed;
-        failed.status = compiled.status;
-        failed.diagnostics = compiled.diagnostics;
-        return failed;
-    }
+    if (compiled.status != EditorStatus::Applied)
+        return EditorResult<animation::AnimStateMachine*>::failure(
+            eve::Status(compiled.status, compiled.diagnostics));
 
     std::map<GraphNodeId, const GraphNodeRecord*> nodes;
     std::map<GraphPinId, GraphNodeId> pinOwners;
@@ -91,7 +88,7 @@ EditorResult<animation::AnimStateMachine*> AnimationStateGraphRuntimeBuilder::bu
         else if (kind == "trigger")
             machine->addTriggerCondition(transition, parameter);
     }
-    return EditorResult<animation::AnimStateMachine*>::applied(machine.release());
+    return eve::editing::applied<animation::AnimStateMachine*>(machine.release());
 }
 
 }  // namespace eve::animation_editing
