@@ -192,7 +192,7 @@ void Graphics::ensureReadbackSlots() {
     // rebuilt under waitIdle (rebuildSwapchainIfNeeded / recreate path).
     for (auto &slot : screenReadbackSlots) {
         if (slot.mapped) {
-            device->unmapMemory(slot.staging.memory);
+            slot.staging.unmap();
             slot.mapped = nullptr;
         }
         slot.staging.release();
@@ -281,7 +281,7 @@ void Graphics::syncReadbackCpu() {
 
     auto &slot = screenReadbackSlots[readbackWriteSlot];
     if (!slot.mapped)
-        slot.mapped = device->mapMemory(slot.staging.memory, 0, vk::DeviceSize(bytes));
+        slot.mapped = slot.staging.map();
 
     lastFrameRgba.resize(bytes);
     if (readbackBgra) {
@@ -310,7 +310,7 @@ void Graphics::syncReadbackCpu() {
 void Graphics::destroyReadbackResources() {
     for (auto &slot : screenReadbackSlots) {
         if (slot.mapped) {
-            device->unmapMemory(slot.staging.memory);
+            slot.staging.unmap();
             slot.mapped = nullptr;
         }
         slot.staging.release();
@@ -456,9 +456,9 @@ image::ImageData *Graphics::renderEntityIdMask(
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     std::memcpy(img->getData(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
 
     // 让 RenderControl 的 GBuffer 也指向该槽位（镜像 endGBufferPass），这样
@@ -508,9 +508,9 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     std::memcpy(img->getData(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
     if (attachment == "depth") {
         auto *pixels = static_cast<uint8_t *>(img->getData());
@@ -568,9 +568,9 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    void *mapped = staging.map();
     std::memcpy(img->getData(), mapped, size_t(byteSize));
-    device->unmapMemory(staging.memory);
+    staging.unmap();
     staging.release();
     return img;
 }

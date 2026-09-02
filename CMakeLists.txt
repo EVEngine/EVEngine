@@ -104,6 +104,8 @@ option(EVENGINE_BUILD_PROFILE_CHECKS
 option(EVENGINE_BUILD_PIXELWORLD_BENCHMARK
     "Build the renderer-independent PixelWorld million-cell benchmark" OFF)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
+option(EVENGINE_VULKAN_USE_VMA
+    "Use the bundled Vulkan Memory Allocator for VKBuilder buffers" ON)
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
 set(EVENGINE_PREBUILT_THIRD_PARTY "" CACHE PATH
@@ -647,6 +649,17 @@ function(set_include)
         # pulls in Graphics.h can resolve <vkbuilder.hpp>.
         ${EVENGINE_VKBUILDER_INCLUDE_DIR}
     )
+    if(EVENGINE_VULKAN_USE_VMA AND NOT EVENGINE_WEBGPU AND NOT EMSCRIPTEN)
+        # The Vulkan instance is deliberately created against the 1.0 contract.
+        # Keep VMA on that same contract so Android does not statically import
+        # newer core entry points that its loader only exposes dynamically.
+        target_compile_definitions(eve_engine_includes INTERFACE
+            VKB_ENABLE_VMA=1
+            VMA_VULKAN_VERSION=1000000
+            VMA_STATIC_VULKAN_FUNCTIONS=0
+            VMA_DYNAMIC_VULKAN_FUNCTIONS=1
+        )
+    endif()
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
         # Raw source-checkout headers for medialoader/assimp/DTL. In prebuilt
         # mode (EVENGINE_THIRD_PARTY_BINARY_DIR) these headers come from the
