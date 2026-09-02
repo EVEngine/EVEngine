@@ -13,6 +13,7 @@ namespace ssq {
 class Table;
 class VM;
 class Array;
+class Class;
 }  // namespace ssq
 
 namespace eve {
@@ -30,11 +31,11 @@ void exposeECSToVM(ssq::VM& vm);
 
 /**
  * @brief C++ 实体 → 脚本 eve.view() 桥接。
- * 用 registerCppEntityView(typeid(T*).hash_code(), fn) 登记 T 的收集函数；
+ * 用 registerCppEntityView(cls, fn) 登记脚本类的收集函数；
  * 脚本 eve.view(cls) 沿类链找到登记的 C++ 类型后调用 fn 填充输出数组。
  */
 using CppEntityViewFn = std::function<void(ssq::Array& out)>;
-void registerCppEntityView(size_t typeHash, CppEntityViewFn fn);
+void registerCppEntityView(const ssq::Class& cls, CppEntityViewFn fn);
 
 /**
  * @brief 在脚本 ECS 基类（eve.Component / eve.Entity / eve.System）注入之后执行的回调。

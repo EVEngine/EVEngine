@@ -35,8 +35,8 @@ void destroyHandles(std::vector<ecs::EntityHandle>& hs) {
 }
 
 template <typename T>
-void registerCppEntityClassForScript() {
-    eve::registerCppEntityView(typeid(T*).hash_code(), [](ssq::Array& out) {
+void registerCppEntityClassForScript(const ssq::Class& cls) {
+    eve::registerCppEntityView(cls, [](ssq::Array& out) {
         HSQUIRRELVM vm = out.getHandle();
         sq_pushobject(vm, out.getRaw());
         ecs::Table* table = ecs::current();
@@ -683,10 +683,9 @@ void Vehicle::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Vehicle::create, false);
     expose(cls);
 
-    registerCppEntityClassForScript<VehicleEntity>();
-
     auto vCls = table.addClass<VehicleEntity>(
         "VehicleEntity", std::function<VehicleEntity*()>([]() -> VehicleEntity* { return nullptr; }), false);
+    registerCppEntityClassForScript<VehicleEntity>(vCls);
     vCls.addFunc("getId", [](VehicleEntity* v) -> std::string { return v ? v->identity()->id : std::string{}; });
     vCls.addFunc("getDefId", [](VehicleEntity* v) -> std::string { return v ? v->identity()->defId : std::string{}; });
     vCls.addFunc("getFaction",

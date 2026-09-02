@@ -977,7 +977,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # Full debug build + per-case unit tests + all-example smoke exceeded the
+    # previous 60-minute job cap even though each step stayed within its guard.
+    timeout-minutes: 90
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
