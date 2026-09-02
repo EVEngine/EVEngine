@@ -16,9 +16,9 @@ if (!("blueFactionId" in getroottable())) blueFactionId <- null;
 if (!("redFactionId" in getroottable())) redFactionId <- null;
 
 GRID_W <- 36; GRID_H <- 22; CELL <- 28.0; ORIGIN_X <- 24.0; ORIGIN_Y <- 94.0;
-BLUE_FACTION_SEED <- "00000000-0000-7000-8000-00000000f001";
-RED_FACTION_SEED  <- "00000000-0000-7000-8000-00000000f002";
-MATCH <- "00000000-0000-7000-8000-00000000f003";
+RTS_SANDBOX_BLUE_FACTION_ID <- "00000000-0000-7000-8000-00000000f001";
+RTS_SANDBOX_RED_FACTION_ID  <- "00000000-0000-7000-8000-00000000f002";
+RTS_SANDBOX_MATCH_ID <- "00000000-0000-7000-8000-00000000f003";
 
 function requireResult(result, context) {
     if (!result.ok) throw context + ": " + result.status.summary;
@@ -54,10 +54,12 @@ function resetGame() {
     sim=eve.RTS(); selected=[]; accumulator=0.0; serial=1;
     requireResult(sim.loadScriptContent(readTextFile("data/content.json")),"load RTS content");
     requireResult(sim.configureScriptWorld(GRID_W,GRID_H,1.0,0.0,0.0),"configure RTS world");
-    // Persist the facade's canonical identity instead of relying on the seed
-    // text after a reset. All subsequent facade calls share this owner key.
-    blueFactionId=requireResult(sim.newFaction(BLUE_FACTION_SEED),"create blue faction");
-    redFactionId=requireResult(sim.newFaction(RED_FACTION_SEED),"create red faction");
+    // newFaction validates creation but has no value payload. Persist the
+    // sandbox-owned identity strings used to create and query each faction.
+    blueFactionId=RTS_SANDBOX_BLUE_FACTION_ID;
+    redFactionId=RTS_SANDBOX_RED_FACTION_ID;
+    requireResult(sim.newFaction(blueFactionId),"create blue faction");
+    requireResult(sim.newFaction(redFactionId),"create red faction");
     requireResult(sim.configureAutoConstruction(blueFactionId,true,2,2),"configure blue builders");
     requireResult(sim.configureAutoRepair(blueFactionId,true,2,2),"configure blue repairers");
     requireResult(sim.configureAutoConstruction(redFactionId,true,2,2),"configure red builders");
@@ -84,11 +86,11 @@ function resetGame() {
     blueAPC=requireResult(sim.newUnit(nextId(),"unit:apc",blueFactionId,7.0,16.5),"blue APC");
     for(local i=0;i<9;++i)
         requireResult(sim.newUnit(nextId(),"unit:marine",redFactionId,26.0-(i%3),13.0+(i/3).tointeger()),"red marine");
-    requireResult(sim.newMatch(MATCH),"create match");
-    requireResult(sim.configureMatch(MATCH,"headquarters","command_center",0.0),"configure victory");
-    requireResult(sim.addMatchParticipant(MATCH,blueFactionId,1),"join blue");
-    requireResult(sim.addMatchParticipant(MATCH,redFactionId,2),"join red");
-    requireResult(sim.startMatch(MATCH),"start match");
+    requireResult(sim.newMatch(RTS_SANDBOX_MATCH_ID),"create match");
+    requireResult(sim.configureMatch(RTS_SANDBOX_MATCH_ID,"headquarters","command_center",0.0),"configure victory");
+    requireResult(sim.addMatchParticipant(RTS_SANDBOX_MATCH_ID,blueFactionId,1),"join blue");
+    requireResult(sim.addMatchParticipant(RTS_SANDBOX_MATCH_ID,redFactionId,2),"join red");
+    requireResult(sim.startMatch(RTS_SANDBOX_MATCH_ID),"start match");
 }
 function selectAtCursor() {
     local state=requireResult(sim.inspectState(),"inspect"), best=null, bestD=0.8*0.8;
@@ -114,7 +116,7 @@ function refreshHud() {
     pruneSelection();
     local state=requireResult(sim.inspectState(),"inspect");
     local minerals=requireResult(sim.scriptResource(blueFactionId,"minerals"),"read minerals");
-    local matchState=requireResult(sim.inspectMatch(MATCH),"inspect match");
+    local matchState=requireResult(sim.inspectMatch(RTS_SANDBOX_MATCH_ID),"inspect match");
     local isolated=0;
     foreach(id in selected){local unit=unitBySubject(state,id);if(unit!=null&&!unit.inCommand)++isolated;}
     ui.setText("stats","矿物 "+minerals+"  单位 "+state.units.len()+"  建筑 "+state.buildings.len()+
