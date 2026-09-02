@@ -9,6 +9,7 @@
 #include "devtools/ScenarioRecorder.h"
 
 #include "common/Module.h"
+#include "common/GameplayControlJson.h"
 #include "common/RenderTrace.h"
 #include "common/Runtime.h"
 #include "common/ScriptError.h"
@@ -394,6 +395,11 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
                     []() { return ScenarioRecorder::instance().framesRemaining(); });
         dev.addFunc("replayErrorReport",
                     []() { return ScenarioRecorder::instance().errorReport(); });
+        dev.addFunc("gameplay", [](const std::string& requestJson) {
+            auto result = eve::executeGameplayControlJson(requestJson);
+            return result ? std::move(result).takeValue()
+                          : std::string("error:") + result.status().describe();
+        });
 
         // AI / MCP surface (DevTools panel + agent session log).
         ssq::Table ai = dev.addTable("ai");

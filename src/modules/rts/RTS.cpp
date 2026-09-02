@@ -1,6 +1,9 @@
 #include "rts/RTS.h"
 #include "rts/RTSAttributes.h"
 
+#include "action/Action.h"
+#include "common/Capability.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <algorithm>
@@ -20,6 +23,27 @@ Result<T> failureFrom(const Status& status) {
 }
 
 bool validSubject(SubjectRef subject) { return subject.isValid(); }
+
+bool controls(const GameplaySession& session, SubjectRef subject) {
+    return session.access != GameplayAccess::PlayerEquivalent ||
+           std::find(session.controlledSubjects.begin(), session.controlledSubjects.end(), subject) !=
+               session.controlledSubjects.end();
+}
+
+LogicalId gameplayId(std::string_view value) { return LogicalId::parse(value).value(); }
+
+Result<double> numericParameter(const Value& parameters, std::string_view name) {
+    const auto* object = parameters.getIf<Value::Object>();
+    if (!object)
+        return failure<double>(DiagnosticCode::InvalidArgument, "RTS gameplay parameters must be an object",
+                               "parameters");
+    const auto found = object->find(std::string(name));
+    if (found == object->end() || !found->second.isNumeric())
+        return failure<double>(DiagnosticCode::InvalidArgument, "RTS gameplay parameter must be numeric",
+                               "parameters." + std::string(name));
+    return Result<double>::success(found->second.isInt64() ? static_cast<double>(found->second.asInt())
+                                                           : found->second.asDouble());
+}
 
 template <typename T>
 void destroyHandles(std::vector<ecs::EntityHandle>& handles) {
@@ -51,11 +75,189 @@ bool owns(const std::vector<ecs::EntityHandle>& handles, const T& entity) {
 
 Module_IMPL(RTS, new RTS());
 
+struct RTS::GameplayRuntime {
+    action::ActionRuntime action;
+    ActionAdapter         adapter{action};
+};
+
+RTS::RTS() : gameplayRuntime_(std::make_unique<GameplayRuntime>()) {
+    cap::addListener<IGameplayControlProvider>(this);
+}
+
 RTS::~RTS() {
+    cap::removeListener<IGameplayControlProvider>(this);
     destroyHandles<Unit>(units_);
     destroyHandles<Building>(buildings_);
     destroyHandles<Player>(players_);
     destroyHandles<Faction>(factions_);
+}
+
+std::string_view RTS::gameplayDomain() const noexcept { return "rts"; }
+
+Result<GameplayObservation> RTS::observeGameplay(const GameplaySession& session, SubjectRef instance) const {
+    Player* player = resolvePlayer(instance);
+    if (!player)
+        return failure<GameplayObservation>(DiagnosticCode::NotFound, "RTS gameplay player was not found",
+                                            "instance");
+    if (!controls(session, instance))
+        return failure<GameplayObservation>(DiagnosticCode::PreconditionViolation,
+                                            "session does not control this RTS player", "instance");
+    Value::Array units;
+    for (const auto& handle : player->selection()->units) {
+        auto* unit = dynamic_cast<Unit*>(ecs::try_get(handle));
+        if (!unit) continue;
+        auto current = unit->orders()->values.current();
+        std::string orderKind;
+        if (current) {
+            orderKind = orderKindName(current.value().kind);
+        } else if (current.code() == StatusCode::NotFound) {
+            current.ignore("idle RTS unit has no active order");
+        } else {
+            return Result<GameplayObservation>::failure(current.status());
+        }
+        units.emplace_back(Value::Object{{"activeOrder", Value(std::move(orderKind))},
+                                         {"arrived", Value(unit->motion()->arrived)},
+                                         {"subject", Value(unit->identity()->subject.format())},
+                                         {"x", Value(unit->motion()->x)},
+                                         {"y", Value(unit->motion()->y)}});
+    }
+    GameplayObservation observation;
+    observation.domain = gameplayId("gameplay:rts");
+    observation.instance = instance;
+    observation.tick = player->selection()->tick;
+    observation.revision = player->selection()->revision;
+    observation.state = Value(Value::Object{{"selectedUnits", Value(std::move(units))}});
+    return Result<GameplayObservation>::success(std::move(observation));
+}
+
+Result<std::vector<GameplayActionDescriptor>> RTS::availableGameplayActions(
+    const GameplaySession& session, SubjectRef instance, SubjectRef subject) const {
+    Player* player = resolvePlayer(instance);
+    Unit* unit = resolveUnit(subject);
+    if (!player || !unit)
+        return failure<std::vector<GameplayActionDescriptor>>(DiagnosticCode::NotFound,
+                                                               "RTS gameplay player or unit was not found",
+                                                               "subject");
+    if (!controls(session, instance))
+        return failure<std::vector<GameplayActionDescriptor>>(DiagnosticCode::PreconditionViolation,
+                                                               "session does not control this RTS player",
+                                                               "instance");
+    const auto unitHandle = ecs::handle_of(unit);
+    const bool selected = std::any_of(player->selection()->units.begin(), player->selection()->units.end(),
+                                      [&](const auto& handle) {
+        return handle.table == unitHandle.table && handle.type == unitHandle.type && handle.id == unitHandle.id &&
+               handle.generation == unitHandle.generation;
+    });
+    if (!selected)
+        return failure<std::vector<GameplayActionDescriptor>>(DiagnosticCode::PreconditionViolation,
+                                                               "RTS unit is not in the player's selection",
+                                                               "subject");
+    Value number(Value::Object{{"type", Value("number")}});
+    Value schema(Value::Object{{"x", number}, {"y", number}});
+    std::vector<GameplayActionDescriptor> actions;
+    actions.push_back({gameplayId("rts:move"), schema});
+    actions.push_back({gameplayId("rts:attack"), std::move(schema)});
+    return Result<std::vector<GameplayActionDescriptor>>::success(std::move(actions));
+}
+
+Result<GameplayCommandReceipt> RTS::submitGameplay(const GameplaySession& session, SubjectRef instance,
+                                                    const GameplayCommand& command) {
+    Player* player = resolvePlayer(instance);
+    if (!player)
+        return failure<GameplayCommandReceipt>(DiagnosticCode::NotFound, "RTS gameplay player was not found",
+                                               "instance");
+    if (!controls(session, instance))
+        return failure<GameplayCommandReceipt>(DiagnosticCode::PreconditionViolation,
+                                               "session does not control this RTS player", "instance");
+    if (command.id.empty())
+        return failure<GameplayCommandReceipt>(DiagnosticCode::InvalidArgument, "command id must not be empty",
+                                               "command.id");
+    if (command.observedTick != player->selection()->tick ||
+        command.expectedRevision != player->selection()->revision)
+        return failure<GameplayCommandReceipt>(DiagnosticCode::Conflict,
+                                               "RTS command was based on a stale observation",
+                                               "command.expectedRevision");
+    auto x = numericParameter(command.parameters, "x");
+    auto y = numericParameter(command.parameters, "y");
+    if (!x) return Result<GameplayCommandReceipt>::failure(x.status());
+    if (!y) return Result<GameplayCommandReceipt>::failure(y.status());
+
+    CommandSpec spec;
+    if (command.action == gameplayId("rts:move")) {
+        spec.kind = OrderKind::Move;
+        spec.definitionId = "rts:move";
+    } else if (command.action == gameplayId("rts:attack")) {
+        spec.kind = OrderKind::Attack;
+        spec.definitionId = "rts:attack";
+    } else {
+        return failure<GameplayCommandReceipt>(DiagnosticCode::Unsupported, "unsupported RTS gameplay action",
+                                               "command.action");
+    }
+    spec.target = {static_cast<float>(x.value()), static_cast<float>(y.value())};
+    FormationSpec formation;
+    auto accepted = fanOut(*player->selection(), spec, formation);
+    if (!accepted) return Result<GameplayCommandReceipt>::failure(accepted.status());
+    auto fanOutReceipt = std::move(accepted).takeValue();
+
+    GameplayCommandReceipt receipt;
+    receipt.commandId = command.id;
+    receipt.executionId = fanOutReceipt.orderIds.empty() ? std::string{} : fanOutReceipt.orderIds.front();
+    receipt.acceptedTick = player->selection()->tick;
+    receipt.resultingRevision = player->selection()->revision;
+    Value::Array orderIds;
+    for (auto& id : fanOutReceipt.orderIds) orderIds.emplace_back(std::move(id));
+    receipt.details = Value(Value::Object{{"accepted", Value(static_cast<std::int64_t>(fanOutReceipt.accepted))},
+                                          {"orderIds", Value(std::move(orderIds))}});
+    GameplayEvent event;
+    event.sequence = nextGameplayEventSequence_++;
+    event.tick = player->selection()->tick;
+    event.type = "rts.command.accepted";
+    event.subject = command.subject;
+    event.causationCommandId = command.id;
+    event.correlationId = command.id;
+    event.payload = Value(Value::Object{{"action", Value(command.action.format())},
+                                        {"instance", Value(instance.format())},
+                                        {"resultingRevision",
+                                         Value(static_cast<std::int64_t>(player->selection()->revision))}});
+    gameplayEvents_.push_back(std::move(event));
+    return Result<GameplayCommandReceipt>::success(std::move(receipt), Status::success(StatusCode::Applied));
+}
+
+Result<GameplayObservation> RTS::advanceGameplay(const GameplaySession& session, SubjectRef instance,
+                                                  const SimulationStep& simulationStep) {
+    Player* player = resolvePlayer(instance);
+    if (!player)
+        return failure<GameplayObservation>(DiagnosticCode::NotFound, "RTS gameplay player was not found",
+                                            "instance");
+    if (!controls(session, instance))
+        return failure<GameplayObservation>(DiagnosticCode::PreconditionViolation,
+                                            "session does not control this RTS player", "instance");
+    if (simulationStep.tick <= player->selection()->tick)
+        return failure<GameplayObservation>(DiagnosticCode::Conflict, "RTS simulation tick must increase",
+                                            "step.tick");
+    auto advanced = step(simulationStep, gameplayRuntime_->adapter);
+    if (!advanced) return Result<GameplayObservation>::failure(advanced.status());
+    std::move(advanced).takeValue();
+    player->selection()->tick = simulationStep.tick;
+    ++player->selection()->revision;
+    return observeGameplay(session, instance);
+}
+
+Result<std::vector<GameplayEvent>> RTS::gameplayEvents(const GameplaySession& session, SubjectRef instance,
+                                                        std::uint64_t afterSequence) const {
+    auto observation = observeGameplay(session, instance);
+    if (!observation) return Result<std::vector<GameplayEvent>>::failure(observation.status());
+    std::move(observation).takeValue();
+    std::vector<GameplayEvent> result;
+    for (const auto& event : gameplayEvents_) {
+        const auto* eventInstance = event.payload.find("instance");
+        if (event.sequence > afterSequence && eventInstance && eventInstance->isString() &&
+            eventInstance->asString() == instance.format())
+            result.push_back(event);
+    }
+    const bool empty = result.empty();
+    return Result<std::vector<GameplayEvent>>::success(
+        std::move(result), Status::success(empty ? StatusCode::NoOp : StatusCode::Applied));
 }
 
 Result<Unit*> RTS::newUnit(SubjectRef subject, LogicalId definition) {
@@ -116,9 +318,12 @@ Result<Faction*> RTS::newFaction(SubjectRef subject) {
     return Result<Faction*>::success(faction, Status::success(StatusCode::Applied));
 }
 
-Result<FanOutReceipt> RTS::fanOut(const Player::Selection& selection, const CommandSpec& command,
+Result<FanOutReceipt> RTS::fanOut(Player::Selection& selection, const CommandSpec& command,
                                   const FormationSpec& formation) const {
-    return CommandFanOutSystem::fanOut(selection.units, command, formation);
+    auto result = CommandFanOutSystem::fanOut(selection.units, command, formation);
+    if (!result) return result;
+    ++selection.revision;
+    return result;
 }
 
 Result<double> RTS::readUnitAttribute(Unit& unit, std::string_view attribute) const {
@@ -184,6 +389,22 @@ std::size_t RTS::unitCount() const noexcept { return countLive<Unit>(units_); }
 std::size_t RTS::buildingCount() const noexcept { return countLive<Building>(buildings_); }
 std::size_t RTS::playerCount() const noexcept { return countLive<Player>(players_); }
 std::size_t RTS::factionCount() const noexcept { return countLive<Faction>(factions_); }
+
+Player* RTS::resolvePlayer(SubjectRef subject) const noexcept {
+    for (const auto& handle : players_) {
+        auto* player = dynamic_cast<Player*>(ecs::try_get(handle));
+        if (player && player->identity()->subject == subject) return player;
+    }
+    return nullptr;
+}
+
+Unit* RTS::resolveUnit(SubjectRef subject) const noexcept {
+    for (const auto& handle : units_) {
+        auto* unit = dynamic_cast<Unit*>(ecs::try_get(handle));
+        if (unit && unit->identity()->subject == subject) return unit;
+    }
+    return nullptr;
+}
 
 void RTS::expose(ssq::Table& table) {
     auto cls = table.addClass(name, RTS::create, false);
