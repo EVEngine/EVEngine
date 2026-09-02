@@ -264,6 +264,18 @@ void VmaAllocatorOwner::create(const vkb::Instance &instance,
     createInfo.instance = static_cast<VkInstance>(instance.instance);
     createInfo.physicalDevice = static_cast<VkPhysicalDevice>(physicalDevice.instance);
     createInfo.device = static_cast<VkDevice>(device.instance);
+    VmaVulkanFunctions vulkanFunctions{};
+    vulkanFunctions.vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
+        SDL_Vulkan_GetVkGetInstanceProcAddr());
+    if (!vulkanFunctions.vkGetInstanceProcAddr) {
+        throw Exception("VMA could not resolve vkGetInstanceProcAddr from SDL");
+    }
+    vulkanFunctions.vkGetDeviceProcAddr = reinterpret_cast<PFN_vkGetDeviceProcAddr>(
+        vulkanFunctions.vkGetInstanceProcAddr(createInfo.instance, "vkGetDeviceProcAddr"));
+    if (!vulkanFunctions.vkGetDeviceProcAddr) {
+        throw Exception("VMA could not resolve vkGetDeviceProcAddr");
+    }
+    createInfo.pVulkanFunctions = &vulkanFunctions;
     // InstanceBuilder requests Vulkan 1.0. VMA requires this value to describe
     // the application's instance contract, not the physical device maximum.
     createInfo.vulkanApiVersion = VK_API_VERSION_1_0;
@@ -275,13 +287,13 @@ void VmaAllocatorOwner::create(const vkb::Instance &instance,
 
 std::string Graphics::getBackendName() const { return "vulkan"; }
 
-Graphics::Graphics() { eve::boot::startVulkanInstanceWarmup(); }
+Graphics::Graphics() = default;
 
 Graphics::~Graphics() {
     detachGraphicsArtifactProvider(this);
     if (!initialized) {
-        // Construction starts instance warmup before callers decide whether to
-        // initialize graphics. Join it before the Vulkan loader can be unloaded.
+        // The command-line boot path may start warmup before Graphics exists.
+        // Join it if initialization never consumed the warmed instance.
         discardWarmedInstance();
         if (static_cast<VkInstance>(inst.instance) != VK_NULL_HANDLE) inst.destroy();
         return;

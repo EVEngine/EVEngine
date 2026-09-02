@@ -656,6 +656,8 @@ function(set_include)
         target_compile_definitions(eve_engine_includes INTERFACE
             VKB_ENABLE_VMA=1
             VMA_VULKAN_VERSION=1000000
+            VMA_STATIC_VULKAN_FUNCTIONS=0
+            VMA_DYNAMIC_VULKAN_FUNCTIONS=1
         )
     endif()
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
