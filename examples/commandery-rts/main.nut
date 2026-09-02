@@ -282,8 +282,9 @@ function issueMove(x, y) {
         group[i].orderId = requireResult(replaced, "replace move order");
         local order = group[i].queue.find(group[i].orderId);
         if (order != null) {
-            order.getPayload().setNumber("x", group[i].tx);
-            order.getPayload().setNumber("y", group[i].ty);
+            local payload = order.getPayload();
+            requireResult(payload.setJson("x", group[i].tx.tostring()), "move payload x");
+            requireResult(payload.setJson("y", group[i].ty.tostring()), "move payload y");
         }
     }
     game.message = "已向 "+group.len()+" 个单位下达编队移动命令。";

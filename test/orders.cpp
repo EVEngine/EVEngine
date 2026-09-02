@@ -202,9 +202,8 @@ TEST_CASE("orders.script.ownedQueueReplace") {
         local order = queue.current();
         if (order != null && order.getId() == replaced.value && order.getKind() == "move" &&
             order.getState() == "active") {
-            order.getPayload().setNumber("x", 400.0);
-            order.getPayload().setNumber("y", 360.0);
-            if (order.getPayload().has("x") && order.getPayload().has("y"))
+            local payloadResult = order.getPayload().setJson("x", "400");
+            if (payloadResult.ok && order.getPayload().has("x"))
                 result = "replaced";
         }
     )"));
