@@ -637,7 +637,13 @@ function(set_include)
         ${EVENGINE_VKBUILDER_INCLUDE_DIR}
     )
     if(EVENGINE_VULKAN_USE_VMA AND NOT EVENGINE_WEBGPU AND NOT EMSCRIPTEN)
-        target_compile_definitions(eve_engine_includes INTERFACE VKB_ENABLE_VMA=1)
+        # The Vulkan instance is deliberately created against the 1.0 contract.
+        # Keep VMA on that same contract so Android does not statically import
+        # newer core entry points that its loader only exposes dynamically.
+        target_compile_definitions(eve_engine_includes INTERFACE
+            VKB_ENABLE_VMA=1
+            VMA_VULKAN_VERSION=1000000
+        )
     endif()
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
         # Raw source-checkout headers for medialoader/assimp/DTL. In prebuilt

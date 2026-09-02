@@ -67,7 +67,9 @@ void VmaAllocatorOwner::create(const vkb::Instance &instance,
     createInfo.instance = static_cast<VkInstance>(instance.instance);
     createInfo.physicalDevice = static_cast<VkPhysicalDevice>(physicalDevice.instance);
     createInfo.device = static_cast<VkDevice>(device.instance);
-    createInfo.vulkanApiVersion = physicalDevice.properties.apiVersion;
+    // InstanceBuilder requests Vulkan 1.0. VMA requires this value to describe
+    // the application's instance contract, not the physical device maximum.
+    createInfo.vulkanApiVersion = VK_API_VERSION_1_0;
     const VkResult result = vmaCreateAllocator(&createInfo, &allocator_);
     if (result != VK_SUCCESS) throw Exception("vmaCreateAllocator failed: %d", int(result));
     device.attachVmaAllocator(allocator_);
