@@ -57,6 +57,33 @@ gfx.renderSprites();
 `setClipPlanes(near, far)` 配置两种投影共用的近、远裁剪面，并要求
 `0 < near < far`。
 
+### 跨帧绘制 3D 基础图形
+
+调试可视化、编辑器辅助线和玩法范围提示应使用持久 `Primitive3D`，不需要保留帧内
+Canvas。Graphics 是图形场景的唯一所有者；脚本对象只保存带 owner、index 和 generation
+的句柄。对象被移除、Graphics 销毁或槽位复用后，旧代理会通过 `isStale()` 明确失效。
+
+```squirrel
+local created = gfx.newPrimitiveLine3D(
+    0, 0, 0, 4, 1, -2, 1, 0.7, 0.1, 1, 3);
+if (created.ok) {
+    debugLine <- created.value;
+    debugLine.setDash(12, 8, 0, "screen"); // screen | world
+    debugLine.setDepthMode("test");         // test-write | test | ignore
+}
+
+local sphereResult = gfx.newPrimitiveSphere3D(0, 1, -4, 1.5, 0.2, 0.8, 1, 1, 2);
+local boxResult = gfx.newPrimitiveAabb3D(-1, 0, -1, 1, 2, 1, 1, 1, 0, 1, 2);
+```
+
+`newPrimitiveLine3D(...)`、`newPrimitiveSphere3D(...)` 和
+`newPrimitiveAabb3D(...)` 返回统一 Result 表；成功后的 `value` 是 owned `Primitive3D`。
+代理提供 `setVisible(bool)`、`setColor(r,g,b,a)`、`setLineWidth(width)`、
+`setDash(draw,gap,phase,space)`、`clearDash()`、`setDepthMode(mode)`、`remove()` 和
+`setObjectId(id)`、`isStale()`；`ownership()` 固定返回 `"owned"`。所有修改和移除操作都返回 Result，必须检查 `ok` 或显式忽略；代理析构会
+移除仍存活的图形。当前脚本入口只提供描边线、线框球和线框 AABB；C++ 的
+`PrimitiveSceneCanvas3D` 还提供圆盘、弧、OBB、网格、胶囊、圆柱、圆锥、箭头和视锥。
+
 ### 实时编辑与替换 Shader
 
 开发工具可保留已有 `Shader` 对象及其材质引用，仅替换内部后端资源：

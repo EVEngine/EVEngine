@@ -1,12 +1,13 @@
 #pragma once
-#include "graphics/Graphics.h"
 #include "graphics/Batcher.h"
-#include "graphics/Texture.h"
-#include "graphics/Mesh.h"
-#include "graphics/Shader.h"
-#include "graphics/Light.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/Graphics.h"
+#include "graphics/Light.h"
+#include "graphics/Mesh.h"
+#include "graphics/PrimitiveTypes.h"
+#include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/Texture.h"
 
 #if defined(__EMSCRIPTEN__) && __has_include(<webgpu/webgpu_cpp.h>)
 #include <webgpu/webgpu_cpp.h>
@@ -242,6 +243,7 @@ public:
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
     void drawSolidRect(float x, float y, float w, float h, const Color &color,
                        BlendMode blend = BlendMode::Alpha) override;
+    void drawPrimitiveCanvas(const PrimitiveCanvas2D &canvas) override;
     void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
                               const Color &color,
                               BlendMode blend = BlendMode::Alpha) override;
@@ -350,6 +352,7 @@ public:
     void begin3DFrame() override;
     void begin3DFrameToCanvas(Canvas *canvas) override;
     void end3DFrameToCanvas() override;
+    void  drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) override;
     float getLastOffscreen3DGpuDurationMs() const override {
         return completedOffscreenTimestampMs.exchange(0.f);
     }
@@ -637,6 +640,9 @@ private:
                       WGPUTextureFormat format);
     void flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format,
                      bool canvasTarget = false);
+    void                 flushPrimitive3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format, uint32_t sampleCount);
+    wgpu::RenderPipeline getPrimitive3DPipeline(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull,
+                                                WGPUTextureFormat format, uint32_t sampleCount);
     void flushShadowPass(wgpu::RenderPassEncoder pass, int cascade);
     void flushGbufferPass(wgpu::RenderPassEncoder pass);
     void flushDecalPass(wgpu::RenderPassEncoder pass);
@@ -859,6 +865,18 @@ private:
     glm::mat4 mesh3dViewProj{1.f};
     glm::mat4 mesh3dView{1.f};
     float mesh3dNear = 0.1f, mesh3dFar = 100.f;
+    struct Primitive3DVertex {
+        glm::vec4 clipPosition{0.f};
+        glm::vec4 color{1.f};
+    };
+    struct Primitive3DDraw {
+        ScenePrimitivePaint            paint;
+        float                          averageDepth = 0.f;
+        std::size_t                    sequence     = 0;
+        std::vector<Primitive3DVertex> vertices;
+    };
+    std::vector<Primitive3DDraw>                            primitive3DDraws;
+    std::unordered_map<std::uint64_t, wgpu::RenderPipeline> primitive3DPipelines;
     Texture *sceneColorTexture = nullptr;
     Texture *mesh3dNormalTexture = nullptr;
     Texture *mesh3dHeightTexture = nullptr;

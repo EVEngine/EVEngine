@@ -18,6 +18,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
+#include "graphics/PrimitiveTypes.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
@@ -47,6 +48,20 @@ struct ColorVertex {
             {0, binding, vk::Format::eR32G32Sfloat, offsetof(ColorVertex, pos)},
             {1, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(ColorVertex, color)},
         };
+    }
+};
+
+/** @brief Clip-space vertex emitted by the backend-neutral primitive tessellator. */
+struct Primitive3DVertex {
+    glm::vec4 clipPosition;
+    glm::vec4 color;
+
+    static vk::VertexInputBindingDescription getBindingDescription(uint32_t binding) {
+        return {binding, sizeof(Primitive3DVertex), vk::VertexInputRate::eVertex};
+    }
+    static std::vector<vk::VertexInputAttributeDescription> getAttributeDescription(uint32_t binding) {
+        return {{0, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(Primitive3DVertex, clipPosition)},
+                {1, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(Primitive3DVertex, color)}};
     }
 };
 
@@ -382,6 +397,7 @@ public:
 
     void drawSolidRect(float x, float y, float w, float h, const Color &color,
                        BlendMode blend = BlendMode::Alpha) override;
+    void     drawPrimitiveCanvas(const PrimitiveCanvas2D &canvas) override;
     void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
                               const Color &color,
                               BlendMode blend = BlendMode::Alpha) override;
@@ -492,6 +508,7 @@ public:
     void begin3DFrame() override;
     void begin3DFrameToCanvas(Canvas *canvas) override;
     void end3DFrameToCanvas() override;
+    void  drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) override;
     float getLastOffscreen3DGpuDurationMs() const override {
         return lastOffscreen3DGpuDurationMs;
     }
@@ -717,6 +734,8 @@ private:
                                             bool depthWrite = true, bool doubleSided = true);
     static constexpr size_t kMesh3DPipelineVariants = 20;
     static size_t mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided);
+    static constexpr size_t kPrimitive3DPipelineVariants = 45;
+    static size_t           primitive3DPipelineIndex(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull);
     /** @brief X-ray overlay variant: depth test/write off + alpha blend (occluded silhouettes). */
     vk::Pipeline createMesh3DXrayPipeline(const std::vector<uint32_t> &vert,
                                           const std::vector<uint32_t> &frag,
@@ -731,6 +750,9 @@ private:
     /** @brief Rebuild scene-pass pipelines against the given render pass / sample count. */
     void ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
                                   vk::SampleCountFlagBits samples);
+    void rebuildPrimitive3DPipelines(const vkb::BuiltRenderPass &target, vk::SampleCountFlagBits samples);
+    void buildPrimitive3DPipelines(const vkb::BuiltRenderPass &target, vk::SampleCountFlagBits samples,
+                                   std::array<vk::Pipeline, kPrimitive3DPipelineVariants> &pipelines);
     /** @brief Clamp a requested sample count to the device-supported set (0/1/2/4/8). */
     int clampMsaaSamples(int requested) const;
     /** @brief Render pass a scene-pass pipeline should be built against right now. */
@@ -882,6 +904,10 @@ private:
     vk::Pipeline mesh3dPipeline;
     vk::Pipeline mesh3dTransparentPipeline;
     std::array<vk::Pipeline, kMesh3DPipelineVariants> mesh3dSurfacePipelines{};
+    std::array<vk::Pipeline, kPrimitive3DPipelineVariants> primitive3DPipelines{};
+    std::array<vk::Pipeline, kPrimitive3DPipelineVariants> offscreenPrimitive3DPipelines{};
+    std::array<vk::Pipeline, kPrimitive3DPipelineVariants> hdrOffscreenPrimitive3DPipelines{};
+    std::vector<vkb::HostVertexBuffer>                     offscreenPrimitive3DBufs;
     // One UBO (+ per-texture descriptor sets) per draw in the current 3D frame.
     // Avoids vkUpdateDescriptorSets on a set already bound in a recording /
     // executable command buffer (which invalidates the CB).
@@ -1486,6 +1512,7 @@ private:
         std::vector<vkb::HostVertexBuffer> solidBufs;
         std::vector<vkb::HostVertexBuffer> texBufs;
         std::vector<vkb::HostVertexBuffer> uiTexBufs;
+        std::vector<vkb::HostVertexBuffer> primitive3DBufs;
     };
     std::vector<Frame2DBuffers> frame2dBuffers;  // per swapchain frame slot
     Frame2DBuffers offscreenBuffers;             // synchronous offscreen path

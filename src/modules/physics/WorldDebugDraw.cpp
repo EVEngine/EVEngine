@@ -1,12 +1,12 @@
 #include "physics/World.h"
 
-#include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
+#include "graphics/PrimitiveDrawList.h"
+#include "graphics/PrimitivePath.h"
 
 #include <Box2D/Box2D.h>
 
-#include <algorithm>
-#include <cmath>
+#include <vector>
 
 namespace eve::physics {
 namespace {
@@ -23,12 +23,12 @@ class DebugDraw final : public b2Draw {
 public:
     DebugDraw() { SetFlags(e_shapeBit | e_jointBit | e_aabbBit); }
 
-    void begin(graphics::Graphics *gfx, float meter) {
-        gfx_   = gfx;
+    void begin(graphics::PrimitiveCanvas2D *canvas, float meter) {
+        canvas_ = canvas;
         meter_ = meter;
     }
 
-    void end() { gfx_ = nullptr; }
+    void end() { canvas_ = nullptr; }
 
     void DrawPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color) override {
         drawPoly(vertices, vertexCount, color, false);
@@ -47,16 +47,8 @@ public:
     }
 
     void DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2, const b2Color &color) override {
-        if (!gfx_) return;
-        float x1   = p1.x * meter_;
-        float y1   = p1.y * meter_;
-        float x2   = p2.x * meter_;
-        float y2   = p2.y * meter_;
-        float minx = std::min(x1, x2);
-        float miny = std::min(y1, y2);
-        float w    = std::max(1.f, std::fabs(x2 - x1));
-        float h    = std::max(1.f, std::fabs(y2 - y1));
-        gfx_->drawSolidRect(minx, miny, w, h, Color(color.r, color.g, color.b, color.a * 0.8f));
+        if (!canvas_) return;
+        canvas_->drawLine({p1.x * meter_, p1.y * meter_}, {p2.x * meter_, p2.y * meter_}, strokePaint(color));
     }
 
     void DrawTransform(const b2Transform &xf) override {
@@ -65,40 +57,47 @@ public:
     }
 
 private:
+    static graphics::PrimitivePaint strokePaint(const b2Color &color) {
+        graphics::PrimitivePaint paint;
+        paint.color        = Color(color.r, color.g, color.b, color.a * 0.8f);
+        paint.mode         = graphics::PaintMode::Stroke;
+        paint.stroke.width = 1.5f;
+        paint.stroke.cap   = graphics::LineCap::Round;
+        paint.stroke.join  = graphics::LineJoin::Round;
+        return paint;
+    }
+
     void drawPoly(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color, bool solid) {
-        if (!gfx_ || vertexCount < 2) return;
-        for (int32 i = 0; i < vertexCount; ++i) {
-            const b2Vec2 &a = vertices[i];
-            const b2Vec2 &b = vertices[(i + 1) % vertexCount];
-            DrawSegment(a, b, color);
-        }
+        if (!canvas_ || vertexCount < 2) return;
+        std::vector<glm::vec2> points;
+        points.reserve(static_cast<std::size_t>(vertexCount));
+        for (int32 i = 0; i < vertexCount; ++i) points.emplace_back(vertices[i].x * meter_, vertices[i].y * meter_);
+        graphics::PrimitivePaint paint = strokePaint(color);
         if (solid && vertexCount >= 3) {
-            float minx = vertices[0].x;
-            float maxx = vertices[0].x;
-            float miny = vertices[0].y;
-            float maxy = vertices[0].y;
-            for (int32 i = 1; i < vertexCount; ++i) {
-                minx = std::min(minx, vertices[i].x);
-                maxx = std::max(maxx, vertices[i].x);
-                miny = std::min(miny, vertices[i].y);
-                maxy = std::max(maxy, vertices[i].y);
-            }
-            gfx_->drawSolidRect(minx * meter_, miny * meter_, (maxx - minx) * meter_, (maxy - miny) * meter_,
-                                Color(color.r, color.g, color.b, color.a * 0.25f));
+            paint.mode    = graphics::PaintMode::FillAndStroke;
+            paint.color.a = color.a * 0.35f;
+            graphics::Path2D path;
+            path.moveTo(points.front());
+            for (std::size_t i = 1; i < points.size(); ++i) path.lineTo(points[i]);
+            path.close();
+            canvas_->drawPath(path, paint);
+        } else {
+            canvas_->drawPolyline(points, true, paint);
         }
     }
 
     void drawCircle(const b2Vec2 &center, float32 radius, const b2Color &color, bool solid) {
-        if (!gfx_) return;
-        float px = (center.x - radius) * meter_;
-        float py = (center.y - radius) * meter_;
-        float d  = radius * 2.f * meter_;
-        float a  = solid ? color.a * 0.35f : color.a * 0.7f;
-        gfx_->drawSolidRect(px, py, d, d, Color(color.r, color.g, color.b, a));
+        if (!canvas_) return;
+        graphics::PrimitivePaint paint = strokePaint(color);
+        if (solid) {
+            paint.mode    = graphics::PaintMode::FillAndStroke;
+            paint.color.a = color.a * 0.35f;
+        }
+        canvas_->drawCircle({center.x * meter_, center.y * meter_}, radius * meter_, paint);
     }
 
-    graphics::Graphics *gfx_   = nullptr;
-    float               meter_ = 30.f;
+    graphics::PrimitiveCanvas2D *canvas_ = nullptr;
+    float                        meter_  = 30.f;
 };
 
 class DebugDrawBinding final {
@@ -120,10 +119,12 @@ void World::drawDebug(graphics::Graphics *gfx) {
     if (!world || !isValid() || !gfx) return;
 
     DebugDraw draw;
-    draw.begin(gfx, getMeter());
+    graphics::PrimitiveCanvas2D canvas;
+    draw.begin(&canvas, getMeter());
     DebugDrawBinding binding(world, &draw);
     world->DrawDebugData();
     draw.end();
+    gfx->drawPrimitiveCanvas(canvas);
 }
 
 }  // namespace eve::physics
