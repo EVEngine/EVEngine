@@ -766,6 +766,61 @@ void Orders::expose(ssq::Table& table) {
         return eve::script::projectResult(vm, queueView->append(kind, priority, timeout),
                                           [](std::string&& id) { return eve::Value(std::move(id)); });
     });
+    ownedQueue.addFunc("replace", [vm](ScriptCommandQueue* value, const std::string& kind, int priority, float timeout) {
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
+                                          "owned order queue proxy must not be null", "queue"),
+                [](std::string&& id) { return eve::Value(std::move(id)); });
+        auto queueView = Orders::resolve(value->reference);
+        if (!queueView.isBound())
+            return eve::script::projectResult(vm,
+                                              orderFailure<std::string>(eve::DiagnosticCode::StaleHandle,
+                                                                        "owned order queue handle is stale", "queue"),
+                                              [](std::string&& id) { return eve::Value(std::move(id)); });
+        return eve::script::projectResult(vm, queueView->replace(kind, priority, timeout),
+                                          [](std::string&& id) { return eve::Value(std::move(id)); });
+    });
+    ownedQueue.addFunc("interrupt", [vm](ScriptCommandQueue* value, const std::string& kind, int priority,
+                                         float timeout) {
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
+                                          "owned order queue proxy must not be null", "queue"),
+                [](std::string&& id) { return eve::Value(std::move(id)); });
+        auto queueView = Orders::resolve(value->reference);
+        if (!queueView.isBound())
+            return eve::script::projectResult(vm,
+                                              orderFailure<std::string>(eve::DiagnosticCode::StaleHandle,
+                                                                        "owned order queue handle is stale", "queue"),
+                                              [](std::string&& id) { return eve::Value(std::move(id)); });
+        return eve::script::projectResult(vm, queueView->interrupt(kind, priority, timeout),
+                                          [](std::string&& id) { return eve::Value(std::move(id)); });
+    });
+    ownedQueue.addFunc("fail", [vm](ScriptCommandQueue* value, const std::string& id, const std::string& reason) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "owned order queue proxy must not be null",
+                                       "queue"));
+        auto queueView = Orders::resolve(value->reference);
+        if (!queueView.isBound())
+            return eve::script::projectResult(
+                vm, orderFailure<void>(eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue"));
+        return eve::script::projectResult(vm, queueView->fail(id, reason));
+    });
+    ownedQueue.addFunc("cancel", [vm](ScriptCommandQueue* value, const std::string& id, const std::string& reason) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "owned order queue proxy must not be null",
+                                       "queue"));
+        auto queueView = Orders::resolve(value->reference);
+        if (!queueView.isBound())
+            return eve::script::projectResult(
+                vm, orderFailure<void>(eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue"));
+        return eve::script::projectResult(vm, queueView->cancel(id, reason));
+    });
     ownedQueue.addFunc("current", [](ScriptCommandQueue* value) -> Order* {
         if (!value) return nullptr;
         auto queueView = Orders::resolve(value->reference);
