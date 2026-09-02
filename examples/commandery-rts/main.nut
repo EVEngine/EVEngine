@@ -37,16 +37,13 @@ function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
 function distance(ax, ay, bx, by) { local x=ax-bx; local y=ay-by; return sqrt(x*x+y*y); }
 
 function requireResult(result, context) {
-    if (result == null || !result.ok) {
-        local summary = result == null ? "null result" : result.status.summary;
-        throw context + ": " + summary;
-    }
+    if (!result.ok) throw context + ": " + result.status.summary;
     return result.value;
 }
 
 function livingCount(faction) {
     local n = 0;
-    foreach (u in game.units) if (u.alive && u.faction == faction) n += 1;
+    foreach (u in game.units) if (u.alive && u.faction == faction) n+=1;
     return n;
 }
 
@@ -283,8 +280,8 @@ function issueMove(x, y) {
         local order = group[i].queue.find(group[i].orderId);
         if (order != null) {
             local payload = order.getPayload();
-            requireResult(payload.setJson("x", group[i].tx.tostring()), "move payload x");
-            requireResult(payload.setJson("y", group[i].ty.tostring()), "move payload y");
+            requireResult(payload.setJson("x", "" + group[i].tx), "move payload x");
+            requireResult(payload.setJson("y", "" + group[i].ty), "move payload y");
         }
     }
     game.message = "已向 "+group.len()+" 个单位下达编队移动命令。";
@@ -416,8 +413,8 @@ function nearestPoint(faction, wantEnemyOwned) {
     ax = ax / n; ay = ay / n;
     local best=null; local bestD=100000.0;
     foreach (p in game.points) {
-        local match = wantEnemyOwned ? (p.owner != faction) : (p.owner == faction);
-        if (!match) continue;
+        local takeIt = wantEnemyOwned ? (p.owner != faction) : (p.owner == faction);
+        if (!takeIt) continue;
         local d=distance(ax,ay,p.x,p.y);
         if (d < bestD) { best=p; bestD=d; }
     }
