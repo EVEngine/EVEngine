@@ -265,10 +265,12 @@ void VmaAllocatorOwner::create(const vkb::Instance &instance,
     createInfo.physicalDevice = static_cast<VkPhysicalDevice>(physicalDevice.instance);
     createInfo.device = static_cast<VkDevice>(device.instance);
     VmaVulkanFunctions vulkanFunctions{};
-    vulkanFunctions.vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
-        SDL_Vulkan_GetVkGetInstanceProcAddr());
+    // The headless backend does not ask SDL to load Vulkan, so its loader
+    // accessor may legitimately be null. Reuse the dispatcher that created
+    // this instance; it is also the portable path on Android.
+    vulkanFunctions.vkGetInstanceProcAddr = VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr;
     if (!vulkanFunctions.vkGetInstanceProcAddr) {
-        throw Exception("VMA could not resolve vkGetInstanceProcAddr from SDL");
+        throw Exception("VMA could not resolve vkGetInstanceProcAddr from the Vulkan dispatcher");
     }
     vulkanFunctions.vkGetDeviceProcAddr = reinterpret_cast<PFN_vkGetDeviceProcAddr>(
         vulkanFunctions.vkGetInstanceProcAddr(createInfo.instance, "vkGetDeviceProcAddr"));
