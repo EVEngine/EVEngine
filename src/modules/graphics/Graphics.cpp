@@ -42,7 +42,10 @@
 #endif
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
+#include "common/Resource.h"
 #include "common/SquirrelBinding.h"
+#include "common/StartupTiming.h"
+#include "common/Diagnostic.h"
 #include "filesystem/Filesystem.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
@@ -50,6 +53,7 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -1405,6 +1409,7 @@ Texture* Graphics::newTextureFromImageData(image::ImageData* data, const Texture
 
 eve::Result<void> Graphics::updateTextureFromImageData(Texture *texture,
                                                         image::ImageData *data) {
+    ensureFileTexturesReady();
     if (!texture || !data)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "texture and ImageData must be non-null",
@@ -1420,6 +1425,80 @@ eve::Result<void> Graphics::updateTextureFromImageData(Texture *texture,
             "texture is not owned by this backend, dimensions differ, or upload failed",
             "graphics.updateTextureFromImageData"));
     return eve::Result<void>::success();
+}
+
+void Graphics::requestFileImageDecode(const std::string &key) {
+    auto queued = eve::ResourceManager::getInstance().request(key);
+    if (!queued.ok())
+        throw eve::Exception("%s", queued.status().describe().c_str());
+}
+
+bool Graphics::fileTextureSourceExists(const std::string &filename) const {
+    auto *fs = eve::filesystem::Filesystem::create();
+    if (!fs) return false;
+    eve::filesystem::Filesystem::Info info{};
+    return fs->getInfo(filename, info);
+}
+
+void Graphics::dropDeferredFileTexture(Texture *texture) {
+    if (!texture) return;
+    deferredFileTextures_.erase(std::remove_if(deferredFileTextures_.begin(), deferredFileTextures_.end(),
+                                               [texture](const DeferredFileTexture &item) {
+                                                   return item.texture == texture;
+                                               }),
+                                deferredFileTextures_.end());
+    texture->clearDeferredFilePixels();
+}
+
+bool Graphics::uploadDeferredFileTexture(Texture *texture, image::ImageData *data) {
+    if (!texture || !data) return false;
+    if (data->getFormat() != "RGBA8") return false;
+    return updateTexture(texture, data->getWidth(), data->getHeight(),
+                         static_cast<const uint8_t *>(data->getData()));
+}
+
+void Graphics::ensureFileTexturesReady() {
+    if (deferredFileTextures_.empty() || realizingFileTextures_) return;
+    realizingFileTextures_ = true;
+    StartupStage stage("graphics: realize file textures");
+    struct Guard {
+        Graphics *g;
+        ~Guard() { g->realizingFileTextures_ = false; }
+    } guard{this};
+
+    std::vector<DeferredFileTexture> pending = std::move(deferredFileTextures_);
+    deferredFileTextures_.clear();
+
+    auto restoreUnrealized = [&]() {
+        for (const auto &item : pending) {
+            if (item.texture && item.texture->hasDeferredFilePixels())
+                deferredFileTextures_.push_back(item);
+        }
+    };
+
+    auto &resources = eve::ResourceManager::getInstance();
+    for (const auto &item : pending) {
+        auto waited = resources.waitFor(item.key);
+        if (!waited.ok()) {
+            restoreUnrealized();
+            throw eve::Exception("%s", waited.status().describe().c_str());
+        }
+    }
+
+    try {
+        for (const auto &item : pending) {
+            auto waited = resources.waitFor(item.key);
+            if (!waited.ok())
+                throw eve::Exception("%s", waited.status().describe().c_str());
+            auto *data = dynamic_cast<image::ImageData *>(&waited.value().get());
+            if (!data || !uploadDeferredFileTexture(item.texture, data))
+                throw eve::Exception("newTextureFromFile: GPU upload failed '%s'", item.key.c_str());
+            if (item.texture) item.texture->clearDeferredFilePixels();
+        }
+    } catch (...) {
+        restoreUnrealized();
+        throw;
+    }
 }
 
 Texture* Graphics::newTextureFromFileRepeated(const std::string& filename, bool repeatU, bool repeatV) {

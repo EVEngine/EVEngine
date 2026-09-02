@@ -1086,14 +1086,16 @@ int findFirstSkinnedMesh(const eve::model3d::ModelData *model) {
     return -1;
 }
 
-void printOverlayThunk(void *userdata, void *) {
+bool printOverlayThunk(void *userdata, void *commandBuffer) {
     auto *gfx = static_cast<Graphics *>(userdata);
-    if (!gfx || !gfx->getFont()) return;
+    if (!gfx || !gfx->getFont()) return false;
+    if (!commandBuffer) return true;
     Font *font = gfx->getFont();
     const char *icon = "\xEF\x80\x80";
     std::string row;
     for (int i = 0; i < 8; ++i) row += icon;
     gfx->drawText(font, row, 8.f, 8.f, Color(1.f, 0.82f, 0.2f, 1.f), 2.4f);
+    return true;
 }
 
 }  // namespace

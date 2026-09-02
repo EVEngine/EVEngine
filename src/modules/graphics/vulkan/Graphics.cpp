@@ -294,13 +294,14 @@ Graphics::Graphics() = default;
 Graphics::~Graphics() {
     detachGraphicsArtifactProvider(this);
     if (!initialized) {
-        // The command-line boot path may start warmup before Graphics exists.
-        // Join it if initialization never consumed the warmed instance.
+        // A process-level boot warmup may exist even when callers decide not
+        // to initialize graphics. Join it before the Vulkan loader unloads.
         discardWarmedInstance();
         if (static_cast<VkInstance>(inst.instance) != VK_NULL_HANDLE) inst.destroy();
         return;
     }
     device->waitIdle();
+    deferredFileTextures_.clear();
     if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
     gpuQueryPool_ = nullptr;
     // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them

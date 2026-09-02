@@ -154,6 +154,12 @@ function(check_third_party_project name repo)
     set(_eve_tp_cmake_args
         -DCMAKE_BUILD_TYPE=${_eve_tp_build_type}
         -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
+        # Assimp enables ccache by default and installs it as a global rule
+        # launcher for the whole aggregate. On Windows hosted runners that
+        # resolves to Strawberry Perl's ccache, which cannot launch our
+        # msvc-cl.cmd compiler wrapper. EVEngine owns compiler caching at the
+        # parent build, so nested dependencies must not install another layer.
+        -DASSIMP_BUILD_USE_CCACHE=OFF
     )
     # Pass the resolved logical groups into the isolated dependency project.
     # Comma encoding keeps one CMake argument intact across ExternalProject's
