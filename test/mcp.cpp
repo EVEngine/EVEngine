@@ -319,6 +319,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     auto tools = toolsMsg->getObject("result")->getArray("tools");
     REQUIRE(tools);
     bool foundStatus          = false;
+    bool foundGameplay        = false;
     bool foundEval            = false;
     bool foundScene           = false;
     bool foundProc            = false;
@@ -361,6 +362,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         auto              t    = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
         if (name == "eve_status") foundStatus = true;
+        if (name == "eve_gameplay") foundGameplay = true;
         if (name == "eve_eval") foundEval = true;
         if (name == "eve_scene_status") foundScene = true;
         if (name == "eve_procgen_recipes") foundProc = true;
@@ -401,6 +403,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_pixelworld_catalog_apply") foundPixelApply = true;
     }
     CHECK(foundStatus);
+    CHECK(foundGameplay);
     CHECK(foundEval);
     CHECK(foundScene);
     CHECK(foundProc);
@@ -449,6 +452,17 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     const std::string text = content->getObject(0)->getValue<std::string>("text");
     CHECK(text.find("\"attached\":true") != std::string::npos);
     CHECK(text.find("\"mcpPort\":") != std::string::npos);
+
+    client.sendRequest(
+        40, "tools/call",
+        "{\"name\":\"eve_gameplay\",\"arguments\":{\"request\":{\"schemaId\":"
+        "\"evengine.gameplay-control-request\",\"schemaVersion\":1,\"op\":\"domains\"}}}");
+    auto gameplayMsg = client.expectResult(40);
+    REQUIRE(gameplayMsg);
+    auto gameplayContent = gameplayMsg->getObject("result")->getArray("content");
+    REQUIRE(gameplayContent);
+    CHECK(gameplayContent->getObject(0)->getValue<std::string>("text").find("\"domains\"") !=
+          std::string::npos);
 
     client.sendRequest(4, "tools/call", "{\"name\":\"eve_ai_note\",\"arguments\":{\"text\":\"hello agent\"}}");
     REQUIRE(client.expectResult(4));
