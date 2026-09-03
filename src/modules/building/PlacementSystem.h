@@ -20,6 +20,7 @@ namespace eve::building {
 class PlacementWorld;
 class Ghost;
 class HeightfieldSurface;
+class StaticMeshSurface;
 
 /** @brief Outcome of restoring an exact placement snapshot. */
 enum class PlacementRestoreStatus { Restored, Rejected };
@@ -194,6 +195,16 @@ public:
     [[nodiscard]] static eve::Result<void>
     registerHeightfieldSurface(const std::string &name,
                                std::shared_ptr<const HeightfieldSurface> surface);
+    /**
+     * @brief Register an immutable BVH-accelerated triangle mesh and retain its snapshot.
+     * @param name Registry key used by placement and preview operations.
+     * @param surface Immutable owning mesh snapshot retained until replacement or removal.
+     * @return Applied, or a structured validation failure without changing the registry.
+     * @thread Caller-thread only; registration must not race sampling or unregistration.
+     */
+    [[nodiscard]] static eve::Result<void>
+    registerStaticMeshSurface(const std::string &name,
+                              std::shared_ptr<const StaticMeshSurface> surface);
     static void unregisterSurface(const std::string &name);
     static bool hasSurface(const std::string &name);
     static bool surfaceHit(const PlacementWorld &world, const std::string &name, float x,

@@ -8,6 +8,7 @@
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
 #include "building/PlacementSession.h"
+#include "building/StaticMeshSurface.h"
 #include "map/Map.h"
 #include "map/TileLayer.h"
 
@@ -877,6 +878,148 @@ TEST_CASE("building.surface.heightfieldFeedsFootprintsAndCurves") {
     REQUIRE_EQ(group.value().surfaceSamples.size(), size_t(9));
 
     PlacementSystem::unregisterSurface("heightfield.integration");
+    BuildingRegistry::clear();
+}
+
+TEST_CASE("building.surface.staticMeshBvhSelectsLayersAndInterpolatesFrames") {
+    StaticMeshSurface::Config invalidConfig;
+    auto invalid = StaticMeshSurface::create(
+        invalidConfig, {0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f, 0.f}, {0, 1, 9});
+    REQUIRE(!invalid.ok());
+    REQUIRE_EQ(invalid.code(), eve::StatusCode::Rejected);
+
+    const std::vector<float> layeredVertices{
+        0.f, 1.f, 0.f, 2.f, 1.f, 0.f, 2.f, 1.f, 2.f, 0.f, 1.f, 2.f,
+        0.f, 3.f, 0.f, 2.f, 3.f, 0.f, 2.f, 3.f, 2.f, 0.f, 3.f, 2.f};
+    const std::vector<uint32_t> layeredIndices{0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
+    StaticMeshSurface::Config highestConfig;
+    highestConfig.surfaceId = "mesh.layers";
+    highestConfig.surfaceRevision = 12;
+    highestConfig.tags = {"static", "walkable"};
+    highestConfig.leafTriangleCount = 1;
+    auto highestCreated =
+        StaticMeshSurface::create(highestConfig, layeredVertices, layeredIndices);
+    REQUIRE(highestCreated.ok());
+    auto highest = std::move(highestCreated).takeValue();
+    REQUIRE_EQ(highest->triangleCount(), size_t(4));
+    REQUIRE(highest->nodeCount() > 1);
+    std::weak_ptr<const StaticMeshSurface> lifetime = highest;
+    auto highestRegistered =
+        PlacementSystem::registerStaticMeshSurface("mesh.highest", highest);
+    REQUIRE(highestRegistered.ok());
+    highest.reset();
+    REQUIRE(!lifetime.expired());
+
+    PlacementWorld xzWorld(8, 8, 1.f);
+    xzWorld.setGridPlane("xz");
+    auto highHit = PlacementSystem::sampleSurface(xzWorld, "mesh.highest", 0.25f, 0.25f);
+    REQUIRE(highHit.ok());
+    REQUIRE(approxEq(highHit.value().worldY, 3.f));
+    REQUIRE_EQ(highHit.value().primitiveId, uint64_t(2));
+    REQUIRE_EQ(highHit.value().surfaceId, "mesh.layers");
+    REQUIRE_EQ(highHit.value().surfaceRevision, uint64_t(12));
+    REQUIRE(approxEq(highHit.value().normalY, 1.f));
+
+    StaticMeshSurface::Config lowestConfig = highestConfig;
+    lowestConfig.hitSelection = StaticMeshSurface::HitSelection::Lowest;
+    auto lowestCreated =
+        StaticMeshSurface::create(lowestConfig, layeredVertices, layeredIndices);
+    REQUIRE(lowestCreated.ok());
+    auto lowestRegistered = PlacementSystem::registerStaticMeshSurface(
+        "mesh.lowest", std::move(lowestCreated).takeValue());
+    REQUIRE(lowestRegistered.ok());
+    auto lowHit = PlacementSystem::sampleSurface(xzWorld, "mesh.lowest", 0.25f, 0.25f);
+    REQUIRE(lowHit.ok());
+    REQUIRE(approxEq(lowHit.value().worldY, 1.f));
+    REQUIRE_EQ(lowHit.value().primitiveId, uint64_t(0));
+
+    StaticMeshSurface::Config closestConfig = highestConfig;
+    closestConfig.hitSelection = StaticMeshSurface::HitSelection::ClosestToReference;
+    closestConfig.referenceHeight = 2.6f;
+    auto closestCreated =
+        StaticMeshSurface::create(closestConfig, layeredVertices, layeredIndices);
+    REQUIRE(closestCreated.ok());
+    auto closestRegistered = PlacementSystem::registerStaticMeshSurface(
+        "mesh.closest", std::move(closestCreated).takeValue());
+    REQUIRE(closestRegistered.ok());
+    auto closestHit = PlacementSystem::sampleSurface(xzWorld, "mesh.closest", 1.5f, 1.5f);
+    REQUIRE(closestHit.ok());
+    REQUIRE(approxEq(closestHit.value().worldY, 3.f));
+
+    StaticMeshSurface::Config xyConfig;
+    xyConfig.surfaceId = "mesh.xy";
+    const std::vector<float> xyVertices{0.f, 0.f, 1.f, 2.f, 0.f, 3.f, 0.f, 2.f, 1.f};
+    const std::vector<float> xyNormals{0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    auto xyCreated = StaticMeshSurface::create(xyConfig, xyVertices, {0, 1, 2}, xyNormals);
+    REQUIRE(xyCreated.ok());
+    auto xyRegistered = PlacementSystem::registerStaticMeshSurface(
+        "mesh.xy", std::move(xyCreated).takeValue());
+    REQUIRE(xyRegistered.ok());
+    PlacementWorld xyWorld(8, 8, 1.f);
+    auto xyHit = PlacementSystem::sampleSurface(xyWorld, "mesh.xy", 0.5f, 0.5f);
+    REQUIRE(xyHit.ok());
+    REQUIRE(approxEq(xyHit.value().worldZ, 1.5f));
+    REQUIRE(approxEq(xyHit.value().normalX, 0.f));
+    REQUIRE(approxEq(xyHit.value().normalZ, 1.f));
+    REQUIRE(!PlacementSystem::sampleSurface(xyWorld, "mesh.xy", 1.8f, 1.8f).ok());
+
+    PlacementSystem::unregisterSurface("mesh.highest");
+    REQUIRE(lifetime.expired());
+    PlacementSystem::unregisterSurface("mesh.lowest");
+    PlacementSystem::unregisterSurface("mesh.closest");
+    PlacementSystem::unregisterSurface("mesh.xy");
+}
+
+TEST_CASE("building.surface.staticMeshFeedsFootprintsAndCurves") {
+    BuildingRegistry::clear();
+    BuildingDefinition platform;
+    platform.id = "mesh-platform";
+    platform.footprintW = 2;
+    platform.footprintH = 2;
+    platform.maxSurfaceSlopeDegrees = 20.f;
+    platform.maxSurfaceHeightDelta = 1.f;
+    BuildingRegistry::registerBuilding(platform);
+    BuildingDefinition wall;
+    wall.id = "mesh-wall";
+    wall.placementKind = "edge";
+    BuildingRegistry::registerBuilding(wall);
+
+    StaticMeshSurface::Config config;
+    config.surfaceId = "mesh.integration";
+    config.surfaceRevision = 5;
+    const std::vector<float> vertices{
+        0.f, 0.f, 0.f, 8.f, 0.8f, 0.f, 8.f, 1.6f, 8.f, 0.f, 0.8f, 8.f};
+    auto created = StaticMeshSurface::create(config, vertices, {0, 2, 1, 0, 3, 2});
+    REQUIRE(created.ok());
+    auto registered = PlacementSystem::registerStaticMeshSurface(
+        "mesh.integration", std::move(created).takeValue());
+    REQUIRE(registered.ok());
+
+    PlacementWorld world(8, 8, 1.f);
+    world.setGridPlane("xz");
+    auto patch = PlacementSystem::sampleSurfacePatch(
+        world, platform.id, "mesh.integration", 2.2f, 2.2f);
+    REQUIRE(patch.ok());
+    REQUIRE_EQ(patch.value().samples.size(), size_t(4));
+    REQUIRE(patch.value().heightDelta < 0.3f);
+    Ghost ghost;
+    ghost.setBuildingId(platform.id);
+    ghost.setFromSurface(&world, "mesh.integration", 2.2f, 2.2f);
+    REQUIRE(ghost.validate(&world));
+    REQUIRE(world.placeGhost(&ghost) > 0);
+
+    const std::vector<PlacementSystem::EdgeCurvePoint> controls{
+        {1.f, 1.f}, {2.f, 1.f}, {3.f, 2.f}, {4.f, 2.f}};
+    auto curve = PlacementSystem::placeEdgeCubicBezierOnSurface(
+        &world, wall.id, controls, 8, "mesh.integration");
+    REQUIRE(curve.ok());
+    auto group = world.edgeCurveGroupForInstance(curve.value().instanceIds.front());
+    REQUIRE(group.ok());
+    REQUIRE_EQ(group.value().surfaceId, "mesh.integration");
+    REQUIRE_EQ(group.value().surfaceRevision, uint64_t(5));
+    REQUIRE_EQ(group.value().surfaceSamples.size(), size_t(9));
+
+    PlacementSystem::unregisterSurface("mesh.integration");
     BuildingRegistry::clear();
 }
 

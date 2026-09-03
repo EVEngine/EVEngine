@@ -1,6 +1,7 @@
 #include "building/PlacementSystem.h"
 
 #include "building/HeightfieldSurface.h"
+#include "building/StaticMeshSurface.h"
 #include "building/BuildingDef.h"
 #include "building/Ghost.h"
 #include "building/PlacementWorld.h"
@@ -360,6 +361,21 @@ eve::Result<void> PlacementSystem::registerHeightfieldSurface(
             eve::DiagnosticCode::InvalidArgument,
             "heightfield registration requires a name and an owning surface", name, {},
             "building.heightfield-surface"));
+    }
+    registerSurfaceProvider(
+        name, [surface = std::move(surface)](const PlacementWorld &world, float x, float y) {
+            return surface->sample(world, x, y);
+        });
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> PlacementSystem::registerStaticMeshSurface(
+    const std::string &name, std::shared_ptr<const StaticMeshSurface> surface) {
+    if (name.empty() || !surface) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "static mesh registration requires a name and an owning surface", name, {},
+            "building.static-mesh-surface"));
     }
     registerSurfaceProvider(
         name, [surface = std::move(surface)](const PlacementWorld &world, float x, float y) {

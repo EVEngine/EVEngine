@@ -159,8 +159,8 @@ ghost.setFromWorld3D(world, worldX, worldY, worldZ); // 直接喂真实世界坐
 world.placeAtWorld3D("house", x, y, z, rot);
 ```
 
-物理射线与任意 Mesh 表面由游戏在 C++ 侧实现 Provider；引擎内置 `plane` 与不可变规则
-高度场 `HeightfieldSurface`。
+物理射线由游戏在 C++ 侧实现 Provider；引擎内置 `plane`、不可变规则高度场
+`HeightfieldSurface`，以及不可变静态三角网格 `StaticMeshSurface`。
 
 新实现应优先使用 `PlacementSystem::registerSurfaceProvider`。Provider 返回受检查的
 `Result<PlacementHit>`；命中除世界坐标外还包含归一化法线、正交切线框架、稳定
@@ -190,6 +190,31 @@ if (surface.ok()) {
 连续。XZ 网格把高度映射到 world Y，XY 网格映射到 world Z。对象构造完成后不可变，可
 并发采样；注册、替换和注销仍限定调用线程且不得与
 采样并发。修改地形时应构造新对象、递增 `surfaceRevision` 后原子替换注册项。
+
+静态网格使用拥有所有权的世界空间 XYZ 顶点、三角形索引和可选逐顶点法线，在创建时
+构建确定性的 median-split BVH：
+
+```cpp
+StaticMeshSurface::Config config;
+config.surfaceId = "terrain.mesh.0";
+config.surfaceRevision = meshRevision;
+config.hitSelection = StaticMeshSurface::HitSelection::Highest;
+auto surface = StaticMeshSurface::create(
+    config, std::move(packedWorldPositions), std::move(triangleIndices),
+    std::move(optionalPackedWorldNormals));
+if (surface.ok()) {
+    auto registered = PlacementSystem::registerStaticMeshSurface(
+        "terrain-mesh", std::move(surface).takeValue());
+    // registered 必须检查。
+}
+```
+
+查询仍采用网格平面坐标而非相机射线：XZ 网格沿世界 Y 投影，XY 网格沿世界 Z 投影；
+与投影方向平行、在平面上退化的三角面不会命中。重叠层可确定性选择 `Highest`、
+`Lowest` 或离 `referenceHeight` 最近的面，相同高度/距离以源三角形序号决胜；该序号写入
+`primitiveId`。法线优先重心插值逐顶点法线，否则使用几何法线，并可统一朝向网格 up。
+对象构造后不可变且可并发采样，注册表持有快照至替换或注销。动态物理体、相机射线和
+任意方向墙面拾取仍应使用自定义 `registerSurfaceProvider`。
 
 通过表面放置后，Ghost 与 `PlacedBuilding` 会保留表面身份、revision 和局部法线。
 脚本可用 `ghost.getSurfaceId/getSurfaceRevision/getSurfaceNormal*`，以及
