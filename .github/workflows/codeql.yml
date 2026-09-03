@@ -57,6 +57,20 @@ jobs:
             libwayland-dev libxkbcommon-dev libasound2-dev \
             mesa-vulkan-drivers libvulkan-dev vulkan-tools glslang-tools
 
+      - name: Prepare C++ dependencies outside CodeQL tracing
+        if: matrix.language == 'cpp'
+        timeout-minutes: 40
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Third-party sources are pinned and scanned in their own upstreams.
+          # Build them before CodeQL initialization so the database contains
+          # EVEngine production code rather than 1000+ external translation units.
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux \
+            -DBUILD_TESTING=OFF \
+            -B build/codeql -S .
+          cmake --build build/codeql --target deps -j "$(nproc)"
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
@@ -69,13 +83,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Third-party deps ship prebuilt SDK headers/libs; the engine itself
-          # must be built under CodeQL tracing. BUILD_TESTING=OFF keeps the
-          # scan focused on engine sources and avoids the test-only TUs.
-          cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux \
-            -DBUILD_TESTING=OFF \
-            -B build/codeql -S .
-          cmake --build build/codeql --target deps -j "$(nproc)"
+          # The already-prepared build tree contains pinned dependency outputs.
+          # Only EVEngine production translation units are traced here.
           cmake --build build/codeql -j "$(nproc)"
 
       - name: Perform CodeQL analysis

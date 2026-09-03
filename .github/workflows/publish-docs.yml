@@ -25,6 +25,12 @@ on:
 permissions:
   contents: write
 
+# gh-pages is a single mutable publication target. Only the newest source
+# revision may promote docs; superseded runs must never race a force-push.
+concurrency:
+  group: publish-docs-gh-pages
+  cancel-in-progress: true
+
 jobs:
   publish:
     name: Build and publish docs

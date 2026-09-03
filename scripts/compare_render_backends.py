@@ -7,13 +7,68 @@ import argparse
 import json
 import math
 import sys
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from PIL import Image
 
 
 class ArtifactContractError(ValueError):
     """Raised when render-parity producers emitted incomplete artifact sets."""
+
+
+@dataclass(frozen=True)
+class RenderContract:
+    """Versioned, backend-neutral comparison semantics for one rendered scene."""
+
+    color_space: str
+    alpha_coverage_delta_max: float
+    mean_rgb_error_max: float
+    p99_rgb_error_max: float
+
+
+def parse_manifest(path: Path) -> dict[str, Any]:
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ArtifactContractError(f"manifest {path.name} is invalid: {error}") from error
+    for field in ("schema", "version", "scene", "backend", "contract"):
+        if field not in manifest:
+            raise ArtifactContractError(
+                f"manifest {path.name} missing required field: {field}"
+            )
+    if manifest["schema"] != "evengine.render-parity" or manifest["version"] != 1:
+        raise ArtifactContractError(
+            f"manifest {path.name} has unsupported schema/version: "
+            f"{manifest['schema']!r}/{manifest['version']!r}"
+        )
+    return manifest
+
+
+def parse_render_contract(manifest: dict[str, Any], path: Path) -> RenderContract:
+    payload = manifest["contract"]
+    required = (
+        "color_space",
+        "alpha_coverage_delta_max",
+        "mean_rgb_error_max",
+        "p99_rgb_error_max",
+    )
+    if not isinstance(payload, dict):
+        raise ArtifactContractError(f"manifest {path.name} contract must be an object")
+    missing = [field for field in required if field not in payload]
+    if missing:
+        raise ArtifactContractError(
+            f"manifest {path.name} contract missing: {', '.join(missing)}"
+        )
+    if payload["color_space"] != "srgb-linearized":
+        raise ArtifactContractError(
+            f"manifest {path.name} has unsupported color space: {payload['color_space']!r}"
+        )
+    limits = [float(payload[field]) for field in required[1:]]
+    if any(not math.isfinite(value) or value < 0.0 for value in limits):
+        raise ArtifactContractError(f"manifest {path.name} has invalid tolerance")
+    return RenderContract(str(payload["color_space"]), *limits)
 
 
 def srgb_to_linear(value: int) -> float:
@@ -26,9 +81,9 @@ def srgb_to_linear(value: int) -> float:
 def compare_scene(
     reference_dir: Path, candidate_dir: Path, manifest_path: Path
 ) -> list[str]:
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest = parse_manifest(manifest_path)
+    contract = parse_render_contract(manifest, manifest_path)
     scene = manifest["scene"]
-    profile = manifest.get("profile", "lit3d")
     reference = Image.open(reference_dir / f"{scene}.png").convert("RGBA")
     candidate = Image.open(candidate_dir / f"{scene}.png").convert("RGBA")
     failures: list[str] = []
@@ -50,21 +105,24 @@ def compare_scene(
     mean_error = sum(errors) / len(errors)
     percentile_99 = errors[min(len(errors) - 1, math.ceil(len(errors) * 0.99) - 1)]
 
-    mean_limit = 2.0 / 255.0 if profile == "flat2d" else 6.0 / 255.0
-    p99_limit = 8.0 / 255.0 if profile == "flat2d" else 20.0 / 255.0
-    if alpha_ratio > 0.005:
-        failures.append(f"{scene}: alpha coverage delta {alpha_ratio:.4%} > 0.5%")
-    if mean_error > mean_limit:
+    if alpha_ratio > contract.alpha_coverage_delta_max:
         failures.append(
-            f"{scene}: mean linear RGB error {mean_error:.6f} > {mean_limit:.6f}"
+            f"{scene}: alpha coverage delta {alpha_ratio:.4%} > "
+            f"{contract.alpha_coverage_delta_max:.4%}"
         )
-    if percentile_99 > p99_limit:
+    if mean_error > contract.mean_rgb_error_max:
         failures.append(
-            f"{scene}: p99 linear RGB error {percentile_99:.6f} > {p99_limit:.6f}"
+            f"{scene}: mean linear RGB error {mean_error:.6f} > "
+            f"{contract.mean_rgb_error_max:.6f}"
+        )
+    if percentile_99 > contract.p99_rgb_error_max:
+        failures.append(
+            f"{scene}: p99 linear RGB error {percentile_99:.6f} > "
+            f"{contract.p99_rgb_error_max:.6f}"
         )
     print(
         f"{scene}: alpha={alpha_ratio:.4%} mean={mean_error:.6f} "
-        f"p99={percentile_99:.6f} profile={profile}"
+        f"p99={percentile_99:.6f} color_space={contract.color_space}"
     )
     return failures
 
@@ -94,9 +152,10 @@ def validate_artifact_contract(
     ):
         for name, manifest_path in sorted(manifests.items()):
             try:
-                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                manifest = parse_manifest(manifest_path)
+                parse_render_contract(manifest, manifest_path)
                 scene = manifest["scene"]
-            except (OSError, json.JSONDecodeError, KeyError) as error:
+            except (ArtifactContractError, KeyError, TypeError, ValueError) as error:
                 errors.append(f"{backend} manifest {name} is invalid: {error}")
                 continue
             image_path = directory / f"{scene}.png"
@@ -104,6 +163,18 @@ def validate_artifact_contract(
                 errors.append(
                     f"{backend} manifest {name} is missing image {image_path.name}"
                 )
+
+    for name in sorted(reference_manifests.keys() & candidate_manifests.keys()):
+        try:
+            reference_manifest = parse_manifest(reference_manifests[name])
+            candidate_manifest = parse_manifest(candidate_manifests[name])
+            if reference_manifest["scene"] != candidate_manifest["scene"]:
+                errors.append(f"manifest {name} scene differs between backends")
+            if reference_manifest["contract"] != candidate_manifest["contract"]:
+                errors.append(f"manifest {name} contract differs between backends")
+        except ArtifactContractError:
+            # The backend-specific validation above already reports malformed input.
+            pass
 
     if errors:
         raise ArtifactContractError("\n".join(errors))

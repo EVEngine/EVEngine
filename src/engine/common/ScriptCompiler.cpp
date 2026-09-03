@@ -404,9 +404,10 @@ ssq::Script ScriptCompiler::compileFile(std::string_view path) {
     }
 }
 
-const ScriptMetadata* ScriptCompiler::metadata(std::string_view canonicalUri) const noexcept {
+eve::OptionalRef<const ScriptMetadata> ScriptCompiler::metadata(std::string_view canonicalUri) const noexcept {
     const auto found = metadata_.find(std::string(canonicalUri));
-    return found == metadata_.end() ? nullptr : &found->second;
+    return found == metadata_.end() ? eve::OptionalRef<const ScriptMetadata>{}
+                                    : eve::OptionalRef<const ScriptMetadata>{std::cref(found->second)};
 }
 
 std::vector<ScriptMetadata> ScriptCompiler::metadataSnapshot() const {
@@ -443,11 +444,11 @@ std::vector<ScriptCompletion> ScriptCompiler::completions(std::string_view canon
                                                           std::string_view prefix) const {
     std::vector<ScriptCompletion> result;
     const auto                    matches = [prefix](std::string_view value) { return value.rfind(prefix, 0) == 0; };
-    if (const ScriptMetadata* unit = metadata(canonicalUri)) {
-        for (const ScriptSymbolMetadata& symbol : unit->symbols) {
+    if (const auto unit = metadata(canonicalUri)) {
+        for (const ScriptSymbolMetadata& symbol : unit->get().symbols) {
             if (matches(symbol.name)) result.push_back({symbol.name, symbol.kind, symbol.erasedType, symbol.name});
         }
-        for (const std::string& name : unit->exports) {
+        for (const std::string& name : unit->get().exports) {
             if (matches(name)) result.push_back({name, "export", "module export", name});
         }
     }
@@ -480,8 +481,8 @@ std::vector<ScriptCompletion> ScriptCompiler::completions(std::string_view canon
 }
 
 std::optional<ScriptHover> ScriptCompiler::hover(std::string_view canonicalUri, std::string_view symbol) const {
-    if (const ScriptMetadata* unit = metadata(canonicalUri)) {
-        for (const ScriptSymbolMetadata& candidate : unit->symbols) {
+    if (const auto unit = metadata(canonicalUri)) {
+        for (const ScriptSymbolMetadata& candidate : unit->get().symbols) {
             if (candidate.name == symbol)
                 return ScriptHover{candidate.name,
                                    "`" + candidate.kind + " " + candidate.name + ": " + candidate.erasedType + "`",
@@ -502,8 +503,8 @@ std::optional<ScriptHover> ScriptCompiler::hover(std::string_view canonicalUri, 
 }
 
 std::vector<ScriptDiagnostic> ScriptCompiler::diagnostics(std::string_view canonicalUri) const {
-    const ScriptMetadata* unit = metadata(canonicalUri);
-    return unit == nullptr ? std::vector<ScriptDiagnostic>{} : unit->diagnostics;
+    const auto unit = metadata(canonicalUri);
+    return unit ? unit->get().diagnostics : std::vector<ScriptDiagnostic>{};
 }
 
 bool ScriptCompiler::setSourceMap(std::string_view canonicalUri, ScriptSourceMap sourceMap) {
