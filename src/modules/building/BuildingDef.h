@@ -23,6 +23,8 @@ public:
      * {
      *   "id": "house.wood", "displayName": "木屋", "category": "housing",
      *   "footprintW": 2, "footprintH": 2,
+     *   "freeFootprintWidthCells": 2.0, "freeFootprintHeightCells": 0.75,
+     *   "freeFootprintVertices": [-1,0, 0,-0.5, 1,0, 0,0.5],
      *   "snapMode": "grid", "rotationMode": "cardinal", "validateRule": "default",
      *   "tags": ["house"], "requireTerrain": [1], "forbidTerrain": [2],
      *   "requireAdjacentTag": "road", "requireAdjacentTerrain": -1,
