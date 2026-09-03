@@ -104,6 +104,38 @@ TEST_CASE("rts.scriptFogQueriesResolveCreatedFactionIdentity") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 
+TEST_CASE("rts.scriptFacadeKeepsFactionIdentityAcrossFrameCallbacks") {
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    ssq::VM          vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+
+    vm.run(vm.compileSource(R"(
+        persist sim = null;
+        persist faction = null;
+        result <- "fail";
+        function init() {
+            sim = eve.RTS();
+            local configured = sim.configureScriptWorld(4, 4, 1.0, 0.0, 0.0);
+            local created = sim.newFaction("00000000-0000-7000-8000-00000000fc02");
+            if (configured.ok && created.ok) faction = created.value;
+        }
+        function update() {
+            local stepped = sim.stepScript(1.0 / 30.0);
+            if (!stepped.ok) result = stepped.status.summary;
+        }
+        function render() {
+            local explored = sim.scriptCellExplored(faction, 0, 0);
+            result = explored.ok ? "ok" : explored.status.summary;
+        }
+    )"));
+
+    vm.callFunc(vm.findFunc("init"), vm);
+    vm.callFunc(vm.findFunc("update"), vm);
+    vm.callFunc(vm.findFunc("render"), vm);
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+}
+
 TEST_CASE("rts.legacySandboxContentMaterializesEveryArchetype") {
     const std::filesystem::path sourceRoot = std::filesystem::path(__FILE__).parent_path().parent_path();
     std::ifstream input(sourceRoot / "examples" / "rts-sandbox" / "data" / "content.json",

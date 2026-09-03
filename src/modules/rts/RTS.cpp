@@ -3730,10 +3730,9 @@ void RTS::expose(ssq::Class& cls) {
         return script::projectStatusResult(vm, Status::success(), true, true,
                                            self->inspectFrameEvents());
     });
-    cls.addFunc("stepScript", [vm](RTS* self, double seconds) -> ssq::Table {
-        return script::projectResult(vm, self->stepScript(seconds), [](std::size_t processed) {
-            return Value(static_cast<std::int64_t>(processed));
-        });
+    cls.addFunc("stepScript", [vm](RTS* self, float seconds) -> ssq::Table {
+        return script::projectResult(vm, self->stepScript(static_cast<double>(seconds)),
+            [](std::size_t processed) { return Value(static_cast<std::int64_t>(processed)); });
     });
     cls.addFunc("configureScriptWorld", [vm](RTS* self, int width, int height, float cellSize,
                                               float originX, float originY) -> ssq::Table {
