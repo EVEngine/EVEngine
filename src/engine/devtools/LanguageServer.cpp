@@ -715,8 +715,8 @@ struct LanguageServer::Impl {
                 if (dot > 0 && (*source)[dot - 1] == '.') --dot;
             }
             const auto localType = [&](std::string_view name) -> std::string {
-                if (const script::ScriptMetadata* unit = runtime_.scriptCompiler().metadata(ident)) {
-                    for (const script::ScriptSymbolMetadata& symbol : unit->symbols) {
+                if (const auto unit = runtime_.scriptCompiler().metadata(ident)) {
+                    for (const script::ScriptSymbolMetadata& symbol : unit->get().symbols) {
                         if (symbol.name != name) continue;
                         const std::string annotated = trimTypeName(symbol.erasedType);
                         if (runtime_.scriptCompiler().bindings().hasScriptClass(annotated)) return annotated;
@@ -930,8 +930,8 @@ std::optional<std::vector<lsp::TextEdit>> LanguageServer::rename(std::string_vie
 }
 
 std::vector<script::ScriptSymbolMetadata> LanguageServer::documentSymbols(std::string_view uri) const {
-    const script::ScriptMetadata* metadata = impl_->runtime_.scriptCompiler().metadata(impl_->identity(uri));
-    return metadata ? metadata->symbols : std::vector<script::ScriptSymbolMetadata>{};
+    const auto metadata = impl_->runtime_.scriptCompiler().metadata(impl_->identity(uri));
+    return metadata ? metadata->get().symbols : std::vector<script::ScriptSymbolMetadata>{};
 }
 
 std::optional<LanguageSignatureHelp> LanguageServer::signatureHelp(std::string_view uri, lsp::Position position) const {
@@ -970,10 +970,10 @@ std::vector<lsp::FoldingRange> LanguageServer::foldingRanges(std::string_view ur
 std::vector<lsp::SemanticToken> LanguageServer::semanticTokens(std::string_view uri) const {
     std::vector<lsp::SemanticToken> tokens = impl_->index_.semanticTokens(impl_->identity(uri));
     const auto&                     bindings = impl_->runtime_.scriptCompiler().bindings();
-    const script::ScriptMetadata*   metadata = impl_->runtime_.scriptCompiler().metadata(impl_->identity(uri));
+    const auto                      metadata = impl_->runtime_.scriptCompiler().metadata(impl_->identity(uri));
     std::unordered_map<std::string, uint32_t> extra;
     if (metadata) {
-        for (const script::ScriptSymbolMetadata& symbol : metadata->symbols) {
+        for (const script::ScriptSymbolMetadata& symbol : metadata->get().symbols) {
             if (symbol.kind == "class") extra[symbol.name] = lsp::SemanticTypes::Class;
             else if (symbol.kind == "function" || symbol.kind == "async")
                 extra[symbol.name] = lsp::SemanticTypes::Function;

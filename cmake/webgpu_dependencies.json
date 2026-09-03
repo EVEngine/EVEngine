@@ -1,0 +1,10 @@
+{
+  "schema": "evengine.webgpu-dependencies",
+  "version": 1,
+  "emscripten": "6.0.9",
+  "emdawnwebgpu": {
+    "release": "v20260423.175430",
+    "url": "https://github.com/google/dawn/releases/download/v20260423.175430/emdawnwebgpu_pkg-v20260423.175430.zip",
+    "sha256": "3ad7ebe95a4a20764df46c5a63b0ad489782aee26804fff8511d9797c10e732f"
+  }
+}

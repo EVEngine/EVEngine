@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/BorrowedRef.h"
+
 #include "common/Export.h"
 
 #include <simplesquirrel/script.hpp>
@@ -195,13 +197,14 @@ public:
     ssq::Script compileSource(std::string_view source, std::string_view sourceName);
     /** @brief Compiles a file through the VM and records its canonical identity. */
     ssq::Script compileFile(std::string_view path);
-    /** @brief Returns metadata for the most recent successful compilation.
-     * @return Non-owning pointer, or nullptr when the URI is unknown.
-     * @ownership Borrowed; ScriptCompiler retains the metadata.
-     * @lifetime Valid until that URI is compiled again or this ScriptCompiler is destroyed.
-     * @thread Same thread as the owning Runtime.
+    /**
+     * @brief Borrows metadata for the most recent successful compilation.
+     * @return Empty when no compiled unit exists for the URI.
+     * @note The compiler owns the metadata. The reference is invalidated by the
+     * next compile or source-map update and by destruction of this compiler.
+     * It must not be retained across those operations or across threads.
      */
-    const ScriptMetadata* metadata(std::string_view canonicalUri) const noexcept;
+    [[nodiscard]] eve::OptionalRef<const ScriptMetadata> metadata(std::string_view canonicalUri) const noexcept;
     /** @brief Returns all successful compilation metadata sorted by URI. */
     std::vector<ScriptMetadata> metadataSnapshot() const;
     /** @brief Native binding contracts used by semantic checks and tools. */

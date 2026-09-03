@@ -103,9 +103,9 @@ TEST_CASE("scriptModule.resolvesCachesAndInstantiatesDependencyGraph") {
     const auto reverse = runtime.scriptModules().reverseDependencies("mem:/answer.nut");
     CHECK_EQ(reverse.size(), size_t(1));
     CHECK_EQ(reverse[0], std::string("game:/main.nut"));
-    const script::ScriptMetadata* metadata = runtime.scriptCompiler().metadata("game:/main.nut");
-    CHECK(metadata != nullptr);
-    CHECK_EQ(metadata->dependencies, dependencies);
+    const auto metadata = runtime.scriptCompiler().metadata("game:/main.nut");
+    REQUIRE(metadata.has_value());
+    CHECK_EQ(metadata->get().dependencies, dependencies);
 }
 
 TEST_CASE("scriptModule.rejectsCyclesBeforeExecution") {

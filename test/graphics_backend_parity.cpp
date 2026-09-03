@@ -91,12 +91,21 @@ void writeParityArtifact(const eve::image::ImageData &image, const std::string &
     const bool lit3d = scene.starts_with("pbr_") || scene.starts_with("surface_") ||
                        scene.starts_with("masked_") || scene.starts_with("gbuffer_") ||
                        scene.starts_with("decal_") || scene == "dither" || scene == "coverage";
+    const double meanLimit = (lit3d ? 6.0 : 2.0) / 255.0;
+    const double p99Limit  = (lit3d ? 20.0 : 8.0) / 255.0;
     manifest << "{\n"
+             << "  \"schema\": \"evengine.render-parity\",\n"
+             << "  \"version\": 1,\n"
              << "  \"scene\": \"" << scene << "\",\n"
              << "  \"backend\": \"" << backend << "\",\n"
              << "  \"width\": " << image.getWidth() << ",\n"
              << "  \"height\": " << image.getHeight() << ",\n"
-             << "  \"profile\": \"" << (lit3d ? "lit3d" : "flat2d") << "\"\n"
+             << "  \"contract\": {\n"
+             << "    \"color_space\": \"srgb-linearized\",\n"
+             << "    \"alpha_coverage_delta_max\": 0.005,\n"
+             << "    \"mean_rgb_error_max\": " << meanLimit << ",\n"
+             << "    \"p99_rgb_error_max\": " << p99Limit << "\n"
+             << "  }\n"
              << "}\n";
     REQUIRE(manifest.good());
 }

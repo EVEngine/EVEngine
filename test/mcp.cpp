@@ -788,8 +788,8 @@ TEST_CASE("devtools.mcp.evalAndPause") {
 
     // One-shot MCP source must remain in memory: no user-space script and no
     // persistent compiler identity that can collide with project hot reload.
-    CHECK(runtime.scriptCompiler().metadata("mcp_snippet.nut") == nullptr);
-    CHECK(runtime.scriptCompiler().metadata("eval") == nullptr);
+    CHECK(!runtime.scriptCompiler().metadata("mcp_snippet.nut").has_value());
+    CHECK(!runtime.scriptCompiler().metadata("eval").has_value());
     bool foundScript = false;
     for (const auto& entry : std::filesystem::recursive_directory_iterator(projectRoot)) {
         if (entry.is_regular_file() && entry.path().extension() == ".nut") foundScript = true;

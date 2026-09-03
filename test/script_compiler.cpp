@@ -19,14 +19,14 @@ TEST_CASE("scriptCompiler.recordsErasedLanguageMetadata") {
         "export function answer(value: int) -> int { return value + score }\n",
         "game:/metadata.nut");
 
-    const script::ScriptMetadata* metadata = runtime.scriptCompiler().metadata("game:/metadata.nut");
-    CHECK(metadata != nullptr);
-    CHECK(!metadata->sourceHash.empty());
-    CHECK_EQ(metadata->persistRoots.size(), size_t(1));
-    CHECK_EQ(metadata->persistRoots[0], std::string("score"));
-    CHECK_EQ(metadata->exports.size(), size_t(1));
-    CHECK_EQ(metadata->exports[0], std::string("answer"));
-    CHECK_EQ(metadata->sourceMap.originalPosition({2, 9}).line, uint32_t(2));
+    const auto metadata = runtime.scriptCompiler().metadata("game:/metadata.nut");
+    REQUIRE(metadata.has_value());
+    CHECK(!metadata->get().sourceHash.empty());
+    CHECK_EQ(metadata->get().persistRoots.size(), size_t(1));
+    CHECK_EQ(metadata->get().persistRoots[0], std::string("score"));
+    CHECK_EQ(metadata->get().exports.size(), size_t(1));
+    CHECK_EQ(metadata->get().exports[0], std::string("answer"));
+    CHECK_EQ(metadata->get().sourceMap.originalPosition({2, 9}).line, uint32_t(2));
 }
 
 TEST_CASE("scriptCompiler.metadataIgnoresCommentedLanguageForms") {
@@ -232,12 +232,12 @@ TEST_CASE("scriptCompiler.retainsStructuredDiagnosticsAfterFailure") {
         rejected = true;
     }
     CHECK(rejected);
-    const script::ScriptMetadata* metadata = runtime.scriptCompiler().metadata("game:/invalid.nut");
-    CHECK(metadata != nullptr);
-    CHECK_EQ(metadata->diagnostics.size(), size_t(1));
-    CHECK_EQ(metadata->diagnostics[0].code, std::string("EVE2601"));
-    CHECK_EQ(metadata->diagnostics[0].position.line, uint32_t(1));
-    CHECK(!metadata->diagnostics[0].fix.empty());
+    const auto metadata = runtime.scriptCompiler().metadata("game:/invalid.nut");
+    REQUIRE(metadata.has_value());
+    CHECK_EQ(metadata->get().diagnostics.size(), size_t(1));
+    CHECK_EQ(metadata->get().diagnostics[0].code, std::string("EVE2601"));
+    CHECK_EQ(metadata->get().diagnostics[0].position.line, uint32_t(1));
+    CHECK(!metadata->get().diagnostics[0].fix.empty());
 }
 
 TEST_CASE("scriptCompiler.requiresPluginAnnotationsToBeRegistered") {
@@ -287,10 +287,10 @@ TEST_CASE("scriptCompiler.rawVmBridgeRecordsToolingMetadata") {
         runtime.handle(), source, static_cast<SQInteger>(std::strlen(source)), "console_repl.nut", SQTrue);
     CHECK(SQ_SUCCEEDED(result));
     sq_settop(runtime.handle(), top);
-    const script::ScriptMetadata* metadata = runtime.scriptCompiler().metadata("console_repl.nut");
-    CHECK(metadata != nullptr);
-    CHECK_EQ(metadata->symbols.size(), size_t(1));
-    CHECK_EQ(metadata->symbols[0].name, std::string("replValue"));
+    const auto metadata = runtime.scriptCompiler().metadata("console_repl.nut");
+    REQUIRE(metadata.has_value());
+    CHECK_EQ(metadata->get().symbols.size(), size_t(1));
+    CHECK_EQ(metadata->get().symbols[0].name, std::string("replValue"));
 }
 
 TEST_CASE("scriptCompiler.bindingContractChecksLiteralTypes") {
