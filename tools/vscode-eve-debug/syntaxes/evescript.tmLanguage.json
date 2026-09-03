@@ -1,0 +1,93 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "EveScript",
+  "scopeName": "source.evescript",
+  "fileTypes": ["nut"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#constants" },
+    { "include": "#language-vars" },
+    { "include": "#keywords" },
+    { "include": "#numbers" },
+    { "include": "#class-decl" },
+    { "include": "#function-decl" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.evescript",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.evescript",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.evescript",
+          "begin": "@?\"",
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.evescript", "match": "\\\\." }
+          ]
+        },
+        {
+          "name": "string.quoted.single.evescript",
+          "begin": "@?'",
+          "end": "'",
+          "patterns": [
+            { "name": "constant.character.escape.evescript", "match": "\\\\." }
+          ]
+        }
+      ]
+    },
+    "constants": {
+      "name": "constant.language.boolean.evescript",
+      "match": "\\b(true|false|null|nullrel)\\b"
+    },
+    "language-vars": {
+      "name": "variable.language.this.evescript",
+      "match": "\\b(this|base|self)\\b"
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.evescript",
+          "match": "\\b(if|else|switch|case|default|while|do|for|foreach|break|continue|return|try|catch|throw|yield|resume|await)\\b"
+        },
+        {
+          "name": "storage.type.evescript",
+          "match": "\\b(local|const|enum|class|function|constructor|static|persist|async|export|import)\\b"
+        },
+        {
+          "name": "keyword.other.evescript",
+          "match": "\\b(from|as|extends|in|typeof|instanceof|clone|delete)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "name": "constant.numeric.evescript",
+      "match": "\\b0x[0-9A-Fa-f]+\\b|\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?(?:ms|s|deg|rad)?\\b"
+    },
+    "class-decl": {
+      "match": "\\b(class)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "storage.type.evescript" },
+        "2": { "name": "entity.name.type.class.evescript" }
+      }
+    },
+    "function-decl": {
+      "match": "\\b(function|async)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "storage.type.evescript" },
+        "2": { "name": "entity.name.function.evescript" }
+      }
+    }
+  }
+}

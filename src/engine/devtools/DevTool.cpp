@@ -167,8 +167,11 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     graph_.clear();
     localSnap_.clear();
     lastReport_.clear();
+    lastError_.clear();
+    lastSlice_ = {};
 
     Debugger::instance().attach(vm);
+    Debugger::instance().setCallGraph(&graph_);
     Debugger::instance().setPump([this]() { pumpWhilePaused(); });
 
     sq_enabledebuginfo(vm_, SQTrue);
@@ -191,6 +194,7 @@ void DevTool::detach() {
     }
     stopDap();
     stopMcp();
+    Debugger::instance().setCallGraph(nullptr);
     Debugger::instance().detach();
     if (vm_) {
         sq_setnativedebughook(vm_, nullptr);
@@ -200,6 +204,9 @@ void DevTool::detach() {
     ConsolePanel::instance().detach();
     vm_ = nullptr;
     localSnap_.clear();
+    lastReport_.clear();
+    lastError_.clear();
+    lastSlice_ = {};
     uninstallRenderTracer();
 }
 
@@ -287,8 +294,8 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         });
         dev.addFunc("poll", [this]() { poll(); });
 
-        dev.addFunc("setBreakpoint", [this](std::string source, int line) {
-            return debugger().setBreakpoint(std::move(source), line, true);
+        dev.addFunc("setBreakpoint", [this](std::string source, int line, std::string condition) {
+            return debugger().setBreakpoint(std::move(source), line, true, std::move(condition));
         });
         dev.addFunc("clearBreakpoint", [this](std::string source, int line) {
             return debugger().clearBreakpoint(std::move(source), line);
@@ -329,26 +336,35 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         dev.addFunc("clearStateRoots", []() { Snapshot::instance().clearRoots(); });
         dev.addFunc("stateRoots", [this]() { return snapshot().rootsFor(vm_); });
         dev.addFunc("transientStateRoots", []() { return Snapshot::instance().transientRoots(); });
+        auto markSnapshotPause = [this]() {
+            if (!debugger().isPaused()) return;
+            debugger().pauseAt(PauseReason::Snapshot, debugger().pauseLocation());
+            debugger().refreshWatches();
+            dap().notifyStopped(PauseReason::Snapshot, debugger().pauseLocation(),
+                                "snapshot restored");
+        };
         dev.addFunc("saveSnapshot", [this](std::string path) {
             std::string err;
             const bool  ok = snapshot().saveFile(vm_, path, &err);
             if (!ok) return std::string("error:") + err;
             return std::string("ok");
         });
-        dev.addFunc("loadSnapshot", [this](std::string path) {
+        dev.addFunc("loadSnapshot", [this, markSnapshotPause](std::string path) {
             std::string err;
             const bool  ok = snapshot().loadFile(vm_, path, &err);
             if (!ok) return std::string("error:") + err;
+            markSnapshotPause();
             return std::string("ok");
         });
         dev.addFunc("captureSnapshot", [this]() {
             std::string err;
             return snapshot().capture(vm_, &err);
         });
-        dev.addFunc("restoreSnapshot", [this](std::string json) {
+        dev.addFunc("restoreSnapshot", [this, markSnapshotPause](std::string json) {
             std::string err;
             const bool  ok = snapshot().restore(vm_, json, &err);
             if (!ok) return std::string("error:") + err;
+            markSnapshotPause();
             return std::string("ok");
         });
         dev.addFunc("beginStateReload", [this]() {
@@ -459,6 +475,14 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         consoleTbl.addFunc("setVisible", [](bool on) { ConsolePanel::instance().setVisible(on); });
         consoleTbl.addFunc("toggleVisible", []() { ConsolePanel::instance().toggleVisible(); });
         consoleTbl.addFunc("draw", [this]() { drawConsolePanel(); });
+
+        // Native binding is arity-3; keep `setBreakpoint(file, line)` working.
+        ssq::Script bpWrap = vm.compileSource(
+            "local _setBreakpoint = eve.dev.setBreakpoint\n"
+            "eve.dev.setBreakpoint = function(source, line, condition = \"\") {\n"
+            "    return _setBreakpoint(source, line, condition)\n"
+            "}\n");
+        vm.run(bpWrap);
     } catch (...) {
         // If eve table missing, skip — attach still useful for C++/DAP/MCP.
     }
@@ -474,12 +498,12 @@ void DevTool::handleDebugEvent(HSQUIRRELVM vm, int type, const char* source, int
     // Squirrel passes 'l' / 'c' / 'r' as event type characters.
     switch (type) {
         case 'c':
-            graph_.onCall(loc, loc.function);
+            loc.function = Debugger::instance().onCall(loc);
             localSnap_.erase(static_cast<int>(graph_.currentStack().size()));
             profileCall(loc.function);
             break;
         case 'r':
-            graph_.onReturn(loc, loc.function);
+            Debugger::instance().onReturn(loc);
             // Drop snapshot for the frame that just returned.
             localSnap_.erase(static_cast<int>(graph_.currentStack().size()) + 1);
             profileReturn();
@@ -716,6 +740,7 @@ std::string DevTool::notifyError(const std::string& errorMessage,
     if (report.empty()) report = std::string("Error: ") + errorMessage + "\n";
     lastReport_ = report;
     lastError_  = errorMessage;
+    lastSlice_  = analyzeError(errorMessage, hintVars);
 
     // If a scenario is being recorded, pair the failure report + site with it so
     // the dumped scenario becomes a reproducible baseline + input sequence.
@@ -725,7 +750,7 @@ std::string DevTool::notifyError(const std::string& errorMessage,
     if (debugger().breakOnError()) {
         // Godot "Break on Error": stop at the reported site. Block inside the
         // hook so the IDE sees a stable frame instead of the next executed line.
-        debugger().pause(PauseReason::Exception);
+        debugger().pauseAt(PauseReason::Exception, site);
         dap().notifyStopped(PauseReason::Exception, site, errorMessage);
         debugger().waitWhilePaused([this]() { pumpWhilePaused(); });
     }

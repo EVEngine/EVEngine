@@ -8,7 +8,10 @@
 #include <squirrel.h>
 
 #include <algorithm>
+#include <cctype>
 #include <chrono>
+#include <cstring>
+#include <fstream>
 #include <thread>
 #include <utility>
 
@@ -299,6 +302,86 @@ bool valueTruthy(const VariableInfo& info) {
     return true;
 }
 
+bool isGenericFuncName(const char* name) {
+    if (!name || !name[0] || std::strcmp(name, "?") == 0) return true;
+    return std::strcmp(name, "unknown") == 0 || std::strcmp(name, "NATIVE") == 0 ||
+           std::strcmp(name, "anonymous") == 0;
+}
+
+bool isGenericFuncName(const std::string& name) { return isGenericFuncName(name.c_str()); }
+
+std::string nthLine(const std::string& text, int line) {
+    if (line <= 0) return {};
+    int n = 1;
+    size_t start = 0;
+    while (n < line) {
+        const size_t nl = text.find('\n', start);
+        if (nl == std::string::npos) return {};
+        start = nl + 1;
+        ++n;
+    }
+    size_t end = text.find('\n', start);
+    if (end == std::string::npos) end = text.size();
+    std::string out = text.substr(start, end - start);
+    if (!out.empty() && out.back() == '\r') out.pop_back();
+    return out;
+}
+
+std::string inferNameFromDefinitionLine(std::string line) {
+    while (!line.empty() && std::isspace(static_cast<unsigned char>(line.front()))) line.erase(line.begin());
+    if (line.rfind("//", 0) == 0) return {};
+    const auto isIdent = [](unsigned char c) { return std::isalnum(c) || c == '_' || c == '.'; };
+    if (line.rfind("function ", 0) == 0) {
+        size_t i = 9;
+        while (i < line.size() && std::isspace(static_cast<unsigned char>(line[i]))) ++i;
+        const size_t start = i;
+        while (i < line.size() && isIdent(static_cast<unsigned char>(line[i]))) ++i;
+        if (i > start) return line.substr(start, i - start);
+        return {};
+    }
+    size_t i = 0;
+    if (i < line.size() && (std::isalpha(static_cast<unsigned char>(line[i])) || line[i] == '_')) {
+        const size_t start = i;
+        while (i < line.size() && isIdent(static_cast<unsigned char>(line[i]))) ++i;
+        const std::string ident = line.substr(start, i - start);
+        while (i < line.size() && std::isspace(static_cast<unsigned char>(line[i]))) ++i;
+        bool assign = false;
+        if (i + 1 < line.size() && line[i] == '<' && line[i + 1] == '-') {
+            i += 2;
+            assign = true;
+        } else if (i < line.size() && line[i] == '=') {
+            ++i;
+            assign = true;
+        }
+        if (!assign) return {};
+        while (i < line.size() && std::isspace(static_cast<unsigned char>(line[i]))) ++i;
+        if (line.compare(i, 6, "async ") == 0) {
+            i += 6;
+            while (i < line.size() && std::isspace(static_cast<unsigned char>(line[i]))) ++i;
+        }
+        if (line.compare(i, 8, "function") == 0) return ident;
+    }
+    return {};
+}
+
+std::string readDefinitionLine(const std::string& source, int line) {
+    if (source.empty() || line <= 0) return {};
+    std::ifstream in(source);
+    if (!in) {
+        const auto slash = source.find_last_of("/\\");
+        if (slash != std::string::npos) in.open(source.substr(slash + 1));
+    }
+    if (!in) return {};
+    std::string text;
+    for (int n = 1; n <= line && std::getline(in, text); ++n) {
+        if (n == line) {
+            if (!text.empty() && text.back() == '\r') text.pop_back();
+            return text;
+        }
+    }
+    return {};
+}
+
 }  // namespace
 
 Debugger& Debugger::instance() {
@@ -334,18 +417,24 @@ bool Debugger::sourcesMatch(const std::string& a, const std::string& b) {
     const std::string nb = normalizeSource(b);
     if (na.empty() || nb.empty()) return false;
     if (na == nb) return true;
-    const std::string ba = sourceBasename(na);
-    const std::string bb = sourceBasename(nb);
-    if (!ba.empty() && ba == bb) return true;
-    // Suffix match: ".../scripts/main.nut" vs "scripts/main.nut"
+
     const std::string& longer  = na.size() >= nb.size() ? na : nb;
     const std::string& shorter = na.size() >= nb.size() ? nb : na;
     if (longer.size() > shorter.size() &&
         longer.compare(longer.size() - shorter.size(), shorter.size(), shorter) == 0) {
         const auto idx = longer.size() - shorter.size();
-        return idx == 0 || longer[idx - 1] == '/';
+        if (idx == 0 || longer[idx - 1] == '/') return true;
     }
-    return false;
+
+    // Bare filenames (no slash) still match any path with the same basename so
+    // Squirrel's `main.nut` can hit a VS Code absolute breakpoint. Two paths
+    // that both include a directory must not match on basename alone.
+    const bool aHasDir = na.find('/') != std::string::npos;
+    const bool bHasDir = nb.find('/') != std::string::npos;
+    if (aHasDir && bHasDir) return false;
+    const std::string ba = sourceBasename(na);
+    const std::string bb = sourceBasename(nb);
+    return !ba.empty() && ba == bb;
 }
 
 void Debugger::attach(HSQUIRRELVM vm) {
@@ -355,6 +444,8 @@ void Debugger::attach(HSQUIRRELVM vm) {
     reason_ = PauseReason::None;
     pauseLoc_ = {};
     stepFrameArmed_ = false;
+    ownGraph_.clear();
+    virtualSources_.clear();
 }
 
 void Debugger::detach() {
@@ -363,14 +454,117 @@ void Debugger::detach() {
     mode_ = RunMode::Running;
     reason_ = PauseReason::None;
     stepFrameArmed_ = false;
+    callGraph_ = nullptr;
+    ownGraph_.clear();
+    virtualSources_.clear();
+}
+
+void Debugger::setCallGraph(CallGraph* graph) {
+    std::lock_guard<std::mutex> lock(mu_);
+    callGraph_ = graph;
+}
+
+void Debugger::setVirtualSource(std::string source, std::string text) {
+    std::lock_guard<std::mutex> lock(mu_);
+    virtualSources_[normalizeSource(std::move(source))] = std::move(text);
+}
+
+CallGraph& Debugger::activeGraph() {
+    return callGraph_ ? *callGraph_ : ownGraph_;
+}
+
+const CallGraph& Debugger::activeGraph() const {
+    return callGraph_ ? *callGraph_ : ownGraph_;
+}
+
+std::string Debugger::lineAt(const std::string& source, int line) const {
+    if (line <= 0) return {};
+    {
+        std::lock_guard<std::mutex> lock(mu_);
+        for (const auto& [name, text] : virtualSources_) {
+            if (sourcesMatch(name, source)) return nthLine(text, line);
+        }
+    }
+    return readDefinitionLine(source, line);
+}
+
+std::string Debugger::resolveCallName(const SourceLoc& loc) const {
+    if (!isGenericFuncName(loc.function)) return loc.function;
+    // Only the hook's own line: loc.line-1 is often the *caller's* definition
+    // when Squirrel reports the call site.
+    const std::string name = inferNameFromDefinitionLine(lineAt(loc.source, loc.line));
+    if (!name.empty()) return name;
+    return loc.function.empty() ? "unknown" : loc.function;
+}
+
+std::string Debugger::onCall(SourceLoc loc) {
+    const std::string name = resolveCallName(loc);
+    loc.function = name;
+    activeGraph().onCall(loc, name);
+    return name;
+}
+
+void Debugger::onReturn(const SourceLoc& loc) {
+    activeGraph().onReturn(loc, loc.function);
+}
+
+std::string Debugger::nameFromPrototype(int level, const char* rawName, const SourceLoc& loc) const {
+    if (!isGenericFuncName(rawName)) return rawName;
+    if (vm_) {
+        SQFunctionInfo fi;
+        std::memset(&fi, 0, sizeof(fi));
+        if (SQ_SUCCEEDED(sq_getfunctioninfo(vm_, level, &fi))) {
+            if (!isGenericFuncName(fi.name)) return fi.name;
+            const char* src = (fi.source && fi.source[0]) ? fi.source : loc.source.c_str();
+            const int defLine = fi.line > 0 ? static_cast<int>(fi.line) : loc.line;
+            const std::string inferred = inferNameFromDefinitionLine(lineAt(src, defLine));
+            if (!inferred.empty()) return inferred;
+        }
+    }
+    const std::string fromPc = inferNameFromDefinitionLine(lineAt(loc.source, loc.line));
+    if (!fromPc.empty()) return fromPc;
+    for (int ln = loc.line - 1; ln > 0 && ln >= loc.line - 32; --ln) {
+        const std::string inferred = inferNameFromDefinitionLine(lineAt(loc.source, ln));
+        if (!inferred.empty()) return inferred;
+    }
+    return "unknown";
+}
+
+void Debugger::applyCallGraphNames(std::vector<StackFrameInfo>& frames) const {
+    std::vector<std::string> cgInner;
+    const auto stack = activeGraph().currentStack();
+    for (auto it = stack.rbegin(); it != stack.rend(); ++it) {
+        if (it->loc.source == "NATIVE") continue;
+        cgInner.push_back(it->loc.function);
+    }
+    // Align from the outer end so an extra/missing inner CallGraph frame cannot
+    // relabel the current SQ frame as its caller.
+    const int delta = static_cast<int>(frames.size()) - static_cast<int>(cgInner.size());
+    for (size_t i = 0; i < frames.size(); ++i) {
+        if (!isGenericFuncName(frames[i].name)) continue;
+        const int cgi = static_cast<int>(i) - delta;
+        if (cgi < 0 || cgi >= static_cast<int>(cgInner.size())) continue;
+        if (isGenericFuncName(cgInner[static_cast<size_t>(cgi)])) continue;
+        frames[i].name         = cgInner[static_cast<size_t>(cgi)];
+        frames[i].loc.function = frames[i].name;
+    }
 }
 
 void Debugger::pause(PauseReason reason) {
+    // PauseKey is frame-level: drop any stale script site so smart step()
+    // becomes stepFrame. Other reasons keep the last script location unless
+    // the caller uses pauseAt.
+    if (reason == PauseReason::PauseKey) {
+        pauseAt(reason, {});
+        return;
+    }
+    pauseAt(reason, pauseLoc_);
+}
+
+void Debugger::pauseAt(PauseReason reason, SourceLoc loc) {
     reason_.store(reason);
     mode_.store(RunMode::Paused);
-    // Frame-level Pause has no script site; drop a stale hook location so
-    // smart step() does not treat this as mid-script.
-    if (reason == PauseReason::PauseKey) pauseLoc_ = {};
+    pauseLoc_ = std::move(loc);
 }
 
 void Debugger::resume() {
@@ -433,7 +627,8 @@ void Debugger::step() {
     // Prefer script step-over when we have a script pause site; else one frame.
     const PauseReason r = reason_.load();
     if (!pauseLoc_.empty() &&
-        (r == PauseReason::Breakpoint || r == PauseReason::Step || r == PauseReason::Exception)) {
+        (r == PauseReason::Breakpoint || r == PauseReason::Step ||
+         r == PauseReason::Exception || r == PauseReason::Snapshot)) {
         stepOver();
         return;
     }
@@ -601,8 +796,8 @@ int Debugger::setBreakpoint(std::string source, int line, bool enabled,
     std::lock_guard<std::mutex> lock(mu_);
     for (auto& bp : bps_) {
         if (bp.line == line && normalizeSource(bp.source) == source) {
-            bp.enabled = enabled;
-            if (!condition.empty()) bp.condition = std::move(condition);
+            bp.enabled   = enabled;
+            bp.condition = std::move(condition);
             return bp.id;
         }
     }
@@ -638,6 +833,16 @@ void Debugger::clearBreakpoints(const std::string& source) {
                bps_.end());
 }
 
+bool Debugger::setBreakpointEnabled(int id, bool enabled) {
+    std::lock_guard<std::mutex> lock(mu_);
+    for (auto& bp : bps_) {
+        if (bp.id != id) continue;
+        bp.enabled = enabled;
+        return true;
+    }
+    return false;
+}
+
 std::vector<Breakpoint> Debugger::breakpoints() const {
     std::lock_guard<std::mutex> lock(mu_);
     return bps_;
@@ -645,7 +850,7 @@ std::vector<Breakpoint> Debugger::breakpoints() const {
 
 bool Debugger::hasBreakpoint(const std::string& source, int line) const {
     std::lock_guard<std::mutex> lock(mu_);
-    return matchBreakpoint(source, line);
+    return matchBreakpointAny(source, line);
 }
 
 void Debugger::addWatch(std::string expression) {
@@ -961,20 +1166,17 @@ std::vector<StackFrameInfo> Debugger::stackTrace(int maxFrames) const {
         f.id = level;
         if (si.source) f.loc.source = si.source;
         f.loc.line = static_cast<int>(si.line);
-        if (si.funcname) {
-            f.loc.function = si.funcname;
-            f.name         = si.funcname;
-        } else {
-            f.name = "?";
-        }
         // Native-only frames (Squirrel reports source "NATIVE" / line -1, e.g.
         // the uncaught-error hook parked above the throwing script frame) carry
         // no script location. Skip them so frame 0 in the IDE is the throw
         // site; ids stay at stack levels so scopes(frameId) still resolves to
         // the right frame's locals.
         if (f.loc.source == "NATIVE" || (f.loc.source.empty() && f.loc.line <= 0)) continue;
+        f.name         = nameFromPrototype(level, si.funcname, f.loc);
+        f.loc.function = f.name;
         out.push_back(std::move(f));
     }
+    applyCallGraphNames(out);
     return out;
 }
 

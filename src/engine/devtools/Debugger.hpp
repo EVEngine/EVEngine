@@ -8,6 +8,7 @@
 #include <functional>
 #include <mutex>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 struct SQVM;
@@ -21,6 +22,7 @@ enum class PauseReason : uint8_t {
     Breakpoint,
     Step,
     Exception,
+    /** @brief Script state was restored while the debugger was already paused. */
     Snapshot,
 };
 
@@ -63,10 +65,11 @@ struct EVENGINE_API VariableInfo {
     int         childCount = -1;     // -1 = unknown
 };
 
-/** @brief Where a variable tree node is rooted (used by containerChildren/resolvePath). */
+/** @brief Where a variable tree node is rooted (used by containerChildren). */
 enum class VarKind : uint8_t {
     Locals   = 0,  // frame locals
     Globals  = 1,  // roottable
+    // Closure upvalues are children of a closure value, not a third root.
 };
 
 /**
@@ -93,7 +96,19 @@ public:
     HSQUIRRELVM vm() const { return vm_; }
 
     // ---- run control ----
+    /**
+     * @brief Frame-level pause without a script site (PauseKey clears pauseLocation).
+     * For Exception / Snapshot, prefer pauseAt so DAP/MCP keep a source location.
+     * @param reason Pause cause stored in lastPauseReason().
+     */
     void     pause(PauseReason reason = PauseReason::PauseKey);
+    /**
+     * @brief Pause and record the script site (copied; Observed until the next
+     * pause/resume). Thread: VM / game loop that owns waitWhilePaused.
+     * @param reason Pause cause (Exception, Snapshot, Breakpoint, …).
+     * @param loc Source location shown to DAP/MCP; empty clears pauseLocation.
+     */
+    void     pauseAt(PauseReason reason, SourceLoc loc);
     void     resume();
     void     stepFrame();
     /** @brief Enter calls: stop on the next script line at any depth. */
@@ -122,6 +137,32 @@ public:
     void notifyFrameDone();
 
     /**
+     * @brief Use DevTool's CallGraph for stack names (same object the slicer sees).
+     * Pass nullptr to record calls on the debugger's own graph (unit tests).
+     * @param graph Shared CallGraph, or nullptr for the debugger-owned graph.
+     */
+    void setCallGraph(CallGraph* graph);
+    /**
+     * @brief In-memory script text used to name anonymous `name = function()` bindings
+     * when the hook source is a compile buffer, not a file.
+     * @param source Compile name / path as reported by the Squirrel debug hook.
+     * @param text Full source of that buffer.
+     */
+    void setVirtualSource(std::string source, std::string text);
+
+    /**
+     * @brief Squirrel call debug hook ('c'). Records a frame on the active CallGraph.
+     * @param loc Hook location (function name may be `unknown` for anonymous closures).
+     * @return Display name stored on the new frame (binding name when the closure is anonymous).
+     */
+    std::string onCall(SourceLoc loc);
+    /**
+     * @brief Squirrel return debug hook ('r'). Pops the active CallGraph frame.
+     * @param loc Hook location of the returning function.
+     */
+    void onReturn(const SourceLoc& loc);
+
+    /**
      * @brief Called from Squirrel line debug hook.
      * Returns true if execution should block (breakpoint / step).
      */
@@ -130,11 +171,22 @@ public:
     void waitWhilePaused(const std::function<void()>& pump = {});
 
     // ---- breakpoints ----
+    /**
+     * @brief Add or update a line breakpoint. A later call with the same source+line
+     * replaces `enabled` and `condition` (empty condition clears a previous one).
+     * @return Breakpoint id, or 0 if source is empty / line is not positive.
+     */
     int  setBreakpoint(std::string source, int line, bool enabled = true,
                        std::string condition = {});
     bool clearBreakpoint(std::string source, int line);
     void clearBreakpoints(const std::string& source = {});
+    /** @brief Enable or disable by id. @return false if id is unknown. */
+    bool setBreakpointEnabled(int id, bool enabled);
     std::vector<Breakpoint> breakpoints() const;
+    /**
+     * @brief True if a breakpoint is registered at source+line.
+     * Ignores the skip-all master switch and the per-breakpoint enabled flag.
+     */
     bool hasBreakpoint(const std::string& source, int line) const;
 
     // ---- watches ----
@@ -156,7 +208,7 @@ public:
     std::vector<VariableInfo> globals() const;
     /**
      * @brief Children of a container variable. `path` is the key chain that locates
-     * the container from its root (locals frame / roottable / upvalues).
+     * the container from its root (locals frame or roottable).
      * Empty `path` lists the root entries themselves.
      */
     std::vector<VariableInfo> containerChildren(VarKind kind, int frame,
@@ -184,7 +236,9 @@ public:
     static std::string sourceBasename(const std::string& source);
     /**
      * @brief True when two source paths refer to the same script file.
-     * Matches exact path, basename, or one path as a suffix of the other.
+     * Matches exact path, or one path as a directory-bounded suffix of the other.
+     * A bare filename (no `/`) also matches any path with the same basename.
+     * Two directory-qualified paths that only share a basename do not match.
      */
     static bool sourcesMatch(const std::string& a, const std::string& b);
 
@@ -201,6 +255,12 @@ private:
     VariableInfo evaluateLegacy(const std::string& expression) const;
     bool pushLocalValue(HSQUIRRELVM vm, unsigned level, const std::string& name) const;
     void beginScriptStep(RunMode mode);
+    CallGraph& activeGraph();
+    const CallGraph& activeGraph() const;
+    std::string resolveCallName(const SourceLoc& loc) const;
+    std::string lineAt(const std::string& source, int line) const;
+    std::string nameFromPrototype(int level, const char* rawName, const SourceLoc& loc) const;
+    void applyCallGraphNames(std::vector<StackFrameInfo>& frames) const;
 
     HSQUIRRELVM           vm_ = nullptr;
     std::atomic<RunMode>  mode_{RunMode::Running};
@@ -219,6 +279,9 @@ private:
     /** @brief While set, step filters ignore this exact source+line (multi-_OP_LINE). */
     SourceLoc             stepSkipLoc_;
     BreakpointEventFn     bpEventFn_;
+    CallGraph*            callGraph_ = nullptr;
+    CallGraph             ownGraph_;
+    std::unordered_map<std::string, std::string> virtualSources_;
 };
 
 }  // namespace eve::dev

@@ -1,12 +1,14 @@
-#include "cmdline/LanguageIndex.h"
+#include "devtools/LanguageIndex.h"
 
 #include "common/ScriptModule.h"
 
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
+#include <unordered_map>
 #include <unordered_set>
 
-namespace eve::cmd::lsp {
+namespace eve::dev::lsp {
 namespace {
 
 enum class TokenKind { Identifier, String, Symbol };
@@ -159,6 +161,17 @@ bool contains(const Range& range, Position position) {
     return true;
 }
 
+bool isKeyword(std::string_view word) {
+    static const std::unordered_set<std::string> words = {
+        "if",       "else",   "switch",  "case",     "default", "while",     "do",         "for",
+        "foreach",  "break",  "continue","return",   "try",     "catch",     "throw",      "yield",
+        "resume",   "await",  "local",   "const",    "enum",    "class",     "function",   "constructor",
+        "static",   "persist","async",   "export",   "import",  "from",      "as",         "extends",
+        "in",       "typeof", "instanceof","clone",  "delete",  "this",      "base",       "self",
+        "true",     "false",  "null",    "nullrel"};
+    return words.count(std::string(word)) != 0;
+}
+
 }  // namespace
 
 struct WorkspaceIndex::Unit {
@@ -169,6 +182,8 @@ struct WorkspaceIndex::Unit {
     std::unordered_map<std::string, size_t> declarations;
     std::unordered_map<std::string, size_t> exports;
     std::vector<ImportBinding>              imports;
+    std::unordered_map<std::string, uint32_t> nameTypes;
+    std::unordered_map<std::string, uint32_t> nameModifiers;
 };
 
 struct WorkspaceIndex::Target {
@@ -197,15 +212,34 @@ void WorkspaceIndex::update(std::string canonicalUri, std::string clientUri, std
     for (size_t i = 0; i < tokens.size(); ++i) {
         if (tokens[i].kind != TokenKind::Identifier) continue;
         const std::string& word = tokens[i].text;
+        const auto         remember = [&](const std::string& name, uint32_t type, uint32_t modifiers) {
+            next.nameTypes.try_emplace(name, type);
+            next.nameModifiers.try_emplace(name, modifiers);
+        };
         if ((word == "local" || word == "function" || word == "class" || word == "const" || word == "persist") &&
-            i + 1 < tokens.size() && tokens[i + 1].kind == TokenKind::Identifier) {
+            i + 1 < tokens.size() && tokens[i + 1].kind == TokenKind::Identifier &&
+            !isKeyword(tokens[i + 1].text)) {
             next.declarations.try_emplace(tokens[i + 1].text, i + 1);
+            if (word == "class")
+                remember(tokens[i + 1].text, SemanticTypes::Class, 0);
+            else if (word == "function")
+                remember(tokens[i + 1].text, SemanticTypes::Function, 0);
+            else if (word == "const")
+                remember(tokens[i + 1].text, SemanticTypes::Variable, SemanticMods::Readonly);
+            else
+                remember(tokens[i + 1].text, SemanticTypes::Variable, 0);
         }
         if (word == "export" && i + 2 < tokens.size() && tokens[i + 1].kind == TokenKind::Identifier &&
             (tokens[i + 1].text == "function" || tokens[i + 1].text == "class" || tokens[i + 1].text == "const") &&
             tokens[i + 2].kind == TokenKind::Identifier) {
             next.declarations.try_emplace(tokens[i + 2].text, i + 2);
             next.exports[tokens[i + 2].text] = i + 2;
+            if (tokens[i + 1].text == "class")
+                remember(tokens[i + 2].text, SemanticTypes::Class, 0);
+            else if (tokens[i + 1].text == "function")
+                remember(tokens[i + 2].text, SemanticTypes::Function, 0);
+            else
+                remember(tokens[i + 2].text, SemanticTypes::Variable, SemanticMods::Readonly);
         }
         if (word != "import" || i + 1 >= tokens.size()) continue;
 
@@ -359,6 +393,69 @@ std::vector<Location> WorkspaceIndex::targetReferences(const Target& target, boo
     return result;
 }
 
+std::vector<SemanticToken> WorkspaceIndex::semanticTokens(std::string_view canonicalUri) const {
+    const Unit* current = unit(canonicalUri);
+    if (current == nullptr) return {};
+    const auto& tokens = current->tokens;
+    std::vector<SemanticToken> result;
+    for (size_t i = 0; i < tokens.size(); ++i) {
+        if (tokens[i].kind != TokenKind::Identifier) continue;
+        const std::string& name = tokens[i].text;
+        if (name == "true" || name == "false" || name == "null" || name == "nullrel" || name == "this" ||
+            name == "base" || name == "self") {
+            result.push_back({tokens[i].range.start, name.size(), SemanticTypes::Keyword, 0, name});
+            continue;
+        }
+        if (isKeyword(name)) continue;
+        const Token*       prev = i > 0 ? &tokens[i - 1] : nullptr;
+        const Token*       next = i + 1 < tokens.size() ? &tokens[i + 1] : nullptr;
+        const bool         called = next && next->text == "(";
+        const bool         member = prev && prev->text == ".";
+        SemanticToken token;
+        token.start    = tokens[i].range.start;
+        token.length   = name.size();
+        token.name     = name;
+        token.type     = SemanticTypes::Variable;
+        token.modifiers = 0;
+
+        const std::string prevText = prev && prev->kind == TokenKind::Identifier ? prev->text : std::string{};
+        if (prevText == "class" || prevText == "extends" || (prev && prev->text == ":")) {
+            token.type      = SemanticTypes::Class;
+            token.modifiers = prevText == "class" ? SemanticMods::Declaration : 0;
+        } else if (prevText == "function") {
+            token.type      = SemanticTypes::Function;
+            token.modifiers = SemanticMods::Declaration;
+        } else if (prevText == "local" || prevText == "persist") {
+            token.type      = SemanticTypes::Variable;
+            token.modifiers = SemanticMods::Declaration;
+        } else if (prevText == "const") {
+            token.type      = SemanticTypes::Variable;
+            token.modifiers = SemanticMods::Declaration | SemanticMods::Readonly;
+        } else if (member && called) {
+            token.type = (!name.empty() && std::isupper(static_cast<unsigned char>(name.front())) != 0)
+                             ? SemanticTypes::Class
+                             : SemanticTypes::Method;
+        } else if (member) {
+            token.type = SemanticTypes::Property;
+        } else if (called) {
+            const auto found = current->nameTypes.find(name);
+            if (found != current->nameTypes.end() && found->second == SemanticTypes::Class)
+                token.type = SemanticTypes::Class;
+            else if (!name.empty() && std::isupper(static_cast<unsigned char>(name.front())) != 0)
+                token.type = SemanticTypes::Class;
+            else
+                token.type = SemanticTypes::Function;
+        } else {
+            const auto found = current->nameTypes.find(name);
+            if (found != current->nameTypes.end()) token.type = found->second;
+            const auto mods = current->nameModifiers.find(name);
+            if (mods != current->nameModifiers.end()) token.modifiers = mods->second;
+        }
+        result.push_back(std::move(token));
+    }
+    return result;
+}
+
 std::optional<Location> WorkspaceIndex::definition(std::string_view canonicalUri, Position position) const {
     const Unit* current = unit(canonicalUri);
     if (current == nullptr) return std::nullopt;
@@ -386,4 +483,4 @@ std::optional<std::vector<TextEdit>> WorkspaceIndex::rename(std::string_view can
     return edits.empty() ? std::nullopt : std::optional<std::vector<TextEdit>>(std::move(edits));
 }
 
-}  // namespace eve::cmd::lsp
+}  // namespace eve::dev::lsp

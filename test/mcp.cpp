@@ -984,3 +984,50 @@ TEST_CASE("devtools.mcp.hostEditorBinding") {
     dt.detach();
     std::filesystem::remove_all(tmp);
 }
+
+TEST_CASE("devtools.mcp.setBreakpointWithCondition") {
+    auto& mcp = McpServer::instance();
+    auto& dt  = DevTool::instance();
+    auto& dbg = Debugger::instance();
+
+    mcp.stop();
+    dt.detach();
+    dbg.clearBreakpoints();
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    dt.attach(vm, false);
+
+    const int port = mcp.listen(0);
+    REQUIRE(port > 0);
+    McpClient client(port);
+    client.sendRequest(1, "initialize",
+                       "{\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},"
+                       "\"clientInfo\":{\"name\":\"t\"}}");
+    REQUIRE(client.expectResult(1));
+    client.sendNotification("notifications/initialized");
+
+    client.sendRequest(2, "tools/call",
+                       "{\"name\":\"eve_set_breakpoint\",\"arguments\":"
+                       "{\"source\":\"mcp.nut\",\"line\":7,\"condition\":\"n == 2\"}}");
+    auto setMsg = client.expectResult(2);
+    REQUIRE(setMsg);
+    const std::string setText =
+        setMsg->getObject("result")->getArray("content")->getObject(0)->getValue<std::string>("text");
+    CHECK(setText.find("ok id=") != std::string::npos);
+
+    auto bps = dbg.breakpoints();
+    REQUIRE(bps.size() == 1u);
+    REQUIRE_EQ(bps[0].line, 7);
+    REQUIRE_EQ(bps[0].condition, std::string("n == 2"));
+
+    client.sendRequest(3, "tools/call", "{\"name\":\"eve_list_breakpoints\",\"arguments\":{}}");
+    auto listMsg = client.expectResult(3);
+    REQUIRE(listMsg);
+    const std::string listText =
+        listMsg->getObject("result")->getArray("content")->getObject(0)->getValue<std::string>("text");
+    REQUIRE(listText.find("n == 2") != std::string::npos);
+
+    dbg.clearBreakpoints();
+    mcp.stop();
+    dt.detach();
+}
