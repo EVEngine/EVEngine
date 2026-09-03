@@ -147,13 +147,28 @@ public:
     void registerContract(BindingContract contract);
     /** @brief Removes a binding contract. */
     bool unregisterContract(std::string_view key);
-    /** @brief Finds a binding contract, or nullptr when metadata is unavailable. */
+    /**
+     * @brief Finds a binding contract.
+     * @return Non-owning pointer, or nullptr when metadata is unavailable.
+     * @ownership Borrowed; the registry retains the contract.
+     * @lifetime Valid until the matching contract is replaced, unregistered, or this registry is destroyed.
+     * @thread Same thread as the owning ScriptCompiler / Runtime.
+     */
     const BindingContract* find(std::string_view key) const noexcept;
-    /** @brief Finds a uniquely named method; returns nullptr when absent or ambiguous. */
+    /**
+     * @brief Finds a uniquely named method.
+     * @return Non-owning pointer, or nullptr when absent or ambiguous.
+     * @ownership Borrowed; the registry retains the contract.
+     * @lifetime Valid until the matching contract is replaced, unregistered, or this registry is destroyed.
+     * @thread Same thread as the owning ScriptCompiler / Runtime.
+     */
     const BindingContract* findMethod(std::string_view method) const noexcept;
     /**
      * @brief Finds a method on one script class.
-     * @return nullptr when the class has no such method.
+     * @return Non-owning pointer, or nullptr when the class has no such method.
+     * @ownership Borrowed; the registry retains the contract.
+     * @lifetime Valid until the matching contract is replaced, unregistered, or this registry is destroyed.
+     * @thread Same thread as the owning ScriptCompiler / Runtime.
      */
     const BindingContract* findMethod(std::string_view scriptClass, std::string_view method) const noexcept;
     /** @brief True when generated contracts include this script class. */
@@ -180,7 +195,12 @@ public:
     ssq::Script compileSource(std::string_view source, std::string_view sourceName);
     /** @brief Compiles a file through the VM and records its canonical identity. */
     ssq::Script compileFile(std::string_view path);
-    /** @brief Returns metadata for the most recent successful compilation. */
+    /** @brief Returns metadata for the most recent successful compilation.
+     * @return Non-owning pointer, or nullptr when the URI is unknown.
+     * @ownership Borrowed; ScriptCompiler retains the metadata.
+     * @lifetime Valid until that URI is compiled again or this ScriptCompiler is destroyed.
+     * @thread Same thread as the owning Runtime.
+     */
     const ScriptMetadata* metadata(std::string_view canonicalUri) const noexcept;
     /** @brief Returns all successful compilation metadata sorted by URI. */
     std::vector<ScriptMetadata> metadataSnapshot() const;

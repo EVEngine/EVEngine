@@ -5,6 +5,7 @@
 #include "devtools/LanguageIndex.h"
 #include "devtools/LanguageText.h"
 
+#include <cstdint>
 #include <iosfwd>
 #include <memory>
 #include <optional>
@@ -13,6 +14,9 @@
 #include <vector>
 
 namespace eve::dev {
+
+/** @brief Whether the stdio/JSON-RPC host should keep reading after one dispatch. */
+enum class LspDispatch : uint8_t { Continue = 0, Exit };
 
 /** @brief One parameter in an LSP signature-help result. */
 struct LanguageSignatureParameter {
@@ -66,7 +70,9 @@ public:
     std::optional<LanguageSignatureHelp>      signatureHelp(std::string_view uri, lsp::Position position) const;
     /**
      * @brief Formats an open document (brace/bracket indent, trailing whitespace).
-     * @param range when set, the returned edit covers those lines; indent still uses the whole file.
+     * @param range Borrowed; when set, the returned edit covers those lines.
+     * @lifetime `range` is used only for the call; it is not retained.
+     * @thread Caller thread; no shared mutable state.
      */
     std::vector<lsp::TextEdit> formatDocument(std::string_view uri, lsp::FormatOptions options = {},
                                               const lsp::Range* range = nullptr) const;
@@ -77,9 +83,9 @@ public:
 
     /**
      * @brief Dispatches one LSP JSON-RPC body and appends Content-Length frames.
-     * @return false after an `exit` notification.
+     * @return LspDispatch::Exit after an `exit` notification; otherwise Continue.
      */
-    bool handleMessage(std::string_view jsonBody, std::ostream& output);
+    [[nodiscard]] LspDispatch handleMessage(std::string_view jsonBody, std::ostream& output);
 
     /** @brief Stdio LSP host. Returns 0 after a clean shutdown. */
     int runStdio(std::istream& input, std::ostream& output);

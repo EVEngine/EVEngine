@@ -1000,16 +1000,16 @@ std::vector<lsp::SemanticToken> LanguageServer::semanticTokens(std::string_view 
     return tokens;
 }
 
-bool LanguageServer::handleMessage(std::string_view jsonBody, std::ostream& output) {
+LspDispatch LanguageServer::handleMessage(std::string_view jsonBody, std::ostream& output) {
     Poco::JSON::Parser      parser;
     Poco::JSON::Object::Ptr request;
     try {
         request = parser.parse(std::string(jsonBody)).extract<Poco::JSON::Object::Ptr>();
     } catch (const std::exception& error) {
         writeFrame(output, rpcError(Poco::Dynamic::Var(), -32700, error.what()));
-        return true;
+        return LspDispatch::Continue;
     }
-    if (!request) return true;
+    if (!request) return LspDispatch::Continue;
     const std::string method = request->optValue<std::string>("method", "");
     const auto        params = request->getObject("params");
     const bool        hasId  = request->has("id");
@@ -1095,12 +1095,12 @@ bool LanguageServer::handleMessage(std::string_view jsonBody, std::ostream& outp
         result->set("serverInfo", serverInfo);
         writeFrame(output, rpcResponse(id, Poco::Dynamic::Var(result)));
     } else if (method == "initialized" || method == "textDocument/didSave" || method.rfind("$/", 0) == 0) {
-        return true;
+        return LspDispatch::Continue;
     } else if (method == "shutdown") {
         impl_->shutdown_ = true;
         writeFrame(output, rpcResponse(id, Poco::Dynamic::Var()));
     } else if (method == "exit") {
-        return false;
+        return LspDispatch::Exit;
     } else if (method == "textDocument/didOpen") {
         auto document = params ? params->getObject("textDocument") : nullptr;
         if (document) {
@@ -1273,13 +1273,13 @@ bool LanguageServer::handleMessage(std::string_view jsonBody, std::ostream& outp
     } else if (hasId) {
         writeFrame(output, rpcError(id, -32601, "unsupported LSP method: " + method));
     }
-    return true;
+    return LspDispatch::Continue;
 }
 
 int LanguageServer::runStdio(std::istream& input, std::ostream& output) {
     std::string body;
     while (readFrame(input, body)) {
-        if (!handleMessage(body, output)) return impl_->shutdown_ ? 0 : 1;
+        if (handleMessage(body, output) == LspDispatch::Exit) return impl_->shutdown_ ? 0 : 1;
     }
     return impl_->shutdown_ ? 0 : 1;
 }
