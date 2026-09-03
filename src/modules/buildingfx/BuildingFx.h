@@ -82,9 +82,9 @@ public:
     void clearMeshResolver() { meshResolver_ = {}; }
     /** @brief Current derived topology variant for one visual, or empty when unavailable. */
     std::string getVisualVariant(building::PlacementWorld *world, int instanceId) const;
-    /** @brief Selected configured resource id after mask/class/base fallback. */
+    /** @brief Selected configured resource id after mask, class, and base resolution. */
     std::string getVisualResource(building::PlacementWorld *world, int instanceId) const;
-    /** @brief Empty on resolved resources, otherwise a stable observable fallback reason. */
+    /** @brief Empty on resolved resources, otherwise a stable observable degradation reason. */
     std::string getVisualFallbackReason(building::PlacementWorld *world, int instanceId) const;
     /** @brief Set per-world floor visibility: `all`, `active`, or `active_and_below`. */
     void setLevelVisibilityMode(building::PlacementWorld *world, const std::string &mode);
@@ -96,7 +96,7 @@ public:
     int getCurveGroupCount(building::PlacementWorld *world) const;
     /** @brief Number of curve groups currently rendered as one continuous 3D mesh. */
     int getContinuousCurveVisualCount(building::PlacementWorld *world) const;
-    /** @brief Stable fallback reason for the curve group containing an instance. */
+    /** @brief Stable degradation reason for the curve group containing an instance. */
     std::string getCurveVisualFallbackReason(building::PlacementWorld *world,
                                              int instanceId) const;
 
@@ -142,7 +142,7 @@ public:
      * @param session Active placement session owning exactly four curve controls.
      * @param subdivisions Analytic surface sample segment count.
      * @param surfaceName Registered surface provider used by a subsequent matching commit.
-     * @return Success after CPU generation (including explicit graphics-unavailable fallback),
+     * @return Success after CPU generation (including explicit graphics-unavailable degradation),
      * or a diagnostic without replacing the last valid preview.
      */
     [[nodiscard]] eve::Result<void> updateEdgeCurveSurfacePreview(
@@ -156,7 +156,7 @@ public:
     void clearEdgeCurvePreview(building::PlacementWorld *world);
     /** @brief Return whether the world owns a current CPU curve-preview mesh. */
     bool hasEdgeCurvePreview(building::PlacementWorld *world) const;
-    /** @brief Return the stable backend fallback reason for the transient curve preview. */
+    /** @brief Return the stable backend degradation reason for the transient curve preview. */
     std::string getEdgeCurvePreviewFallbackReason(building::PlacementWorld *world) const;
     /** @brief Surface identity represented by the current preview, or empty. */
     std::string getEdgeCurvePreviewSurfaceId(building::PlacementWorld *world) const;
