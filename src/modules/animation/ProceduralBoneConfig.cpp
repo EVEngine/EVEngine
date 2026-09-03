@@ -41,7 +41,8 @@ Result<Value> DynamicBoneConfig::toValue() const {
 }
 
 Result<DynamicBoneConfig> DynamicBoneConfig::fromValue(const Value& value) {
-    if(!value.isObject())return invalid<DynamicBoneConfig>("expected object","dynamicBone");DynamicBoneConfig out;
+    if(!value.isObject())return invalid<DynamicBoneConfig>("expected object","dynamicBone");
+    DynamicBoneConfig out;
     std::string schema;int version=0;if(!string(value,"schema",schema)||schema!=SchemaId)return invalid<DynamicBoneConfig>("unexpected schema","schema");if(!integer(value,"schemaVersion",version)||version!=static_cast<int>(SchemaVersion))return invalid<DynamicBoneConfig>("unsupported schema version","schemaVersion");
     if(!number(value,"gravityX",out.gravityX)||!number(value,"gravityY",out.gravityY)||!number(value,"gravityZ",out.gravityZ)||!number(value,"externalX",out.externalX)||!number(value,"externalY",out.externalY)||!number(value,"externalZ",out.externalZ)||!number(value,"weight",out.weight)||!number(value,"updateRate",out.updateRate)||!number(value,"teleportThreshold",out.teleportThreshold)||!number(value,"objectMoveResponse",out.objectMoveResponse)||!number(value,"distanceLimit",out.distanceLimit))return invalid<DynamicBoneConfig>("missing numeric global field","dynamicBone");
     const Value* chainArray=field(value,"chains");const Value* colliderArray=field(value,"colliders");const Value* foot=field(value,"footIK");if(!chainArray||!chainArray->isArray()||!colliderArray||!colliderArray->isArray()||!foot||!foot->isObject())return invalid<DynamicBoneConfig>("expected chain, collider and Foot IK values","dynamicBone");
