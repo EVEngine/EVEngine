@@ -11,6 +11,7 @@
 #include <string>
 
 using eve::dev::LanguageServer;
+using eve::dev::LspDispatch;
 using eve::dev::lsp::Position;
 
 namespace {
