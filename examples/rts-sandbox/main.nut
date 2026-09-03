@@ -30,9 +30,7 @@ function nextId() {
     ++serial; return id;
 }
 function readTextFile(path) {
-    local handle=file(path,"r"), content="", n=handle.len();
-    for(local i=0;i<n;++i) content += handle.readn('b').tochar();
-    handle.close(); return content;
+    return fs.readText(path);
 }
 function wx() { return (mouse.getX()-ORIGIN_X)/CELL; }
 function wy() { return (mouse.getY()-ORIGIN_Y)/CELL; }

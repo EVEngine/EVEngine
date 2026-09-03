@@ -144,8 +144,9 @@ TEST_CASE("rts.sandboxInitializesStepsAndRebuildsAcrossReload") {
         content << input.rdbuf();
         return content.str();
     };
-    const std::string source = readAll(sourceRoot / "examples" / "rts-sandbox" / "main.nut");
-    const std::string content = readAll(sourceRoot / "examples" / "rts-sandbox" / "data" / "content.json");
+    const auto sandboxRoot = sourceRoot / "examples" / "rts-sandbox";
+    const std::string source = readAll(sandboxRoot / "main.nut");
+    const std::string content = readAll(sandboxRoot / "data" / "content.json");
 
     ecs::Table       world;
     ecs::ScopedTable guard(world);
