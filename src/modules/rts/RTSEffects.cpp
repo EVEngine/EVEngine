@@ -80,6 +80,10 @@ eve::Result<effects::EffectHandle> RTSEffectAdapter::apply(const RTSEffectDefini
     common.period    = definition.period;
     common.magnitude = definition.magnitude;
     common.policy    = definition.policy;
+    common.payload.setNumber("speedMultiplier", definition.speedMultiplier);
+    common.payload.setNumber("damageMultiplier", definition.damageMultiplier);
+    common.payload.setNumber("incomingDamageMultiplier", definition.incomingDamageMultiplier);
+    common.payload.setNumber("healingPerSecond", definition.healingPerSecond);
     common.tags      = definition.tags;
     common.tags.push_back(kindTag(definition.kind));
     auto valid = common.validate();
@@ -137,6 +141,32 @@ std::size_t RTSEffectAdapter::count() const noexcept { return static_cast<std::s
 
 eve::Result<const effects::EffectInstance*> RTSEffectAdapter::resolve(effects::EffectHandle handle) const {
     return container_.resolve(handle);
+}
+
+double RTSEffectAdapter::multiplier(std::string_view field) const noexcept {
+    double result = 1.0;
+    for (int index = 0; index < container_.effectCount(); ++index) {
+        const auto* effect = container_.effectAt(index);
+        if (effect == nullptr) continue;
+        const auto found = effect->payload.object().find(std::string(field));
+        if (found == effect->payload.object().end()) continue;
+        if (const auto* real = found->second.getIf<double>()) result *= *real;
+        else if (const auto* integer = found->second.getIf<std::int64_t>()) result *= static_cast<double>(*integer);
+    }
+    return result;
+}
+
+double RTSEffectAdapter::additive(std::string_view field) const noexcept {
+    double result = 0.0;
+    for (int index = 0; index < container_.effectCount(); ++index) {
+        const auto* effect = container_.effectAt(index);
+        if (effect == nullptr) continue;
+        const auto found = effect->payload.object().find(std::string(field));
+        if (found == effect->payload.object().end()) continue;
+        if (const auto* real = found->second.getIf<double>()) result += *real;
+        else if (const auto* integer = found->second.getIf<std::int64_t>()) result += static_cast<double>(*integer);
+    }
+    return result;
 }
 
 eve::Result<void> RTSEffectComponent::bindSubject(eve::SubjectRef subject) {

@@ -491,6 +491,11 @@ FlowField *buildFlowFieldUncached(Grid &grid, int gx, int gy) {
 }  // namespace
 
 Path *Pathfinder::findPath(int sx, int sy, int gx, int gy) {
+    return findPath(sx, sy, gx, gy, {});
+}
+
+Path *Pathfinder::findPath(int sx, int sy, int gx, int gy,
+                           const std::function<float(int, int)> &entryPenalty) {
     auto *path = new Path();
     Grid &grid = impl_->grid;
     if (!ensureSynced(grid)) return path;
@@ -530,7 +535,10 @@ Path *Pathfinder::findPath(int sx, int sy, int gx, int gy) {
         grid.forEachWalkableNeighbor(cx, cy, [&](int nx, int ny, float edgeCost) {
             const int ni = idx(nx, ny);
             if (closed[size_t(ni)]) return;
-            const float tentative = gScore[size_t(cur.idx)] + edgeCost;
+            float penalty = entryPenalty ? entryPenalty(nx, ny) : 0.0f;
+            if (!std::isfinite(penalty)) return;
+            penalty = std::max(0.0f, penalty);
+            const float tentative = gScore[size_t(cur.idx)] + edgeCost + penalty;
             if (tentative >= gScore[size_t(ni)]) return;
             gScore[size_t(ni)] = tentative;
             parent[size_t(ni)] = cur.idx;

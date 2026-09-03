@@ -5,6 +5,7 @@
 #include "zeroerr/unittest.h"
 
 #include <cmath>
+#include <limits>
 #include <map>
 #include <string_view>
 
@@ -135,4 +136,34 @@ TEST_CASE("projectileRuntime.expiryReturnsSlotToPool") {
     REQUIRE_EQ(update.value().released.size(), 1u);
     CHECK_EQ(runtime.activeCount(), 0u);
     CHECK(!runtime.find(spawned.value()).has_value());
+}
+
+TEST_CASE("projectileRuntime.snapshotRestoresTrajectoryAndEmptySlotGenerationsAtomically") {
+    eve::weapon::ProjectileRuntime source;
+    REQUIRE(source.configurePool(2).ok());
+    auto first = source.spawn(definition(eve::weapon::ProjectileMode::Linear), {{}, {1.0, 0.0, 0.0}, {}});
+    REQUIRE(first.ok());
+    REQUIRE(source.update(eve::Duration::fromNanoseconds(250000000)).ok());
+    const auto snapshot = source.snapshot();
+
+    eve::weapon::ProjectileRuntime restored;
+    REQUIRE(restored.restore(snapshot).ok());
+    REQUIRE_EQ(restored.capacity(), 2u);
+    REQUIRE_EQ(restored.activeCount(), 1u);
+    auto state = restored.find(first.value());
+    REQUIRE(state.has_value());
+    CHECK(std::fabs(state->position.x - 2.5) < 1e-9);
+    REQUIRE(restored.release(first.value()).ok());
+    auto reused = restored.spawn(definition(eve::weapon::ProjectileMode::Linear), {{}, {1.0, 0.0, 0.0}, {}});
+    REQUIRE(reused.ok());
+    CHECK_EQ(reused.value().slot, first.value().slot);
+    CHECK(reused.value().generation != first.value().generation);
+
+    auto invalid = snapshot;
+    invalid.slots[0].state->position.x = std::numeric_limits<double>::quiet_NaN();
+    const auto before = restored.snapshot();
+    CHECK(!restored.restore(invalid).ok());
+    CHECK_EQ(restored.activeCount(), 1u);
+    CHECK(restored.find(reused.value()).has_value());
+    CHECK_EQ(restored.snapshot().slots.size(), before.slots.size());
 }

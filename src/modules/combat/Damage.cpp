@@ -58,26 +58,32 @@ Result<void> HitReactionPolicy::validate() const {
     return Result<void>::success();
 }
 
-Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequest& request) const {
+Result<DamageAmounts> DamageRuntime::preview(const CombatState& target, const DamageRequest& request) const {
     auto stateValid = target.validate();
-    if (!stateValid) return Result<DamageOutcome>::failure(stateValid.status());
+    if (!stateValid) return Result<DamageAmounts>::failure(stateValid.status());
     auto requestValid = request.validate();
-    if (!requestValid) return Result<DamageOutcome>::failure(requestValid.status());
-    auto policyValid = policy_.validate();
-    if (!policyValid) return Result<DamageOutcome>::failure(policyValid.status());
+    if (!requestValid) return Result<DamageAmounts>::failure(requestValid.status());
     if (target.subject != request.target)
-        return invalid<DamageOutcome>("Damage request target does not match combat state", "target");
-
-    DamageAmounts    amounts{request.healthDamage, request.poiseDamage, 1.0};
-    DamageRuleSource source = DamageRuleSource::Default;
+        return invalid<DamageAmounts>("Damage request target does not match combat state", "target");
+    DamageAmounts amounts{request.healthDamage, request.poiseDamage, 1.0};
     if (rule_) {
         auto evaluated = rule_->evaluate(request, target);
-        if (!evaluated) return Result<DamageOutcome>::failure(evaluated.status());
+        if (!evaluated) return Result<DamageAmounts>::failure(evaluated.status());
         amounts = std::move(evaluated).takeValue();
-        source  = DamageRuleSource::Provider;
     }
-    auto amountsValid = validateAmounts(amounts);
-    if (!amountsValid) return Result<DamageOutcome>::failure(amountsValid.status());
+    auto valid = validateAmounts(amounts);
+    if (!valid) return Result<DamageAmounts>::failure(valid.status());
+    return Result<DamageAmounts>::success(amounts);
+}
+
+Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequest& request) const {
+    auto policyValid = policy_.validate();
+    if (!policyValid) return Result<DamageOutcome>::failure(policyValid.status());
+    auto previewed = preview(target, request);
+    if (!previewed) return Result<DamageOutcome>::failure(previewed.status());
+    DamageAmounts amounts = std::move(previewed).takeValue();
+    DamageRuleSource source = DamageRuleSource::Default;
+    if (rule_) source = DamageRuleSource::Provider;
 
     CombatState candidate      = target;
     candidate.health           = std::max(0.0, candidate.health - amounts.healthDamage);

@@ -114,6 +114,8 @@ public:
     explicit DamageRuntime(const IDamageRule* rule = nullptr, HitReactionPolicy policy = {})
         : rule_(rule), policy_(policy) {}
 
+    /** @brief Resolve final damage amounts without mutating the target, for authoritative tactical prediction. */
+    [[nodiscard]] Result<DamageAmounts> preview(const CombatState& target, const DamageRequest& request) const;
     /** @brief Resolve and atomically commit one damage request. */
     [[nodiscard]] Result<DamageOutcome> apply(CombatState& target, const DamageRequest& request) const;
     /** @brief Restore an explicit poise amount, clamped to maxPoise. */

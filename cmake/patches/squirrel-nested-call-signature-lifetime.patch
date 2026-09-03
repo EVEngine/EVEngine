@@ -1,0 +1,16 @@
+diff --git a/squirrel/squirrel/sqcompiler.cpp b/squirrel/squirrel/sqcompiler.cpp
+--- a/squirrel/squirrel/sqcompiler.cpp
++++ b/squirrel/squirrel/sqcompiler.cpp
+@@ -1211,7 +1211,11 @@ public:
+     void FunctionCallArgs(bool rawcall = false)
+     {
+         const SQObjectPtr callName = _activecallname;
+-        const SQFunctionSignature *callSignature = FindSignature(callName);
++        const SQFunctionSignature *resolvedSignature = FindSignature(callName);
++        SQFunctionSignature callSignatureStorage;
++        if(resolvedSignature != NULL)
++            callSignatureStorage = *resolvedSignature;
++        const SQFunctionSignature *callSignature = resolvedSignature == NULL ? NULL : &callSignatureStorage;
+         SQInteger nargs = 1;//this
+         bool hasNamedArgs = false;
+         SQObjectPtrVec argumentNames;

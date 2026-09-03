@@ -81,6 +81,27 @@ TEST_CASE("combatDamage.providerPathIsObservableAndPreparedBeforeCommit") {
     CHECK_EQ(target.poise, before.poise);
 }
 
+TEST_CASE("combatDamage.previewUsesCanonicalRuleWithoutMutatingTarget") {
+    auto                       target  = state();
+    auto                       request = requestFor(target);
+    ArmorRule                  armor;
+    eve::combat::DamageRuntime damage(&armor);
+
+    auto preview = damage.preview(target, request);
+    REQUIRE(preview.ok());
+    CHECK_EQ(armor.calls, 1);
+    CHECK_EQ(preview.value().healthDamage, 5.0);
+    CHECK_EQ(preview.value().poiseDamage, 10.0);
+    CHECK_EQ(preview.value().knockbackScale, 0.25);
+    CHECK_EQ(target.health, 100.0);
+    CHECK_EQ(target.poise, 50.0);
+
+    auto outcome = damage.apply(target, request);
+    REQUIRE(outcome.ok());
+    CHECK_EQ(armor.calls, 2);
+    CHECK_EQ(outcome.value().appliedHealthDamage, preview.value().healthDamage);
+}
+
 TEST_CASE("combatDamage.reactionPriorityIsDeathKnockdownStaggerFlinch") {
     eve::combat::HitReactionPolicy policy;
     policy.flinchDamageThreshold = 1.0;

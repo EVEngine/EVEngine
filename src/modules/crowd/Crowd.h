@@ -22,6 +22,7 @@ struct AgentState {
     float vy = 0.f;      ///< 速度 Y
     int action = -1;     ///< 行动枚举（-1=非法 id）
     int data = 0;        ///< 游戏自定义标记
+    int avoidancePriority = 0; ///< Higher-priority agents yield less during overlap resolution.
 };
 
 /** @brief 流场采样结果（脚本 flowAtWorld / flowAtCell 返回值）。 */
@@ -153,6 +154,11 @@ public:
     /** @brief 设置游戏自定义标记。 */
     bool setAgentData(int id, int data);
     int getAgentData(int id) const;
+    /** @brief Set overlap-resolution priority; higher values yield less. @return Applied, or NotFound for an invalid
+     * slot. */
+    [[nodiscard]] Result<void> setAgentAvoidancePriority(int id, int priority);
+    /** @brief Return overlap-resolution priority, or zero for an invalid id. */
+    int getAgentAvoidancePriority(int id) const;
     /** @brief 直接放置单位。 */
     bool setAgentPosition(int id, float x, float y);
     /** @brief 读取单位状态快照（非法 id 返回 action=-1）。 */

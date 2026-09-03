@@ -21,6 +21,12 @@ namespace eve::rts {
 
 class Building;
 
+/** @brief Resource amount protected from production requests below a configured priority. */
+struct RTSProductionResourceReserve {
+    resource::ResourceCost resource;
+    int minimumPriority = 0;
+};
+
 /**
  * @brief Caller-owned inputs for one atomic RTS build or production command.
  *
@@ -42,6 +48,7 @@ struct RTSBuildRequest {
     eve::Value         context  = eve::Value(eve::Value::Object{});
     Duration           duration = Duration::zero();
     int                priority = 0;
+    std::vector<RTSProductionResourceReserve> resourceReserves;
 
     std::string orderKind           = "build";
     int         orderPriority       = 0;
@@ -69,6 +76,24 @@ struct RTSBuildReceipt {
     action::ActionExecutionId       actionExecution;
 };
 
+/** @brief Caller-owned inputs for atomically cancelling one paid production task. */
+struct RTSCancelProductionRequest {
+    production::WorkQueue*      production = nullptr;
+    orders::CommandQueue*       orders = nullptr;
+    resource::IResourceAccount* account = nullptr;
+    resource::CostSpec          refund;
+    std::string                 productionTaskId;
+    std::string                 orderId;
+    std::string                 reason = "production cancelled";
+};
+
+/** @brief Result of a production cancellation whose queues and refund all committed. */
+struct RTSCancelProductionReceipt {
+    resource::Receipt refund;
+    std::string       productionTaskId;
+    std::string       orderId;
+};
+
 /**
  * @brief Coordinates Orders, Production, Action and resource payment.
  *
@@ -92,13 +117,15 @@ public:
      * @param productionKind Domain production kind, defaulting to `unit`.
      * @param priority Queue priority for the production task.
      * @param transactionId Optional transaction correlation id.
+     * @param resourceReserves Faction/game-owned floors applied before the canonical transaction.
      * @return Complete build receipt, or a failure without partial queue/payment state.
      */
     [[nodiscard]] static eve::Result<RTSBuildReceipt> build(Building& building, action::ActionRuntime& action,
                                                             resource::IResourceAccount& account,
                                                             resource::CostSpec cost, std::string product,
                                                             Duration duration, std::string productionKind = "unit",
-                                                            int priority = 0, std::string transactionId = {});
+                                                            int priority = 0, std::string transactionId = {},
+                                                            std::vector<RTSProductionResourceReserve> resourceReserves = {});
 
     /**
      * @brief Atomically enqueue an RTS build/production action and charge cost.
@@ -107,6 +134,23 @@ public:
      *         failure with no observable queue/payment partial state.
      */
     [[nodiscard]] static eve::Result<RTSBuildReceipt> build(RTSBuildRequest request);
+
+    /**
+     * @brief Cancel a building production task and refund its complete canonical cost atomically.
+     * @param building Borrowed building owning both authoritative queues.
+     * @param account Borrowed authoritative resource account.
+     * @param productionTaskId Stable task id returned by build().
+     * @param orderId Stable order id returned by build().
+     * @param refund Exact multi-resource cost originally paid by the task.
+     * @param reason Retained cancellation reason for both canonical queues.
+     * @return Refund receipt, or failure with both queues restored and no refund applied.
+     */
+    [[nodiscard]] static eve::Result<RTSCancelProductionReceipt> cancel(
+        Building& building, resource::IResourceAccount& account, std::string productionTaskId,
+        std::string orderId, resource::CostSpec refund, std::string reason = "production cancelled");
+
+    /** @brief Cancel through explicitly injected canonical production, order and account ports. */
+    [[nodiscard]] static eve::Result<RTSCancelProductionReceipt> cancel(RTSCancelProductionRequest request);
 };
 
 }  // namespace eve::rts

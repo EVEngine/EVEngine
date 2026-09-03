@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <map>
 #include <unordered_map>
 
 namespace eve::economy {
@@ -10,6 +11,13 @@ namespace eve::economy {
  */
 class EconomyLedger {
 public:
+    /** @brief Owning deterministic copy of all balance and accounting counters. */
+    struct Snapshot {
+        std::map<std::string, int> current;
+        std::map<std::string, int> wasted;
+        std::map<std::string, int> income;
+        std::map<std::string, int> expense;
+    };
     /**
      * @brief 入账 amount。
      * @return 实际入账量（受类型上限约束，超限部分记为浪费）。
@@ -37,6 +45,10 @@ public:
      *          fully validated and built.
      */
     void swap(EconomyLedger& other) noexcept;
+    /** @brief Capture every ledger counter in deterministic key order. */
+    [[nodiscard]] Snapshot snapshot() const;
+    /** @brief Restore a previously captured complete ledger state. */
+    void restore(const Snapshot& snapshot);
 
 private:
     std::unordered_map<std::string, int> current_;

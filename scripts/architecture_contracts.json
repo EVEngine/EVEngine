@@ -348,14 +348,18 @@
     {
       "id": "rts-ecs-system-contracts",
       "rule": "ecs-system",
-      "scope": "src/modules/rts/RTSSystems.h",
+      "scope": "src/modules/rts/*.h",
       "owner": "rts::RTSSystems",
       "issue": "EVENGINE-ARCH-ECS-SYSTEM-METADATA",
       "reason": "RTS systems publish machine-readable access contracts before view iteration and deferred structural changes.",
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/rts/RTSSystems.h",
-        "src/modules/rts/RTSSystems.cpp"
+        "src/modules/rts/RTSSystems.cpp",
+        "src/modules/rts/RTSMatch.h",
+        "src/modules/rts/RTSMatch.cpp",
+        "src/modules/rts/RTSTech.h",
+        "src/modules/rts/RTSTech.cpp"
       ],
       "tests": [
         "test/rts_composition.cpp",
@@ -366,16 +370,18 @@
         "MotionSystem",
         "OrderActionSystem",
         "BuildingProductionSystem",
-        "EffectSystem"
+        "EffectSystem",
+        "MatchSystem",
+        "TechnologySystem"
       ],
-      "entity_scope": "live Unit and Building ECS entities in the current world",
-      "view": "typed generation-checked Unit/Building views with no mutation while the view is iterated",
-      "read_set": "Transform, Motion, OrderComponent, Production and Effect components as applicable",
-      "write_set": "Transform, Motion, OrderComponent and lifecycle component outputs",
-      "structural_changes": "enqueue deferred add/remove/despawn operations after view traversal",
-      "events": "order accepted/completed, production advanced and effect lifecycle events",
-      "services": "injected SimulationStep, action executor and capability services",
-      "phase": "deterministic simulation phase before presentation and after command ingestion"
+      "entity_scope": "live Unit, Building, ResourceNode, Faction and Match ECS roots in the current world",
+      "view": "typed generation-checked RTS views; each view closes before deferred creation, destruction or relationship repair",
+      "read_set": "identity, faction links, motion, orders, production, effects, research definitions, match rules and economy queries as applicable",
+      "write_set": "motion, orders, lifecycle projections, production queues, faction research state, match participant/state/event components and affected surrender roots",
+      "structural_changes": "unit production and surrender collect stable handles during traversal, then create or destroy only after the relevant view closes",
+      "events": "ordered command, production, effect, technology unlock, surrender and victory lifecycle facts are emitted after authoritative mutation",
+      "services": "injected SimulationStep, definition registry, action executor, resource query and capability services; callbacks are synchronous and not retained",
+      "phase": "owner-thread deterministic simulation after command ingestion and before presentation; match evaluation follows authoritative economy settlement"
     },
     {
       "id": "tactics-ecs-system-contracts",

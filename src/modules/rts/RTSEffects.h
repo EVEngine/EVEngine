@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eve::rts {
@@ -35,6 +36,10 @@ struct RTSEffectDefinition {
     double                   duration  = 0.0;
     double                   period    = 0.0;
     double                   magnitude = 0.0;
+    double                   speedMultiplier = 1.0;
+    double                   damageMultiplier = 1.0;
+    double                   incomingDamageMultiplier = 1.0;
+    double                   healingPerSecond = 0.0;
     effects::EffectPolicy    policy;
     RTSEffectKind            kind = RTSEffectKind::Morale;
     std::vector<std::string> tags;
@@ -82,8 +87,14 @@ public:
     [[nodiscard]] RTSEffectSnapshot snapshot() const;
     /** @brief Restore effects and target state, invalidating prior handles. */
     [[nodiscard]] eve::Result<void> restore(const RTSEffectSnapshot& snapshot);
+    /** @brief Align the contained lifecycle scheduler with an owning world checkpoint. @param tick Completed tick. */
+    void restoreSchedulerTick(eve::SimulationTick tick) noexcept { container_.restoreSchedulerTick(tick); }
     /** @brief Resolve a live handle as a borrowed observation. */
     [[nodiscard]] eve::Result<const effects::EffectInstance*> resolve(effects::EffectHandle handle) const;
+    /** @brief Multiply one numeric payload across all active canonical effect instances. */
+    [[nodiscard]] double multiplier(std::string_view field) const noexcept;
+    /** @brief Sum one numeric payload across all active canonical effect instances. */
+    [[nodiscard]] double additive(std::string_view field) const noexcept;
     /** @brief Access the adapter-owned RTS target state. */
     [[nodiscard]] RTSEffectTarget& target() noexcept { return target_; }
     /** @brief Read the adapter-owned RTS target state. */
@@ -114,10 +125,20 @@ public:
     [[nodiscard]] eve::Result<RTSEffectUpdate> advance(const eve::SimulationStep& step);
     /** @brief Return active effect count. */
     [[nodiscard]] std::size_t count() const noexcept { return adapter_.count(); }
+    /** @brief Capture the canonical effect lifecycle and RTS target projection. */
+    [[nodiscard]] RTSEffectSnapshot snapshot() const { return adapter_.snapshot(); }
+    /** @brief Atomically restore the canonical effect lifecycle and RTS target projection. */
+    [[nodiscard]] eve::Result<void> restore(const RTSEffectSnapshot& value) { return adapter_.restore(value); }
+    /** @brief Align the lifecycle scheduler with an owning world checkpoint. @param tick Completed tick. */
+    void restoreSchedulerTick(eve::SimulationTick tick) noexcept { adapter_.restoreSchedulerTick(tick); }
     /** @brief Return the mutable RTS target state owned by this component. */
     [[nodiscard]] RTSEffectTarget& target() noexcept { return adapter_.target(); }
     /** @brief Return the read-only RTS target state owned by this component. */
     [[nodiscard]] const RTSEffectTarget& target() const noexcept { return adapter_.target(); }
+    /** @brief Return a composed active status multiplier. */
+    [[nodiscard]] double multiplier(std::string_view field) const noexcept { return adapter_.multiplier(field); }
+    /** @brief Return a composed active additive status value. */
+    [[nodiscard]] double additive(std::string_view field) const noexcept { return adapter_.additive(field); }
 
 private:
     RTSEffectAdapter adapter_;

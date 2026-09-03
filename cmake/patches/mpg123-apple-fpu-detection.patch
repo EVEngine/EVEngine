@@ -1,0 +1,9 @@
+diff --git a/sound-libs/mpg123/ports/cmake/src/CMakeLists.txt b/sound-libs/mpg123/ports/cmake/src/CMakeLists.txt
+--- a/sound-libs/mpg123/ports/cmake/src/CMakeLists.txt
++++ b/sound-libs/mpg123/ports/cmake/src/CMakeLists.txt
+@@ -188,4 +188,4 @@ if(NO_MESSAGES)
+-if(WIN32 OR ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")
++if(WIN32 OR APPLE OR ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")
+         OR IOS OR (CMAKE_SYSTEM_NAME STREQUAL "iOS"))
+     # Host HAS_FPU is meaningless when cross-compiling; arm64 iOS/Android always has FPU.
+     set(HAVE_FPU 1)

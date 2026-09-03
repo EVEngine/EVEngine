@@ -5,6 +5,7 @@
 #include "map/TileLayer.h"
 
 #include <memory>
+#include <functional>
 #include <string>
 
 namespace eve::map {
@@ -50,6 +51,21 @@ public:
      * Never returns nullptr — always a Path object for simpler script null checks via length.
      */
     Path *findPath(int sx, int sy, int gx, int gy);
+
+    /**
+     * @brief A* with a caller-owned non-negative dynamic entry penalty.
+     * @param sx Start cell x.
+     * @param sy Start cell y.
+     * @param gx Goal cell x.
+     * @param gy Goal cell y.
+     * @param entryPenalty Additional cost for entering a walkable cell. Negative
+     *        values are clamped to zero; non-finite values reject that cell.
+     * @return Caller-owned path, empty when no route satisfies the overlay.
+     * @ownership Ownership transfers to the caller, which must release the Path after its final synchronous use.
+     * @lifetime The returned Path remains valid until the caller releases it and does not borrow Pathfinder state.
+     */
+    Path *findPath(int sx, int sy, int gx, int gy,
+                   const std::function<float(int, int)> &entryPenalty);
 
     /** @brief Build / reuse cached flow field toward goal. Owned by caller. */
     FlowField *buildFlowField(int gx, int gy);

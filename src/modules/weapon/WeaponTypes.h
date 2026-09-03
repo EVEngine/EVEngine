@@ -136,6 +136,15 @@ struct WeaponDefinition {
     float       damage = 0.f;
     float       penetration = 0.f;
     float       range  = 0.f;
+    /** @brief Linear range falloff begins here and reaches minimumDamageFactor at range. */
+    float falloffStart = 0.f;
+    float minimumDamageFactor = 1.f;
+    /** @brief Minimum radial multiplier at the outer edge of projectile area damage. */
+    float splashMinimumDamageFactor = 0.1f;
+    /** @brief Probability of a shot retaining its intended target. */
+    float accuracy = 1.0f;
+    /** @brief Maximum world-space miss displacement for an inaccurate shot. */
+    float scatterRadius = 0.0f;
     /** @brief 散布（度）。 */
     float    spread   = 0.f;
     /** @brief 散布 bloom：连续射击精度下降，停火回稳。 */
@@ -150,6 +159,16 @@ struct WeaponDefinition {
     /** @brief 伤害类型 / 元素（游戏侧结算用，引擎只透传）。 */
     std::string damageType;
     std::string element;
+    /** @brief Shared target-domain and gameplay-tag acceptance policy. */
+    bool targetsGround = true;
+    bool targetsAir = true;
+    bool friendlyFire = false;
+    bool blockedByObstacles = false;
+    std::vector<std::string> requiredTargetTags;
+    std::vector<std::string> excludedTargetTags;
+    /** @brief Soft automatic-target role hints; explicit attacks remain authoritative. */
+    std::vector<std::string> preferredTargetTags;
+    float preferredTargetBonus = 1.0f;
     /** @brief 运行时射击模式（safe/semi/auto 切换）。 */
     std::vector<FireMode> selectableModes;  // 空 = 固定 fireMode
     /** @brief 开镜缩放 FOV（0 = 无缩放）；`State.aiming` 时生效。 */

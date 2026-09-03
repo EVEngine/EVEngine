@@ -55,6 +55,10 @@ ActionAdapter::ActionAdapter(action::ActionRuntime& runtime) : impl_(std::make_u
 
 ActionAdapter::~ActionAdapter() = default;
 
+void ActionAdapter::clear() noexcept {
+    if (impl_) impl_->pending.clear();
+}
+
 Result<ActionExecutionResult> ActionAdapter::execute(Unit& unit, const OrderRecord& order, const SimulationStep& step) {
     if (step.delta.nanoseconds() < 0)
         return failure<ActionExecutionResult>(DiagnosticCode::InvalidArgument,

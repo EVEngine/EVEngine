@@ -109,6 +109,31 @@ TEST_CASE("scriptCompiler.bindingContractEnablesNativeNamedArguments") {
     CHECK_EQ(result, int64_t(123));
 }
 
+TEST_CASE("scriptCompiler.nestedBindingCallsKeepOuterSignatureStable") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.vm().addFunc("nativeInner", [](int value) { return value + 1; });
+    runtime.vm().addFunc("nativeOuter", [](int first, int second) { return first * 10 + second; });
+
+    script::BindingContract inner;
+    inner.module = "test";
+    inner.method = "nativeInner";
+    inner.parameters = {{"value", "int"}};
+    inner.returnType = "int";
+    runtime.scriptCompiler().bindings().registerContract(std::move(inner));
+
+    script::BindingContract outer;
+    outer.module = "test";
+    outer.method = "nativeOuter";
+    outer.parameters = {{"first", "int"}, {"second", "int"}};
+    outer.returnType = "int";
+    runtime.scriptCompiler().bindings().registerContract(std::move(outer));
+
+    runtime.runSource(
+        "nested_binding_result <- nativeOuter(nativeInner(4), 7)\n",
+        "nested-binding-signature-test.nut");
+    CHECK_EQ(runtime.vm().get<int64_t>("nested_binding_result"), int64_t(57));
+}
+
 TEST_CASE("scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments") {
     Runtime    runtime(512, ssq::Libs::ALL);
     const auto contracts = runtime.scriptCompiler().bindings().snapshot();
