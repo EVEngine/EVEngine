@@ -149,8 +149,8 @@ TEST_CASE("devtools.languageServer.jsonRpcInitializeAndDiagnostics") {
     LanguageServer     server(root.string());
     const std::string  uri = LanguageServer::fileUriFromPath((root / "main.nut").string());
     std::ostringstream output;
-    CHECK_EQ(server.handleMessage(R"({"jsonrpc":"2.0","id":1,"method":"initialize","params":{}})", output),
-             LspDispatch::Continue);
+    CHECK(server.handleMessage(R"({"jsonrpc":"2.0","id":1,"method":"initialize","params":{}})", output) ==
+          LspDispatch::Continue);
     CHECK(output.str().find("documentSymbolProvider") != std::string::npos);
     CHECK(output.str().find("signatureHelpProvider") != std::string::npos);
     CHECK(output.str().find("\"change\":2") != std::string::npos);
@@ -166,14 +166,14 @@ TEST_CASE("devtools.languageServer.jsonRpcInitializeAndDiagnostics") {
     const std::string open =
         std::string(R"({"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":")") + uri +
         R"(","languageId":"nut","version":1,"text":"function boom() { return await 1 }\n"}}})";
-    CHECK_EQ(server.handleMessage(open, output), LspDispatch::Continue);
+    CHECK(server.handleMessage(open, output) == LspDispatch::Continue);
     CHECK(output.str().find("publishDiagnostics") != std::string::npos);
     CHECK(output.str().find("EVE2601") != std::string::npos);
 
     output.str("");
     output.clear();
-    CHECK_EQ(server.handleMessage(R"({"jsonrpc":"2.0","id":2,"method":"shutdown"})", output), LspDispatch::Continue);
-    CHECK_EQ(server.handleMessage(R"({"jsonrpc":"2.0","method":"exit"})", output), LspDispatch::Exit);
+    CHECK(server.handleMessage(R"({"jsonrpc":"2.0","id":2,"method":"shutdown"})", output) == LspDispatch::Continue);
+    CHECK(server.handleMessage(R"({"jsonrpc":"2.0","method":"exit"})", output) == LspDispatch::Exit);
 
     std::error_code error;
     std::filesystem::remove_all(root, error);
@@ -212,27 +212,25 @@ TEST_CASE("devtools.languageServer.formatFoldAndIncrementalEdit") {
     const std::string  change =
         std::string(R"({"jsonrpc":"2.0","method":"textDocument/didChange","params":{"textDocument":{"uri":")") + uri +
         R"(","version":2},"contentChanges":[{"range":{"start":{"line":1,"character":6},"end":{"line":1,"character":11}},"text":"n"}]}})";
-    CHECK_EQ(server.handleMessage(change, output), LspDispatch::Continue);
+    CHECK(server.handleMessage(change, output) == LspDispatch::Continue);
     const auto afterIncremental = server.hover(uri, Position{1, 6});
     REQUIRE(afterIncremental.has_value());
     CHECK(afterIncremental->markdown.find("n") != std::string::npos);
 
     output.str("");
     output.clear();
-    CHECK_EQ(server.handleMessage(
-                 std::string(R"({"jsonrpc":"2.0","id":3,"method":"textDocument/formatting","params":{"textDocument":{"uri":")") +
-                     uri + R"(},"options":{"tabSize":4,"insertSpaces":true}}})",
-                 output),
-             LspDispatch::Continue);
+    CHECK(server.handleMessage(
+              std::string(R"({"jsonrpc":"2.0","id":3,"method":"textDocument/formatting","params":{"textDocument":{"uri":")") +
+                  uri + R"(},"options":{"tabSize":4,"insertSpaces":true}}})",
+              output) == LspDispatch::Continue);
     CHECK(output.str().find("local n = 1") != std::string::npos);
 
     output.str("");
     output.clear();
-    CHECK_EQ(server.handleMessage(
-                 std::string(R"({"jsonrpc":"2.0","id":4,"method":"textDocument/foldingRange","params":{"textDocument":{"uri":")") +
-                     uri + R"("}}})",
-                 output),
-             LspDispatch::Continue);
+    CHECK(server.handleMessage(
+              std::string(R"({"jsonrpc":"2.0","id":4,"method":"textDocument/foldingRange","params":{"textDocument":{"uri":")") +
+                  uri + R"("}}})",
+              output) == LspDispatch::Continue);
     CHECK(output.str().find("startLine") != std::string::npos);
 
     std::error_code cleanup;
