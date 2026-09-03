@@ -136,7 +136,7 @@ TEST_CASE("rts.scriptFacadeKeepsFactionIdentityAcrossFrameCallbacks") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 
-TEST_CASE("rts.sandboxInitializesAndStepsAcrossSmokeDuration") {
+TEST_CASE("rts.sandboxInitializesStepsAndRebuildsAcrossReload") {
     const std::filesystem::path sourceRoot = std::filesystem::path(__FILE__).parent_path().parent_path();
     auto readAll = [](const std::filesystem::path& path) {
         std::ifstream input(path, std::ios::binary);
@@ -170,6 +170,14 @@ TEST_CASE("rts.sandboxInitializesAndStepsAcrossSmokeDuration") {
         result = explored.ok ? "ok" : explored.status.summary;
     )"));
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+
+    // The game runner can reload main.nut while persisted script state survives.
+    // The native RTS facade must not survive that boundary because its ECS roots
+    // belong to the discarded script generation.
+    vm.run(vm.compileSource(source.c_str()));
+    vm.run(vm.compileSource(R"(
+        if (sim != null) throw "RTS facade survived script reload";
+    )"));
 }
 
 TEST_CASE("rts.legacySandboxContentMaterializesEveryArchetype") {

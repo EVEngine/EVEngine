@@ -1,6 +1,9 @@
 // RTS composition sandbox: the facade owns roots while map, crowd, sensing,
 // combat, weapon, economy and action remain the canonical providers.
-persist sim = null
+// RTS owns ECS roots and must be rebuilt on script reload; retaining the native
+// facade while its previous generation is destroyed leaves stale entity handles.
+if ("sim" in getroottable()) sim = null;
+else sim <- null;
 persist selected = []
 persist accumulator = 0.0
 persist serial = 1
