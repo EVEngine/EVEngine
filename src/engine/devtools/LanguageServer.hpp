@@ -9,6 +9,7 @@
 #include <iosfwd>
 #include <memory>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -17,6 +18,16 @@ namespace eve::dev {
 
 /** @brief Whether the stdio/JSON-RPC host should keep reading after one dispatch. */
 enum class LspDispatch : uint8_t { Continue = 0, Exit };
+
+inline std::ostream& operator<<(std::ostream& os, LspDispatch value) {
+    switch (value) {
+        case LspDispatch::Continue:
+            return os << "Continue";
+        case LspDispatch::Exit:
+            return os << "Exit";
+    }
+    return os << "LspDispatch(" << static_cast<int>(value) << ")";
+}
 
 /** @brief One parameter in an LSP signature-help result. */
 struct LanguageSignatureParameter {
