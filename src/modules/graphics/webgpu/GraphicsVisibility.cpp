@@ -471,8 +471,8 @@ void Graphics::recordGpuDrivenVisibility(wgpu::CommandEncoder encoder) {
             makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()),
                               gpuForTexture(material->getNormalTexture()),
                               gpuForTexture(mesh3dEnvTexture),
-                              gpuForTexture(material->getHeightTexture()), depthTex, frameOffset,
-                              shadowOffset, 0);
+                              gpuForTexture(material->getHeightTexture()), depthTex, nullptr,
+                              frameOffset, shadowOffset, 0);
         const uint32_t frameOffsets[3] = {frameOffset, shadowOffset, 0};
         pass.SetBindGroup(0, frameGroup, 3, frameOffsets);
         WGPUBindGroupEntry entries[4]{};
@@ -560,8 +560,8 @@ void Graphics::flushGpuDrivenResolve(wgpu::RenderPassEncoder pass) {
             makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()),
                               gpuForTexture(material->getNormalTexture()),
                               gpuForTexture(mesh3dEnvTexture),
-                              gpuForTexture(material->getHeightTexture()), depthTex, frameOffset,
-                              shadowOffset, 0);
+                              gpuForTexture(material->getHeightTexture()), depthTex, nullptr,
+                              frameOffset, shadowOffset, 0);
         const uint32_t frameOffsets[3] = {frameOffset, shadowOffset, 0};
         pass.SetBindGroup(0, frameGroup, 3, frameOffsets);
         WGPUBindGroupEntry entries[6]{};

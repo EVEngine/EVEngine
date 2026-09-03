@@ -1,9 +1,15 @@
 #pragma once
 
 #include "common/Module.h"
+#include "stylize/MeshEffect.h"
+#include "stylize/MeshEffectRenderer.h"
+#include "stylize/MeshVfxAsset.h"
+#include "stylize/SkillMeshEffect.h"
 #include "stylize/StyleChain.h"
 #include "stylize/StylePass.h"
+#include "stylize/TrailEffect.h"
 
+#include <memory>
 #include <string>
 
 namespace eve::graphics {
@@ -69,6 +75,17 @@ public:
     StyleInstance *newInstance(const std::string &style);
     /** @brief Create an empty compilable multi-style recipe. */
     StyleRecipe *newRecipe();
+
+    /** @brief Create an owned runtime mesh effect for a registered mesh style. */
+    [[nodiscard]] std::unique_ptr<MeshEffectInstance> createMeshEffect(const std::string& style);
+    /** @brief Create an owned CPU weapon-trail sampler with default settings. */
+    [[nodiscard]] std::unique_ptr<TrailEmitter> createTrailEmitter();
+    /** @brief Create a render-thread adapter bound to one Graphics owner. */
+    [[nodiscard]] std::unique_ptr<MeshEffectRenderer> createMeshEffectRenderer(graphics::Graphics& gfx);
+    /** @brief Create an owning runtime for a built-in gameplay mesh VFX recipe. */
+    [[nodiscard]] std::unique_ptr<SkillMeshEffect> createSkillMeshEffect(SkillMeshEffectKind kind);
+    /** @brief Instantiate all runtime layers, reporting incompatible authored style parameters. */
+    [[nodiscard]] eve::Result<std::unique_ptr<MeshVfxAssetInstance>> createMeshVfxAssetInstance(const MeshVfxAsset& asset);
 
     /** @brief Post-process StylePass (shader owned by Graphics). */
     StylePass *newPass(graphics::Graphics *gfx, const std::string &style);

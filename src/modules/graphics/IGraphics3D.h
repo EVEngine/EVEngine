@@ -78,6 +78,7 @@ public:
     virtual void setMesh3DNormalTexture(Texture *normal) = 0;
     virtual void setMesh3DHeightTexture(Texture *height) = 0;
     virtual void setMesh3DSceneDepth(Texture *depth) = 0;
+    virtual void setMesh3DSceneColor(Texture *color) = 0;
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
     virtual void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) = 0;
     virtual void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) = 0;

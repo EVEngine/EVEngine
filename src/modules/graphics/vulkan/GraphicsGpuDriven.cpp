@@ -1755,7 +1755,12 @@ Graphics::GpuDrivenFrameSet0 Graphics::gpuDrivenFrameSet0() {
     }
     shadowUbo.bias.z = mesh3dShadowReceive ? 1.f : 0.f;
     updateRingLocal(fslots.shadowRing, shadowOffset, &shadowUbo, sizeof(shadowUbo));
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth,
+    auto *gpuSceneColor = mesh3dSceneColorTexture && mesh3dSceneColorTexture->gpuHandle
+                              ? static_cast<GpuTexture *>(mesh3dSceneColorTexture->gpuHandle)
+                          : sceneColorHistoryValid && completedSceneColorSlot < sceneColorSlots.size()
+                              ? &sceneColorSlots[completedSceneColorSlot].colorGpu
+                              : static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor,
                                          gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots);
     return {set, uboOffset, shadowOffset};
 }
