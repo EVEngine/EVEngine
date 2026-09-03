@@ -3602,7 +3602,7 @@ void RTS::expose(ssq::Class& cls) {
     });
     cls.addFunc("configureMatch", [vm](RTS* self, const std::string& matchText,
                                         const std::string& ruleText, const std::string& archetype,
-                                        double targetValue) -> ssq::Table {
+                                        float targetValue) -> ssq::Table {
         auto matchSubject = parseScriptSubject(matchText, "match");
         if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status(), false, false);
         Match* match = self->findMatch(matchSubject.value());
@@ -3615,7 +3615,8 @@ void RTS::expose(ssq::Class& cls) {
         else if (ruleText == "resource") rule = VictoryRule::ResourceTarget;
         else return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS victory rule is invalid", "rule")), false, false);
-        return script::projectResult(vm, self->configureMatch(*match, rule, archetype, targetValue));
+        return script::projectResult(
+            vm, self->configureMatch(*match, rule, archetype, static_cast<double>(targetValue)));
     });
     cls.addFunc("addMatchParticipant", [vm](RTS* self, const std::string& matchText,
                                              const std::string& factionText, int team) -> ssq::Table {
@@ -4687,22 +4688,24 @@ void RTS::expose(ssq::Class& cls) {
         return script::projectResult(vm, self->setUnitAutoResupply(*unit, enabled));
     });
     cls.addFunc("heal", [vm](RTS* self, const std::string& sourceText,
-                               const std::string& targetText, double amount) -> ssq::Table {
+                               const std::string& targetText, float amount) -> ssq::Table {
         auto source = parseScriptSubject(sourceText, "source");
         if (!source) return script::projectStatusResult(vm, source.status(), false, false);
         auto target = parseScriptSubject(targetText, "target");
         if (!target) return script::projectStatusResult(vm, target.status(), false, false);
-        return script::projectResult(vm, self->heal(source.value(), target.value(), amount),
+        return script::projectResult(vm, self->heal(
+                                         source.value(), target.value(), static_cast<double>(amount)),
                                      [](double applied) { return Value(applied); });
     });
     cls.addFunc("applyStatusEffect", [vm](RTS* self, const std::string& sourceText,
-        const std::string& targetText, const std::string& effect, double durationOverride) -> ssq::Table {
+        const std::string& targetText, const std::string& effect, float durationOverride) -> ssq::Table {
         auto source = parseScriptSubject(sourceText, "source");
         if (!source) return script::projectStatusResult(vm, source.status(), false, false);
         auto target = parseScriptSubject(targetText, "target");
         if (!target) return script::projectStatusResult(vm, target.status(), false, false);
         return script::projectResult(vm,
-            self->applyStatusEffect(source.value(), target.value(), effect, durationOverride),
+            self->applyStatusEffect(source.value(), target.value(), effect,
+                                    static_cast<double>(durationOverride)),
             [](effects::EffectHandle handle) {
                 return Value(Value::Object{{"instanceId", std::move(handle.instanceId)},
                     {"generation", static_cast<std::int64_t>(handle.containerGeneration)}});

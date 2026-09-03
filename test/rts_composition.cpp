@@ -136,6 +136,42 @@ TEST_CASE("rts.scriptFacadeKeepsFactionIdentityAcrossFrameCallbacks") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 
+TEST_CASE("rts.sandboxInitializesAndStepsAcrossSmokeDuration") {
+    const std::filesystem::path sourceRoot = std::filesystem::path(__FILE__).parent_path().parent_path();
+    auto readAll = [](const std::filesystem::path& path) {
+        std::ifstream input(path, std::ios::binary);
+        std::ostringstream content;
+        content << input.rdbuf();
+        return content.str();
+    };
+    const std::string source = readAll(sourceRoot / "examples" / "rts-sandbox" / "main.nut");
+    const std::string content = readAll(sourceRoot / "examples" / "rts-sandbox" / "data" / "content.json");
+
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    ssq::VM          vm(8192, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource("eve_init <- null; eve_update <- null; eve_render <- null;"));
+    vm.run(vm.compileSource(source.c_str()));
+    vm.set("sandboxContent", content);
+    vm.run(vm.compileSource(R"(
+        readTextFile = function(path) { return sandboxContent; };
+        result <- "fail";
+        stepSandbox <- function() {
+            local stepped = sim.stepScript(1.0 / 30.0);
+            if (!stepped.ok) throw stepped.status.summary;
+        };
+    )"));
+    vm.callFunc(vm.findFunc("resetGame"), vm);
+    const auto stepSandbox = vm.findFunc("stepSandbox");
+    for (int frame = 0; frame < 180; ++frame) vm.callFunc(stepSandbox, vm);
+    vm.run(vm.compileSource(R"(
+        local explored = sim.scriptCellExplored(RTS_SANDBOX_BLUE_FACTION_ID, 0, 0);
+        result = explored.ok ? "ok" : explored.status.summary;
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+}
+
 TEST_CASE("rts.legacySandboxContentMaterializesEveryArchetype") {
     const std::filesystem::path sourceRoot = std::filesystem::path(__FILE__).parent_path().parent_path();
     std::ifstream input(sourceRoot / "examples" / "rts-sandbox" / "data" / "content.json",
