@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace eve::stylize {
-class MeshVfxAsset;
+struct MeshVfxAsset;
 class MeshVfxAssetInstance;
 }
 
