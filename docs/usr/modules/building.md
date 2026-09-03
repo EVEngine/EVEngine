@@ -535,3 +535,25 @@ session.updateFromSurface(world, "plane", hitX, hitZ);  // 或 updateFromWorld /
 session.setMode("remove");
 session.execute();                     // place 放置 / remove 拆除
 ```
+
+### 新增脚本 API 索引
+
+以下名称是上述多层、表面、边/角/free 域、区域工具和统一 Pattern 协议的脚本绑定索引：
+
+- 世界查询与校验：`canPlaceCorner`、`canPlaceCornerReason`、`canPlaceEdge`、
+  `canPlaceEdgeReason`、`canPlaceFreeReason`、`canRemoveBuildingReason`、`isCornerEmpty`、
+  `isEdgeEmpty`、`getCornerOccupantAtLevel`、`getFreeOccupantAtLevel`。
+- 层与实例元数据：`getActiveLevel`、`getFloorHeight`、`getBuildingLevel`、
+  `getBuildingPlacementKind`、`getBuildingConnectionGroup`、`getEdgeAxis`、
+  `getEdgeVariant`、`getEdgePathVertexCount`、`getEdgeCurveControlPointCount`。
+- 已提交表面帧：`getBuildingSurfaceNormalX`、`getBuildingSurfaceNormalY`、
+  `getBuildingSurfaceNormalZ`。
+- Ghost 域与表面 patch：`setEdge`、`setFree`、`getPlacementKind`、
+  `getSurfaceSampleCount`、`getSurfaceMaxSlopeDegrees`、`getSurfaceHeightDelta`、
+  `getSurfaceNormalX`、`getSurfaceNormalY`、`getSurfaceNormalZ`、`getSurfaceTangentX`、
+  `getSurfaceTangentY`、`getSurfaceTangentZ`。
+- 区域工具：`executeBrush`、`getAreaPreviewCount`、`getAreaPreviewCellX`、
+  `getAreaPreviewCellY`、`getAreaPreviewReason`。
+- Pattern 配置与预览：`getPatternKind`、`getPatternPointCount`、`setPatternRadius`、
+  `setPatternSubdivisions`、`getPatternPreviewX`、`getPatternPreviewY`、
+  `getPatternPreviewAxis`、`getPatternPreviewAccepted`、`getPatternPreviewReason`。

@@ -46,11 +46,18 @@ function eve_render() {
 - `sync(world)`：把占用图中的建筑同步为视觉（每帧调用）。
 - `getVisualCount(world)`：当前视觉实例数。
 - `updateGhost(world, ghost)`：同步鬼影位置/朝向/合法性（失败会半透明/变红）。
+- `updateAreaPreview(world, session)`：复制会话当前区域草稿的格坐标与接受状态，供
+  2D/3D heatmap 呈现；`clearAreaPreview(world)` 清除草稿，
+  `getAreaPreviewCount/getAreaPreviewAccepted` 用于查询当前投影。
 - corner 视觉锚定网格顶点，并使用 `width/depth/height`（3D）或 `width/height`（2D）；
   `size` 是宽深缺省值，最终回退为较短格边的 20%。
 - `hideGhost(world)`：隐藏鬼影。
 - `setGridVisible(world, visible)` / `getGridVisible(world)`。
 - `drawGrid2D(world, gfx)` / `drawGrid3D(world, gfx)`。
+- 多层显示：`setLevelVisibilityMode(world, mode, level)` / `getLevelVisibilityMode(world)`；
+  `isVisualVisible(world, instanceId)` 查询过滤后的可见性。
+- 视觉诊断：`getVisualResource`、`getVisualVariant`、`getVisualFallbackReason`，以及组级
+  `getCurveGroupCount` / `getContinuousCurveVisualCount`。
 
 ### 连续曲线墙体网格（C++）
 
