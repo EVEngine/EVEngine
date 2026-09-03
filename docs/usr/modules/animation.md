@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Animation()`
 
-支持七类能力：
+支持八类能力：
 
 1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）
 2. **2D 帧动画**：`SpriteSheet` + `SpriteClip` + `SpriteAnim`（sprite sheet / 图集格子）
@@ -11,6 +11,38 @@
 5. **CPU 蒙皮**：`AnimSkin` 从 `ModelData` 读取骨骼权重与 inverse-bind，按 `AnimPose` 世界矩阵做线性混合蒙皮
 6. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
 7. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
+8. **程序化骨骼**：`DynamicBoneSolver` 提供弹簧骨、碰撞、风场和距离休眠；`FootIKSolver` 提供地面探测、脚掌对齐、锁足和骨盆补偿
+
+## 程序化骨骼与 Foot IK
+
+Dynamic Bone 在基础动画采样后修改 Pose，适合头发、裙摆、尾巴和挂件。链、碰撞体及
+Skeleton 均为 solver 内部状态；传入的 Skeleton 和地面查询对象为 borrowed，必须比
+solver 活得更久。`update` 使用固定子步并限制单帧最大步数，非有限时间步会被忽略。
+
+```squirrel
+local dynamic = anim.newDynamicBoneSolver(skeleton);
+local hair = dynamic.addChainByName("hair_root", "hair_tip", 0.12, 0.18, 0.8);
+dynamic.setChainEndLength(hair, 0.08);
+dynamic.setChainSelfCollision(hair, true);
+dynamic.setGlobalGravity(0, -9.81, 0);
+dynamic.setExternalForce(windX, windY, windZ);
+dynamic.addBoneColliderSphere("head", 0, 0.08, 0, 0.12, false);
+dynamic.update(pose, dt);
+
+local feet = anim.newFootIKSolver(skeleton);
+feet.setPelvisBone(skeleton.findBone("hips"));
+feet.configureLeftLeg(upperLeft, lowerLeft, footLeft, 0.03);
+feet.configureRightLeg(upperRight, lowerRight, footRight, 0.03);
+feet.configureLeftToe(toeLeft, 0.5);
+feet.configureRightToe(toeRight, 0.5);
+feet.setFootLockEnabled(true);
+feet.setGroundQuery(groundQuery);
+feet.apply(pose, dt);
+```
+
+`setGroundQuery` 接收实现地面探测契约的运行时对象；没有 provider 或 provider 返回
+Unavailable 时，solver 保留脚本通过 `setLeftContact` / `setRightContact` 提供的手动
+接触点。调用顺序应为动画采样、Foot IK、Dynamic Bone，最后计算世界 Pose 与蒙皮。
 
 ## 基本用法（Tween）
 
@@ -403,6 +435,9 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - `ControlAnim`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`set()`、`setTarget()`、`setTargetVelocity()`、`impulse()`、`has()`、`get()`、`getVelocity()`、`getTarget()`、`clear()`、`remove()`、`getPropertyCount()`、`getPropertyName()`、`update()`
 - `ControlPose`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`setBoneWeight()`、`getBoneWeight()`、`setTargetPose()`、`snapToTarget()`、`getPose()`、`getTargetPose()`、`update()`
 - `AnimTrail`：`setCapacity()`、`getCapacity()`、`setDuration()`、`getDuration()`、`setMinDistance()`、`getMinDistance()`、`setWidth()`、`getWidth()`、`setColor()`、`getColor*()`、`setFade()`、`getFade()`、`setStyle()`、`getStyle()`、`setDrawScale()`、`getDrawScale*()`、`setDrawOffset()`、`getDrawOffset*()`、`addPoint()`、`addPoint3()`、`sampleBone()`、`sampleBoneOffset()`、`clear()`、`update()`、`getPointCount()`、`getPoint*()`、`getPointAge()`、`getPointAlpha()`、`draw()`
+- 程序化骨骼工厂：`newDynamicBoneSolver()`、`newFootIKSolver()`。
+- `DynamicBoneSolver`：`setSkeleton()`、`addChain()`、`addChainByName()`、`clearChains()`、`getChainCount()`、`setChainEnabled()`、`isChainEnabled()`、`isChainSleeping()`、`setChainParticleParameters()`、`setChainFreezeAxis()`、`setChainEndLength()`、`setChainEndOffset()`、`clearChainEnd()`、`setChainSelfCollision()`、`setGlobalGravity()`、`getGlobalGravityX()`、`getGlobalGravityY()`、`getGlobalGravityZ()`、`setExternalForce()`、`setWeight()`、`getWeight()`、`setPositionResponse()`、`setRotationResponse()`、`setObjectMoveResponse()`、`getObjectMoveResponse()`、`setTeleportThreshold()`、`getTeleportThreshold()`、`setDistanceReference()`、`setDistanceLimit()`、`addColliderSphere()`、`addColliderCapsule()`、`addBoneColliderSphere()`、`addBoneColliderCapsule()`、`removeCollider()`、`clearColliders()`、`getColliderCount()`、`setColliderEnabled()`、`setColliderRadius()`、`setColliderInside()`、`update()`。
+- `FootIKSolver`：`setSkeleton()`、`setPelvisBone()`、`configureLeftLeg()`、`configureRightLeg()`、`configureLeftToe()`、`configureRightToe()`、`setGroundQuery()`、`setLeftContact()`、`setRightContact()`、`setMinGroundNormalY()`、`setMaxPelvisOffset()`、`setFootLockEnabled()`、`setFootLockThresholds()`、`setContactGraceTime()`、`isLeftFootLocked()`、`isRightFootLocked()`、`apply()`。
 
 ## 使用要点
 

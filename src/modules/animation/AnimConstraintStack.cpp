@@ -12,6 +12,12 @@ AnimConstraintStack::AnimConstraintStack(AnimSkeleton* skeleton) : skeleton_(ske
     if (!skeleton_) throw Exception("AnimConstraintStack: skeleton is null");
 }
 
+void AnimConstraintStack::setSkeleton(AnimSkeleton* skeleton) {
+    if (skeleton_ == skeleton) return;
+    skeleton_ = skeleton;
+    clear();
+}
+
 void AnimConstraintStack::addAim(int bone, float targetX, float targetY, float targetZ, float weight) {
     constraints_.push_back({Type::Aim, bone, -1, -1, targetX, targetY, targetZ, 0.f, 1.f, 0.f, 0.f,
                             clampf(weight, 0.f, 1.f)});
@@ -33,6 +39,7 @@ void AnimConstraintStack::addFootIK(int hip, int knee, int foot, float groundY, 
 
 void AnimConstraintStack::apply(AnimPose* pose) const {
     if (!pose) throw Exception("AnimConstraintStack.apply: pose is null");
+    if (!skeleton_) throw Exception("AnimConstraintStack.apply: skeleton is null");
     pose->computeWorld(skeleton_);
     for (const Constraint& constraint : constraints_) {
         if (constraint.type == Type::Aim) {

@@ -10,6 +10,8 @@
 #include "animation/AnimPlayer.h"
 #include "animation/AnimGraph.h"
 #include "animation/AnimPose.h"
+#include "animation/DynamicBoneSolver.h"
+#include "animation/FootIKSolver.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
 #include "animation/AnimStateMachine.h"
@@ -319,6 +321,10 @@ AnimBatch *Animation::newBatch() { return new AnimBatch(); }
 AnimConstraintStack *Animation::newConstraintStack(AnimSkeleton *skeleton) {
     return new AnimConstraintStack(skeleton);
 }
+DynamicBoneSolver *Animation::newDynamicBoneSolver(AnimSkeleton *skeleton) {
+    return new DynamicBoneSolver(skeleton);
+}
+FootIKSolver *Animation::newFootIKSolver(AnimSkeleton *skeleton) { return new FootIKSolver(skeleton); }
 AnimSyncGroup *Animation::newSyncGroup() { return new AnimSyncGroup(); }
 
 AnimPlayer *Animation::newPlayer(AnimSkeleton *skeleton) { return new AnimPlayer(skeleton); }
@@ -658,6 +664,8 @@ void Animation::expose(ssq::Table &table) {
         true);
     constraints.addFunc("clear", &AnimConstraintStack::clear);
     constraints.addFunc("getCount", &AnimConstraintStack::getCount);
+    constraints.addFunc("setSkeleton", &AnimConstraintStack::setSkeleton);
+    constraints.addFunc("getSkeleton", &AnimConstraintStack::getSkeleton);
     constraints.addFunc("addAim", &AnimConstraintStack::addAim);
     constraints.addFunc("addTwoBoneIK", &AnimConstraintStack::addTwoBoneIK);
     constraints.addFunc("addFootIK", &AnimConstraintStack::addFootIK);
@@ -963,6 +971,73 @@ void Animation::expose(ssq::Table &table) {
     cp.addFunc("getTargetPose", &ControlPose::getTargetPose);
     cp.addFunc("update", &ControlPose::update);
 
+    auto solver = table.addClass<DynamicBoneSolver>(
+        "DynamicBoneSolver",
+        std::function<DynamicBoneSolver *()>([]() -> DynamicBoneSolver * { return nullptr; }), true);
+    solver.addFunc("addChain", &DynamicBoneSolver::addChain);
+    solver.addFunc("addChainByName", &DynamicBoneSolver::addChainByName);
+    solver.addFunc("getChainCount", &DynamicBoneSolver::getChainCount);
+    solver.addFunc("clearChains", &DynamicBoneSolver::clearChains);
+    solver.addFunc("setChainEnabled", &DynamicBoneSolver::setChainEnabled);
+    solver.addFunc("isChainEnabled", &DynamicBoneSolver::isChainEnabled);
+    solver.addFunc("setChainFreezeAxis", &DynamicBoneSolver::setChainFreezeAxis);
+    solver.addFunc("setChainSelfCollision", &DynamicBoneSolver::setChainSelfCollision);
+    solver.addFunc("setChainParticleParameters", &DynamicBoneSolver::setChainParticleParameters);
+    solver.addFunc("setChainEndLength", &DynamicBoneSolver::setChainEndLength);
+    solver.addFunc("setChainEndOffset", &DynamicBoneSolver::setChainEndOffset);
+    solver.addFunc("clearChainEnd", &DynamicBoneSolver::clearChainEnd);
+    solver.addFunc("setGlobalGravity", &DynamicBoneSolver::setGlobalGravity);
+    solver.addFunc("setExternalForce", &DynamicBoneSolver::setExternalForce);
+    solver.addFunc("getGlobalGravityX", &DynamicBoneSolver::getGlobalGravityX);
+    solver.addFunc("getGlobalGravityY", &DynamicBoneSolver::getGlobalGravityY);
+    solver.addFunc("getGlobalGravityZ", &DynamicBoneSolver::getGlobalGravityZ);
+    solver.addFunc("setWeight", &DynamicBoneSolver::setWeight);
+    solver.addFunc("getWeight", &DynamicBoneSolver::getWeight);
+    solver.addFunc("setUpdateRate", &DynamicBoneSolver::setUpdateRate);
+    solver.addFunc("getUpdateRate", &DynamicBoneSolver::getUpdateRate);
+    solver.addFunc("setTeleportThreshold", &DynamicBoneSolver::setTeleportThreshold);
+    solver.addFunc("getTeleportThreshold", &DynamicBoneSolver::getTeleportThreshold);
+    solver.addFunc("setObjectMoveResponse", &DynamicBoneSolver::setObjectMoveResponse);
+    solver.addFunc("getObjectMoveResponse", &DynamicBoneSolver::getObjectMoveResponse);
+    solver.addFunc("setDistanceReference", &DynamicBoneSolver::setDistanceReference);
+    solver.addFunc("setDistanceLimit", &DynamicBoneSolver::setDistanceLimit);
+    solver.addFunc("isChainSleeping", &DynamicBoneSolver::isChainSleeping);
+    solver.addFunc("addColliderSphere", &DynamicBoneSolver::addColliderSphere);
+    solver.addFunc("addBoneColliderSphere", &DynamicBoneSolver::addBoneColliderSphere);
+    solver.addFunc("addColliderCapsule", &DynamicBoneSolver::addColliderCapsule);
+    solver.addFunc("addBoneColliderCapsule", &DynamicBoneSolver::addBoneColliderCapsule);
+    solver.addFunc("clearColliders", &DynamicBoneSolver::clearColliders);
+    solver.addFunc("getColliderCount", &DynamicBoneSolver::getColliderCount);
+    solver.addFunc("removeCollider", &DynamicBoneSolver::removeCollider);
+    solver.addFunc("setColliderEnabled", &DynamicBoneSolver::setColliderEnabled);
+    solver.addFunc("setColliderInside", &DynamicBoneSolver::setColliderInside);
+    solver.addFunc("setColliderRadius", &DynamicBoneSolver::setColliderRadius);
+    solver.addFunc("reset", &DynamicBoneSolver::reset);
+    solver.addFunc("update", &DynamicBoneSolver::update);
+    auto footIK = table.addClass<FootIKSolver>(
+        "FootIKSolver", std::function<FootIKSolver *()>([]() -> FootIKSolver * { return nullptr; }), true);
+    footIK.addFunc("setSkeleton", &FootIKSolver::setSkeleton);
+    footIK.addFunc("getSkeleton", &FootIKSolver::getSkeleton);
+    footIK.addFunc("setPelvisBone", &FootIKSolver::setPelvisBone);
+    footIK.addFunc("configureLeftLeg", &FootIKSolver::configureLeftLeg);
+    footIK.addFunc("configureRightLeg", &FootIKSolver::configureRightLeg);
+    footIK.addFunc("configureLeftToe", &FootIKSolver::configureLeftToe);
+    footIK.addFunc("configureRightToe", &FootIKSolver::configureRightToe);
+    footIK.addFunc("setGroundQuery", &FootIKSolver::setGroundQuery);
+    footIK.addFunc("setLeftContact", &FootIKSolver::setLeftContact);
+    footIK.addFunc("setRightContact", &FootIKSolver::setRightContact);
+    footIK.addFunc("setMaxPelvisOffset", &FootIKSolver::setMaxPelvisOffset);
+    footIK.addFunc("setMinGroundNormalY", &FootIKSolver::setMinGroundNormalY);
+    footIK.addFunc("setPositionResponse", &FootIKSolver::setPositionResponse);
+    footIK.addFunc("setRotationResponse", &FootIKSolver::setRotationResponse);
+    footIK.addFunc("setContactGraceTime", &FootIKSolver::setContactGraceTime);
+    footIK.addFunc("setFootLockEnabled", &FootIKSolver::setFootLockEnabled);
+    footIK.addFunc("setFootLockThresholds", &FootIKSolver::setFootLockThresholds);
+    footIK.addFunc("isLeftFootLocked", &FootIKSolver::isLeftFootLocked);
+    footIK.addFunc("isRightFootLocked", &FootIKSolver::isRightFootLocked);
+    footIK.addFunc("reset", &FootIKSolver::reset);
+    footIK.addFunc("apply", &FootIKSolver::apply);
+
     auto trail = table.addClass<AnimTrail>(
         "AnimTrail", std::function<AnimTrail *()>([]() -> AnimTrail * { return nullptr; }), true);
     trail.addFunc("setCapacity", &AnimTrail::setCapacity);
@@ -1231,6 +1306,8 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newPose", &Animation::newPose);
     cls.addFunc("newBatch", &Animation::newBatch);
     cls.addFunc("newConstraintStack", &Animation::newConstraintStack);
+    cls.addFunc("newDynamicBoneSolver", &Animation::newDynamicBoneSolver);
+    cls.addFunc("newFootIKSolver", &Animation::newFootIKSolver);
     cls.addFunc("newSyncGroup", &Animation::newSyncGroup);
     cls.addFunc("newPlayer", &Animation::newPlayer);
     cls.addFunc("newGraph", &Animation::newGraph);

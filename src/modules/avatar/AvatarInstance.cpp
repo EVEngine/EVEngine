@@ -1,8 +1,11 @@
 #include "avatar/AvatarInstance.h"
 #include "animation/AnimClip.h"
+#include "animation/AnimConstraintStack.h"
 #include "animation/AnimLayerMixer.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimPose.h"
+#include "animation/DynamicBoneSolver.h"
+#include "animation/FootIKSolver.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
 #include "animation/AnimStateMachine.h"
@@ -85,6 +88,9 @@ void AvatarInstance::release() {
     animPlayer_       = nullptr;
     animLayerMixer_   = nullptr;
     animStateMachine_ = nullptr;
+    animConstraintStack_.reset();
+    footIKSolver_.reset();
+    dynamicBoneSolver_ = nullptr;
     animSkin_         = nullptr;
     animSkeleton_     = nullptr;
     motions_.clear();
@@ -525,6 +531,9 @@ bool AvatarInstance::bindAnimPlayer(animation::AnimPlayer* player) {
     animLayerMixer_   = nullptr;
     animSkeleton_     = player ? player->getSkeleton() : nullptr;
     hasPreviousRoot_  = false;
+    if (footIKSolver_) footIKSolver_->setSkeleton(animSkeleton_);
+    if (animConstraintStack_) animConstraintStack_->setSkeleton(animSkeleton_);
+    if (dynamicBoneSolver_) dynamicBoneSolver_->setSkeleton(animSkeleton_);
     return player != nullptr;
 }
 
@@ -535,6 +544,9 @@ bool AvatarInstance::bindAnimStateMachine(animation::AnimStateMachine* machine) 
     animLayerMixer_   = nullptr;
     animSkeleton_     = machine ? machine->getSkeleton() : nullptr;
     hasPreviousRoot_  = false;
+    if (footIKSolver_) footIKSolver_->setSkeleton(animSkeleton_);
+    if (animConstraintStack_) animConstraintStack_->setSkeleton(animSkeleton_);
+    if (dynamicBoneSolver_) dynamicBoneSolver_->setSkeleton(animSkeleton_);
     return machine != nullptr;
 }
 
@@ -545,7 +557,41 @@ bool AvatarInstance::bindAnimLayerMixer(animation::AnimLayerMixer* mixer) {
     animPlayer_       = mixer ? mixer->getBasePlayer() : nullptr;
     animSkeleton_     = mixer ? mixer->getSkeleton() : nullptr;
     hasPreviousRoot_  = false;
+    if (footIKSolver_) footIKSolver_->setSkeleton(animSkeleton_);
+    if (animConstraintStack_) animConstraintStack_->setSkeleton(animSkeleton_);
+    if (dynamicBoneSolver_) dynamicBoneSolver_->setSkeleton(animSkeleton_);
     return mixer != nullptr;
+}
+
+void AvatarInstance::setAnimConstraintStack(animation::AnimConstraintStack* stack) {
+    if (kind_ != "vroid" || !stack) {
+        animConstraintStack_.reset();
+        return;
+    }
+    animConstraintStack_ = std::make_unique<animation::AnimConstraintStack>(*stack);
+    animConstraintStack_->setSkeleton(animSkeleton_);
+}
+
+void AvatarInstance::setFootIKSolver(animation::FootIKSolver* solver) {
+    if (kind_ != "vroid" || !solver) {
+        footIKSolver_.reset();
+        return;
+    }
+    footIKSolver_ = std::make_unique<animation::FootIKSolver>(*solver);
+    footIKSolver_->setSkeleton(animSkeleton_);
+}
+
+void AvatarInstance::setDynamicBoneSolver(animation::DynamicBoneSolver* solver) {
+    if (kind_ != "vroid") {
+        dynamicBoneSolver_.reset();
+        return;
+    }
+    if (!solver) {
+        dynamicBoneSolver_.reset();
+        return;
+    }
+    dynamicBoneSolver_ = std::make_unique<animation::DynamicBoneSolver>(*solver);
+    if (dynamicBoneSolver_) dynamicBoneSolver_->setSkeleton(animSkeleton_);
 }
 
 bool AvatarInstance::bindAnimSkin(animation::AnimSkin* skin) {
@@ -759,6 +805,9 @@ animation::AnimPose* AvatarInstance::updateSkeletalAnimation(float dt) {
     if (!pose || !animSkeleton_) return nullptr;
     pose->computeWorld(animSkeleton_);
     applyLookAt(pose);
+    if (footIKSolver_) footIKSolver_->apply(pose, dt);
+    if (animConstraintStack_) animConstraintStack_->apply(pose);
+    if (dynamicBoneSolver_) dynamicBoneSolver_->update(pose, dt);
     updateRootMotion(pose);
     updateSkin(pose);
     updateAttachments(pose);

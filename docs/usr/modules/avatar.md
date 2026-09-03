@@ -139,6 +139,10 @@ alpha、additive 或 opaque。Avatar 同步只传播角色整体变换、显隐�
   根骨 X/Z 位移是否累加到 Avatar，`getRootMotionDeltaX/getRootMotionDeltaZ`
   可供角色控制器自行消费。绑定 `AnimSkin` 后，`update(dt)` 会计算世界 Pose、
   CPU skinning 并原位更新绑定 Mesh。
+- 程序化骨骼：`setFootIKSolver`、`getFootIKSolver`、`setDynamicBoneSolver`、
+  `getDynamicBoneSolver`、`setAnimConstraintStack`、`getAnimConstraintStack` 接入 animation
+  模块创建的 solver。Avatar 不拥有这些对象；它们及其 Skeleton 必须覆盖 Avatar 的绑定
+  生命周期。每帧顺序为基础动画、约束栈/Foot IK、Dynamic Bone、世界 Pose 与蒙皮。
 - 动画分层：`bindAnimLayerMixer(mixer)` 让 Avatar 直接消费通用 Override/Additive
   分层 Pose，并继续执行根运动、LookAt、蒙皮和骨骼附件。每帧事件可通过
   `getAnimationEventCount()`、`getAnimationEventLayer()`、`getAnimationEventName()`、
