@@ -1,19 +1,19 @@
 // RTS composition sandbox: the facade owns roots while map, crowd, sensing,
 // combat, weapon, economy and action remain the canonical providers.
-if (!("sim" in getroottable())) sim <- null;
-if (!("selected" in getroottable())) selected <- [];
-if (!("accumulator" in getroottable())) accumulator <- 0.0;
-if (!("serial" in getroottable())) serial <- 1;
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
-if (!("prevLeft" in getroottable())) prevLeft <- false;
-if (!("prevRight" in getroottable())) prevRight <- false;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("blueBarracks" in getroottable())) blueBarracks <- null;
-if (!("blueCommand" in getroottable())) blueCommand <- null;
-if (!("blueTurret" in getroottable())) blueTurret <- null;
-if (!("blueAPC" in getroottable())) blueAPC <- null;
-if (!("blueFactionId" in getroottable())) blueFactionId <- null;
-if (!("redFactionId" in getroottable())) redFactionId <- null;
+persist sim = null
+persist selected = []
+persist accumulator = 0.0
+persist serial = 1
+persist uiBuilt = false
+persist prevLeft = false
+persist prevRight = false
+persist prevKeys = {}
+persist blueBarracks = null
+persist blueCommand = null
+persist blueTurret = null
+persist blueAPC = null
+persist blueFactionId = null
+persist redFactionId = null
 
 GRID_W <- 36; GRID_H <- 22; CELL <- 28.0; ORIGIN_X <- 24.0; ORIGIN_Y <- 94.0;
 RTS_SANDBOX_BLUE_FACTION_ID <- "00000000-0000-7000-8000-00000000f001";
