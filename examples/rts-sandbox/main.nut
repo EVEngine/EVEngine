@@ -1,9 +1,6 @@
 // RTS composition sandbox: the facade owns roots while map, crowd, sensing,
 // combat, weapon, economy and action remain the canonical providers.
-// RTS owns ECS roots and must be rebuilt on script reload; retaining the native
-// facade while its previous generation is destroyed leaves stale entity handles.
-if ("sim" in getroottable()) sim = null;
-else sim <- null;
+persist sim = null
 persist selected = []
 persist accumulator = 0.0
 persist serial = 1
@@ -38,10 +35,10 @@ function wx() { return (mouse.getX()-ORIGIN_X)/CELL; }
 function wy() { return (mouse.getY()-ORIGIN_Y)/CELL; }
 function sx(x) { return ORIGIN_X+x*CELL; }
 function sy(y) { return ORIGIN_Y+y*CELL; }
-function fogVisible(x,y) {
+function fogVisible(visibleCells,x,y) {
     local cx=floor(x+0.5).tointeger(),cy=floor(y+0.5).tointeger();
     if(cx<0||cy<0||cx>=GRID_W||cy>=GRID_H)return false;
-    return requireResult(sim.scriptCellVisible(RTS_SANDBOX_BLUE_FACTION_ID,cx,cy),"query visibility");
+    return visibleCells[cy*GRID_W+cx];
 }
 function pressed(name) {
     local down=keyboard.isDown(name), before=(name in prevKeys)?prevKeys[name]:false;
@@ -212,6 +209,15 @@ eve_update=function(dt){
     refreshHud();
 };
 eve_render=function(){
+    // Snapshot simulation-owned fog before issuing graphics calls. Rendering
+    // consumes this immutable frame view instead of interleaving subsystem calls.
+    local exploredCells=[],visibleCells=[];
+    for(local y=0;y<GRID_H;++y)for(local x=0;x<GRID_W;++x){
+        exploredCells.push(requireResult(sim.scriptCellExplored(
+            RTS_SANDBOX_BLUE_FACTION_ID,x,y),"query explored"));
+        visibleCells.push(requireResult(sim.scriptCellVisible(
+            RTS_SANDBOX_BLUE_FACTION_ID,x,y),"query visible"));
+    }
     gfx.clear();
     for(local y=0;y<GRID_H;++y)for(local x=0;x<GRID_W;++x){
         local wall=(x==17&&y>=2&&y<20&&y!=6&&y!=16);
@@ -223,18 +229,18 @@ eve_render=function(){
     local state=requireResult(sim.inspectState(),"inspect");
     foreach(node in state.resourceNodes){
         local nx=floor(node.x+0.5).tointeger(),ny=floor(node.y+0.5).tointeger();
-        if(requireResult(sim.scriptCellExplored(RTS_SANDBOX_BLUE_FACTION_ID,nx,ny),"query resource fog"))
+        if(exploredCells[ny*GRID_W+nx])
             gfx.drawSolidRect(sx(node.x)-10.0,sy(node.y)-10.0,20.0,20.0,0.15,0.75,0.92,1.0);
     }
     foreach(building in state.buildings){
-        if(building.faction!=RTS_SANDBOX_BLUE_FACTION_ID&&!fogVisible(building.x,building.y))continue;
+        if(building.faction!=RTS_SANDBOX_BLUE_FACTION_ID&&!fogVisible(visibleCells,building.x,building.y))continue;
         local isBlue=building.faction==RTS_SANDBOX_BLUE_FACTION_ID,size=building.definition=="building:command_center"?64.0:44.0;
         gfx.drawSolidRect(sx(building.x)-size*0.5,sy(building.y)-size*0.5,size,size,
             isBlue?0.18:0.75,isBlue?0.48:0.20,isBlue?0.88:0.18,building.powered?1.0:0.35);
     }
     foreach(unit in state.units){
         if(unit.garrisoned)continue;
-        if(unit.faction!=RTS_SANDBOX_BLUE_FACTION_ID&&!fogVisible(unit.x,unit.y))continue;
+        if(unit.faction!=RTS_SANDBOX_BLUE_FACTION_ID&&!fogVisible(visibleCells,unit.x,unit.y))continue;
         local isBlue=unit.faction==RTS_SANDBOX_BLUE_FACTION_ID,worker=unit.definition=="unit:worker",size=worker?10.0:14.0;
         gfx.drawSolidRect(sx(unit.x)-size*0.5,sy(unit.y)-size*0.5,size,size,
             isBlue?0.25:0.92,isBlue?0.62:0.25,isBlue?0.96:0.18,1.0);
@@ -242,8 +248,7 @@ eve_render=function(){
     foreach(id in selected){local unit=unitBySubject(state,id);if(unit!=null)
         gfx.drawSolidRect(sx(unit.x)-9,sy(unit.y)+9,18,2,0.2,1.0,0.35,1.0);}
     for(local y=0;y<GRID_H;++y)for(local x=0;x<GRID_W;++x){
-        local explored=requireResult(sim.scriptCellExplored(RTS_SANDBOX_BLUE_FACTION_ID,x,y),"query explored");
-        local visible=requireResult(sim.scriptCellVisible(RTS_SANDBOX_BLUE_FACTION_ID,x,y),"query visible");
+        local explored=exploredCells[y*GRID_W+x],visible=visibleCells[y*GRID_W+x];
         if(!explored)gfx.drawSolidRect(sx(x),sy(y),CELL-1,CELL-1,0.01,0.015,0.02,0.94);
         else if(!visible)gfx.drawSolidRect(sx(x),sy(y),CELL-1,CELL-1,0.02,0.03,0.05,0.58);
     }
