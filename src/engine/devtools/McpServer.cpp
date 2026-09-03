@@ -1363,7 +1363,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         const std::string source = argString(args, "source");
         const int         line   = argInt(args, "line");
         if (source.empty() || line <= 0) return "error: need source and line";
-        const int id = dbg.setBreakpoint(source, line, true);
+        const std::string condition = argString(args, "condition");
+        const int id = dbg.setBreakpoint(source, line, true, condition);
         return "ok id=" + std::to_string(id);
     }
     if (name == "eve_clear_breakpoint") {
@@ -1380,6 +1381,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             o->set("source", bp.source);
             o->set("line", bp.line);
             o->set("enabled", bp.enabled);
+            o->set("condition", bp.condition);
             arr->add(o);
         }
         return mcpStringify(Poco::Dynamic::Var(arr));
@@ -1769,7 +1771,8 @@ std::string handleToolsList(const std::string& idJson) {
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_set_breakpoint\",\"description\":\"Set a script breakpoint.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"string\"},\"line\":{\"type\":"
-        "\"integer\"}},\"required\":[\"source\",\"line\"]}},"
+        "\"integer\"},\"condition\":{\"type\":\"string\",\"description\":\"Optional Squirrel expression; empty always "
+        "hits.\"}},\"required\":[\"source\",\"line\"]}},"
         "{\"name\":\"eve_clear_breakpoint\",\"description\":\"Clear a script breakpoint.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"string\"},\"line\":{\"type\":"
         "\"integer\"}},\"required\":[\"source\",\"line\"]}},"

@@ -36,7 +36,7 @@
 | 变量 | 多帧作用域（Locals 按 `frameId`）+ Globals scope；table / array / class / instance / closure(upvalue) 可展开为变量树；可展开变量带 `__vscodeVariableMenuContext` 标记，VS Code 变量视图右键「查看实例」打开对象检查面板（webview 经 DAP `variables` 递归取子项） |
 | 表达式求值 | DAP `evaluate` 支持完整 Squirrel 表达式（算术 / 调用 / 下标），在选中帧的 locals + roottable 环境中编译求值 |
 | Watch | `addWatch` / DAP `evaluate`（仅 `context=watch` 注册为持久 watch）；求值失败时显示错误 |
-| Snapshot | JSON 序列化标记根（或 `gameState` / `eve_state` / 启发式非引擎槽） |
+| Snapshot | JSON 序列化标记根（或 `gameState` / `eve_state` / 启发式非引擎槽）；已暂停时 `loadSnapshot` / `restoreSnapshot` 把暂停原因标为 `Snapshot` 并刷新 Watch / DAP |
 | Profiler | line hook 计时：`eve.dev.profileReport()` / `profileClear()`（按函数统计调用次数、行数、耗时） |
 | MCP / AI | `--mcp-port` 嵌入 MCP；`AiPanel` 会话日志；F9 切换 ImGui「AI / MCP」面板 |
 | 运行时控制台 | `ConsolePanel`: print 捕获 + 级别化日志 + Squirrel REPL; F4 切换 ImGui「Console」面板 |
@@ -60,6 +60,7 @@
 - `eve::dev::Debugger`：pause / step / breakpoints / watches
 - `eve::dev::Snapshot`：脚本状态 capture / restore / 文件
 - `eve::dev::DebugAdapter`：DAP TCP（供 VS Code 插件连接）
+- `eve::dev::LanguageServer`：EveScript LSP（stdio + 进程内 typed API：诊断 / 补全 / Hover / 跳转 / 重命名 / 符号 / signature help / 格式化 / 折叠 / 增量编辑）
 - `eve::dev::McpServer`：MCP JSON-RPC TCP（AI Agent 测试 / 辅助开发）
 - `eve::dev::AiPanel`: AI 会话日志；ImGui 绘制由 `ImGuiHostPanels.cpp` 注册（避免 EVDevTools 拉入 imgui.h）
 - `eve::dev::ConsolePanel`: 运行时控制台环形缓冲（线程安全）+ Squirrel `print` 捕获 + REPL 求值；ImGui 绘制同样由 `ImGuiHostPanels.cpp` 注册
@@ -76,6 +77,7 @@ eve.dev.stepOut();         // run until caller (DAP Shift+F11)
 eve.dev.stepFrame();       // F8 — one game frame
 eve.dev.step();            // convenience: stepOver mid-script, else one frame
 eve.dev.setBreakpoint("main.nut", 42);
+eve.dev.setBreakpoint("main.nut", 42, "score > 10");
 eve.dev.addWatch("score");
 eve.dev.setBreakOnError(true);   // Godot-style break on script errors
 eve.dev.setBreakpointsEnabled(false);  // skip all breakpoints
@@ -121,11 +123,22 @@ Cursor / Claude Desktop 通过 [`tools/eve-mcp`](../../../tools/eve-mcp/) 将 st
 
 ### VS Code 插件
 
-见 [`tools/vscode-eve-debug/`](../../../tools/vscode-eve-debug/)：`type: eve` 的 debug adapter，launch 时启动 `eve run --debug --dap-port`，attach 则连接已有进程。
+见 [`tools/vscode-eve-debug/`](../../../tools/vscode-eve-debug/)：打开 `.nut` 时启动
+`eve language-server`（诊断 / 补全 / Hover / 跳转 / 格式化 / 折叠）；`type: eve` 的
+debug adapter 在 launch 时启动 `eve run --debug --dap-port`，attach 则连接已有进程。
+运行中出错后，命令面板 **EVEngine: Show Error Slice** 发 DAP 自定义请求 `errorSlice`，
+把 `DevTool` 最近一次动态后向切片（报告 + 源码位置）送到编辑器；脚本异常暂停时也会自动打开。
+切片依赖 debug hook / CallGraph，不是 language server 的静态分析。
 
 桌面 Debug 构建链接 `EVDevTools`；Android / iOS 精简运行时不包含本模块（`rt*` 钩子保持空）。
 
 
 ## language server
 
-可以创建自动提示功能等，方便代码编写
+`eve::dev::LanguageServer` 是 EveScript 的语言服务，不依赖正在运行的游戏。cmdline 的
+`eve language-server --root <game>` 只是把它接到 stdio 上。
+
+进程内可直接调用 `openDocument` / `complete` / `hover` / `definition` / `diagnosticsFor`
+/ `formatDocument` / `foldingRanges` / `semanticTokens` 等 API（见 `test/language_server.cpp`）。JSON-RPC
+覆盖 initialize、增量文档同步、补全、Hover、定义、引用、重命名、documentSymbol、
+signatureHelp、formatting、rangeFormatting、foldingRange、semanticTokens 和 publishDiagnostics。

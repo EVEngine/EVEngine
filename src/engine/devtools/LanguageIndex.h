@@ -1,14 +1,16 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
 
-namespace eve::cmd::lsp {
+namespace eve::dev::lsp {
 
 struct Position {
     size_t line      = 0;
@@ -30,8 +32,36 @@ struct TextEdit {
     std::string newText;
 };
 
+/** @brief LSP semantic-token type indices (must match the initialize legend). */
+namespace SemanticTypes {
+constexpr uint32_t Namespace = 0;
+constexpr uint32_t Class     = 1;
+constexpr uint32_t Function  = 2;
+constexpr uint32_t Method    = 3;
+constexpr uint32_t Variable  = 4;
+constexpr uint32_t Parameter = 5;
+constexpr uint32_t Property  = 6;
+constexpr uint32_t Keyword   = 7;
+}  // namespace SemanticTypes
+
+/** @brief LSP semantic-token modifier bits (must match the initialize legend). */
+namespace SemanticMods {
+constexpr uint32_t Declaration    = 1u << 0;
+constexpr uint32_t Readonly       = 1u << 1;
+constexpr uint32_t DefaultLibrary = 1u << 2;
+}  // namespace SemanticMods
+
+/** @brief One identifier classified for editor semantic highlighting. */
+struct SemanticToken {
+    Position    start;
+    size_t      length     = 0;
+    uint32_t    type       = SemanticTypes::Variable;
+    uint32_t    modifiers  = 0;
+    std::string name;
+};
+
 /** @brief Cross-file semantic index for EveScript source modules. */
-class WorkspaceIndex {
+class EVENGINE_API WorkspaceIndex {
 public:
     WorkspaceIndex();
     ~WorkspaceIndex();
@@ -49,6 +79,8 @@ public:
     /** @brief Computes a project-wide rename, or nullopt for an invalid/unresolved request. */
     std::optional<std::vector<TextEdit>> rename(std::string_view canonicalUri, Position position,
                                                 std::string_view newName) const;
+    /** @brief Identifier classifications for LSP semantic highlighting. */
+    std::vector<SemanticToken> semanticTokens(std::string_view canonicalUri) const;
 
 private:
     struct Unit;
@@ -62,4 +94,4 @@ private:
     std::unique_ptr<Impl>   impl_;
 };
 
-}  // namespace eve::cmd::lsp
+}  // namespace eve::dev::lsp

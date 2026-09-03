@@ -30,7 +30,7 @@ endif()
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
   foreach(_eve_devtool_test IN ITEMS
-      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp agent_development_session.cpp mcp.cpp console.cpp runtime_error_sink.cpp scenario_recorder.cpp)
+      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp agent_development_session.cpp mcp.cpp console.cpp runtime_error_sink.cpp scenario_recorder.cpp language_index.cpp language_server.cpp language_text.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")
@@ -54,6 +54,12 @@ endif()
 eve_module_enabled(physics _eve_test_has_physics)
 if(NOT _eve_test_has_physics)
   list(FILTER all_test_cpp EXCLUDE REGEX "/vehicle_physics.cpp$")
+endif()
+eve_module_enabled(devtools _eve_test_has_devtools)
+if(NOT _eve_test_has_devtools)
+  foreach(_eve_lsp_test IN ITEMS language_index.cpp language_server.cpp language_text.cpp)
+    list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_lsp_test}$")
+  endforeach()
 endif()
 
 file(GLOB all_test_scripts

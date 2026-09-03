@@ -1,14 +1,25 @@
-# EVEngine VS Code Debug Extension
+# EVEngine VS Code Extension
 
-VS Code debugger contribution for EVEngine Squirrel scripts. Follows the same
-shape as [microsoft/vscode-mock-debug](https://github.com/microsoft/vscode-mock-debug):
+EveScript language support and debugger for EVEngine. Follows the same debug
+shape as [microsoft/vscode-mock-debug](https://github.com/microsoft/vscode-mock-debug),
+plus a stdio Language Server spawned from `eve language-server`.
 
 | Piece | Role |
 |-------|------|
+| `package.json` languages / grammar | `.nut` as EveScript, comments, brackets, highlighting |
+| `lib/language.js` | Spawns `eve language-server --root`, incremental LSP |
 | `package.json` `contributes.debuggers` | Declares type `eve`, launch schema, snippets |
 | `DebugConfigurationProvider` | Fills defaults, auto-finds `eve`, allocates DAP port |
 | `DebugAdapterDescriptorFactory` | Spawns `eve run --debug --dap-port` → `DebugAdapterServer` |
 | Engine DAP (`DebugAdapter.cpp`) | Implements continue / next / pause / breakpoints |
+
+Opening a `.nut` file starts the language server for the nearest game directory
+(`config.nut`). That provides diagnostics, completion, hover, go-to-definition,
+references, rename, outline, signature help, format, folding, and semantic
+highlighting (class / function / method / variable).
+
+Set `eve.executable` if `eve` is not on `PATH` and the repo `build/` tree is not
+the workspace root. Set `eve.languageServer.enabled` to `false` to keep debug-only.
 
 ## Test
 
@@ -20,16 +31,24 @@ shape as [microsoft/vscode-mock-debug](https://github.com/microsoft/vscode-mock-
 node tools/vscode-eve-debug/test/extension.test.js
 ```
 
-## Install
+## Install (Cursor / VS Code)
+
+Cursor does not install an unpacked folder. Pack a `.vsix` with [vsce](https://github.com/microsoft/vscode-vsce), then install that file:
 
 ```bash
-# From the EVEngine repo root (directory install — no vsix needed):
-code --install-extension tools/vscode-eve-debug
-
-# Or: open tools/vscode-eve-debug as an Extension Development Host (F5)
+cd tools/vscode-eve-debug
+npm install
+npm run package
+cursor --install-extension eve-debug-0.3.0.vsix
 ```
 
-Reload the window after installing / editing the extension.
+In Cursor: **Extensions → ⋯ → Install from VSIX…** and pick the generated file.
+
+`code --install-extension <folder>` only works in VS Code, not Cursor.
+
+Reload the window after installing. Re-pack and re-install after editing the extension.
+
+VS Code can still load the folder as an Extension Development Host (F5).
 
 ## Launch
 
@@ -109,10 +128,16 @@ Handled by `load.nut` when running with `--debug` (same semantics):
     in `try/catch`) pause at the game's catch statement that reported the
     error — never inside `load.nut` internals.
 - **查看实例 (Inspect Instance)**: right-click an expandable object in the
-  VARIABLES view while stopped 鈫?*EVEngine: 查看实例 (Inspect Instance)* opens a
+  VARIABLES view while stopped → *EVEngine: 查看实例 (Inspect Instance)* opens a
   webview that walks the object's children through DAP `variables` requests,
   so tables / arrays / instances / classes can be explored side-by-side with
   the stack (Godot-style remote inspector).
+- **Error slice**: while a `--debug` session is running, **EVEngine: Show Error
+  Slice** asks the adapter for DAP `errorSlice` (same CallGraph backward slice
+  as the in-game DevTools / MCP `eve_error_slice`). The report goes to
+  **EVEngine Debug**; slice locations become diagnostics and the first site
+  opens in the editor. A `stopped` event with `reason: exception` also opens
+  the slice automatically. This is runtime-only — it is not an LSP feature.
 - **Breakpoint verification**: breakpoints start hollow and turn solid once the
   line is actually executed (DAP `breakpoint` events), so a wrong line number
   or path mismatch is visible immediately.

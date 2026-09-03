@@ -265,6 +265,24 @@ const BindingContract* BindingContractRegistry::findMethod(std::string_view meth
     return result;
 }
 
+const BindingContract* BindingContractRegistry::findMethod(std::string_view scriptClass,
+                                                           std::string_view method) const noexcept {
+    const BindingContract* result = nullptr;
+    for (const auto& [_, contract] : storage_->contracts) {
+        if (contract.scriptClass != scriptClass || contract.method != method) continue;
+        if (result != nullptr) return nullptr;
+        result = &contract;
+    }
+    return result;
+}
+
+bool BindingContractRegistry::hasScriptClass(std::string_view scriptClass) const noexcept {
+    for (const auto& [_, contract] : storage_->contracts) {
+        if (contract.scriptClass == scriptClass) return true;
+    }
+    return false;
+}
+
 std::vector<BindingContract> BindingContractRegistry::snapshot() const {
     std::vector<BindingContract> result;
     result.reserve(storage_->contracts.size());

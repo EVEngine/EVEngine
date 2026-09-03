@@ -16,34 +16,9 @@ const { spawn } = require('child_process');
 
 const repoRoot = path.resolve(__dirname, '../../..');
 
-function resolveEvePath(configured, workspaceRoot) {
-  if (configured && configured !== 'eve' && fs.existsSync(configured)) {
-    return configured;
-  }
-  if (!workspaceRoot) return configured || 'eve';
-
-  const candidates = [];
-  if (process.platform === 'darwin') {
-    candidates.push(
-      path.join(workspaceRoot, 'build/macosx-debug/src/engine/eve'),
-      path.join(workspaceRoot, 'build/macosx/src/engine/eve')
-    );
-  } else if (process.platform === 'win32') {
-    candidates.push(
-      path.join(workspaceRoot, 'build/win32-debug/src/engine/Debug/eve.exe'),
-      path.join(workspaceRoot, 'build/win32-debug/src/engine/eve.exe')
-    );
-  } else {
-    candidates.push(
-      path.join(workspaceRoot, 'build/linux-debug/src/engine/eve'),
-      path.join(workspaceRoot, 'build/linux/src/engine/eve')
-    );
-  }
-  for (const c of candidates) {
-    if (fs.existsSync(c)) return c;
-  }
-  return configured || 'eve';
-}
+const { resolveEvePath, findProjectRoot } = require('../lib/evePath');
+const { LspClient } = require('../lib/lspClient');
+const { pathToFileURL } = require('url');
 
 function waitForPort(host, port, timeoutMs) {
   const start = Date.now();
@@ -429,13 +404,126 @@ async function testPackageJsonInspectMenu() {
   console.log('  package.json inspect menu ok');
 }
 
+async function testPackageJsonErrorSlice() {
+  const pkg = JSON.parse(
+    fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8')
+  );
+  const cmds = (pkg.contributes.commands || []).map((c) => c.command);
+  assert.ok(cmds.includes('eve-debug.showErrorSlice'), 'showErrorSlice command');
+  assert.ok(
+    pkg.activationEvents.includes('onCommand:eve-debug.showErrorSlice'),
+    'activates on showErrorSlice'
+  );
+  const palette = (pkg.contributes.menus || {}).commandPalette || [];
+  const item = palette.find((m) => m.command === 'eve-debug.showErrorSlice');
+  assert.ok(item, 'commandPalette menu entry');
+  assert.ok(item.when.includes("debugType == 'eve'"), 'slice menu when clause');
+  const src = fs.readFileSync(path.join(__dirname, '..', 'extension.js'), 'utf8');
+  assert.ok(src.includes("customRequest('errorSlice'"), 'extension sends errorSlice');
+  console.log('  package.json error slice ok');
+}
+
+async function testPackageJsonLanguage() {
+  const pkg = JSON.parse(
+    fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8')
+  );
+  const lang = (pkg.contributes.languages || []).find((item) => item.id === 'nut');
+  assert.ok(lang, 'nut language contribution');
+  assert.ok(lang.aliases && lang.aliases.includes('EveScript'), 'EveScript alias');
+  assert.ok(lang.configuration, 'language configuration');
+  const grammar = (pkg.contributes.grammars || []).find((item) => item.language === 'nut');
+  assert.ok(grammar && grammar.path.includes('evescript.tmLanguage.json'), 'TextMate grammar');
+  assert.ok(pkg.contributes.configuration, 'eve.executable settings');
+  assert.ok(
+    pkg.activationEvents.includes('onLanguage:nut'),
+    'activates on EveScript files'
+  );
+  console.log('  package.json language contribution ok');
+}
+
+async function testFindProjectRoot() {
+  const game = path.join(repoRoot, 'examples/basic');
+  const nested = path.join(game, 'main.nut');
+  assert.strictEqual(findProjectRoot(nested, repoRoot), game);
+  console.log('  findProjectRoot →', game);
+}
+
+async function testLiveEveLsp() {
+  const eve = resolveEvePath('eve', repoRoot);
+  if (eve === 'eve' || !fs.existsSync(eve)) {
+    console.log('  SKIP live eve LSP (binary not found)');
+    return;
+  }
+
+  const game = path.join(repoRoot, 'examples/basic');
+  const uri = pathToFileURL(path.join(game, 'main.nut')).href;
+  const source = 'function foo() {\nlocal x = 1\n}\ngfx.\n';
+  const client = new LspClient(eve, ['language-server', '--root', game], { cwd: game });
+  try {
+    const init = await client.request('initialize', {
+      processId: process.pid,
+      rootUri: pathToFileURL(game).href,
+      capabilities: {},
+    });
+    assert.ok(init && init.capabilities, 'initialize capabilities');
+    assert.strictEqual(init.capabilities.textDocumentSync.change, 2, 'incremental sync');
+    assert.ok(init.capabilities.documentFormattingProvider, 'formatting');
+    assert.ok(init.capabilities.foldingRangeProvider, 'folding');
+    client.notify('initialized', {});
+    client.notify('textDocument/didOpen', {
+      textDocument: { uri, languageId: 'nut', version: 1, text: source },
+    });
+    const completions = await client.request('textDocument/completion', {
+      textDocument: { uri },
+      position: { line: 3, character: 4 },
+    });
+    const labels = (Array.isArray(completions) ? completions : []).map((item) => item.label);
+    assert.ok(labels.includes('setBackgroundColor'), `gfx members: ${labels.slice(0, 8).join(',')}`);
+
+    const edits = await client.request('textDocument/formatting', {
+      textDocument: { uri },
+      options: { tabSize: 4, insertSpaces: true },
+    });
+    assert.ok(Array.isArray(edits) && edits.length >= 1, 'formatting edits');
+    assert.ok(edits[0].newText.includes('    local x = 1'), 'indented body');
+
+    const folds = await client.request('textDocument/foldingRange', {
+      textDocument: { uri },
+    });
+    assert.ok(Array.isArray(folds) && folds.length >= 1, 'folding ranges');
+    assert.strictEqual(folds[0].startLine, 0);
+
+    client.notify('textDocument/didChange', {
+      textDocument: { uri, version: 2 },
+      contentChanges: [
+        {
+          range: { start: { line: 1, character: 6 }, end: { line: 1, character: 7 } },
+          text: 'value',
+        },
+      ],
+    });
+    const hover = await client.request('textDocument/hover', {
+      textDocument: { uri },
+      position: { line: 1, character: 8 },
+    });
+    assert.ok(hover && hover.contents && String(hover.contents.value).includes('value'), 'incremental hover');
+    console.log('  live eve LSP initialize + complete/format/fold/incremental ok');
+  } finally {
+    await client.shutdown();
+  }
+}
+
 async function main() {
   let failed = 0;
   const cases = [
     ['package.json keybindings', testPackageJsonKeybindings],
     ['package.json inspect menu', testPackageJsonInspectMenu],
+    ['package.json error slice', testPackageJsonErrorSlice],
+    ['package.json language', testPackageJsonLanguage],
+    ['findProjectRoot', testFindProjectRoot],
     ['resolveEvePath', testResolveEvePath],
     ['waitForPort', testWaitForPort],
+    ['live eve LSP', testLiveEveLsp],
     ['live eve DAP', testLiveEveDap],
   ];
   for (const [name, fn] of cases) {

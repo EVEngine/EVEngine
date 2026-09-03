@@ -928,6 +928,37 @@ TEST_CASE("devtools.dap.breakpointVerificationEvent") {
     dap.stop();
 }
 
+TEST_CASE("devtools.dap.setBreakpointsStoresCondition") {
+    auto& dap = DebugAdapter::instance();
+    auto& dbg = Debugger::instance();
+    dbg.detach();
+    dbg.clearBreakpoints();
+    dap.stop();
+
+    const int port = dap.listen(0);
+    REQUIRE(port > 0);
+    DapClient client(port);
+    pump(20);
+    client.sendRequest("initialize", "{\"adapterID\":\"eve\"}");
+    REQUIRE(client.expectResponse("initialize"));
+
+    client.sendRequest(
+        "setBreakpoints",
+        "{\"source\":{\"path\":\"cond.nut\",\"name\":\"cond.nut\"},"
+        "\"breakpoints\":[{\"line\":4,\"condition\":\"score > 10\"}]}");
+    auto bpResp = client.expectResponse("setBreakpoints");
+    REQUIRE(bpResp);
+    CHECK(bpResp->optValue<bool>("success", false));
+
+    auto bps = dbg.breakpoints();
+    REQUIRE(bps.size() == 1u);
+    CHECK_EQ(bps[0].line, 4);
+    CHECK_EQ(bps[0].condition, std::string("score > 10"));
+
+    dbg.clearBreakpoints();
+    dap.stop();
+}
+
 TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     auto& dap = DebugAdapter::instance();
     auto& dbg = Debugger::instance();
@@ -1121,4 +1152,55 @@ TEST_CASE("devtools.dap.runtimeExecuteReportsThroughDevToolOnce") {
     CHECK(caught);
     CHECK(!dt.lastReport().empty());
     dt.detach();
+}
+
+TEST_CASE("devtools.dap.errorSliceReturnsLastReportAndLocations") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    auto&   dt  = DevTool::instance();
+    auto&   dap = DebugAdapter::instance();
+    auto&   dbg = Debugger::instance();
+
+    dap.stop();
+    dt.detach();
+    dbg.clearBreakpoints();
+    dbg.setBreakOnError(false);
+    dt.attach(vm, /*sampleLocals=*/false);
+
+    SourceLoc site;
+    site.source   = "slice.nut";
+    site.line     = 7;
+    site.function = "boom";
+    dt.graph().onLine(site);
+    dt.graph().onDef(site, "score");
+    dt.notifyError("slice boom", {"score"});
+    CHECK(!dt.lastReport().empty());
+    CHECK(!dt.lastSlice().locations.empty());
+
+    const int port = dap.listen(0);
+    REQUIRE(port > 0);
+    DapClient client(port);
+    client.sendRequest("initialize", "{\"adapterID\":\"eve\"}");
+    REQUIRE(client.expectResponse("initialize"));
+    client.sendRequest("errorSlice");
+    auto resp = client.expectResponse("errorSlice");
+    REQUIRE(resp);
+    CHECK(resp->optValue<bool>("success", false));
+    auto body = resp->getObject("body");
+    REQUIRE(body);
+    CHECK(body->optValue<std::string>("report", "").find("slice boom") != std::string::npos);
+    auto locations = body->getArray("locations");
+    REQUIRE(locations);
+    CHECK(locations->size() >= 1);
+    bool foundSite = false;
+    for (unsigned i = 0; i < locations->size(); ++i) {
+        auto item = locations->getObject(i);
+        if (!item) continue;
+        if (item->optValue<std::string>("name", "").find("slice.nut") != std::string::npos &&
+            item->optValue<int>("line", 0) == 7)
+            foundSite = true;
+    }
+    CHECK(foundSite);
+
+    dt.detach();
+    dap.stop();
 }
