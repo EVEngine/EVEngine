@@ -107,7 +107,7 @@ void FootIKSolver::solve(const Leg& leg,AnimPose& pose,float rotationWeight) con
     const auto& foot=pose.world(leg.foot);
     pose.aimBone(skeleton_,leg.foot,foot.px+leg.smooth.nx,foot.py+leg.smooth.ny,
                  foot.pz+leg.smooth.nz,rotationWeight*leg.smooth.weight);
-    if(leg.toeConfigured&&leg.toeSmooth.weight>1e-4f){pose.computeWorld(skeleton_);const auto& toe=pose.world(leg.toe);pose.aimBone(skeleton_,leg.toe,leg.toeSmooth.x,leg.toeSmooth.y+leg.toeSoleOffset,leg.toeSmooth.z,rotationWeight*leg.toeSmooth.weight);}
+    if(leg.toeConfigured&&leg.toeSmooth.weight>1e-4f){pose.computeWorld(skeleton_);pose.aimBone(skeleton_,leg.toe,leg.toeSmooth.x,leg.toeSmooth.y+leg.toeSoleOffset,leg.toeSmooth.z,rotationWeight*leg.toeSmooth.weight);}
 }
 void FootIKSolver::apply(AnimPose* pose,float dt) {
     if(!pose||!skeleton_)throw Exception("FootIKSolver.apply: pose or skeleton is null");
