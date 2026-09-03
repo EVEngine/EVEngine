@@ -259,6 +259,18 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("bindAnimPlayer", &AvatarInstance::bindAnimPlayer);
     av.addFunc("bindAnimStateMachine", &AvatarInstance::bindAnimStateMachine);
     av.addFunc("bindAnimLayerMixer", &AvatarInstance::bindAnimLayerMixer);
+    av.addFunc("setAnimConstraintStack", [](AvatarInstance* a, animation::AnimConstraintStack* stack) -> void {
+        a->setAnimConstraintStack(stack);
+    });
+    av.addFunc("getAnimConstraintStack", &AvatarInstance::getAnimConstraintStack);
+    av.addFunc("setFootIKSolver", [](AvatarInstance* a, animation::FootIKSolver* solver) -> void {
+        a->setFootIKSolver(solver);
+    });
+    av.addFunc("getFootIKSolver", &AvatarInstance::getFootIKSolver);
+    av.addFunc("setDynamicBoneSolver", [](AvatarInstance* a, animation::DynamicBoneSolver* solver) -> void {
+        a->setDynamicBoneSolver(solver);
+    });
+    av.addFunc("getDynamicBoneSolver", &AvatarInstance::getDynamicBoneSolver);
     av.addFunc("bindAnimSkin", &AvatarInstance::bindAnimSkin);
     av.addFunc("bindSkinnedPart",
                [](AvatarInstance* a, int partIndex, const std::string& partName,

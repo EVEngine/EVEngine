@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <functional>
 #include <string>
 #include <unordered_map>
@@ -35,10 +37,13 @@ namespace eve::animation {
 class AnimClip;
 class AnimPlayer;
 class AnimLayerMixer;
+class AnimConstraintStack;
 class AnimPose;
 class AnimSkin;
 class AnimSkeleton;
 class AnimStateMachine;
+class DynamicBoneSolver;
+class FootIKSolver;
 class Tween;
 }
 
@@ -202,6 +207,34 @@ public:
     bool bindAnimStateMachine(animation::AnimStateMachine* machine);
     /** @brief Bind an override/additive layer mixer that the avatar advances each update. */
     bool bindAnimLayerMixer(animation::AnimLayerMixer* mixer);
+    /** @brief Copy an IK/aim stack into Avatar-owned storage; null disables it. */
+    void setAnimConstraintStack(animation::AnimConstraintStack* stack);
+    /**
+     * @brief Return the Avatar-owned constraint stack, or null.
+     * @ownership Borrowed from this Avatar.
+     * @lifetime Valid until replacement, disable, or Avatar destruction.
+     */
+    animation::AnimConstraintStack* getAnimConstraintStack() const { return animConstraintStack_.get(); }
+    /** @brief Copy paired-foot IK configuration into Avatar-owned storage; null disables it. */
+    void setFootIKSolver(animation::FootIKSolver* solver);
+    /**
+     * @brief Return the Avatar-owned paired-foot IK solver, or null.
+     * @ownership Borrowed from this Avatar.
+     * @lifetime Valid until replacement, disable, or Avatar destruction.
+     */
+    animation::FootIKSolver* getFootIKSolver() const { return footIKSolver_.get(); }
+    /**
+     * @brief Copy dynamic-bone configuration into Avatar-owned storage.
+     * @param solver Borrowed only during this call; null disables the effect.
+     * @note Main-thread only. The getter is valid until replacement or Avatar destruction.
+     */
+    void setDynamicBoneSolver(animation::DynamicBoneSolver* solver);
+    /**
+     * @brief Return the Avatar-owned solver, or null.
+     * @ownership Borrowed from this Avatar.
+     * @lifetime Valid until replacement, disable, or Avatar destruction.
+     */
+    animation::DynamicBoneSolver* getDynamicBoneSolver() const { return dynamicBoneSolver_.get(); }
     /** @brief Bind CPU skin data used to deform the avatar mesh from the active pose. */
     bool bindAnimSkin(animation::AnimSkin* skin);
     /**
@@ -413,6 +446,9 @@ private:
     animation::AnimPlayer*                                animPlayer_       = nullptr;
     animation::AnimLayerMixer*                            animLayerMixer_   = nullptr;
     animation::AnimStateMachine*                          animStateMachine_ = nullptr;
+    std::unique_ptr<animation::AnimConstraintStack>       animConstraintStack_;
+    std::unique_ptr<animation::FootIKSolver>              footIKSolver_;
+    std::unique_ptr<animation::DynamicBoneSolver>         dynamicBoneSolver_;
     animation::AnimSkin*                                  animSkin_         = nullptr;
     animation::AnimSkeleton*                              animSkeleton_     = nullptr;
     std::unordered_map<std::string, animation::AnimClip*> motions_;
