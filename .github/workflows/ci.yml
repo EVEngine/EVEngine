@@ -456,7 +456,8 @@ jobs:
         run: |
           python -m pip install --quiet pillow
           python scripts/compare_render_backends.py `
-            artifacts/render-parity/vulkan artifacts/render-parity/webgpu
+            artifacts/render-parity/vulkan artifacts/render-parity/webgpu `
+            --result-json artifacts/render-parity/ci-result.json
 
       - name: Upload render parity artifacts
         if: always()
@@ -1495,6 +1496,9 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.webgpu == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      EMSCRIPTEN_VERSION: "6.0.9"
+      EMDAWNWEBGPU_RELEASE: "v20260423.175430"
     # Do not add sccache via EM_COMPILER_WRAPPER here: emsdk's Clang commands
     # carry -Xclang flags that sccache v0.16 treats as non-cacheable, adding
     # wrapper overhead without storing any of the engine's object files.
@@ -1540,7 +1544,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: $HOME/emsdk
-          key: emsdk-${{ runner.os }}-${{ runner.arch }}-latest
+          key: emsdk-${{ runner.os }}-${{ runner.arch }}-${{ env.EMSCRIPTEN_VERSION }}-${{ env.EMDAWNWEBGPU_RELEASE }}-v1
 
       - name: Install Emscripten SDK
         timeout-minutes: 30
@@ -1550,8 +1554,46 @@ jobs:
           else
             git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
           fi
-          "$HOME/emsdk/emsdk" install latest
-          "$HOME/emsdk/emsdk" activate latest
+          "$HOME/emsdk/emsdk" install "$EMSCRIPTEN_VERSION"
+          "$HOME/emsdk/emsdk" activate "$EMSCRIPTEN_VERSION"
+
+      - name: Acquire and verify immutable WebGPU port
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/webgpu-dependencies
+          archive="artifacts/webgpu-dependencies/emdawnwebgpu.zip"
+          url="https://github.com/google/dawn/releases/download/${EMDAWNWEBGPU_RELEASE}/emdawnwebgpu_pkg-${EMDAWNWEBGPU_RELEASE}.zip"
+          if ! curl --fail --location --retry 4 --retry-all-errors --retry-delay 5 \
+            --output "$archive" "$url"; then
+            python3 -c 'from pathlib import Path; from scripts.ci_result import CIResult, FailureKind; CIResult.failure(FailureKind.INFRASTRUCTURE, "WEBGPU_DEPENDENCY_DOWNLOAD_FAILED", "webgpu-dependencies", "failed to download the locked emdawnwebgpu archive after retries").write(Path("artifacts/webgpu-dependencies/ci-result.json"))'
+            exit 1
+          fi
+          python3 scripts/verify_webgpu_dependencies.py \
+            --lock cmake/webgpu_dependencies.json \
+            --archive "$archive" \
+            --emscripten-version "$EMSCRIPTEN_VERSION" \
+            --result-json artifacts/webgpu-dependencies/ci-result.json
+
+      - name: Prewarm Emscripten WebGPU port
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          source "$HOME/emsdk/emsdk_env.sh"
+          for attempt in 1 2 3; do
+            em++ --use-port=emdawnwebgpu -x c++ -c /dev/null \
+              -o artifacts/webgpu-dependencies/port-probe.o && exit 0
+            [ "$attempt" -lt 3 ] && sleep $((attempt * 10))
+          done
+          exit 1
+
+      - name: Upload WebGPU dependency result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: webgpu-dependency-result
+          path: artifacts/webgpu-dependencies/ci-result.json
+          if-no-files-found: warn
 
       - name: Configure webgpu (Emscripten/WASM)
         timeout-minutes: 15

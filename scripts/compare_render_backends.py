@@ -13,6 +13,11 @@ from typing import Any
 
 from PIL import Image
 
+try:
+    from scripts.ci_result import CIResult, FailureKind
+except ModuleNotFoundError:  # Direct execution sets sys.path to scripts/.
+    from ci_result import CIResult, FailureKind
+
 
 class ArtifactContractError(ValueError):
     """Raised when render-parity producers emitted incomplete artifact sets."""
@@ -185,6 +190,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("reference", type=Path, help="Vulkan artifact directory")
     parser.add_argument("candidate", type=Path, help="WebGPU artifact directory")
+    parser.add_argument("--result-json", type=Path, help="write a versioned CI result")
     args = parser.parse_args()
 
     try:
@@ -192,6 +198,13 @@ def main() -> int:
     except ArtifactContractError as error:
         print("ARTIFACT CONTRACT FAILURE:", file=sys.stderr)
         print(error, file=sys.stderr)
+        if args.result_json:
+            CIResult.failure(
+                FailureKind.CONTRACT,
+                "RENDER_ARTIFACT_CONTRACT_INVALID",
+                "render-parity",
+                str(error),
+            ).write(args.result_json)
         return 2
     failures: list[str] = []
     for manifest in manifests:
@@ -199,7 +212,17 @@ def main() -> int:
     if failures:
         print("PIXEL PARITY FAILURE:", file=sys.stderr)
         print("\n".join(f"ERROR: {failure}" for failure in failures), file=sys.stderr)
+        if args.result_json:
+            CIResult.failure(
+                FailureKind.PARITY,
+                "RENDER_PARITY_EXCEEDED",
+                "render-parity",
+                "one or more scenes exceeded their render contract",
+                {"failures": failures},
+            ).write(args.result_json)
         return 1
+    if args.result_json:
+        CIResult.success("render-parity").write(args.result_json)
     return 0
 
 
