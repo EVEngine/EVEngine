@@ -17,14 +17,6 @@
 #include <memory>
 #include <string>
 
-namespace eve::audio {
-class Source;
-}
-
-namespace eve::sound {
-class SoundData;
-}
-
 namespace eve::audio_editor {
 
 /**
@@ -172,10 +164,9 @@ private:
     audio_editing::AudioWaveformResult       waveform_;
     AudioClockTransportBackend               clock_;
     audio_editing::AudioAuditionTransport    transport_;
-    std::unique_ptr<audio_editing::AudioSourceTransportBackend> liveBackend_;
     audio_editing::AudioTransportSnapshot    lastTransport_;
-    std::unique_ptr<sound::SoundData>        soundData_;
-    audio::Source*                           liveSource_   = nullptr;
+    struct LiveAudition;
+    std::unique_ptr<LiveAudition>            liveAudition_;
     bool                                     liveBound_    = false;
     std::uint64_t                            pcmRevision_  = 1;
     std::uint64_t                            txSequence_   = 0;

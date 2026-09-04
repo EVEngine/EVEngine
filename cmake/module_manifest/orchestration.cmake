@@ -115,7 +115,7 @@ eve_declare_module(NAME action_editor LAYER 7 SCRIPT ActionEditorModule SLOT act
 eve_declare_module(NAME animation_editor LAYER 7 DEPS animation_editing editor
                    SCRIPT AnimationEditorModule SLOT animationEditor GROUP 3d web)
 eve_declare_module(NAME audio_editor LAYER 7 SCRIPT AudioEditorModule SLOT audioEditor
-                   DEPS audio audio_editing editor sound GROUP 3d web)
+                   DEPS audio_editing editor OPTIONAL_DEPS audio sound GROUP 3d web)
 eve_declare_module(NAME avatar_editor LAYER 7 SCRIPT AvatarEditorModule SLOT avatarEditor
                    DEPS avatar_editing editor GROUP 3d)
 eve_declare_module(NAME biome_editor LAYER 7 DEPS biome_editing editor procgen

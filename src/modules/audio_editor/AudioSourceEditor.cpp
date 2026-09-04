@@ -1,11 +1,14 @@
 #include "audio_editor/AudioSourceEditor.h"
 
-#include "audio/Audio.h"
-#include "audio/Source.h"
 #include "audio_editing/AudioTarget.h"
 #include "common/Exception.h"
 #include "common/Module.h"
+
+#if defined(EVE_AUDIO_EDITOR_LIVE)
+#include "audio/Audio.h"
+#include "audio/Source.h"
 #include "sound/SoundData.h"
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -38,6 +41,19 @@ bool readFlag(const audio_editing::AudioSourceTarget& target, const editor::Sele
 }
 
 }  // namespace
+
+struct AudioSourceEditor::LiveAudition {
+#if defined(EVE_AUDIO_EDITOR_LIVE)
+    std::unique_ptr<audio_editing::AudioSourceTransportBackend> backend;
+    std::unique_ptr<eve::sound::SoundData>                      data;
+    eve::audio::Source*                                         source = nullptr;
+    ~LiveAudition() {
+        backend.reset();
+        delete source;
+        source = nullptr;
+    }
+#endif
+};
 
 void AudioClockTransportBackend::play() { playing_ = true; }
 void AudioClockTransportBackend::pause() { playing_ = false; }
@@ -86,11 +102,7 @@ AudioSourceEditor::AudioSourceEditor(std::string targetId)
 
 AudioSourceEditor::~AudioSourceEditor() {
     transport_.unbind();
-    liveBackend_.reset();
-    if (liveSource_) {
-        delete liveSource_;
-        liveSource_ = nullptr;
-    }
+    liveAudition_.reset();
 }
 
 void AudioSourceEditor::seedPreviewDocument() {
@@ -166,6 +178,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::rebuildWaveform() {
 
 audio_editing::EditorResult<void> AudioSourceEditor::bindClockAudition() {
     transport_.unbind();
+    liveAudition_.reset();
     liveBound_ = false;
     clock_.setDuration(duration());
     return transport_.bind(audio_editing::StableId(target_.targetId().value()), auditionRevision(), &clock_);
@@ -182,8 +195,12 @@ audio_editing::EditorResult<void> AudioSourceEditor::syncLoop() {
 }
 
 audio_editing::EditorResult<void> AudioSourceEditor::publishLive() {
-    if (!liveSource_) return eve::editing::applied<void>();
-    return audio_editing::AudioSourceRuntimeApplier().apply(target_, liveSource_);
+#if defined(EVE_AUDIO_EDITOR_LIVE)
+    if (!liveAudition_ || !liveAudition_->source) return eve::editing::applied<void>();
+    return audio_editing::AudioSourceRuntimeApplier().apply(target_, liveAudition_->source);
+#else
+    return eve::editing::applied<void>();
+#endif
 }
 
 audio_editing::EditorResult<void> AudioSourceEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
@@ -323,6 +340,10 @@ audio_editing::EditorResult<audio_editing::AudioTransportSnapshot> AudioSourceEd
 }
 
 audio_editing::EditorResult<void> AudioSourceEditor::attachLiveAudition() {
+#if !defined(EVE_AUDIO_EDITOR_LIVE)
+    return editorError(audio_editing::EditorStatus::Unsupported, "editor.audio.live-module",
+                       "Audio module is not available for live audition");
+#else
     auto* audioMod = eve::ModuleManager::getInstance<eve::audio::Audio>("Audio");
     if (!audioMod)
         return editorError(audio_editing::EditorStatus::Unsupported, "editor.audio.live-module",
@@ -336,33 +357,29 @@ audio_editing::EditorResult<void> AudioSourceEditor::attachLiveAudition() {
     }
     const bool   wasPlaying = isPlaying();
     const double head       = playhead();
+    auto         live       = std::make_unique<LiveAudition>();
     try {
-        soundData_ = std::make_unique<eve::sound::SoundData>(std::move(bytes), pcm_.sampleRate, 16, 1);
+        live->data   = std::make_unique<eve::sound::SoundData>(std::move(bytes), pcm_.sampleRate, 16, 1);
         transport_.unbind();
-        liveSource_ = audioMod->newSource(soundData_.get());
+        live->source = audioMod->newSource(live->data.get());
     } catch (const eve::Exception& ex) {
-        soundData_.reset();
-        liveSource_ = nullptr;
         auto restored = bindClockAudition();
         if (!restored.ok()) restored.ignore("clock audition restored after live attach failure");
         return editorError(audio_editing::EditorStatus::Failed, "editor.audio.live-source",
                            std::string("Live audition source could not be created: ") + ex.what());
     }
-    liveBackend_ = std::make_unique<audio_editing::AudioSourceTransportBackend>(liveSource_);
-    auto bound   = transport_.bind(audio_editing::StableId(target_.targetId().value()), auditionRevision(),
-                                   liveBackend_.get());
+    live->backend = std::make_unique<audio_editing::AudioSourceTransportBackend>(live->source);
+    auto bound     = transport_.bind(audio_editing::StableId(target_.targetId().value()), auditionRevision(),
+                                     live->backend.get());
     if (!bound.ok()) {
-        liveBackend_.reset();
-        delete liveSource_;
-        liveSource_ = nullptr;
-        soundData_.reset();
         auto restored = bindClockAudition();
         if (!restored.ok()) restored.ignore("clock audition restored after live bind failure");
         auto looped = syncLoop();
         if (!looped.ok()) looped.ignore("loop restored after live bind failure");
         return bound;
     }
-    liveBound_ = true;
+    liveAudition_ = std::move(live);
+    liveBound_    = true;
     auto looped = syncLoop();
     if (!looped.ok()) return looped;
     auto published = publishLive();
@@ -371,6 +388,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::attachLiveAudition() {
     if (!sought.ok()) return sought;
     if (wasPlaying) return play();
     return eve::editing::applied<void>();
+#endif
 }
 
 bool AudioSourceEditor::isPlaying() const noexcept {

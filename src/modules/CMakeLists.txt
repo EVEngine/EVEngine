@@ -382,6 +382,13 @@ eve_module_enabled(audio _has_audio)
 if(_has_audio)
   target_compile_definitions(EVAudio PRIVATE AL_LIBTYPE_STATIC)
 endif()
+eve_module_enabled(audio_editor _has_audio_editor)
+if(_has_audio_editor AND _has_audio AND _has_sound)
+  # Live OpenAL audition is optional. Do not hard-depend on sound: WASM/web
+  # profiles do not ship Wuff/OpenAL, and pulling EVSound into that profile
+  # fails to compile WaveDecoder.h.
+  target_compile_definitions(EVAudio_editor PRIVATE EVE_AUDIO_EDITOR_LIVE=1)
+endif()
 
 eve_module_enabled(physics _has_physics)
 option(EVENGINE_BUILD_PHYSICS_CORE_CHECK
