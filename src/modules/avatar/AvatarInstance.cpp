@@ -93,6 +93,7 @@ void AvatarInstance::release() {
     dynamicBoneSolver_ = nullptr;
     animSkin_         = nullptr;
     animSkeleton_     = nullptr;
+    attachmentPoseMatrices_.clear();
     motions_.clear();
     attachments_.clear();
     hideEquipmentVisuals();
@@ -530,6 +531,7 @@ bool AvatarInstance::bindAnimPlayer(animation::AnimPlayer* player) {
     animStateMachine_ = nullptr;
     animLayerMixer_   = nullptr;
     animSkeleton_     = player ? player->getSkeleton() : nullptr;
+    attachmentPoseMatrices_.clear();
     hasPreviousRoot_  = false;
     if (footIKSolver_) footIKSolver_->setSkeleton(animSkeleton_);
     if (animConstraintStack_) animConstraintStack_->setSkeleton(animSkeleton_);
@@ -543,6 +545,7 @@ bool AvatarInstance::bindAnimStateMachine(animation::AnimStateMachine* machine) 
     animPlayer_       = nullptr;
     animLayerMixer_   = nullptr;
     animSkeleton_     = machine ? machine->getSkeleton() : nullptr;
+    attachmentPoseMatrices_.clear();
     hasPreviousRoot_  = false;
     if (footIKSolver_) footIKSolver_->setSkeleton(animSkeleton_);
     if (animConstraintStack_) animConstraintStack_->setSkeleton(animSkeleton_);
@@ -556,6 +559,7 @@ bool AvatarInstance::bindAnimLayerMixer(animation::AnimLayerMixer* mixer) {
     animStateMachine_ = nullptr;
     animPlayer_       = mixer ? mixer->getBasePlayer() : nullptr;
     animSkeleton_     = mixer ? mixer->getSkeleton() : nullptr;
+    attachmentPoseMatrices_.clear();
     hasPreviousRoot_  = false;
     if (footIKSolver_) footIKSolver_->setSkeleton(animSkeleton_);
     if (animConstraintStack_) animConstraintStack_->setSkeleton(animSkeleton_);
@@ -774,6 +778,30 @@ bool AvatarInstance::detachAttachment(const std::string& name) {
     return true;
 }
 
+eve::Result<eve::AttachmentPoint> AvatarInstance::sampleAttachmentPoint(
+    std::string_view name, eve::AttachmentPoint localOffset) const {
+    if (!animSkeleton_ || attachmentPoseMatrices_.empty())
+        return eve::Result<eve::AttachmentPoint>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "Avatar has no evaluated skeletal pose",
+            "avatar.attachment.pose"));
+    std::string boneName(name);
+    const auto semantic = humanoidBones_.find(boneName);
+    if (semantic != humanoidBones_.end()) boneName = semantic->second;
+    const int bone = animSkeleton_->findBone(boneName);
+    if (bone < 0 || static_cast<std::size_t>(bone) >= attachmentPoseMatrices_.size())
+        return eve::Result<eve::AttachmentPoint>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "Avatar attachment bone was not found", boneName));
+    const auto& matrix = attachmentPoseMatrices_[static_cast<std::size_t>(bone)];
+    const float bx = matrix[0] * localOffset.x + matrix[4] * localOffset.y + matrix[8] * localOffset.z + matrix[12];
+    const float by = matrix[1] * localOffset.x + matrix[5] * localOffset.y + matrix[9] * localOffset.z + matrix[13];
+    const float bz = matrix[2] * localOffset.x + matrix[6] * localOffset.y + matrix[10] * localOffset.z + matrix[14];
+    const float sinYaw = std::sin(yaw_);
+    const float cosYaw = std::cos(yaw_);
+    return eve::Result<eve::AttachmentPoint>::success(
+        {x3_ + bx * sx3_ * cosYaw + bz * sz3_ * sinYaw, y3_ + by * sy3_,
+         z3_ - bx * sx3_ * sinYaw + bz * sz3_ * cosYaw});
+}
+
 animation::AnimPose* AvatarInstance::updateSkeletalAnimation(float dt) {
     animation::AnimPose* pose = nullptr;
     rootMotionLoopCount_      = 0;
@@ -802,7 +830,10 @@ animation::AnimPose* AvatarInstance::updateSkeletalAnimation(float dt) {
                 static_cast<int>(std::floor(animPlayer_->getTime() / duration) - std::floor(oldTime / duration));
         }
     }
-    if (!pose || !animSkeleton_) return nullptr;
+    if (!pose || !animSkeleton_) {
+        attachmentPoseMatrices_.clear();
+        return nullptr;
+    }
     pose->computeWorld(animSkeleton_);
     applyLookAt(pose);
     if (footIKSolver_) footIKSolver_->apply(pose, dt);
@@ -811,6 +842,9 @@ animation::AnimPose* AvatarInstance::updateSkeletalAnimation(float dt) {
     updateRootMotion(pose);
     updateSkin(pose);
     updateAttachments(pose);
+    attachmentPoseMatrices_.resize(static_cast<std::size_t>(pose->getBoneCount()));
+    for (int bone = 0; bone < pose->getBoneCount(); ++bone)
+        pose->getWorldMatrix(bone, attachmentPoseMatrices_[static_cast<std::size_t>(bone)].data());
     return pose;
 }
 
@@ -818,6 +852,16 @@ int AvatarInstance::getAnimationEventCount() const {
     if (animLayerMixer_) return animLayerMixer_->getEventCount();
     if (animPlayer_) return animPlayer_->getEventCount();
     return 0;
+}
+
+std::size_t AvatarInstance::animationEventCount() const noexcept {
+    const int count = getAnimationEventCount();
+    return count > 0 ? static_cast<std::size_t>(count) : 0u;
+}
+
+std::string AvatarInstance::animationEventName(std::size_t index) const {
+    if (index > static_cast<std::size_t>(std::numeric_limits<int>::max())) return {};
+    return getAnimationEventName(static_cast<int>(index));
 }
 
 std::string AvatarInstance::getAnimationEventLayer(int index) const {

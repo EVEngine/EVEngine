@@ -71,7 +71,7 @@ void StyleInstance::reset(const std::string& name) {
 
 void StyleInstance::resetAll() { overrides_.clear(); }
 
-void StyleInstance::applyOverrides(graphics::Shader* shader) const {
+void StyleInstance::applyToShader(graphics::Shader* shader) const {
     if (!shader) throw eve::Exception("StyleInstance: null shader");
     for (const auto& [name, value] : overrides_) {
         if (shader->hasUniform(name)) shader->sendFloat(name, value);
@@ -80,13 +80,13 @@ void StyleInstance::applyOverrides(graphics::Shader* shader) const {
 
 StylePass* StyleInstance::newPass(graphics::Graphics* gfx) const {
     graphics::Shader* shader = createPostShader(gfx, style_);
-    applyOverrides(shader);
+    applyToShader(shader);
     return new StylePass(style_, shader);
 }
 
 graphics::Shader* StyleInstance::newMeshShader(graphics::Graphics* gfx) const {
     graphics::Shader* shader = createMeshShader(gfx, style_);
-    applyOverrides(shader);
+    applyToShader(shader);
     return shader;
 }
 

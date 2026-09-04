@@ -506,6 +506,9 @@ wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
               wgpu::TextureViewDimension::Cube);
     b.texture(17, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
               wgpu::TextureViewDimension::Cube);
+    b.texture(18, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::e2D);
+    b.sampler(19, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
     return b.build(device, "eve_mesh3d");
 }
 
@@ -2483,7 +2486,7 @@ wgpu::BindGroup Graphics::makeTex2DBindGroup(GpuTexture *color, GpuTexture *dept
 }
 
 wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *normal, GpuTexture *env,
-                                            GpuTexture *height, GpuTexture *depth,
+                                            GpuTexture *height, GpuTexture *depth, GpuTexture *sceneColor,
                                             uint32_t frameUboOffset, uint32_t shadowUboOffset,
                                             uint32_t pushUboOffset) {
     GpuTexture *a = albedo ? albedo : whiteTexture;
@@ -2500,6 +2503,7 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     GpuTexture *probe1 = localProbe(1);
     GpuTexture *h = height ? height : flatHeightTexture3D;
     GpuTexture *d = depth ? depth : flatDepthTexture3D;
+    GpuTexture *c = sceneColor ? sceneColor : whiteTexture;
     GpuTexture *shadow = shadowDepthArray ? shadowDepthArray : defaultShadowTex;
     wgpu::TextureView aoView_ =
         aoReady ? aoView[(aoWriteIndex + 1) % 2] : (whiteTexture ? whiteTexture->view : wgpu::TextureView());
@@ -2525,12 +2529,13 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
                          reinterpret_cast<uintptr_t>(decalNormalView.Get()),
                          reinterpret_cast<uintptr_t>(decalParamsView.Get()),
                          reinterpret_cast<uintptr_t>(probe0->view.Get()),
-                         reinterpret_cast<uintptr_t>(probe1->view.Get())};
+                         reinterpret_cast<uintptr_t>(probe1->view.Get()),
+                         reinterpret_cast<uintptr_t>(c->view.Get())};
     auto cached = meshBindGroupCache_.find(key);
     if (cached != meshBindGroupCache_.end()) return cached->second;
     if (meshBindGroupCache_.size() >= kMaxMeshBindGroupCache) meshBindGroupCache_.clear();
 
-    WGPUBindGroupEntry entries[18]{};
+    WGPUBindGroupEntry entries[20]{};
     entries[0].binding = 0;
     entries[0].buffer = currentUboArena().buffer.Get();
     entries[0].size = sizeof(Mesh3DUBO);
@@ -2574,6 +2579,10 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     entries[16].textureView = probe0->view.Get();
     entries[17].binding = 17;
     entries[17].textureView = probe1->view.Get();
+    entries[18].binding = 18;
+    entries[18].textureView = c->view.Get();
+    entries[19].binding = 19;
+    entries[19].sampler = c->sampler.Get();
 
     (void)frameUboOffset;
     (void)shadowUboOffset;
@@ -2581,7 +2590,7 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     WGPUBindGroupDescriptor desc{};
     desc.label = sv("eve_mesh_group");
     desc.layout = mesh3dSetLayout.Get();
-    desc.entryCount = 18;
+    desc.entryCount = 20;
     desc.entries = entries;
     wgpu::BindGroup bg =
         device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
@@ -3764,6 +3773,20 @@ void Graphics::setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCou
         enabled ? glm::vec4(float(atlasSlotsX), float(atlasSlotsY), 0.f, 0.f) : glm::vec4(0.f);
 }
 void Graphics::setMesh3DSceneDepth(Texture *depth) { mesh3dSceneDepthTexture = depth; }
+void Graphics::setMesh3DSceneColor(Texture *color) { mesh3dSceneColorTexture = color; }
+
+Graphics::Mesh3DSceneColorCaptureStatus Graphics::captureMesh3DSceneColor() {
+    if (mesh3dSceneColorTexture) return Mesh3DSceneColorCaptureStatus::ExplicitOverride;
+    if (active3DCanvas) return sceneColorHistoryValid
+                                   ? Mesh3DSceneColorCaptureStatus::HistoryFallback
+                                   : Mesh3DSceneColorCaptureStatus::Unavailable;
+    if (sceneColorSlots.size() < 2 || sceneColorSamples != 1)
+        return sceneColorHistoryValid ? Mesh3DSceneColorCaptureStatus::HistoryFallback
+                                      : Mesh3DSceneColorCaptureStatus::Unavailable;
+    if (!mesh3dSceneColorCaptureIndex)
+        mesh3dSceneColorCaptureIndex = mesh3dDraws.size();
+    return Mesh3DSceneColorCaptureStatus::Scheduled;
+}
 void Graphics::setMesh3DMaterial(float metallic, float roughness) {
     mesh3dMetallic = metallic;
     mesh3dRoughness = roughness;
@@ -4187,6 +4210,7 @@ void Graphics::createSceneColorResources(int width, int height) {
 void Graphics::destroySceneColorResources() {
     sceneColorSlots.clear();
     sceneColorTexture = nullptr;
+    sceneColorHistoryValid = false;
 }
 
 void Graphics::setMsaaSamples(int samples) {
@@ -4212,8 +4236,8 @@ void Graphics::createShadowResources() {
     td.sampleCount = 1;
     td.format = WGPUTextureFormat_Depth32Float;
     td.mipLevelCount = 1;
-    td.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment |
-               WGPUTextureUsage_CopySrc;
+        td.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment |
+                   WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst;
     gpu->texture = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
 
     WGPUTextureViewDescriptor avd{};
@@ -4574,6 +4598,10 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         GpuTexture *height = gpuForTexture(d.heightTexture);
         GpuTexture *depth = mesh3dSceneDepthTexture ? gpuForTexture(mesh3dSceneDepthTexture)
                                                     : flatDepthTexture3D;
+        GpuTexture *sceneColor = mesh3dSceneColorTexture ? gpuForTexture(mesh3dSceneColorTexture)
+                                 : sceneColorHistoryValid && lastPresentSlot < sceneColorSlots.size()
+                                     ? &sceneColorSlots[lastPresentSlot].colorGpu
+                                     : whiteTexture;
         wgpu::BindGroup bg;
         uint32_t offsets[3];
         if (useClustered) {
@@ -4586,7 +4614,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
             offsets[1] = d.shadowUboOffset;
             pass.SetBindGroup(0, bg, 2, offsets);
         } else {
-            bg = makeMeshBindGroup(albedo, normal, env, height, depth,
+            bg = makeMeshBindGroup(albedo, normal, env, height, depth, sceneColor,
                                    d.frameUboOffset, d.shadowUboOffset, d.pushUboOffset);
             offsets[0] = d.frameUboOffset;
             offsets[1] = d.shadowUboOffset;
@@ -5089,6 +5117,17 @@ void Graphics::present() {
             lastReadbackH = oc->getHeight();
         } else if (!sceneColorSlots.empty()) {
             SceneColorSlot &slot = sceneColorSlots[currentFrameSlot()];
+            std::vector<Mesh3dDraw> refractiveDraws;
+            const bool splitSceneColor = mesh3dSceneColorCaptureIndex.has_value() &&
+                                         *mesh3dSceneColorCaptureIndex <= mesh3dDraws.size() &&
+                                         sceneColorSlots.size() > 1 && slot.sampleCount == 1;
+            if (splitSceneColor) {
+                auto split = mesh3dDraws.begin() +
+                             static_cast<std::ptrdiff_t>(*mesh3dSceneColorCaptureIndex);
+                refractiveDraws.assign(std::make_move_iterator(split),
+                                       std::make_move_iterator(mesh3dDraws.end()));
+                mesh3dDraws.erase(split, mesh3dDraws.end());
+            }
             WGPURenderPassColorAttachment colorAtt{};
             colorAtt.view = slot.sampleCount > 1 ? slot.msaaView.Get() : slot.colorView.Get();
             colorAtt.resolveTarget = slot.sampleCount > 1 ? slot.colorView.Get() : nullptr;
@@ -5119,7 +5158,42 @@ void Graphics::present() {
             flushGpuDrivenDraws(pass, /*canvasTarget*/ false);
             flushPrimitive3D(pass, sceneColorFormat, slot.sampleCount);
             pass.End();
+            if (splitSceneColor) {
+                const uint32_t snapshotIndex =
+                    (currentFrameSlot() + 1u) % static_cast<uint32_t>(sceneColorSlots.size());
+                SceneColorSlot &snapshot = sceneColorSlots[snapshotIndex];
+                WGPUTexelCopyTextureInfo source{};
+                source.texture = slot.color.Get();
+                source.mipLevel = 0;
+                source.origin = {0, 0, 0};
+                source.aspect = WGPUTextureAspect_All;
+                WGPUTexelCopyTextureInfo destination{};
+                destination.texture = snapshot.color.Get();
+                destination.mipLevel = 0;
+                destination.origin = {0, 0, 0};
+                destination.aspect = WGPUTextureAspect_All;
+                WGPUExtent3D extent{static_cast<uint32_t>(sceneColorWidth),
+                                    static_cast<uint32_t>(sceneColorHeight), 1};
+                encoder.CopyTextureToTexture(
+                    reinterpret_cast<const wgpu::TexelCopyTextureInfo *>(&source),
+                    reinterpret_cast<const wgpu::TexelCopyTextureInfo *>(&destination),
+                    reinterpret_cast<const wgpu::Extent3D *>(&extent));
+
+                lastPresentSlot = snapshotIndex;
+                sceneColorHistoryValid = true;
+                mesh3dDraws = std::move(refractiveDraws);
+                colorAtt.resolveTarget = nullptr;
+                colorAtt.loadOp = WGPULoadOp_Load;
+                colorAtt.storeOp = WGPUStoreOp_Store;
+                ds.depthLoadOp = WGPULoadOp_Load;
+                wgpu::RenderPassEncoder transparentPass = encoder.BeginRenderPass(
+                    reinterpret_cast<const wgpu::RenderPassDescriptor *>(&rp));
+                flushMesh3D(transparentPass, sceneColorFormat);
+                transparentPass.End();
+            }
+            mesh3dSceneColorCaptureIndex.reset();
             lastPresentSlot = currentFrameSlot();
+            sceneColorHistoryValid = true;
             lastReadbackTex = slot.color;
             lastReadbackW = sceneColorWidth;
             lastReadbackH = sceneColorHeight;

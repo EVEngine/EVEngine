@@ -8,6 +8,9 @@
 #include "stylize/shaders/dissolve_mesh_frag_spv.inc"
 #include "stylize/shaders/grain_post_frag_spv.inc"
 #include "stylize/shaders/hologram_mesh_frag_spv.inc"
+#include "stylize/shaders/slash_mesh_frag_spv.inc"
+#include "stylize/shaders/ember_mesh_frag_spv.inc"
+#include "stylize/shaders/aura_mesh_frag_spv.inc"
 #include "stylize/shaders/rim_mesh_frag_spv.inc"
 #include "stylize/shaders/snow_mesh_frag_spv.inc"
 #include "stylize/shaders/vignette_post_frag_spv.inc"
@@ -25,6 +28,9 @@ const StyleDefinition kMeshEffects[] = {
     {"dissolve", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 41},
     {"hologram", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 42},
     {"snow", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 43},
+    {"slash", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 44},
+    {"ember", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 45},
+    {"aura", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 46},
 };
 
 // Post effect styles (full-screen passes, color input only).
@@ -56,6 +62,30 @@ const StyleParameterDesc kSnowParams[] = {
     {"snowAmount", 0.9f, 0.f, 1.f},       {"snowHardness", 0.5f, 0.f, 1.f}, {"snowColorR", 0.93f, 0.f, 1.f},
     {"snowColorG", 0.95f, 0.f, 1.f},      {"snowColorB", 0.98f, 0.f, 1.f},  {"noiseScale", 3.f, 0.1f, 16.f},
     {"snowHeight", 0.f, -1000.f, 1000.f}, {"heightFade", 4.f, 0.1f, 100.f},
+};
+
+const StyleParameterDesc kSlashParams[] = {
+    {"coreR", 0.85f, 0.f, 2.f},          {"coreG", 0.95f, 0.f, 2.f},      {"coreB", 1.0f, 0.f, 2.f},
+    {"edgeR", 1.0f, 0.f, 2.f},           {"edgeG", 0.4f, 0.f, 2.f},       {"edgeB", 0.2f, 0.0f, 2.f},
+    {"intensity", 1.6f, 0.f, 4.f},       {"width", 0.06f, 0.005f, 0.3f}, {"softness", 0.12f, 0.001f, 0.5f},
+    {"noiseScale", 4.f, 0.1f, 20.f},      {"time", 0.f, 0.f, 120.f},      {"speed", 0.9f, 0.f, 3.f},
+    {"flowWarp", 0.35f, 0.f, 2.f},        {"edgeDistortion", 0.08f, 0.f, 0.5f},
+    {"depthSoftness", 0.004f, 0.0001f, 0.1f}, {"intersectionWidth", 0.006f, 0.0001f, 0.1f},
+    {"intersectionGlow", 0.8f, 0.f, 4.f},
+    {"refractionStrength", 0.f, 0.f, 1.f},
+};
+
+const StyleParameterDesc kEmberParams[] = {
+    {"coreR", 1.0f, 0.f, 2.f},        {"coreG", 0.35f, 0.f, 2.f},    {"coreB", 0.08f, 0.f, 2.f},
+    {"flareR", 1.0f, 0.f, 2.f},       {"flareG", 0.58f, 0.f, 2.f},   {"flareB", 0.2f, 0.f, 2.f},
+    {"burnAmount", 0.68f, 0.f, 1.f},   {"flicker", 0.5f, 0.f, 1.f},   {"noiseScale", 2.5f, 0.1f, 16.f},
+    {"hardness", 0.6f, 0.f, 1.f},     {"time", 0.f, 0.f, 120.f},
+};
+
+const StyleParameterDesc kAuraParams[] = {
+    {"auraR", 0.24f, 0.f, 2.f},        {"auraG", 0.62f, 0.f, 2.f},    {"auraB", 1.f, 0.f, 2.f},
+    {"pulse", 1.1f, 0.f, 4.f},          {"edge", 2.f, 0.1f, 8.f},      {"radius", 0.65f, 0.1f, 2.f},
+    {"noiseScale", 3.f, 0.1f, 16.f},    {"time", 0.f, 0.f, 120.f},     {"intensity", 1.1f, 0.f, 4.f},
 };
 
 const StyleParameterDesc kVignetteParams[] = {
@@ -97,6 +127,9 @@ int meshParamCount(const std::string& style) {
     if (style == "dissolve") return int(sizeof(kDissolveParams) / sizeof(kDissolveParams[0]));
     if (style == "hologram") return int(sizeof(kHologramParams) / sizeof(kHologramParams[0]));
     if (style == "snow") return int(sizeof(kSnowParams) / sizeof(kSnowParams[0]));
+    if (style == "slash") return int(sizeof(kSlashParams) / sizeof(kSlashParams[0]));
+    if (style == "ember") return int(sizeof(kEmberParams) / sizeof(kEmberParams[0]));
+    if (style == "aura") return int(sizeof(kAuraParams) / sizeof(kAuraParams[0]));
     return 0;
 }
 const StyleParameterDesc* meshParamAt(const std::string& style, int index) {
@@ -104,6 +137,9 @@ const StyleParameterDesc* meshParamAt(const std::string& style, int index) {
     if (style == "dissolve") return paramAt(kDissolveParams, index);
     if (style == "hologram") return paramAt(kHologramParams, index);
     if (style == "snow") return paramAt(kSnowParams, index);
+    if (style == "slash") return paramAt(kSlashParams, index);
+    if (style == "ember") return paramAt(kEmberParams, index);
+    if (style == "aura") return paramAt(kAuraParams, index);
     return nullptr;
 }
 int postParamCount(const std::string& style) {
@@ -224,6 +260,12 @@ graphics::Shader* createEffectMeshShader(graphics::Graphics* gfx, const std::str
         frag = copySpv(hologram_mesh_frag_spv, hologram_mesh_frag_spv_count);
     else if (style == "snow")
         frag = copySpv(snow_mesh_frag_spv, snow_mesh_frag_spv_count);
+    else if (style == "slash")
+        frag = copySpv(slash_mesh_frag_spv, slash_mesh_frag_spv_count);
+    else if (style == "ember")
+        frag = copySpv(ember_mesh_frag_spv, ember_mesh_frag_spv_count);
+    else if (style == "aura")
+        frag = copySpv(aura_mesh_frag_spv, aura_mesh_frag_spv_count);
     else
         throw eve::Exception("createEffectMeshShader: not an effect mesh style '%s'", style.c_str());
 

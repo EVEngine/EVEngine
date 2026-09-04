@@ -34,7 +34,7 @@ using Colorf = ImageData::Colorf;
 
 namespace {
 
-const char* kMeshEffects[] = {"rim", "dissolve", "hologram", "snow"};
+const char* kMeshEffects[] = {"rim", "dissolve", "hologram", "snow", "slash", "ember", "aura"};
 const char* kPostEffects[] = {"vignette", "chromatic", "grain"};
 
 bool near(float a, float b, float eps = 0.02f) { return std::fabs(a - b) <= eps; }
@@ -176,6 +176,22 @@ TEST_CASE("stylize.effects.gpu.meshShaders") {
     REQUIRE(snow != nullptr);
     REQUIRE(snow->gpuHandle != nullptr);
     CHECK(snow->hasUniform("snowAmount"));
+
+    Shader* slash = mod->newMeshShader(gfx, "slash");
+    REQUIRE(slash != nullptr);
+    REQUIRE(slash->gpuHandle != nullptr);
+    CHECK(slash->hasUniform("coreR"));
+    CHECK(slash->hasUniform("intensity"));
+
+    Shader* ember = mod->newMeshShader(gfx, "ember");
+    REQUIRE(ember != nullptr);
+    REQUIRE(ember->gpuHandle != nullptr);
+    CHECK(ember->hasUniform("burnAmount"));
+
+    Shader* aura = mod->newMeshShader(gfx, "aura");
+    REQUIRE(aura != nullptr);
+    REQUIRE(aura->gpuHandle != nullptr);
+    CHECK(aura->hasUniform("auraR"));
 
     bool threw = false;
     try {

@@ -671,6 +671,55 @@ void Graphics::setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCou
 
 void Graphics::setMesh3DSceneDepth(Texture *depth) { mesh3dSceneDepthTexture = depth; }
 
+void Graphics::setMesh3DSceneColor(Texture *color) { mesh3dSceneColorTexture = color; }
+
+Graphics::Mesh3DSceneColorCaptureStatus Graphics::captureMesh3DSceneColor() {
+    if (mesh3dSceneColorTexture) return Mesh3DSceneColorCaptureStatus::ExplicitOverride;
+    if (!sceneColorPassOpen || sceneColorSlots.size() < 2 || !sceneColorResumeRenderPass ||
+        sceneColorSamples != vk::SampleCountFlagBits::e1)
+        return sceneColorHistoryValid ? Mesh3DSceneColorCaptureStatus::HistoryFallback
+                                      : Mesh3DSceneColorCaptureStatus::Unavailable;
+
+    const size_t sourceIndex = currentFrameSlot() % sceneColorSlots.size();
+    const size_t snapshotIndex = (sourceIndex + 1u) % sceneColorSlots.size();
+    SceneColorSlot &source = sceneColorSlots[sourceIndex];
+    SceneColorSlot &snapshot = sceneColorSlots[snapshotIndex];
+    auto &cb = currentPresentCb();
+
+    cb.endRenderPass();
+    sceneColorPassOpen = false;
+    source.color.endSampledLayout();
+    source.color.setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+    snapshot.color.setLayout(cb, vk::ImageLayout::eTransferDstOptimal);
+    vk::ImageCopy copy{};
+    copy.srcSubresource =
+        vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+    copy.dstSubresource =
+        vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+    copy.extent = vk::Extent3D{static_cast<uint32_t>(sceneColorWidth),
+                              static_cast<uint32_t>(sceneColorHeight), 1};
+    cb.copyImage(source.color.image(), vk::ImageLayout::eTransferSrcOptimal,
+                 snapshot.color.image(), vk::ImageLayout::eTransferDstOptimal, 1, &copy);
+    snapshot.color.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+
+    source.color.setLayout(cb, vk::ImageLayout::eColorAttachmentOptimal);
+    source.depth.setLayout(cb, vk::ImageLayout::eDepthStencilAttachmentOptimal,
+                           vk::ImageAspectFlagBits::eDepth);
+    vk::RenderPassBeginInfo resume{};
+    resume.renderPass = sceneColorResumeRenderPass;
+    resume.framebuffer = source.framebuffer;
+    resume.renderArea =
+        vk::Rect2D{{0, 0}, {static_cast<uint32_t>(sceneColorWidth),
+                            static_cast<uint32_t>(sceneColorHeight)}};
+    cb.beginRenderPass(resume, vk::SubpassContents::eInline);
+    source.color.beginColorAttachment();
+    source.depth.beginDepthAttachment();
+    sceneColorPassOpen = true;
+    completedSceneColorSlot = snapshotIndex;
+    sceneColorHistoryValid = true;
+    return Mesh3DSceneColorCaptureStatus::Captured;
+}
+
 void Graphics::setMesh3DEnv(Texture *cube, float intensity) {
     mesh3dEnvTexture = cube;
     mesh3dEnvIntensity = intensity < 0.f ? 0.f : intensity;
@@ -1139,7 +1188,7 @@ void Graphics::ensureFlatHeightTexture3D() {
 }
 
 vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                     GpuTexture *heightTex, GpuTexture *depthTex,
+                                     GpuTexture *heightTex, GpuTexture *depthTex, GpuTexture *sceneColorTex,
                                      GpuTexture *decalAlbedo, GpuTexture *decalNormal,
                                      GpuTexture *decalParams,
                                      Mesh3dFrameSlots &fslots) {
@@ -1147,6 +1196,7 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
     ASSERT(heightTex != nullptr);
+    ASSERT(sceneColorTex != nullptr);
     ASSERT(decalAlbedo != nullptr);
     ASSERT(decalNormal != nullptr);
     ASSERT(decalParams != nullptr);
@@ -1166,7 +1216,7 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     };
     GpuTexture *probe0 = probeTexture(0);
     GpuTexture *probe1 = probeTexture(1);
-    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, depthTex,
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, depthTex, sceneColorTex,
                      decalAlbedo, decalNormal, decalParams};
     auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
@@ -1177,7 +1227,7 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     alloc.pSetLayouts = &mesh3dSetLayout;
     vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
-    vkb::DescriptorSetUpdater updater(15, 15, 0);
+    vkb::DescriptorSetUpdater updater(16, 16, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
         .buffer(fslots.uboRing.buffer, 0, fslots.uboRing.size)
@@ -1205,6 +1255,8 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
         .image(vkb::SampledImage::forLaterSample(probe0->sampler, probe0->imageView()))
         .beginImages(17, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(probe1->sampler, probe1->imageView()))
+        .beginImages(18, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(sceneColorTex->sampler, sceneColorTex->imageView()))
         .beginImages(20, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(shadowRawSampler, currentShadowArrayView()))
         .update(device.instance);

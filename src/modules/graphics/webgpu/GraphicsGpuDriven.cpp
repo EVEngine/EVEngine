@@ -980,8 +980,8 @@ void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarg
             makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()),
                               gpuForTexture(material->getNormalTexture()),
                               gpuForTexture(mesh3dEnvTexture),
-                              gpuForTexture(material->getHeightTexture()), depth, frameOffset,
-                              shadowOffset, 0);
+                              gpuForTexture(material->getHeightTexture()), depth, nullptr,
+                              frameOffset, shadowOffset, 0);
         const uint32_t offsets[3] = {frameOffset, shadowOffset, 0};
         pass.SetBindGroup(0, bindGroup, 3, offsets);
         WGPUBindGroupEntry modelEntry{};

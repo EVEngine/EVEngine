@@ -53,9 +53,14 @@ public:
     /** @brief Create a mesh technique shader and apply compatible overrides. */
     graphics::Shader* newMeshShader(graphics::Graphics* gfx) const;
 
-private:
-    void applyOverrides(graphics::Shader* shader) const;
+    /**
+     * @brief Apply current overrides to an existing compatible shader.
+     * @param shader Immediate borrowed shader; it is not retained.
+     * @thread Render-thread affine when shader is GPU-backed.
+     */
+    void applyToShader(graphics::Shader* shader) const;
 
+private:
     std::string                            style_;
     std::unordered_map<std::string, float> overrides_;
     std::optional<int>                     priority_;

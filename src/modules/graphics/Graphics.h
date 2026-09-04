@@ -972,6 +972,41 @@ public:
      */
     virtual void setMesh3DSceneDepth(Texture *depth) = 0;
 
+    /**
+     * @brief Optional completed scene-color snapshot for custom mesh shaders.
+     *
+     * Bound at mesh3d shader binding 18 (WebGPU sampler binding 19). The
+     * texture is borrowed and must not be the color attachment currently being
+     * written by the active render pass. nullptr automatically samples the
+     * most recently completed scene-color slot, or a neutral placeholder when
+     * no scene history exists yet.
+     */
+    virtual void setMesh3DSceneColor(Texture *color) = 0;
+
+    /** @brief Observable result of requesting a same-frame mesh SceneColor snapshot. */
+    enum class Mesh3DSceneColorCaptureStatus {
+        ExplicitOverride,
+        Scheduled,
+        Captured,
+        HistoryFallback,
+        Unavailable
+    };
+
+    /**
+     * @brief Make opaque scene color available to subsequent refractive mesh draws.
+     *
+     * Backends may capture immediately or defer the split until command encoding.
+     * An explicit texture installed by setMesh3DSceneColor takes precedence. A
+     * HistoryFallback result is observable quality degradation, not same-frame data.
+     *
+     * @return Capture disposition for the current render frame.
+     * @thread Render-thread affine; call immediately before the first refractive draw.
+     * @reentrancy Does not invoke scripts or caller callbacks.
+     */
+    [[nodiscard]] virtual Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() {
+        return Mesh3DSceneColorCaptureStatus::HistoryFallback;
+    }
+
     /** @brief Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
     /** @brief Select pipeline state for subsequent mesh draws. */

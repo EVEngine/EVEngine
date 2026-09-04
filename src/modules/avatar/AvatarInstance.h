@@ -1,8 +1,11 @@
 #pragma once
 
-#include <memory>
+#include "common/AttachmentPoint.h"
+#include "common/AnimationEventSource.h"
 
+#include <array>
 #include <functional>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -94,7 +97,7 @@ using Live2DBackendFactory = ILive2DBackend *(*)();
  * Script-facing API avoids overloads; kind-specific methods no-op / return false
  * when unsupported.
  */
-class AvatarInstance {
+class AvatarInstance : public eve::IAttachmentPointSource, public eve::IAnimationEventSource {
 public:
     /** @brief Callback fired exactly once, when the instance is destroyed. */
     using DestroyHook = std::function<void(AvatarInstance *)>;
@@ -277,6 +280,10 @@ public:
     std::string getAnimationEventName(int index) const;
     /** @brief Animation event payload, or empty for an invalid index. */
     std::string getAnimationEventPayload(int index) const;
+    /** @brief Expose latest animation events through the backend-neutral consumer contract. */
+    [[nodiscard]] std::size_t animationEventCount() const noexcept override;
+    /** @brief Return one latest animation event name through the consumer contract. */
+    [[nodiscard]] std::string animationEventName(std::size_t index) const override;
     /** @brief Map a VRM humanoid semantic (for example "head") to a skeleton bone. */
     bool mapHumanoidBone(const std::string& semantic, const std::string& boneName);
     /** @brief Auto-map common VRM humanoid semantics from the currently bound skeleton. */
@@ -312,6 +319,9 @@ public:
     bool detachAttachment(const std::string& name);
     /** @brief Return the number of active bone attachments. */
     int getAttachmentCount() const { return static_cast<int>(attachments_.size()); }
+    /** @brief Sample the latest evaluated semantic/bone point in Avatar world space. */
+    [[nodiscard]] eve::Result<eve::AttachmentPoint> sampleAttachmentPoint(
+        std::string_view name, eve::AttachmentPoint localOffset = {}) const override;
     /** @brief Link this avatar to a node in Scene's current host. */
     bool linkSceneNode(scene::Scene* scene, const std::string& nodeId);
     /** @brief Return whether this avatar is currently scene-driven. */
@@ -451,6 +461,7 @@ private:
     std::unique_ptr<animation::DynamicBoneSolver>         dynamicBoneSolver_;
     animation::AnimSkin*                                  animSkin_         = nullptr;
     animation::AnimSkeleton*                              animSkeleton_     = nullptr;
+    std::vector<std::array<float, 16>>                    attachmentPoseMatrices_;
     std::unordered_map<std::string, animation::AnimClip*> motions_;
     std::unordered_map<std::string, std::string>          humanoidBones_;
     std::unordered_map<std::string, std::string>          visemeMorphs_;

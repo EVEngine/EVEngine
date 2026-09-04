@@ -552,6 +552,8 @@ public:
                                  int atlasSlotsX, int atlasSlotsY,
                                  float borderFraction) override;
     void              setMesh3DSceneDepth(Texture *depth) override;
+    void              setMesh3DSceneColor(Texture *color) override;
+    [[nodiscard]] Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() override;
     void              setMesh3DMaterial(float metallic, float roughness) override;
     void              setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
                                        bool doubleSided, float alphaCutoff,
@@ -809,7 +811,7 @@ private:
     void          destroyReadbackResources();
     void          ensurePresentCaptureHook();
     vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                               GpuTexture *heightTex, GpuTexture *depthTex,
+                               GpuTexture *heightTex, GpuTexture *depthTex, GpuTexture *sceneColorTex,
                                GpuTexture *decalAlbedo, GpuTexture *decalNormal,
                                GpuTexture *decalParams, Mesh3dFrameSlots &fslots);
     void          ensureDefaultEnvCubemap();
@@ -943,6 +945,7 @@ private:
         GpuTexture *reflectionProbe1 = nullptr;
         GpuTexture *height = nullptr;
         GpuTexture *depth = nullptr;
+        GpuTexture *sceneColor = nullptr;
         GpuTexture *decalAlbedo = nullptr;
         GpuTexture *decalNormal = nullptr;
         GpuTexture *decalParams = nullptr;
@@ -950,7 +953,7 @@ private:
             return albedo == o.albedo && normal == o.normal && env == o.env &&
                    reflectionProbe0 == o.reflectionProbe0 &&
                    reflectionProbe1 == o.reflectionProbe1 && height == o.height &&
-                   depth == o.depth && decalAlbedo == o.decalAlbedo &&
+                   depth == o.depth && sceneColor == o.sceneColor && decalAlbedo == o.decalAlbedo &&
                    decalNormal == o.decalNormal && decalParams == o.decalParams;
         }
     };
@@ -961,6 +964,7 @@ private:
                    (std::hash<GpuTexture *>()(k.reflectionProbe0) << 8) ^
                    (std::hash<GpuTexture *>()(k.reflectionProbe1) << 9) ^
                    (std::hash<GpuTexture *>()(k.depth) << 4) ^
+                   (std::hash<GpuTexture *>()(k.sceneColor) << 10) ^
                    (std::hash<GpuTexture *>()(k.decalAlbedo) << 5) ^
                    (std::hash<GpuTexture *>()(k.decalNormal) << 6) ^
                    (std::hash<GpuTexture *>()(k.decalParams) << 7);
@@ -992,6 +996,7 @@ private:
     Texture                      *mesh3dHeightTexture     = nullptr;
     Texture *mesh3dEnvTexture = nullptr;
     Texture *mesh3dSceneDepthTexture = nullptr;
+    Texture *mesh3dSceneColorTexture = nullptr;
     float mesh3dEnvIntensity = 0.f;
     glm::vec3 mesh3dEnvProbeCenter{0.f};
     glm::vec3 mesh3dEnvProbeExtent{0.f};
@@ -1417,7 +1422,10 @@ private:
     vk::Format sceneColorFormat = vk::Format::eUndefined;
     vk::SampleCountFlagBits sceneColorSamples = vk::SampleCountFlagBits::e1;
     std::vector<SceneColorSlot> sceneColorSlots;
+    size_t completedSceneColorSlot = 0;
+    bool sceneColorHistoryValid = false;
     vkb::BuiltRenderPass sceneColorRenderPass{};
+    vk::RenderPass sceneColorResumeRenderPass{};
     bool sceneColorPassOpen = false;
     vk::RenderPass scenePassPipelineTarget = vk::RenderPass{};
     vk::SampleCountFlagBits scenePassPipelineSamples = vk::SampleCountFlagBits::e1;

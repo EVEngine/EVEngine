@@ -787,7 +787,12 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     updateRingLocal(fslots.uboRing, uboOffset, &ubo, sizeof(ubo));
     const ShadowUBO shadow = makeShadowUbo();
     updateRingLocal(fslots.shadowRing, shadowOffset, &shadow, sizeof(shadow));
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth,
+    auto *gpuSceneColor = mesh3dSceneColorTexture && mesh3dSceneColorTexture->gpuHandle
+                              ? static_cast<GpuTexture *>(mesh3dSceneColorTexture->gpuHandle)
+                          : sceneColorHistoryValid && completedSceneColorSlot < sceneColorSlots.size()
+                              ? &sceneColorSlots[completedSceneColorSlot].colorGpu
+                              : static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor,
                                          gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots);
     const uint32_t dynOffsets[2] = {uboOffset, shadowOffset};
 

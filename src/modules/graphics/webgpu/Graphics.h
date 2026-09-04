@@ -373,6 +373,8 @@ public:
                                  int atlasSlotsX, int atlasSlotsY,
                                  float borderFraction) override;
     void     setMesh3DSceneDepth(Texture *depth) override;
+    void     setMesh3DSceneColor(Texture *color) override;
+    [[nodiscard]] Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() override;
     void     setMesh3DMaterial(float metallic, float roughness) override;
     void     setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
                               bool doubleSided, float alphaCutoff,
@@ -620,7 +622,7 @@ private:
                                        GpuTexture *motion = nullptr, GpuTexture *extra = nullptr,
                                        GpuTexture *specular = nullptr);
     wgpu::BindGroup makeMeshBindGroup(GpuTexture *albedo, GpuTexture *normal, GpuTexture *env,
-                                      GpuTexture *height, GpuTexture *depth,
+                                      GpuTexture *height, GpuTexture *depth, GpuTexture *sceneColor,
                                       uint32_t frameUboOffset, uint32_t shadowUboOffset,
                                       uint32_t pushUboOffset);
     wgpu::BindGroup makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTexture *normal,
@@ -703,6 +705,8 @@ private:
     uint32_t frameIndex = 0;
     // Slot rendered by the most recent present (the readback source).
     uint32_t lastPresentSlot = 0;
+    bool sceneColorHistoryValid = false;
+    std::optional<size_t> mesh3dSceneColorCaptureIndex;
     static constexpr uint32_t kFramesInFlight = 2;
     std::vector<UboArena> uboArenas;
     std::vector<VertexArena> vertexArenas;
@@ -883,6 +887,7 @@ private:
     Texture *mesh3dHeightTexture = nullptr;
     Texture *mesh3dEnvTexture = nullptr;
     Texture *mesh3dSceneDepthTexture = nullptr;
+    Texture *mesh3dSceneColorTexture = nullptr;
     float mesh3dEnvIntensity = 0.f;
     glm::vec3 mesh3dEnvProbeCenter{0.f};
     glm::vec3 mesh3dEnvProbeExtent{0.f};
@@ -1130,7 +1135,7 @@ private:
     using MeshBindGroupKey = std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t,
                                         uintptr_t, uintptr_t, uintptr_t, uintptr_t,
                                         uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                                        uintptr_t, uintptr_t>;
+                                        uintptr_t, uintptr_t, uintptr_t>;
     std::map<MeshBindGroupKey, wgpu::BindGroup> meshBindGroupCache_;
     static constexpr size_t kMaxMeshBindGroupCache = 128;
     void clearMeshBindGroupCache() { meshBindGroupCache_.clear(); }

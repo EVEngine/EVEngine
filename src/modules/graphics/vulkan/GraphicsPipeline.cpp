@@ -427,6 +427,7 @@ void Graphics::createMesh3DPipeline() {
             .image(10, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(16, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(17, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(18, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(20, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dSetLayout = *mesh3dSetLayoutUnique;
@@ -594,6 +595,7 @@ void Graphics::destroyGBufferResources() {
 
 void Graphics::destroySceneColorResources() {
     sceneColorPassOpen = false;
+    sceneColorHistoryValid = false;
     if (device.instance) device->waitIdle();
     for (auto &slot : sceneColorSlots) {
         slot.colorTex.gpuHandle = nullptr;
@@ -608,6 +610,10 @@ void Graphics::destroySceneColorResources() {
     if (sceneColorRenderPass) {
         device->destroyRenderPass(sceneColorRenderPass);
         sceneColorRenderPass = {};
+    }
+    if (sceneColorResumeRenderPass) {
+        device->destroyRenderPass(sceneColorResumeRenderPass);
+        sceneColorResumeRenderPass = vk::RenderPass{};
     }
     sceneColorWidth = 0;
     sceneColorHeight = 0;
@@ -1250,13 +1256,67 @@ void Graphics::createSceneColorResources(int sceneW, int sceneH) {
             device.createRenderPass()
                 .addSampledColorAttachment(colorFmt)
                 .addDepthAttachment(depthFmt, vk::AttachmentLoadOp::eClear,
-                                    vk::AttachmentStoreOp::eDontCare)
+                                    vk::AttachmentStoreOp::eStore)
                 .addSubpass(vkb::SubpassBuilder()
                                 .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
                                 .setDepthStencilAttachment(
                                     1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
                 .addExternalShaderReadDependencies()
                 .build();
+
+        std::array<vk::AttachmentDescription, 2> attachments{};
+        attachments[0] = vk::AttachmentDescription()
+                             .setFormat(colorFmt)
+                             .setSamples(vk::SampleCountFlagBits::e1)
+                             .setLoadOp(vk::AttachmentLoadOp::eLoad)
+                             .setStoreOp(vk::AttachmentStoreOp::eStore)
+                             .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+                             .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+                             .setInitialLayout(vk::ImageLayout::eColorAttachmentOptimal)
+                             .setFinalLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+        attachments[1] = vk::AttachmentDescription()
+                             .setFormat(depthFmt)
+                             .setSamples(vk::SampleCountFlagBits::e1)
+                             .setLoadOp(vk::AttachmentLoadOp::eLoad)
+                             .setStoreOp(vk::AttachmentStoreOp::eStore)
+                             .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+                             .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+                             .setInitialLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal)
+                             .setFinalLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal);
+        const vk::AttachmentReference colorRef{0, vk::ImageLayout::eColorAttachmentOptimal};
+        const vk::AttachmentReference depthRef{1, vk::ImageLayout::eDepthStencilAttachmentOptimal};
+        const vk::SubpassDescription subpass =
+            vk::SubpassDescription()
+                .setPipelineBindPoint(vk::PipelineBindPoint::eGraphics)
+                .setColorAttachmentCount(1)
+                .setPColorAttachments(&colorRef)
+                .setPDepthStencilAttachment(&depthRef);
+        std::array<vk::SubpassDependency, 2> dependencies{};
+        dependencies[0] = vk::SubpassDependency()
+                              .setSrcSubpass(VK_SUBPASS_EXTERNAL)
+                              .setDstSubpass(0)
+                              .setSrcStageMask(vk::PipelineStageFlagBits::eTransfer)
+                              .setDstStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                                               vk::PipelineStageFlagBits::eEarlyFragmentTests)
+                              .setSrcAccessMask(vk::AccessFlagBits::eTransferRead)
+                              .setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite |
+                                                vk::AccessFlagBits::eDepthStencilAttachmentRead);
+        dependencies[1] = vk::SubpassDependency()
+                              .setSrcSubpass(0)
+                              .setDstSubpass(VK_SUBPASS_EXTERNAL)
+                              .setSrcStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
+                              .setDstStageMask(vk::PipelineStageFlagBits::eFragmentShader)
+                              .setSrcAccessMask(vk::AccessFlagBits::eColorAttachmentWrite)
+                              .setDstAccessMask(vk::AccessFlagBits::eShaderRead);
+        const vk::RenderPassCreateInfo resumeInfo =
+            vk::RenderPassCreateInfo()
+                .setAttachmentCount(static_cast<uint32_t>(attachments.size()))
+                .setPAttachments(attachments.data())
+                .setSubpassCount(1)
+                .setPSubpasses(&subpass)
+                .setDependencyCount(static_cast<uint32_t>(dependencies.size()))
+                .setPDependencies(dependencies.data());
+        sceneColorResumeRenderPass = device->createRenderPass(resumeInfo);
     }
     auto scenePass = sceneColorRenderPass;
 
@@ -1344,8 +1404,11 @@ void Graphics::endSceneColorRenderPass() {
     auto &cb = currentPresentCb();
     cb.endRenderPass();
     sceneColorPassOpen = false;
-    if (auto *slot = currentSceneColorSlot())
+    if (auto *slot = currentSceneColorSlot()) {
         slot->color.endSampledLayout();
+        completedSceneColorSlot = currentFrameSlot() % sceneColorSlots.size();
+        sceneColorHistoryValid = true;
+    }
 }
 
 int Graphics::clampMsaaSamples(int requested) const {
@@ -1806,7 +1869,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     };
     GpuTexture *probe0 = probeTexture(0);
     GpuTexture *probe1 = probeTexture(1);
-    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, nullptr,
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, nullptr, nullptr,
                      decalAlbedo, decalNormal, decalParams};
     auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
